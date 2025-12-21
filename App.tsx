@@ -20,28 +20,31 @@ function LandingPage() {
   return (
     <div className="min-h-screen bg-slate-950">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950" />
-        <div className="z-10 text-center space-y-12 max-w-5xl mx-auto">
-          <div className="space-y-6">
-            <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] leading-[1.05]">
-              Build better French, faster
+        <div className="z-10 text-center space-y-8 sm:space-y-12 max-w-5xl mx-auto w-full">
+          <div className="space-y-4 sm:space-y-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-[-0.02em] leading-[1.05] px-2 animate-fade-in-up">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
             </h1>
-            <p className="text-slate-400 text-xl md:text-2xl font-normal max-w-3xl mx-auto leading-[1.6]">
-              Akseli is the exam simulator trusted by candidates preparing for Canadian immigration. 
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight px-2 animate-fade-in-up delay-200">
+              Build better French, faster
+            </h2>
+            <p className="text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
+              The exam simulator trusted by candidates preparing for Canadian immigration. 
               Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
             <SignUpButton mode="modal">
-              <button className="group px-8 py-4 rounded-full bg-white text-slate-900 font-semibold text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
+              <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
                 Start for free
               </button>
             </SignUpButton>
             <SignInButton mode="modal">
-              <button className="px-8 py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
                 Sign in
               </button>
             </SignInButton>
@@ -50,50 +53,53 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-32 px-4">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 mb-28">
-            <div className="space-y-6">
-              <h2 className="text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
+          <div className="grid md:grid-cols-2 gap-6 sm:gap-12 mb-12 sm:mb-16 md:mb-20">
+            <div className="space-y-3 sm:space-y-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
                 Create, practice, and <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">succeed</span>
               </h2>
+              <p className="text-slate-400 text-base sm:text-lg leading-[1.7] hidden sm:block">
+                Everything you need to prepare, practice, and track your progress—all in one platform.
+              </p>
             </div>
             <div className="flex items-center">
-              <p className="text-slate-400 text-lg leading-[1.7]">
-                Everything you need to prepare for your TEF Canada exam, all in one place.
+              <p className="text-slate-400 text-base sm:text-lg leading-[1.7] hidden md:block">
+                Scale without switching tools. All your exam preparation in one place.
               </p>
             </div>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-indigo-500/30 transition-all duration-300">🎯</div>
-              <h3 className="text-xl font-bold text-white">Official Format</h3>
-              <p className="text-slate-400 leading-[1.6] text-sm">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-100">
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-indigo-500/30 transition-all duration-300">🎯</div>
+              <h3 className="text-base sm:text-xl font-bold text-white">Official Format</h3>
+              <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real TEF Canada scenarios with exact time limits and official exam structure.
               </p>
             </div>
 
-            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-cyan-500/30 transition-all duration-300">🤖</div>
-              <h3 className="text-xl font-bold text-white">AI Evaluation</h3>
-              <p className="text-slate-400 leading-[1.6] text-sm">
+            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-200">
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-cyan-500/30 transition-all duration-300">🤖</div>
+              <h3 className="text-base sm:text-xl font-bold text-white">AI Evaluation</h3>
+              <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 CCI Paris framework evaluation with accurate CLB and CECR assessments.
               </p>
             </div>
 
-            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all duration-300">🎙️</div>
-              <h3 className="text-xl font-bold text-white">Live Audio</h3>
-              <p className="text-slate-400 leading-[1.6] text-sm">
+            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-300">
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all duration-300">🎙️</div>
+              <h3 className="text-base sm:text-xl font-bold text-white">Live Audio</h3>
+              <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real-time conversation practice with advanced speech recognition.
               </p>
             </div>
 
-            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-blue-500/30 transition-all duration-300">📊</div>
-              <h3 className="text-xl font-bold text-white">CLB Scoring</h3>
-              <p className="text-slate-400 leading-[1.6] text-sm">
+            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-400">
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-blue-500/30 transition-all duration-300">📊</div>
+              <h3 className="text-base sm:text-xl font-bold text-white">CLB Scoring</h3>
+              <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Get TEF scores (0-699) and CLB levels for Canadian immigration.
               </p>
             </div>
@@ -102,191 +108,151 @@ function LandingPage() {
       </section>
 
       {/* Why Akseli Section */}
-      <section className="relative py-32 px-4">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-slate-900/30">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+          <div className="text-center mb-8 sm:mb-16 md:mb-24">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
               Why Akseli beats <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">generic AI</span>
             </h2>
-            <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-[1.6]">
+            <p className="text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4 hidden sm:block">
               Training with ChatGPT or plain AI models won't prepare you for the real exam. Here's what makes Akseli different.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-indigo-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
-              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🎓</div>
-              <h3 className="text-2xl font-bold text-white">Built for TEF Canada</h3>
-              <p className="text-slate-400 leading-[1.7]">
-                Purpose-built for the exam with official scenarios, exact time limits, and CCI Paris evaluation framework—not generic conversation practice.
-              </p>
-            </div>
 
-            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-cyan-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
-              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🔬</div>
-              <h3 className="text-2xl font-bold text-white">Scientific Evaluation</h3>
-              <p className="text-slate-400 leading-[1.7]">
-                Structured 6-criteria rubric matching real TEF examiners. Get the same detailed feedback you'd receive from an official exam.
-              </p>
-            </div>
-
-            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-emerald-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
-              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🇨🇦</div>
-              <h3 className="text-2xl font-bold text-white">Immigration Ready</h3>
-              <p className="text-slate-400 leading-[1.7]">
-                CLB scores that map directly to Express Entry requirements. Know exactly where you stand for Canadian immigration.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Comparison Section */}
-      <section className="relative py-32 px-4 bg-slate-900/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-24">
-            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
-              Compare
-            </h2>
-            <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-[1.6]">
-              See the difference between specialized exam preparation and generic AI
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {/* Akseli Column */}
-            <div className="space-y-6 p-8 rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-indigo-500/20">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-xl font-black text-indigo-400 shadow-lg shadow-indigo-500/10">
+            <div className="space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-indigo-500/20">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-base sm:text-xl font-black text-indigo-400 shadow-lg shadow-indigo-500/10">
                   A
                 </div>
-                <h3 className="text-2xl font-bold text-white">Akseli</h3>
+                <h3 className="text-lg sm:text-2xl font-bold text-white">Akseli</h3>
               </div>
               
-              <div className="space-y-5">
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Official exam format</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Real scenarios, time limits, structure</p>
+              <div className="space-y-2 sm:space-y-5">
+                <div className="flex items-start gap-2 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Official exam format</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Real scenarios, time limits, structure</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">CCI Paris framework</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Official TEF evaluation criteria</p>
+                <div className="flex items-start gap-2 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">CCI Paris framework</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Official TEF evaluation criteria</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">CLB, CECR, TEF scores</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">0-699 scale, immigration-ready</p>
+                <div className="flex items-start gap-2 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">CLB, CECR, TEF scores</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">0-699 scale, immigration-ready</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Real-time audio</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Live conversation practice</p>
+                <div className="flex items-start gap-2 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Real-time audio</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Live conversation practice</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Official exam scenarios</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">OCR-extracted from real materials</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Official exam scenarios</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">OCR-extracted from real materials</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Performance tracking</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Full history and progress monitoring</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Performance tracking</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Full history and progress monitoring</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Specialized examiner AI</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Trained to act as official examiner</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Specialized examiner AI</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Trained to act as official examiner</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 group">
-                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div>
-                    <p className="text-white font-semibold mb-1">Model answers & improvements</p>
-                    <p className="text-slate-400 text-sm leading-[1.5]">Detailed examples and upgrades</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
+                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div className="min-w-0">
+                    <p className="text-white font-semibold text-xs sm:text-base">Model answers & improvements</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Detailed examples and upgrades</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* ChatGPT/Plain AI Column */}
-            <div className="space-y-6 p-8 rounded-3xl bg-slate-900/20 backdrop-blur-sm border border-slate-800/30">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 rounded-2xl bg-slate-800/50 flex items-center justify-center text-xl font-black text-slate-500">
+            <div className="space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/20 backdrop-blur-sm border border-slate-800/30">
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-2xl bg-slate-800/50 flex items-center justify-center text-base sm:text-xl font-black text-slate-500">
                   AI
                 </div>
-                <h3 className="text-2xl font-bold text-slate-500">ChatGPT / Plain AI</h3>
+                <h3 className="text-lg sm:text-2xl font-bold text-slate-500">ChatGPT / Plain AI</h3>
               </div>
               
-              <div className="space-y-5">
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Generic conversation</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">No exam structure</p>
+              <div className="space-y-2 sm:space-y-5">
+                <div className="flex items-start gap-2">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Generic conversation</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No exam structure</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">No framework</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">Generic feedback only</p>
+                <div className="flex items-start gap-2">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No framework</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">Generic feedback only</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">No scoring</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">No standardized assessment</p>
+                <div className="flex items-start gap-2">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No scoring</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No standardized assessment</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Text-based</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">No real-time audio practice</p>
+                <div className="flex items-start gap-2">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Text-based</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No real-time audio practice</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Random topics</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">Not exam-specific</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Random topics</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Not exam-specific</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">No tracking</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">No progress monitoring</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No tracking</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">No progress monitoring</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Generic assistant</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">Not exam-focused</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Generic assistant</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Not exam-focused</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
-                  <div>
-                    <p className="text-slate-500 font-semibold mb-1">Basic suggestions</p>
-                    <p className="text-slate-600 text-sm leading-[1.5]">No exam-specific examples</p>
+                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
+                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <div className="min-w-0">
+                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Basic suggestions</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">No exam-specific examples</p>
                   </div>
                 </div>
               </div>
@@ -295,61 +261,24 @@ function LandingPage() {
         </div>
       </section>
 
-      {/* Benefits Section */}
-      <section className="relative py-32 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
-            <div className="space-y-6">
-              <h2 className="text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
-                Scale without switching tools
-              </h2>
-              <p className="text-slate-400 text-lg leading-[1.7]">
-                Everything you need to prepare, practice, and track your progress—all in one platform.
-              </p>
-            </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">🇨🇦</div>
-                <h3 className="text-lg font-bold text-white">CLB Scores</h3>
-                <p className="text-slate-400 text-sm leading-[1.5]">Direct Express Entry mapping</p>
-              </div>
-              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📋</div>
-                <h3 className="text-lg font-bold text-white">Real Scenarios</h3>
-                <p className="text-slate-400 text-sm leading-[1.5]">Official exam tasks</p>
-              </div>
-              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📊</div>
-                <h3 className="text-lg font-bold text-white">6-Criteria</h3>
-                <p className="text-slate-400 text-sm leading-[1.5]">Comprehensive evaluation</p>
-              </div>
-              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
-                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📈</div>
-                <h3 className="text-lg font-bold text-white">Progress</h3>
-                <p className="text-slate-400 text-sm leading-[1.5]">Track improvement</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA Section */}
-      <section className="relative py-32 px-4">
+      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
             Launch faster with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
           </h2>
-          <p className="text-slate-400 text-xl mb-12 leading-[1.6] max-w-2xl mx-auto">
+          <p className="text-slate-400 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
             Join candidates preparing for Canadian immigration with the most accurate TEF exam simulator available.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4">
             <SignUpButton mode="modal">
-              <button className="group px-8 py-4 rounded-full bg-white text-slate-900 font-semibold text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
+              <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
                 Start for free
               </button>
             </SignUpButton>
             <SignInButton mode="modal">
-              <button className="px-8 py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
                 Sign in
               </button>
             </SignInButton>
@@ -365,15 +294,21 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { signOut } = useClerk();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-8">
+      <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+        <div className="flex items-center gap-4 md:gap-8">
           <span 
-            className="font-black text-xl text-slate-900 dark:text-white cursor-pointer" 
+            className="font-black text-lg md:text-xl text-slate-900 dark:text-white cursor-pointer" 
             onClick={() => navigate('/dashboard')}
           >
             Akseli
@@ -391,16 +326,79 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             </button>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
           <button 
             onClick={() => signOut()}
-            className="text-sm font-bold text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
+            className="hidden md:block text-sm font-bold text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
           >
             Sign Out
           </button>
           <UserButton />
         </div>
       </nav>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-40 md:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          {/* Menu Panel */}
+          <div className="fixed top-[57px] left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-40 md:hidden shadow-lg">
+            <div className="px-4 py-3 space-y-1">
+              <button 
+                onClick={() => handleNavigate('/dashboard')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                  isActive('/dashboard') 
+                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                Dashboard
+              </button>
+              <button 
+                onClick={() => handleNavigate('/history')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                  isActive('/history') 
+                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                History
+              </button>
+              <div className="border-t border-slate-200 dark:border-slate-800 my-2" />
+              <button 
+                onClick={() => {
+                  signOut();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="w-full text-left px-4 py-3 rounded-xl text-sm font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       {children}
     </div>
   );
@@ -409,6 +407,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 function Dashboard() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'partA' | 'partB'>('partA');
 
   const startExam = (mode: 'partA' | 'partB' | 'full') => {
     navigate(`/exam/${mode}`);
@@ -416,13 +415,80 @@ function Dashboard() {
 
   return (
     <DashboardLayout>
-      <main className="max-w-5xl mx-auto p-6 md:p-12 space-y-12">
-        <div className="space-y-2">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Bonjour, {user?.firstName}!</h2>
-          <p className="text-slate-500 dark:text-slate-400">Ready to practice your oral expression today?</p>
+      <main className="max-w-5xl mx-auto p-4 md:p-12 space-y-6 md:space-y-12">
+        <div className="space-y-1 md:space-y-2">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Bonjour, {user?.firstName}!</h2>
+          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">Ready to practice your oral expression today?</p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        {/* Mobile: Tabs for Section A and B */}
+        <div className="md:hidden space-y-4">
+          {/* Tab Buttons */}
+          <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            <button
+              onClick={() => setActiveTab('partA')}
+              className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all ${
+                activeTab === 'partA'
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              Section A
+            </button>
+            <button
+              onClick={() => setActiveTab('partB')}
+              className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all ${
+                activeTab === 'partB'
+                  ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              }`}
+            >
+              Section B
+            </button>
+          </div>
+
+          {/* Tab Content */}
+          {activeTab === 'partA' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partA')}>
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📞</div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Section A</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
+                Posez des questions pour obtenir des informations. (4 min)
+              </p>
+              <div className="flex items-center text-blue-600 dark:text-blue-400 font-bold text-xs">
+                Commencer <span className="ml-1">→</span>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'partB' && (
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partB')}>
+              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🤝</div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Section B</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
+                Argumentez pour convaincre un ami. (8 min)
+              </p>
+              <div className="flex items-center text-emerald-600 dark:text-emerald-400 font-bold text-xs">
+                Commencer <span className="ml-1">→</span>
+              </div>
+            </div>
+          )}
+
+          {/* Exam Complet - Always visible below tabs */}
+          <div className="bg-indigo-600 rounded-2xl p-5 shadow-lg hover:shadow-xl hover:shadow-indigo-600/20 transition-all group cursor-pointer" onClick={() => startExam('full')}>
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:rotate-12 transition-transform">🏆</div>
+            <h3 className="text-lg font-bold text-white mb-1">Examen Complet</h3>
+            <p className="text-indigo-100 text-xs leading-relaxed mb-3">
+              Enchaînez les deux sections pour une simulation réelle. (12 min)
+            </p>
+            <div className="flex items-center text-white font-bold text-xs">
+              Commencer <span className="ml-1">→</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop: 3-column grid */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partA')}>
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">📞</div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Section A</h3>
@@ -462,9 +528,17 @@ function Dashboard() {
 }
 
 function HistoryView() {
+  const navigate = useNavigate();
+  
   return (
     <DashboardLayout>
-      <main className="max-w-5xl mx-auto p-6 md:p-12 space-y-12">
+      <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-12 space-y-6 md:space-y-12">
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
+        >
+          ← Back to Dashboard
+        </button>
         <HistoryList />
       </main>
     </DashboardLayout>
@@ -520,14 +594,16 @@ function ResultView() {
     return (
       <DashboardLayout>
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
-          <div className="max-w-7xl mx-auto py-20 text-center">
-            <p className="text-slate-500 dark:text-slate-400 mb-4">{error || 'Result not found'}</p>
+          <div className="max-w-7xl mx-auto">
             <button 
               onClick={() => navigate('/history')}
-              className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-500 transition-colors"
+              className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
             >
-              Back to History
+              ← Back to History
             </button>
+            <div className="py-20 text-center">
+              <p className="text-slate-500 dark:text-slate-400">{error || 'Result not found'}</p>
+            </div>
           </div>
         </div>
       </DashboardLayout>
@@ -631,11 +707,11 @@ function ExamView() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-3 md:p-8">
         <div className="max-w-7xl mx-auto">
           <button 
             onClick={() => navigate('/dashboard')}
-            className="mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-sm font-bold uppercase tracking-wider"
+            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider"
           >
             ← Back to Dashboard
           </button>

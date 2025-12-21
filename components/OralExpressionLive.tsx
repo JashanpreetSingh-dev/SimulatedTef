@@ -49,8 +49,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [showImageFull, setShowImageFull] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [doesContentOverflow, setDoesContentOverflow] = useState(false);
   
   const currentTask: TEFTask = currentPart === 'A' ? scenario.officialTasks.partA : scenario.officialTasks.partB;
+  const micSectionRef = useRef<HTMLDivElement>(null);
 
   const sessionRef = useRef<any>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
@@ -730,6 +732,48 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
     };
   }, []);
 
+  // Check if mic section overflows viewport and control page scrolling
+  useEffect(() => {
+    const checkContentOverflow = () => {
+      if (!micSectionRef.current) return;
+      
+      const section = micSectionRef.current;
+      const rect = section.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      
+      // Check if section bottom extends beyond viewport (only on mobile)
+      const isMobile = window.innerWidth < 768; // md breakpoint
+      const overflows = isMobile && rect.bottom > windowHeight;
+      
+      setDoesContentOverflow(overflows);
+      
+      // Control page scrolling: allow scroll only if content overflows
+      if (isMobile) {
+        if (overflows) {
+          document.body.style.overflow = 'auto';
+        } else {
+          document.body.style.overflow = 'hidden';
+        }
+      } else {
+        document.body.style.overflow = 'auto';
+      }
+    };
+
+    // Check on mount and resize
+    checkContentOverflow();
+    window.addEventListener('resize', checkContentOverflow);
+    
+    // Also check after a short delay to account for layout changes
+    const timeoutId = setTimeout(checkContentOverflow, 100);
+
+    return () => {
+      window.removeEventListener('resize', checkContentOverflow);
+      clearTimeout(timeoutId);
+      // Reset body overflow on unmount
+      document.body.style.overflow = 'auto';
+    };
+  }, [status, currentPart]);
+
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -753,19 +797,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3 md:space-y-6">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-2">
           {scenario.mode !== 'partB' && (
-            <div className={`px-5 py-2.5 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
+            <div className={`px-3 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
           )}
           {scenario.mode !== 'partA' && (
-            <div className={`px-5 py-2.5 rounded-[1.25rem] text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
+            <div className={`px-3 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
           )}
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {status === 'active' && timeLeft > 0 && (
-            <div className={`px-6 py-2.5 rounded-[1.25rem] text-lg font-black tabular-nums transition-all ${
+            <div className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-base md:text-lg font-black tabular-nums transition-all ${
               timeLeft <= 60 
                 ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse' 
                 : timeLeft <= 120
@@ -775,23 +819,23 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
               {formatTime(timeLeft)}
             </div>
           )}
-          {status === 'active' && <div className="text-[10px] font-black text-rose-500 flex items-center gap-1.5"><span className="w-2 h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE MIC</div>}
+          {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-500 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[560px] transition-colors">
-          <div className="bg-slate-900 dark:bg-slate-800 px-8 py-4 flex items-center justify-between border-b border-white/5">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document Officiel #{currentTask.id}</span>
+      <div className="grid lg:grid-cols-2 gap-4 md:gap-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[560px] transition-colors">
+          <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between border-b border-white/5">
+            <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
             <button onClick={() => setShowImageFull(true)} className="text-white hover:text-indigo-400 transition-colors text-xs font-bold flex items-center gap-1">
-              <span>🔍</span> Agrandir
+              <span>🔍</span> <span className="hidden sm:inline">Agrandir</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
             <img 
               src={getImagePath(currentTask.image)} 
               alt="Task Document" 
-              className="w-full h-auto rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
+              className="w-full h-auto rounded-xl md:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.warn(`Initial path failed: ${target.src}. Trying fallback...`);
@@ -819,40 +863,43 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
                 target.src = 'https://placehold.co/600x800/1e293b/ffffff?text=DOCUMENT+OFFICIEL\nMANQUANT';
               }}
             />
-            <div className="mt-8 p-6 bg-white dark:bg-slate-800/80 backdrop-blur rounded-[2rem] border border-slate-100 dark:border-slate-700 text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
+            <div className="mt-4 md:mt-8 p-4 md:p-6 bg-white dark:bg-slate-800/80 backdrop-blur rounded-xl md:rounded-[2rem] border border-slate-100 dark:border-slate-700 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
                <strong className="text-slate-900 dark:text-white not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
             </div>
           </div>
         </div>
 
-        <div className="bg-slate-900 dark:bg-slate-900 rounded-[2.5rem] p-12 flex flex-col items-center justify-center space-y-12 relative overflow-hidden shadow-2xl transition-colors">
+        <div 
+          ref={micSectionRef}
+          className="bg-slate-900 dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] p-4 md:p-12 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-12 relative overflow-hidden shadow-2xl transition-colors"
+        >
           <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-500' : (isUserSpeaking ? 'bg-emerald-500' : 'bg-transparent')}`} />
           
-          <div className="relative group">
+          <div className="relative group flex-shrink-0">
             <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-500/40 scale-150' : (isUserSpeaking ? 'bg-emerald-500/40 scale-125' : 'bg-white/5 scale-100')}`} />
             <button
               onClick={status === 'active' ? handleNextOrFinish : startSession}
               disabled={status === 'connecting' || status === 'evaluating'}
-              className={`w-44 h-44 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-[16px] relative z-10 ${
+              className={`w-28 h-28 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-[16px] relative z-10 ${
                 status === 'active' 
                   ? 'bg-rose-500 hover:bg-rose-600 ring-rose-500/20 active:scale-90' 
                   : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 ring-white/10 text-slate-900 dark:text-white hover:scale-105 active:scale-95'
               }`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-10 h-10 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
-               status === 'evaluating' ? <span className="text-3xl animate-bounce">⚖️</span> :
+              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-10 md:h-10 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
+               status === 'evaluating' ? <span className="text-xl md:text-3xl animate-bounce">⚖️</span> :
                <>
-                <span className="text-5xl mb-2">{status === 'active' ? '⏹' : '🎙'}</span>
-                <span className="text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
+                <span className="text-3xl md:text-5xl mb-0.5 md:mb-2">{status === 'active' ? '⏹' : '🎙'}</span>
+                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
                </>}
             </button>
           </div>
 
-          <div className="text-center space-y-3 z-10">
-            <h4 className="text-white font-black text-2xl tracking-tight">
+          <div className="text-left md:text-center space-y-1.5 md:space-y-3 z-10 flex-1 md:flex-none">
+            <h4 className="text-white font-black text-base md:text-2xl tracking-tight">
               {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
-            <p className="text-slate-400 text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
+            <p className="text-slate-400 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
         </div>
       </div>
