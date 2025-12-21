@@ -1,0 +1,8 @@
+
+{
+  "name": "TEF Canada Master",
+  "description": "A comprehensive simulator and evaluator for the TEF Canada French proficiency exam, featuring automated scoring for writing and speaking using Gemini AI.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
