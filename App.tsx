@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser, useClerk } from '@clerk/clerk-react';
+import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser, useClerk, useAuth } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
 import { OralExpressionLive } from './components/OralExpressionLive';
 import { HistoryList } from './components/HistoryList';
@@ -162,6 +162,7 @@ function ResultView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useUser();
+  const { getToken } = useAuth();
   const [result, setResult] = useState<SavedResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -173,8 +174,10 @@ function ResultView() {
     }
 
     // Fetch result by ID
-    persistenceService.getAllResults(user.id)
-      .then(results => {
+    const fetchResult = async () => {
+      try {
+        const token = await getToken();
+        const results = await persistenceService.getAllResults(user.id, token);
         const found = results.find(r => r._id === id);
         if (found) {
           setResult(found);
@@ -182,13 +185,15 @@ function ResultView() {
           setError('Result not found');
         }
         setLoading(false);
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Failed to fetch result:', err);
         setError('Failed to load result');
         setLoading(false);
-      });
-  }, [id, user]);
+      }
+    };
+    
+    fetchResult();
+  }, [id, user, getToken]);
 
   if (loading) {
     return (
@@ -235,6 +240,7 @@ function ExamView() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useUser();
+  const { getToken } = useAuth();
   const [scenario, setScenario] = useState<any>(null);
 
   useEffect(() => {
@@ -250,7 +256,8 @@ function ExamView() {
       // Generate new scenario, excluding completed tasks
       const loadCompletedTaskIds = async () => {
         try {
-          const results = await persistenceService.getAllResults(user?.id || 'guest');
+          const token = await getToken();
+          const results = await persistenceService.getAllResults(user?.id || 'guest', token);
           // Extract completed task IDs from results
           const completedIds: number[] = [];
           results.forEach(result => {

@@ -24,7 +24,7 @@ Set these in Railway's environment variables:
 - `MONGODB_URI` - MongoDB connection string (e.g., `mongodb+srv://user:pass@cluster.mongodb.net/`)
 - `GEMINI_API_KEY` - Your Google Gemini API key
 - `CLERK_PUBLISHABLE_KEY` - Your Clerk publishable key
-- `CLERK_SECRET_KEY` - Your Clerk secret key (if using server-side Clerk features)
+- `CLERK_SECRET_KEY` - Your Clerk secret key (required for backend authentication)
 
 ### Optional
 - `MONGODB_DB_NAME` - Database name (defaults to `tef_master`)

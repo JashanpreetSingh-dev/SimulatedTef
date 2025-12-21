@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
 import { EvaluationResult, TEFTask, SavedResult } from '../types';
 // Removed combineAudioChunks and mergeAudioTracks - now using MediaRecorder for real-time recording
@@ -41,6 +41,7 @@ interface Props {
 
 export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active' | 'evaluating'>('idle');
   const [transcription, setTranscription] = useState('');
@@ -600,7 +601,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
             wavBlob = recordedBlob;
             
             // Upload recording to GridFS
-            recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest') || undefined;
+            const token = await getToken();
+            recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', token) || undefined;
             console.log('📦 Audio recording uploaded:', recordingId || 'failed');
             
             // Transcribe the recording using Gemini Audio API
@@ -651,6 +653,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         );
         
         // Save result with recordingId, transcript, and task data - returns saved result with _id
+        const token = await getToken();
         const savedResult = await persistenceService.saveResult(
           result,
           scenario.mode,
@@ -659,7 +662,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           recordingId,
           scenario.officialTasks.partA, // Include task data for Section A
           scenario.officialTasks.partB, // Include task data for Section B
-          transcript || undefined // Include transcript if available
+          transcript || undefined, // Include transcript if available
+          token // Clerk authentication token
         );
         
         // Clear recorded chunks after upload

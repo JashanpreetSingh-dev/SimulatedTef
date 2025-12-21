@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { persistenceService } from '../services/persistence';
 import { SavedResult } from '../types';
 
@@ -9,6 +9,7 @@ type FilterMode = 'partA' | 'partB' | 'full';
 
 export const HistoryList: React.FC = () => {
   const { user } = useUser();
+  const { getToken } = useAuth();
   const navigate = useNavigate();
   const userId = user?.id || 'guest';
   const [results, setResults] = useState<SavedResult[]>([]);
@@ -16,11 +17,14 @@ export const HistoryList: React.FC = () => {
   const [filterMode, setFilterMode] = useState<FilterMode>('partA');
 
   useEffect(() => {
-    persistenceService.getAllResults(userId).then(data => {
+    const fetchResults = async () => {
+      const token = await getToken();
+      const data = await persistenceService.getAllResults(userId, token);
       setResults(data);
       setLoading(false);
-    });
-  }, [userId]);
+    };
+    fetchResults();
+  }, [userId, getToken]);
 
   // Filter results based on selected mode
   const filteredResults = results.filter(result => result.mode === filterMode);

@@ -4,17 +4,19 @@
  * 
  * Required Env Variables:
  * - MONGODB_URI (e.g., mongodb+srv://user:pass@cluster.mongodb.net/)
- * - MONGODB_DB_NAME (optional, defaults to 'tef')
+ * - MONGODB_DB_NAME (optional, defaults to 'tef_master')
+ * - CLERK_SECRET_KEY (required for authentication)
  * 
  * Run with: npm run server
  */
 
 import { MongoClient, ObjectId, GridFSBucket } from 'mongodb';
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { clerkClient } from '@clerk/backend';
 import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -24,16 +26,73 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Extend Express Request type to include userId
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+  }
+}
+
 // Multer for handling multipart/form-data (file uploads)
 const upload = multer({ storage: multer.memoryStorage() });
 
 const uri = process.env.MONGODB_URI || "";
 const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
+const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
 
 if (!uri) {
   console.error('❌ MONGODB_URI is required!');
   console.error('   Add MONGODB_URI to your .env file');
   process.exit(1);
+}
+
+if (!clerkSecretKey) {
+  console.warn('⚠️  CLERK_SECRET_KEY is not set!');
+  console.warn('   Authentication will be disabled. Set CLERK_SECRET_KEY for production security.');
+}
+
+// Clerk authentication middleware
+async function requireAuth(req: Request, res: Response, next: NextFunction) {
+  // Skip auth if CLERK_SECRET_KEY is not set (for development)
+  if (!clerkSecretKey) {
+    // In development, allow requests but warn
+    req.userId = req.body.userId || req.params.userId || 'guest';
+    return next();
+  }
+
+  try {
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Unauthorized: No token provided' });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    // Verify token with Clerk
+    const clerk = clerkClient({ secretKey: clerkSecretKey });
+    const sessionClaims = await clerk.verifyToken(token);
+    
+    // Extract userId from session claims
+    req.userId = sessionClaims.sub; // 'sub' is the user ID in Clerk tokens
+    next();
+  } catch (error: any) {
+    console.error('Authentication error:', error.message);
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+  }
+}
+
+if (!uri) {
+  console.error('❌ MONGODB_URI is required!');
+  console.error('   Add MONGODB_URI to your .env file');
+  process.exit(1);
+}
+
+if (!clerkSecretKey) {
+  console.warn('⚠️  CLERK_SECRET_KEY is not set!');
+  console.warn('   Authentication will be disabled. Set CLERK_SECRET_KEY for production security.');
 }
 
 let client: MongoClient;
@@ -59,7 +118,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // POST: Upload audio recording to GridFS
-app.post('/api/recordings/upload', upload.single('audio'), async (req, res) => {
+app.post('/api/recordings/upload', requireAuth, upload.single('audio'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No audio file provided' });
@@ -67,7 +126,8 @@ app.post('/api/recordings/upload', upload.single('audio'), async (req, res) => {
     
     await connectDB(); // Ensure GridFS is initialized
     
-    const userId = req.body.userId || 'guest';
+    // Use authenticated userId from middleware (not from request body)
+    const userId = req.userId || 'guest';
     const filename = `${userId}_${Date.now()}.wav`;
     
     // Upload to GridFS
@@ -100,16 +160,22 @@ app.post('/api/recordings/upload', upload.single('audio'), async (req, res) => {
 });
 
 // GET: Download audio recording from GridFS
-app.get('/api/recordings/:id', async (req, res) => {
+app.get('/api/recordings/:id', requireAuth, async (req, res) => {
   try {
     await connectDB(); // Ensure GridFS is initialized
     
     const recordingId = req.params.id;
+    const userId = req.userId;
     
     // Check if file exists
     const files = await gridFSBucket.find({ _id: new ObjectId(recordingId) }).toArray();
     if (files.length === 0) {
       return res.status(404).json({ error: 'Recording not found' });
+    }
+    
+    // Verify the recording belongs to the authenticated user
+    if (files[0].metadata?.userId && files[0].metadata.userId !== userId) {
+      return res.status(403).json({ error: 'Forbidden: You do not have access to this recording' });
     }
     
     // Set headers for audio streaming
@@ -133,10 +199,13 @@ app.get('/api/recordings/:id', async (req, res) => {
 });
 
 // POST: Save a new result
-app.post('/api/results', async (req, res) => {
+app.post('/api/results', requireAuth, async (req, res) => {
   try {
     const db = await connectDB();
     const result = req.body;
+    
+    // Override userId with authenticated userId (security)
+    result.userId = req.userId;
     result.createdAt = new Date().toISOString();
     result.updatedAt = new Date().toISOString();
     
@@ -149,13 +218,19 @@ app.post('/api/results', async (req, res) => {
 });
 
 // GET: Fetch all results for a user
-app.get('/api/results/:userId', async (req, res) => {
+app.get('/api/results/:userId', requireAuth, async (req, res) => {
   try {
     const db = await connectDB();
-    const userId = req.params.userId;
+    const requestedUserId = req.params.userId;
+    const authenticatedUserId = req.userId;
+    
+    // Security: Users can only fetch their own results
+    if (requestedUserId !== authenticatedUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only access your own results' });
+    }
     
     const results = await db.collection('results')
-      .find({ userId })
+      .find({ userId: authenticatedUserId })
       .sort({ timestamp: -1 })
       .toArray();
       
@@ -167,13 +242,19 @@ app.get('/api/results/:userId', async (req, res) => {
 });
 
 // GET: Fetch specific result with audio metadata
-app.get('/api/results/detail/:id', async (req, res) => {
+app.get('/api/results/detail/:id', requireAuth, async (req, res) => {
   try {
     const db = await connectDB();
     const result = await db.collection('results').findOne({ _id: new ObjectId(req.params.id) });
     if (!result) {
       return res.status(404).json({ error: 'Result not found' });
     }
+    
+    // Security: Users can only access their own results
+    if (result.userId !== req.userId) {
+      return res.status(403).json({ error: 'Forbidden: You do not have access to this result' });
+    }
+    
     res.json(result);
   } catch (err: any) {
     console.error('Error fetching result:', err);
@@ -182,11 +263,19 @@ app.get('/api/results/detail/:id', async (req, res) => {
 });
 
 // User Profile Update (Streak, Stats)
-app.patch('/api/user/profile/:userId', async (req, res) => {
+app.patch('/api/user/profile/:userId', requireAuth, async (req, res) => {
   try {
     const db = await connectDB();
+    const requestedUserId = req.params.userId;
+    const authenticatedUserId = req.userId;
+    
+    // Security: Users can only update their own profile
+    if (requestedUserId !== authenticatedUserId) {
+      return res.status(403).json({ error: 'Forbidden: You can only update your own profile' });
+    }
+    
     const update = await db.collection('users').updateOne(
-      { userId: req.params.userId },
+      { userId: authenticatedUserId },
       { 
         $set: { ...req.body, updatedAt: new Date().toISOString() }, 
         $inc: { totalSessions: 1 } 

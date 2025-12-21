@@ -7,16 +7,25 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 export const persistenceService = {
   /**
    * Uploads audio recording to backend and returns recordingId
+   * @param audioBlob - The audio file to upload
+   * @param userId - User ID (will be overridden by backend from token)
+   * @param authToken - Optional Clerk session token for authentication
    */
-  async uploadRecording(audioBlob: Blob, userId: string): Promise<string | null> {
+  async uploadRecording(audioBlob: Blob, userId: string, authToken?: string | null): Promise<string | null> {
     try {
       const formData = new FormData();
       const filename = `${userId}_${Date.now()}.wav`;
       formData.append('audio', audioBlob, filename);
-      formData.append('userId', userId);
+      // Don't send userId in body - backend will get it from token
+      
+      const headers: HeadersInit = {};
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
       
       const response = await fetch(`${BACKEND_URL}/api/recordings/upload`, {
         method: 'POST',
+        headers,
         body: formData,
       });
       
@@ -37,6 +46,7 @@ export const persistenceService = {
 
   /**
    * Saves an evaluation result with MongoDB via backend API.
+   * @param authToken - Optional Clerk session token for authentication
    */
   async saveResult(
     result: EvaluationResult, 
@@ -46,7 +56,8 @@ export const persistenceService = {
     recordingId?: string,
     taskPartA?: any, // TEFTask for Section A
     taskPartB?: any,  // TEFTask for Section B
-    transcript?: string  // Transcript of the exam
+    transcript?: string,  // Transcript of the exam
+    authToken?: string | null  // Clerk session token
   ): Promise<SavedResult> {
     
     // 1. Prepare the document with a temporary ID (will be replaced by MongoDB _id if save succeeds)
@@ -73,9 +84,14 @@ export const persistenceService = {
 
     // 3. Sync to MongoDB via backend API
     try {
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
       const response = await fetch(`${BACKEND_URL}/api/results`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(newEntry),
       });
 
