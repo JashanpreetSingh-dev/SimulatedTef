@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
-import { EvaluationResult, TEFTask, SavedResult } from '../types';
+import { TEFTask, SavedResult } from '../types';
 // Removed combineAudioChunks and mergeAudioTracks - now using MediaRecorder for real-time recording
 import { persistenceService } from '../services/persistence';
+import { evaluationJobService } from '../services/evaluationJobService';
 import { LoadingResult } from './LoadingResult';
 
 // Type declaration for Web Speech API
@@ -695,35 +696,77 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         const questionCount = (fullUserTranscript.match(/\?/g) || []).length + 
           (fullUserTranscript.match(/\b(combien|comment|où|quand|qui|quoi|pourquoi|quel|quelle|quels|quelles)\b/gi) || []).length;
         
-        // Evaluate using transcribed text
-        const result = await geminiService.evaluateResponse(
-          'OralExpression', 
-          fullPrompt, 
+        // Submit evaluation job to queue (non-blocking)
+        const token = await getToken();
+        const { jobId } = await evaluationJobService.submitJob(
+          'OralExpression',
+          fullPrompt,
           fullUserTranscript,
           scenario.officialTasks.partA.id,
           scenario.officialTasks.partA.time_limit_sec + (scenario.officialTasks.partB?.time_limit_sec || 0),
-          questionCount > 0 ? questionCount : undefined
-        );
-        
-        // Save result with recordingId, transcript, and task data - returns saved result with _id
-        const token = await getToken();
-        const savedResult = await persistenceService.saveResult(
-          result,
+          questionCount > 0 ? questionCount : undefined,
+          recordingId,
           scenario.mode,
           scenario.title,
-          user?.id || 'guest',
-          recordingId,
-          scenario.officialTasks.partA, // Include task data for Section A
-          scenario.officialTasks.partB, // Include task data for Section B
-          transcript || undefined, // Include transcript if available
-          token // Clerk authentication token
+          scenario.officialTasks.partA,
+          scenario.officialTasks.partB,
+          token
         );
+        
+        console.log('📋 Evaluation job submitted:', jobId);
         
         // Clear recorded chunks after upload
         recordedChunksRef.current = [];
         
-        // Update with complete result (no loading flag)
-        onFinish(savedResult);
+        // Create placeholder result with jobId for loading state
+        const placeholderResult: SavedResult = {
+          _id: `job-${jobId}`,
+          userId: user?.id || 'guest',
+          timestamp: Date.now(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          mode: scenario.mode,
+          title: scenario.title,
+          score: 0,
+          clbLevel: 'CLB 0',
+          cecrLevel: 'A1',
+          feedback: '',
+          strengths: [],
+          weaknesses: [],
+          grammarNotes: '',
+          vocabularyNotes: '',
+          isLoading: true,
+          taskPartA: scenario.officialTasks.partA,
+          taskPartB: scenario.officialTasks.partB,
+        };
+        
+        // Show loading state immediately
+        onFinish(placeholderResult);
+        
+        // Poll for job completion in background
+        try {
+          const savedResult = await evaluationJobService.pollJobStatus(
+            jobId,
+            token,
+            (progress) => {
+              console.log(`📊 Job ${jobId} progress: ${progress}%`);
+            }
+          );
+          
+          console.log('✅ Evaluation job completed:', savedResult._id);
+          
+          // Update with complete result
+          onFinish(savedResult);
+        } catch (pollError: any) {
+          console.error('❌ Job polling error:', pollError);
+          // Update result with error state
+          const errorResult: SavedResult = {
+            ...placeholderResult,
+            isLoading: false,
+            feedback: `Erreur: ${pollError.message || 'Échec de l\'évaluation'}`,
+          };
+          onFinish(errorResult);
+        }
       } catch (err: any) {
         console.error('Evaluation error:', err);
         
@@ -739,11 +782,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         
         // Update result with error state (still show result page but with error)
         const errorResult: SavedResult = {
-          ...placeholderResult,
-          isLoading: false,
+          _id: `error-${Date.now()}`,
+          userId: user?.id || 'guest',
+          timestamp: Date.now(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          mode: scenario.mode,
+          title: scenario.title,
+          score: 0,
+          clbLevel: 'CLB 0',
+          cecrLevel: 'A1',
           feedback: `Erreur: ${errorMessage}`,
           strengths: [],
           weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
+          grammarNotes: '',
+          vocabularyNotes: '',
+          isLoading: false,
+          taskPartA: scenario.officialTasks.partA,
+          taskPartB: scenario.officialTasks.partB,
         };
         onFinish(errorResult);
       }
