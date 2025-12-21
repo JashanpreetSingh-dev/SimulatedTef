@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser, useClerk } from '@clerk/clerk-react';
+import { dark } from '@clerk/themes';
 import { OralExpressionLive } from './components/OralExpressionLive';
 import { HistoryList } from './components/HistoryList';
 import { DetailedResultView } from './components/DetailedResultView';
@@ -338,9 +339,108 @@ function ProtectedRoutes() {
   );
 }
 
+// Custom Clerk theme matching app's indigo/slate design
+const clerkAppearance = {
+  baseTheme: dark,
+  variables: {
+    colorPrimary: '#6366f1', // indigo-500
+    colorBackground: '#0f172a', // slate-900
+    colorInputBackground: '#1e293b', // slate-800
+    colorInputText: '#f1f5f9', // slate-100
+    colorText: '#f8fafc', // slate-50
+    colorTextSecondary: '#cbd5e1', // slate-300
+    borderRadius: '1rem',
+    fontFamily: 'Inter, sans-serif',
+  },
+  elements: {
+    rootBox: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+    card: {
+      borderRadius: '2rem',
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+      border: '1px solid rgba(30, 41, 59, 0.8)', // slate-800
+      backgroundColor: '#0f172a', // slate-900
+    },
+    headerTitle: {
+      fontWeight: '900',
+      letterSpacing: '-0.025em',
+      color: '#f8fafc', // slate-50
+      fontSize: '1.5rem',
+    },
+    headerSubtitle: {
+      color: '#94a3b8', // slate-400
+      fontSize: '0.875rem',
+    },
+    socialButtonsBlockButton: {
+      borderRadius: '1rem',
+      border: '1px solid rgba(30, 41, 59, 0.5)',
+      backgroundColor: '#1e293b', // slate-800
+      color: '#f8fafc', // slate-50
+      '&:hover': {
+        backgroundColor: '#334155', // slate-700
+      },
+    },
+    formButtonPrimary: {
+      borderRadius: '1rem',
+      textTransform: 'uppercase',
+      fontWeight: '800',
+      letterSpacing: '0.05em',
+      fontSize: '0.75rem',
+      backgroundColor: '#6366f1', // indigo-500
+      color: '#ffffff',
+      '&:hover': {
+        backgroundColor: '#4f46e5', // indigo-600
+      },
+    },
+    formFieldInput: {
+      borderRadius: '0.75rem',
+      backgroundColor: '#1e293b', // slate-800
+      border: '1px solid rgba(30, 41, 59, 0.5)',
+      color: '#f1f5f9', // slate-100
+      '&:focus': {
+        borderColor: '#6366f1', // indigo-500
+        boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.1)',
+      },
+    },
+    formFieldLabel: {
+      color: '#cbd5e1', // slate-300
+      fontWeight: '600',
+      fontSize: '0.875rem',
+    },
+    footerActionLink: {
+      color: '#818cf8', // indigo-400
+      fontWeight: '600',
+      '&:hover': {
+        color: '#6366f1', // indigo-500
+      },
+    },
+    identityPreviewText: {
+      color: '#f8fafc', // slate-50
+    },
+    identityPreviewEditButton: {
+      color: '#818cf8', // indigo-400
+    },
+    alertText: {
+      color: '#cbd5e1', // slate-300
+    },
+    dividerLine: {
+      backgroundColor: 'rgba(30, 41, 59, 0.5)',
+    },
+    dividerText: {
+      color: '#94a3b8', // slate-400
+    },
+  },
+};
+
 function App() {
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+    <ClerkProvider 
+      publishableKey={PUBLISHABLE_KEY}
+      appearance={clerkAppearance}
+    >
       <BrowserRouter>
         <SignedOut>
           <Routes>
