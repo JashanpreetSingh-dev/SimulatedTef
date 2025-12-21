@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { SavedResult, UpgradedSentence, TEFTask } from '../types';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
@@ -8,54 +8,55 @@ interface Props {
   onBack: () => void;
 }
 
-export const DetailedResultView: React.FC<Props> = ({ result, onBack }) => {
-  const getCECRColor = (level?: string) => {
-    if (!level) return 'bg-slate-500';
-    const cecr = level.toUpperCase();
-    if (cecr.includes('C2')) return 'bg-purple-600';
-    if (cecr.includes('C1')) return 'bg-indigo-600';
-    if (cecr.includes('B2')) return 'bg-blue-600';
-    if (cecr.includes('B1')) return 'bg-emerald-600';
-    if (cecr.includes('A2')) return 'bg-amber-600';
-    return 'bg-rose-600';
-  };
+// Helper functions moved outside component to prevent recreation on every render
+const getCECRColor = (level?: string) => {
+  if (!level) return 'bg-slate-500';
+  const cecr = level.toUpperCase();
+  if (cecr.includes('C2')) return 'bg-purple-600';
+  if (cecr.includes('C1')) return 'bg-indigo-600';
+  if (cecr.includes('B2')) return 'bg-blue-600';
+  if (cecr.includes('B1')) return 'bg-emerald-600';
+  if (cecr.includes('A2')) return 'bg-amber-600';
+  return 'bg-rose-600';
+};
 
-  // Helper function to get image path (same logic as OralExpressionLive)
-  const getImagePath = (imagePath: string): string => {
-    if (!imagePath) return '';
-    // If it already starts with /, return as is
-    if (imagePath.startsWith('/')) return imagePath;
-    // Otherwise prepend /
-    return '/' + imagePath;
-  };
+const getImagePath = (imagePath: string): string => {
+  if (!imagePath) return '';
+  if (imagePath.startsWith('/')) return imagePath;
+  return '/' + imagePath;
+};
 
-  const criteria = result.criteria || {};
-  const upgradedSentences = result.upgraded_sentences || [];
-  const topImprovements = result.top_improvements || [];
+const getSectionBadgeColor = (mode: string) => {
+  if (mode === 'partA') return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800';
+  if (mode === 'partB') return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800';
+  return 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800';
+};
+
+const getSectionLabel = (mode: string) => {
+  if (mode === 'partA') return 'A';
+  if (mode === 'partB') return 'B';
+  return 'Complet';
+};
+
+const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
+  // Memoize expensive calculations to prevent recalculation on every render
+  const criteria = useMemo(() => result.criteria || {}, [result.criteria]);
+  const upgradedSentences = useMemo(() => result.upgraded_sentences || [], [result.upgraded_sentences]);
+  const topImprovements = useMemo(() => result.top_improvements || [], [result.top_improvements]);
   
-  // Determine which tasks to display based on mode
-  const tasksToDisplay: Array<{ task: TEFTask; label: string }> = [];
-  if (result.mode === 'partA' && result.taskPartA) {
-    tasksToDisplay.push({ task: result.taskPartA, label: 'Section A' });
-  } else if (result.mode === 'partB' && result.taskPartB) {
-    tasksToDisplay.push({ task: result.taskPartB, label: 'Section B' });
-  } else if (result.mode === 'full') {
-    if (result.taskPartA) tasksToDisplay.push({ task: result.taskPartA, label: 'Section A' });
-    if (result.taskPartB) tasksToDisplay.push({ task: result.taskPartB, label: 'Section B' });
-  }
-
-  // Helper to get section badge color
-  const getSectionBadgeColor = (mode: string) => {
-    if (mode === 'partA') return 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800';
-    if (mode === 'partB') return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800';
-    return 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800';
-  };
-
-  const getSectionLabel = (mode: string) => {
-    if (mode === 'partA') return 'A';
-    if (mode === 'partB') return 'B';
-    return 'Complet';
-  };
+  // Memoize tasks to display
+  const tasksToDisplay = useMemo(() => {
+    const tasks: Array<{ task: TEFTask; label: string }> = [];
+    if (result.mode === 'partA' && result.taskPartA) {
+      tasks.push({ task: result.taskPartA, label: 'Section A' });
+    } else if (result.mode === 'partB' && result.taskPartB) {
+      tasks.push({ task: result.taskPartB, label: 'Section B' });
+    } else if (result.mode === 'full') {
+      if (result.taskPartA) tasks.push({ task: result.taskPartA, label: 'Section A' });
+      if (result.taskPartB) tasks.push({ task: result.taskPartB, label: 'Section B' });
+    }
+    return tasks;
+  }, [result.mode, result.taskPartA, result.taskPartB]);
 
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
@@ -101,9 +102,14 @@ export const DetailedResultView: React.FC<Props> = ({ result, onBack }) => {
                 controls 
                 className="flex-1 h-7 sm:h-8"
                 src={`${BACKEND_URL}/api/recordings/${result.recordingId}`}
+                preload="metadata"
                 onError={(e) => {
                   console.error('Audio playback error:', e);
                 }}
+                // Prevent audio events from bubbling and causing re-renders
+                onPlay={(e) => e.stopPropagation()}
+                onPause={(e) => e.stopPropagation()}
+                onTimeUpdate={(e) => e.stopPropagation()}
               >
                 Votre navigateur ne supporte pas la lecture audio.
               </audio>
@@ -125,18 +131,30 @@ export const DetailedResultView: React.FC<Props> = ({ result, onBack }) => {
                   src={getImagePath(task.image)}
                   alt={`${label} Task Document`}
                   className="w-full rounded-xl sm:rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg"
+                  loading="lazy"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    // Try alternative paths if image fails to load
-                    if (!task.image.startsWith('/')) {
-                      target.src = '/' + task.image;
-                    } else {
-                      // Try removing leading slash
-                      target.src = './' + task.image.substring(1);
+                    // Prevent infinite retry loops - only try once
+                    if (target.dataset.retried === 'true') {
+                      target.style.display = 'none';
+                      return;
                     }
-                    // Final fallback
-                    if (target.src === window.location.href + task.image) {
-                      target.src = task.image;
+                    target.dataset.retried = 'true';
+                    
+                    // Try alternative path only once
+                    const currentSrc = target.src;
+                    if (task.image.startsWith('/')) {
+                      // Try without leading slash
+                      const altPath = task.image.substring(1);
+                      if (!currentSrc.includes(altPath)) {
+                        target.src = altPath;
+                      }
+                    } else {
+                      // Try with leading slash
+                      const altPath = '/' + task.image;
+                      if (!currentSrc.includes(altPath)) {
+                        target.src = altPath;
+                      }
                     }
                   }}
                 />
@@ -362,4 +380,7 @@ export const DetailedResultView: React.FC<Props> = ({ result, onBack }) => {
     </div>
   );
 };
+
+// Memoize the component to prevent re-renders when props haven't changed
+export const DetailedResultView = React.memo(DetailedResultViewComponent);
 
