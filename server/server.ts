@@ -16,7 +16,7 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { clerkClient } from '@clerk/backend';
+import { verifyToken } from '@clerk/backend';
 import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,17 +42,6 @@ const uri = process.env.MONGODB_URI || "";
 const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
 const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
 
-if (!uri) {
-  console.error('❌ MONGODB_URI is required!');
-  console.error('   Add MONGODB_URI to your .env file');
-  process.exit(1);
-}
-
-if (!clerkSecretKey) {
-  console.warn('⚠️  CLERK_SECRET_KEY is not set!');
-  console.warn('   Authentication will be disabled. Set CLERK_SECRET_KEY for production security.');
-}
-
 // Clerk authentication middleware
 async function requireAuth(req: Request, res: Response, next: NextFunction) {
   // Skip auth if CLERK_SECRET_KEY is not set (for development)
@@ -72,8 +61,7 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
     // Verify token with Clerk
-    const clerk = clerkClient({ secretKey: clerkSecretKey });
-    const sessionClaims = await clerk.verifyToken(token);
+    const sessionClaims = await verifyToken(token, { secretKey: clerkSecretKey });
     
     // Extract userId from session claims
     req.userId = sessionClaims.sub; // 'sub' is the user ID in Clerk tokens
@@ -84,10 +72,20 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+// Health check - must be defined early, before any middleware that might fail
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 if (!uri) {
   console.error('❌ MONGODB_URI is required!');
   console.error('   Add MONGODB_URI to your .env file');
-  process.exit(1);
+  // Don't exit immediately - allow health check to respond
+  // process.exit(1);
 }
 
 if (!clerkSecretKey) {
@@ -99,6 +97,9 @@ let client: MongoClient;
 let gridFSBucket: GridFSBucket;
 
 async function connectDB() {
+  if (!uri) {
+    throw new Error('MONGODB_URI is not set');
+  }
   if (!client) {
     client = new MongoClient(uri);
     await client.connect();
@@ -111,11 +112,6 @@ async function connectDB() {
   }
   return client.db(dbName);
 }
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
 
 // POST: Upload audio recording to GridFS
 app.post('/api/recordings/upload', requireAuth, upload.single('audio'), async (req, res) => {
@@ -304,12 +300,14 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+const PORT = Number(process.env.PORT) || 3001;
+const HOST = process.env.HOST || '0.0.0.0'; // Listen on all interfaces for Railway
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
   if (process.env.NODE_ENV === 'production') {
     console.log(`📦 Serving frontend from dist/`);
   }
   console.log(`📦 Database: ${dbName}`);
+  console.log(`✅ Health check available at http://${HOST}:${PORT}/api/health`);
 });
 
