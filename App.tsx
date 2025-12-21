@@ -9,6 +9,7 @@ import { LoadingResult } from './components/LoadingResult';
 import { SavedResult } from './types';
 import { getRandomTasks, getTaskById } from './services/tasks';
 import { persistenceService } from './services/persistence';
+import { useLanguage } from './contexts/LanguageContext';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -17,6 +18,8 @@ if (!PUBLISHABLE_KEY) {
 }
 
 function LandingPage() {
+  const { t } = useLanguage();
+  
   return (
     <div className="min-h-screen bg-slate-950">
       {/* Hero Section */}
@@ -29,11 +32,10 @@ function LandingPage() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
             </h1>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight px-2 animate-fade-in-up delay-200">
-              Build better French, faster
+              {t('landing.buildBetter')}
             </h2>
             <p className="text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
-              The exam simulator trusted by candidates preparing for Canadian immigration. 
-              Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
+              {t('landing.description')}
             </p>
           </div>
           
@@ -295,6 +297,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -317,16 +320,41 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             <button 
               onClick={() => navigate('/dashboard')}
               className={isActive('/dashboard') ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}>
-              Dashboard
+              {t('nav.dashboard')}
             </button>
             <button 
               onClick={() => navigate('/history')}
               className={isActive('/history') ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}>
-              History
+              {t('nav.history')}
             </button>
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Language Toggle */}
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+            <button
+              onClick={() => setLanguage('fr')}
+              className={`px-2.5 py-1 text-xs font-bold rounded transition-colors ${
+                language === 'fr'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+              title="Français"
+            >
+              FR
+            </button>
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-2.5 py-1 text-xs font-bold rounded transition-colors ${
+                language === 'en'
+                  ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+              }`}
+              title="English"
+            >
+              EN
+            </button>
+          </div>
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -347,7 +375,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             onClick={() => signOut()}
             className="hidden md:block text-sm font-bold text-slate-500 hover:text-rose-500 dark:text-slate-400 dark:hover:text-rose-400 transition-colors"
           >
-            Sign Out
+            {t('nav.signOut')}
           </button>
           <UserButton />
         </div>
@@ -372,7 +400,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                Dashboard
+                {t('nav.dashboard')}
               </button>
               <button 
                 onClick={() => handleNavigate('/history')}
@@ -382,7 +410,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
-                History
+                {t('nav.history')}
               </button>
               <div className="border-t border-slate-200 dark:border-slate-800 my-2" />
               <button 
@@ -392,7 +420,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
                 }}
                 className="w-full text-left px-4 py-3 rounded-xl text-sm font-bold text-rose-500 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-colors"
               >
-                Sign Out
+                {t('nav.signOut')}
               </button>
             </div>
           </div>
@@ -408,6 +436,7 @@ function Dashboard() {
   const { user } = useUser();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'partA' | 'partB'>('partA');
+  const { t } = useLanguage();
 
   const startExam = (mode: 'partA' | 'partB' | 'full') => {
     navigate(`/exam/${mode}`);
@@ -417,8 +446,8 @@ function Dashboard() {
     <DashboardLayout>
       <main className="max-w-5xl mx-auto p-4 md:p-12 space-y-6 md:space-y-12">
         <div className="space-y-1 md:space-y-2">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">Bonjour, {user?.firstName}!</h2>
-          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">Ready to practice your oral expression today?</p>
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{t('dashboard.greeting')}, {user?.firstName}!</h2>
+          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
 
         {/* Mobile: Tabs for Section A and B */}
@@ -529,6 +558,7 @@ function Dashboard() {
 
 function HistoryView() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   return (
     <DashboardLayout>
@@ -537,7 +567,7 @@ function HistoryView() {
           onClick={() => navigate('/dashboard')}
           className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
         >
-          ← Back to Dashboard
+          ← {t('back.dashboard')}
         </button>
         <HistoryList />
       </main>
@@ -550,6 +580,7 @@ function ResultView() {
   const navigate = useNavigate();
   const { user } = useUser();
   const { getToken } = useAuth();
+  const { t } = useLanguage();
   const [result, setResult] = useState<SavedResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -599,7 +630,7 @@ function ResultView() {
               onClick={() => navigate('/history')}
               className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
             >
-              ← Back to History
+              ← {t('back.history')}
             </button>
             <div className="py-20 text-center">
               <p className="text-slate-500 dark:text-slate-400">{error || 'Result not found'}</p>
@@ -630,6 +661,7 @@ function ExamView() {
   const location = useLocation();
   const { user } = useUser();
   const { getToken } = useAuth();
+  const { t } = useLanguage();
   const [scenario, setScenario] = useState<any>(null);
 
   useEffect(() => {
@@ -713,7 +745,7 @@ function ExamView() {
             onClick={() => navigate('/dashboard')}
             className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider"
           >
-            ← Back to Dashboard
+            ← {t('back.dashboard')}
           </button>
           <OralExpressionLive scenario={scenario} onFinish={handleFinish} />
         </div>
@@ -836,6 +868,10 @@ function App() {
     <ClerkProvider 
       publishableKey={PUBLISHABLE_KEY}
       appearance={clerkAppearance}
+      signInUrl="/"
+      signUpUrl="/"
+      afterSignInUrl="/dashboard"
+      afterSignUpUrl="/dashboard"
     >
       <BrowserRouter>
         <SignedOut>
