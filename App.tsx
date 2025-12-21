@@ -11,6 +11,9 @@ import { getRandomTasks, getTaskById } from './services/tasks';
 import { persistenceService } from './services/persistence';
 import { useLanguage } from './contexts/LanguageContext';
 import { useExamResult } from './hooks/useExamResult';
+import { PricingSection } from './components/PricingSection';
+import { FeatureComparison } from './components/FeatureComparison';
+import { FAQSection } from './components/FAQSection';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -38,12 +41,15 @@ function LandingPage() {
             <p className="text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
               The exam simulator trusted by candidates preparing for Canadian immigration. Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
             </p>
+            <p className="text-slate-500 text-sm sm:text-base max-w-2xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-350">
+              Starting at $19 for 5 full tests • No credit card required for trial
+            </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
             <SignUpButton mode="modal">
               <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
-                Start for free
+                Start 3-Day Free Trial
               </button>
             </SignUpButton>
             <SignInButton mode="modal">
@@ -264,22 +270,43 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <PricingSection />
+
+      {/* Feature Comparison Section */}
+      <FeatureComparison />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Final CTA Section */}
       <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
-            Launch faster with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
+            Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">succeed</span>?
           </h2>
-          <p className="text-slate-400 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
+          <p className="text-slate-400 text-base sm:text-lg md:text-xl mb-4 sm:mb-6 leading-[1.6] max-w-2xl mx-auto px-4">
             Join candidates preparing for Canadian immigration with the most accurate TEF exam simulator available.
+          </p>
+          <p className="text-slate-500 text-sm sm:text-base mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
+            Start with a free 3-day trial, or choose a plan that fits your needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4">
             <SignUpButton mode="modal">
               <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
-                Start for free
+                Start Free Trial
               </button>
             </SignUpButton>
+            <a
+              href="#pricing"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98] text-center"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              View Pricing
+            </a>
             <SignInButton mode="modal">
               <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
                 Sign in
