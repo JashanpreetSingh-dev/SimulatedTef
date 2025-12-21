@@ -91,6 +91,7 @@ export interface SavedResult extends EvaluationResult, MongoDocument {
   transcript?: string;
   taskPartA?: TEFTask; // Task data for Section A
   taskPartB?: TEFTask; // Task data for Section B
+  isLoading?: boolean; // Flag to indicate if evaluation is still in progress
 }
 
 export interface UserProfile extends MongoDocument {

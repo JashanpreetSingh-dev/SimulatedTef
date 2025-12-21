@@ -3,8 +3,10 @@ import React, { useState } from 'react';
 import { SavedResult, TEFTask } from '../types';
 import { persistenceService } from '../services/persistence';
 import { OralExpressionLive } from './OralExpressionLive';
+import { LoadingResult } from './LoadingResult';
 import { getRandomTasks } from '../services/tasks';
 import { useUser } from '@clerk/clerk-react';
+import { useExamResult } from '../hooks/useExamResult';
 
 type SimulationMode = 'partA' | 'partB' | 'full';
 
@@ -13,12 +15,23 @@ export const ExamSimulator: React.FC = () => {
   const [simulationMode, setSimulationMode] = useState<SimulationMode | null>(null);
   const [loading, setLoading] = useState(false);
   const [scenario, setScenario] = useState<any>(null);
-  const [evaluation, setEvaluation] = useState<SavedResult | null>(null);
+  
+  // Use the custom hook for result management
+  const { result: evaluation, isLoading, handleResult, clearResult } = useExamResult({
+    onSuccess: (savedResult) => {
+      console.log('✅ Exam completed successfully:', savedResult._id);
+    },
+    onError: (error) => {
+      console.error('❌ Exam error:', error);
+      alert(`Une erreur est survenue: ${error.message}`);
+    },
+    autoNavigate: false, // Don't auto-navigate in ExamSimulator, show result inline
+  });
 
   const startSimulation = (mode: SimulationMode) => {
     setLoading(true);
     setSimulationMode(mode);
-    setEvaluation(null);
+    clearResult(); // Clear previous result
     
     const { partA, partB } = getRandomTasks();
     
@@ -30,12 +43,11 @@ export const ExamSimulator: React.FC = () => {
     setLoading(false);
   };
 
-  const handleFinish = async (savedResult: SavedResult) => {
-    setEvaluation(savedResult);
-    // Result is already saved in OralExpressionLive component
-  };
-
   if (evaluation) {
+    // Show loading state if evaluation is still in progress
+    if (isLoading) {
+      return <LoadingResult />;
+    }
     return (
       <div className="bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl border border-slate-200 dark:border-slate-800 p-8 md:p-12 animate-in fade-in zoom-in duration-300">
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
@@ -95,7 +107,7 @@ export const ExamSimulator: React.FC = () => {
         </div>
 
         <button 
-          onClick={() => { setEvaluation(null); setSimulationMode(null); }} 
+          onClick={() => { clearResult(); setSimulationMode(null); }} 
           className="mt-12 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-6 rounded-[2.5rem] font-black text-xs uppercase tracking-[0.3em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-slate-900/10 dark:shadow-white/5"
         >
           Nouvel Entraînement
@@ -110,7 +122,7 @@ export const ExamSimulator: React.FC = () => {
         <button onClick={() => setSimulationMode(null)} className="text-indigo-600 dark:text-indigo-400 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:opacity-70 transition-opacity mb-4">
           <span>←</span> Menu principal
         </button>
-        <OralExpressionLive scenario={scenario} onFinish={handleFinish} />
+        <OralExpressionLive scenario={scenario} onFinish={handleResult} />
       </div>
     );
   }

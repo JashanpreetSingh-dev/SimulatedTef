@@ -1,0 +1,70 @@
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { SavedResult } from '../types';
+
+interface UseExamResultOptions {
+  onSuccess?: (result: SavedResult) => void;
+  onError?: (error: Error | string) => void;
+  autoNavigate?: boolean; // Whether to automatically navigate to result page
+}
+
+export const useExamResult = (options: UseExamResultOptions = {}) => {
+  const { onSuccess, onError, autoNavigate = true } = options;
+  const navigate = useNavigate();
+  const [result, setResult] = useState<SavedResult | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleResult = useCallback((savedResult: SavedResult) => {
+    setResult(savedResult);
+
+    if (savedResult.isLoading) {
+      // Result is still loading - show loading state
+      setIsLoading(true);
+      return;
+    }
+
+    // Result is complete
+    setIsLoading(false);
+
+    // Check if result indicates an error (has error message in feedback)
+    if (savedResult.feedback?.startsWith('Erreur:')) {
+      const error = new Error(savedResult.feedback);
+      if (onError) {
+        onError(error);
+      }
+      return;
+    }
+
+    // Call success callback if provided
+    if (onSuccess) {
+      onSuccess(savedResult);
+    }
+
+    // Auto-navigate to result page if enabled and result has valid ID
+    if (autoNavigate && savedResult._id && !savedResult._id.startsWith('temp-')) {
+      navigate(`/results/${savedResult._id}`);
+    }
+  }, [navigate, onSuccess, onError, autoNavigate]);
+
+  const handleError = useCallback((error: Error | string) => {
+    setIsLoading(false);
+    const errorObj = error instanceof Error ? error : new Error(error);
+    if (onError) {
+      onError(errorObj);
+    }
+  }, [onError]);
+
+  const clearResult = useCallback(() => {
+    setResult(null);
+    setIsLoading(false);
+  }, []);
+
+  return {
+    result,
+    isLoading,
+    handleResult,
+    handleError,
+    clearResult,
+  };
+};
+

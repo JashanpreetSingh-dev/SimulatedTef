@@ -14,8 +14,30 @@ export const persistenceService = {
    */
   async uploadRecording(audioBlob: Blob, userId: string, authToken?: string | null): Promise<string | null> {
     try {
+      // Validate blob
+      if (!audioBlob || audioBlob.size === 0) {
+        console.warn('⚠️ Empty audio blob, skipping upload');
+        return null;
+      }
+
+      if (audioBlob.size < 100) {
+        console.warn('⚠️ Audio blob too small, likely invalid:', audioBlob.size);
+        return null;
+      }
+
       const formData = new FormData();
-      const filename = `${userId}_${Date.now()}.wav`;
+      
+      // Determine file extension based on blob type
+      let extension = 'wav';
+      if (audioBlob.type.includes('webm')) {
+        extension = 'webm';
+      } else if (audioBlob.type.includes('ogg')) {
+        extension = 'ogg';
+      } else if (audioBlob.type.includes('mp4')) {
+        extension = 'm4a';
+      }
+      
+      const filename = `${userId}_${Date.now()}.${extension}`;
       formData.append('audio', audioBlob, filename);
       // Don't send userId in body - backend will get it from token
       
@@ -32,7 +54,7 @@ export const persistenceService = {
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Audio recording uploaded:', data.recordingId);
+        console.log('✅ Audio recording uploaded:', data.recordingId, `(${(audioBlob.size / 1024).toFixed(2)} KB)`);
         return data.recordingId;
       } else {
         const errorText = await response.text();

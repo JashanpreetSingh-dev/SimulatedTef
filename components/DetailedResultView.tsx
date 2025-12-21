@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useAuth } from '@clerk/clerk-react';
 import { SavedResult, UpgradedSentence, TEFTask } from '../types';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
@@ -39,6 +40,65 @@ const getSectionLabel = (mode: string) => {
 };
 
 const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
+  const { getToken } = useAuth();
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioLoading, setAudioLoading] = useState(false);
+  const [audioError, setAudioError] = useState<string | null>(null);
+  const audioObjectUrlRef = useRef<string | null>(null);
+
+  // Fetch audio with authentication and create object URL
+  useEffect(() => {
+    if (!result.recordingId) {
+      return;
+    }
+
+    const loadAudio = async () => {
+      try {
+        setAudioLoading(true);
+        setAudioError(null);
+        
+        // Clean up previous object URL if it exists
+        if (audioObjectUrlRef.current) {
+          URL.revokeObjectURL(audioObjectUrlRef.current);
+          audioObjectUrlRef.current = null;
+        }
+        
+        const token = await getToken();
+        const response = await fetch(`${BACKEND_URL}/api/recordings/${result.recordingId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load audio: ${response.status} ${response.statusText}`);
+        }
+
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        
+        audioObjectUrlRef.current = objectUrl;
+        setAudioUrl(objectUrl);
+        setAudioLoading(false);
+        
+      } catch (error: any) {
+        console.error('Error loading audio:', error);
+        setAudioError(error.message || 'Failed to load audio recording');
+        setAudioLoading(false);
+      }
+    };
+
+    loadAudio();
+
+    // Cleanup: revoke object URL when component unmounts or recordingId changes
+    return () => {
+      if (audioObjectUrlRef.current) {
+        URL.revokeObjectURL(audioObjectUrlRef.current);
+        audioObjectUrlRef.current = null;
+      }
+    };
+  }, [result.recordingId, getToken]);
+
   // Memoize expensive calculations to prevent recalculation on every render
   const criteria = useMemo(() => result.criteria || {}, [result.criteria]);
   const upgradedSentences = useMemo(() => result.upgraded_sentences || [], [result.upgraded_sentences]);
@@ -98,21 +158,64 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
           {result.recordingId && (
             <div className="flex items-center gap-2 sm:gap-3 w-full md:flex-1 md:min-w-[200px]">
               <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500 flex-shrink-0">🎙️</span>
-              <audio 
-                controls 
-                className="flex-1 h-7 sm:h-8"
-                src={`${BACKEND_URL}/api/recordings/${result.recordingId}`}
-                preload="metadata"
-                onError={(e) => {
-                  console.error('Audio playback error:', e);
-                }}
-                // Prevent audio events from bubbling and causing re-renders
-                onPlay={(e) => e.stopPropagation()}
-                onPause={(e) => e.stopPropagation()}
-                onTimeUpdate={(e) => e.stopPropagation()}
-              >
-                Votre navigateur ne supporte pas la lecture audio.
-              </audio>
+              {audioLoading ? (
+                <div className="flex-1 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                  <div className="w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Chargement de l'audio...</span>
+                </div>
+              ) : audioError ? (
+                <div className="flex-1 text-xs text-rose-600 dark:text-rose-400">
+                  Erreur: {audioError}
+                </div>
+              ) : audioUrl ? (
+                <audio 
+                  controls 
+                  className="flex-1 h-7 sm:h-8"
+                  src={audioUrl}
+                  preload="auto"
+                  onLoadedMetadata={(e) => {
+                    const target = e.target as HTMLAudioElement;
+                    const duration = target.duration;
+                    // Some formats (like WebM) may show Infinity until full file is loaded
+                    if (duration && !isNaN(duration) && isFinite(duration) && duration > 0) {
+                      console.log('✅ Audio duration:', duration.toFixed(2), 'seconds');
+                    } else if (duration === Infinity) {
+                      console.log('ℹ️ Duration not in header (WebM/OGG), will be available after playback starts');
+                    }
+                  }}
+                  onDurationChange={(e) => {
+                    const target = e.target as HTMLAudioElement;
+                    // Duration may become available after some data is loaded
+                    if (target.duration && isFinite(target.duration) && target.duration > 0) {
+                      console.log('✅ Duration updated:', target.duration.toFixed(2), 'seconds');
+                    }
+                  }}
+                  onError={(e) => {
+                    console.error('Audio playback error:', e);
+                    const target = e.target as HTMLAudioElement;
+                    if (target.error) {
+                      console.error('Audio error details:', {
+                        code: target.error.code,
+                        message: target.error.message,
+                        networkState: target.networkState,
+                      });
+                      setAudioError(`Playback error: ${target.error.message}`);
+                    }
+                  }}
+                  onLoadStart={() => {
+                    console.log('🎵 Audio loading started');
+                  }}
+                  onCanPlay={() => {
+                    console.log('✅ Audio ready to play');
+                  }}
+                  // Prevent audio events from bubbling and causing re-renders
+                  onPlay={(e) => e.stopPropagation()}
+                  onPause={(e) => e.stopPropagation()}
+                  onTimeUpdate={(e) => e.stopPropagation()}
+                >
+                  Votre navigateur ne supporte pas la lecture audio.
+                </audio>
+              ) : null}
             </div>
           )}
         </div>

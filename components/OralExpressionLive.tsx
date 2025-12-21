@@ -562,9 +562,36 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
       // Keep audio chunks from Part A - we'll merge everything at the end
     } else {
-      // Allow termination at any time - stop session first, then evaluate
-      setStatus('evaluating');
+      // Stop session immediately
       stopSession();
+      
+      // Create placeholder result with loading flag and immediately redirect
+      const placeholderResult: SavedResult = {
+        _id: `temp-${Date.now()}`,
+        userId: user?.id || 'guest',
+        timestamp: Date.now(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        mode: scenario.mode,
+        title: scenario.title,
+        score: 0,
+        clbLevel: 'CLB 0',
+        cecrLevel: 'A1',
+        feedback: '',
+        strengths: [],
+        weaknesses: [],
+        grammarNotes: '',
+        vocabularyNotes: '',
+        isLoading: true,
+        taskPartA: scenario.officialTasks.partA,
+        taskPartB: scenario.officialTasks.partB,
+      };
+      
+      // Immediately redirect to result page with loading state
+      onFinish(placeholderResult);
+      
+      // Now continue with evaluation in the background
+      setStatus('evaluating');
       
       try {
         const fullPrompt = `Section A: ${scenario.officialTasks.partA.prompt}\nSection B: ${scenario.officialTasks.partB.prompt}`;
@@ -577,15 +604,39 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         // Stop the MediaRecorder if it's still recording
         if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
           try {
-            mediaRecorderRef.current.stop();
-            console.log('🛑 MediaRecorder stopped');
+            // Wait for MediaRecorder to finish processing
+            const stopPromise = new Promise<void>((resolve) => {
+              if (mediaRecorderRef.current) {
+                // Store original handler if it exists
+                const originalHandler = mediaRecorderRef.current.onstop;
+                
+                // Set new handler that calls both original and our resolve
+                mediaRecorderRef.current.onstop = () => {
+                  if (originalHandler) {
+                    originalHandler.call(mediaRecorderRef.current);
+                  }
+                  console.log('🛑 MediaRecorder stopped, chunks:', recordedChunksRef.current.length);
+                  resolve();
+                };
+                
+                mediaRecorderRef.current.stop();
+              } else {
+                resolve();
+              }
+            });
+            
+            // Wait for stop event or timeout after 2 seconds
+            await Promise.race([
+              stopPromise,
+              new Promise(resolve => setTimeout(resolve, 2000))
+            ]);
           } catch (e) {
             console.error('Error stopping MediaRecorder:', e);
           }
         }
         
-        // Wait a moment for the last data to be available
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Additional wait to ensure all chunks are available
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         if (recordedChunksRef.current.length > 0) {
           try {
@@ -599,7 +650,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
               type: mediaRecorderRef.current?.mimeType || 'audio/webm' 
             });
             
-            // Use the blob directly - Gemini may support WebM, or we can convert if needed
+            // Use the blob directly
             wavBlob = recordedBlob;
             
             // Upload recording to GridFS
@@ -671,6 +722,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         // Clear recorded chunks after upload
         recordedChunksRef.current = [];
         
+        // Update with complete result (no loading flag)
         onFinish(savedResult);
       } catch (err: any) {
         console.error('Evaluation error:', err);
@@ -685,10 +737,15 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           alert(`Erreur d'évaluation: ${errorMessage}`);
         }
         
-        // Reset to idle if evaluation fails so user can try again
-        if (isMountedRef.current) {
-          setStatus('idle');
-        }
+        // Update result with error state (still show result page but with error)
+        const errorResult: SavedResult = {
+          ...placeholderResult,
+          isLoading: false,
+          feedback: `Erreur: ${errorMessage}`,
+          strengths: [],
+          weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
+        };
+        onFinish(errorResult);
       }
     }
   };

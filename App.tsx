@@ -10,6 +10,7 @@ import { SavedResult } from './types';
 import { getRandomTasks, getTaskById } from './services/tasks';
 import { persistenceService } from './services/persistence';
 import { useLanguage } from './contexts/LanguageContext';
+import { useExamResult } from './hooks/useExamResult';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -594,6 +595,16 @@ function ResultView() {
     // Fetch result by ID
     const fetchResult = async () => {
       try {
+        // First check localStorage for recently saved results (faster and more reliable for new results)
+        const localResults = persistenceService.getResultsSync();
+        const localFound = localResults.find(r => r._id === id);
+        if (localFound) {
+          setResult(localFound);
+          setLoading(false);
+          return;
+        }
+
+        // If not in localStorage, try fetching from backend
         const token = await getToken();
         const results = await persistenceService.getAllResults(user.id, token);
         const found = results.find(r => r._id === id);
@@ -663,6 +674,17 @@ function ExamView() {
   const { getToken } = useAuth();
   const { t } = useLanguage();
   const [scenario, setScenario] = useState<any>(null);
+  
+  // Use the custom hook for result management
+  const { result, isLoading, handleResult } = useExamResult({
+    onSuccess: (savedResult) => {
+      console.log('✅ Exam completed successfully:', savedResult._id);
+    },
+    onError: (error) => {
+      console.error('❌ Exam error:', error);
+    },
+    autoNavigate: true,
+  });
 
   useEffect(() => {
     if (!mode || !['partA', 'partB', 'full'].includes(mode)) {
@@ -715,15 +737,30 @@ function ExamView() {
     }
   }, [mode, location.state, navigate, user]);
 
-  const handleFinish = async (savedResult: SavedResult) => {
-    // Navigate to result view with the saved result ID
-    if (savedResult._id) {
-      navigate(`/results/${savedResult._id}`);
-    } else {
-      // Fallback to history if no ID
-      navigate('/history');
-    }
-  };
+  // Show loading state if result is loading
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <LoadingResult />
+      </DashboardLayout>
+    );
+  }
+
+  // Show result view if we have a complete result but haven't navigated yet
+  if (result && !result.isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
+          <div className="max-w-7xl mx-auto">
+            <DetailedResultView 
+              result={result} 
+              onBack={() => navigate('/history')} 
+            />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   if (!scenario) {
     return (
@@ -747,7 +784,7 @@ function ExamView() {
           >
             ← {t('back.dashboard')}
           </button>
-          <OralExpressionLive scenario={scenario} onFinish={handleFinish} />
+          <OralExpressionLive scenario={scenario} onFinish={handleResult} />
         </div>
       </div>
     </DashboardLayout>

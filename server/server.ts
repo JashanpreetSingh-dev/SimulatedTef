@@ -119,29 +119,58 @@ app.post('/api/recordings/upload', requireAuth, upload.single('audio'), async (r
     if (!req.file) {
       return res.status(400).json({ error: 'No audio file provided' });
     }
+
+    // Validate file size
+    if (req.file.size === 0) {
+      return res.status(400).json({ error: 'Empty audio file provided' });
+    }
+
+    if (req.file.size < 100) {
+      return res.status(400).json({ error: 'Audio file too small, likely invalid' });
+    }
     
     await connectDB(); // Ensure GridFS is initialized
     
     // Use authenticated userId from middleware (not from request body)
     const userId = req.userId || 'guest';
-    const filename = `${userId}_${Date.now()}.wav`;
+    
+    // Use the original filename from the request, or generate one
+    const originalFilename = req.file.originalname || `${userId}_${Date.now()}.wav`;
+    
+    // Determine content type from file extension or mimetype
+    let contentType = req.file.mimetype || 'audio/wav';
+    if (!contentType.startsWith('audio/')) {
+      // Fallback: determine from extension
+      if (originalFilename.endsWith('.webm')) {
+        contentType = 'audio/webm';
+      } else if (originalFilename.endsWith('.ogg')) {
+        contentType = 'audio/ogg';
+      } else if (originalFilename.endsWith('.m4a')) {
+        contentType = 'audio/mp4';
+      } else {
+        contentType = 'audio/wav';
+      }
+    }
     
     // Upload to GridFS
-    const uploadStream = gridFSBucket.openUploadStream(filename, {
-      contentType: 'audio/wav',
+    const uploadStream = gridFSBucket.openUploadStream(originalFilename, {
+      contentType: contentType,
       metadata: {
         userId,
         uploadedAt: new Date().toISOString(),
+        originalMimeType: req.file.mimetype,
       },
     });
     
     uploadStream.end(req.file.buffer);
     
     uploadStream.on('finish', () => {
+      console.log(`✅ Audio uploaded to GridFS: ${originalFilename} (${(req.file!.size / 1024).toFixed(2)} KB)`);
       res.status(201).json({ 
         recordingId: uploadStream.id.toString(),
-        filename,
+        filename: originalFilename,
         size: req.file!.size,
+        contentType: contentType,
       });
     });
     
@@ -163,20 +192,45 @@ app.get('/api/recordings/:id', requireAuth, async (req, res) => {
     const recordingId = req.params.id;
     const userId = req.userId;
     
+    // Validate ObjectId format
+    if (!ObjectId.isValid(recordingId)) {
+      return res.status(400).json({ error: 'Invalid recording ID format' });
+    }
+    
     // Check if file exists
     const files = await gridFSBucket.find({ _id: new ObjectId(recordingId) }).toArray();
     if (files.length === 0) {
       return res.status(404).json({ error: 'Recording not found' });
     }
     
+    const file = files[0];
+    
     // Verify the recording belongs to the authenticated user
-    if (files[0].metadata?.userId && files[0].metadata.userId !== userId) {
+    if (file.metadata?.userId && file.metadata.userId !== userId) {
       return res.status(403).json({ error: 'Forbidden: You do not have access to this recording' });
     }
     
-    // Set headers for audio streaming
-    res.setHeader('Content-Type', 'audio/wav');
-    res.setHeader('Content-Disposition', `inline; filename="${files[0].filename}"`);
+    // Determine content type from file metadata or filename
+    let contentType = file.contentType || 'audio/wav';
+    if (!contentType.startsWith('audio/')) {
+      // Fallback: determine from filename
+      if (file.filename.endsWith('.webm')) {
+        contentType = 'audio/webm';
+      } else if (file.filename.endsWith('.ogg')) {
+        contentType = 'audio/ogg';
+      } else if (file.filename.endsWith('.m4a')) {
+        contentType = 'audio/mp4';
+      } else {
+        contentType = 'audio/wav';
+      }
+    }
+    
+    // Set headers for audio streaming with CORS support
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+    res.setHeader('Content-Length', file.length.toString());
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
     
     // Stream file from GridFS
     const downloadStream = gridFSBucket.openDownloadStream(new ObjectId(recordingId));
@@ -186,11 +240,24 @@ app.get('/api/recordings/:id', requireAuth, async (req, res) => {
       console.error('GridFS download error:', error);
       if (!res.headersSent) {
         res.status(500).json({ error: 'Failed to download recording' });
+      } else {
+        res.end();
       }
+    });
+    
+    downloadStream.on('end', () => {
+      console.log(`✅ Audio downloaded: ${file.filename} (${(file.length / 1024).toFixed(2)} KB)`);
     });
   } catch (err: any) {
     console.error('Error downloading recording:', err);
-    res.status(500).json({ error: err.message });
+    if (!res.headersSent) {
+      // Check if it's an ObjectId error
+      if (err.message && err.message.includes('ObjectId')) {
+        res.status(400).json({ error: 'Invalid recording ID format' });
+      } else {
+        res.status(500).json({ error: err.message || 'Failed to download recording' });
+      }
+    }
   }
 });
 
