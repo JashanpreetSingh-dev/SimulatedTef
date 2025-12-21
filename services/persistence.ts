@@ -1,5 +1,6 @@
 
 import { EvaluationResult, SavedResult } from '../types';
+import { mongoDBService } from './mongodb';
 
 const STORAGE_KEY = 'tef_master_results';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
@@ -133,10 +134,19 @@ export const persistenceService = {
 
   /**
    * Fetches results, prioritizing MongoDB via backend if available, otherwise LocalStorage.
+   * @param userId - User ID to fetch results for
+   * @param authToken - Optional Clerk session token for authentication
    */
-  async getAllResults(userId: string = 'guest'): Promise<SavedResult[]> {
+  async getAllResults(userId: string = 'guest', authToken?: string | null): Promise<SavedResult[]> {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/results/${userId}`);
+      const headers: HeadersInit = {};
+      if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      
+      const response = await fetch(`${BACKEND_URL}/api/results/${userId}`, {
+        headers,
+      });
       if (response.ok) {
         const results = await response.json();
         // Update local storage with fresh data from MongoDB

@@ -18,31 +18,344 @@ if (!PUBLISHABLE_KEY) {
 
 function LandingPage() {
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950" />
-      <div className="z-10 text-center space-y-8 max-w-2xl">
-        <div className="space-y-2">
-          <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight">
-            TEF <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Master</span>
-          </h1>
-          <p className="text-slate-400 text-lg md:text-xl font-medium">
-            Your AI-powered companion for the TEF Canada exam.
+    <div className="min-h-screen bg-slate-950">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/50 to-slate-950" />
+        <div className="z-10 text-center space-y-12 max-w-5xl mx-auto">
+          <div className="space-y-6">
+            <h1 className="text-6xl md:text-8xl font-black text-white tracking-[-0.02em] leading-[1.05]">
+              Build better French, faster
+            </h1>
+            <p className="text-slate-400 text-xl md:text-2xl font-normal max-w-3xl mx-auto leading-[1.6]">
+              Akseli is the exam simulator trusted by candidates preparing for Canadian immigration. 
+              Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
+            </p>
+          </div>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2">
+            <SignUpButton mode="modal">
+              <button className="group px-8 py-4 rounded-full bg-white text-slate-900 font-semibold text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
+                Start for free
+              </button>
+            </SignUpButton>
+            <SignInButton mode="modal">
+              <button className="px-8 py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
+                Sign in
+              </button>
+            </SignInButton>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="relative py-32 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 mb-28">
+            <div className="space-y-6">
+              <h2 className="text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
+                Create, practice, and <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">succeed</span>
+              </h2>
+            </div>
+            <div className="flex items-center">
+              <p className="text-slate-400 text-lg leading-[1.7]">
+                Everything you need to prepare for your TEF Canada exam, all in one place.
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-indigo-500/30 transition-all duration-300">🎯</div>
+              <h3 className="text-xl font-bold text-white">Official Format</h3>
+              <p className="text-slate-400 leading-[1.6] text-sm">
+                Real TEF Canada scenarios with exact time limits and official exam structure.
+              </p>
+            </div>
+
+            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-cyan-500/30 transition-all duration-300">🤖</div>
+              <h3 className="text-xl font-bold text-white">AI Evaluation</h3>
+              <p className="text-slate-400 leading-[1.6] text-sm">
+                CCI Paris framework evaluation with accurate CLB and CECR assessments.
+              </p>
+            </div>
+
+            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all duration-300">🎙️</div>
+              <h3 className="text-xl font-bold text-white">Live Audio</h3>
+              <p className="text-slate-400 leading-[1.6] text-sm">
+                Real-time conversation practice with advanced speech recognition.
+              </p>
+            </div>
+
+            <div className="group space-y-4 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-blue-500/30 transition-all duration-300">📊</div>
+              <h3 className="text-xl font-bold text-white">CLB Scoring</h3>
+              <p className="text-slate-400 leading-[1.6] text-sm">
+                Get TEF scores (0-699) and CLB levels for Canadian immigration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Why Akseli Section */}
+      <section className="relative py-32 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+              Why Akseli beats <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">generic AI</span>
+            </h2>
+            <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-[1.6]">
+              Training with ChatGPT or plain AI models won't prepare you for the real exam. Here's what makes Akseli different.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-indigo-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
+              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🎓</div>
+              <h3 className="text-2xl font-bold text-white">Built for TEF Canada</h3>
+              <p className="text-slate-400 leading-[1.7]">
+                Purpose-built for the exam with official scenarios, exact time limits, and CCI Paris evaluation framework—not generic conversation practice.
+              </p>
+            </div>
+
+            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-cyan-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
+              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🔬</div>
+              <h3 className="text-2xl font-bold text-white">Scientific Evaluation</h3>
+              <p className="text-slate-400 leading-[1.7]">
+                Structured 6-criteria rubric matching real TEF examiners. Get the same detailed feedback you'd receive from an official exam.
+              </p>
+            </div>
+
+            <div className="group space-y-5 p-8 rounded-3xl bg-slate-900/30 backdrop-blur-sm border border-slate-800/50 hover:border-emerald-500/30 hover:bg-slate-900/40 transition-all duration-500 hover:scale-[1.02]">
+              <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">🇨🇦</div>
+              <h3 className="text-2xl font-bold text-white">Immigration Ready</h3>
+              <p className="text-slate-400 leading-[1.7]">
+                CLB scores that map directly to Express Entry requirements. Know exactly where you stand for Canadian immigration.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Section */}
+      <section className="relative py-32 px-4 bg-slate-900/30">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+              Compare
+            </h2>
+            <p className="text-slate-400 text-xl max-w-2xl mx-auto leading-[1.6]">
+              See the difference between specialized exam preparation and generic AI
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Akseli Column */}
+            <div className="space-y-6 p-8 rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-indigo-500/20">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-xl font-black text-indigo-400 shadow-lg shadow-indigo-500/10">
+                  A
+                </div>
+                <h3 className="text-2xl font-bold text-white">Akseli</h3>
+              </div>
+              
+              <div className="space-y-5">
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Official exam format</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Real scenarios, time limits, structure</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">CCI Paris framework</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Official TEF evaluation criteria</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">CLB, CECR, TEF scores</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">0-699 scale, immigration-ready</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Real-time audio</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Live conversation practice</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Official exam scenarios</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">OCR-extracted from real materials</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Performance tracking</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Full history and progress monitoring</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Specialized examiner AI</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Trained to act as official examiner</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 group">
+                  <span className="text-emerald-400 text-xl mt-0.5 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <div>
+                    <p className="text-white font-semibold mb-1">Model answers & improvements</p>
+                    <p className="text-slate-400 text-sm leading-[1.5]">Detailed examples and upgrades</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ChatGPT/Plain AI Column */}
+            <div className="space-y-6 p-8 rounded-3xl bg-slate-900/20 backdrop-blur-sm border border-slate-800/30">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 rounded-2xl bg-slate-800/50 flex items-center justify-center text-xl font-black text-slate-500">
+                  AI
+                </div>
+                <h3 className="text-2xl font-bold text-slate-500">ChatGPT / Plain AI</h3>
+              </div>
+              
+              <div className="space-y-5">
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">Generic conversation</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">No exam structure</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">No framework</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">Generic feedback only</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">No scoring</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">No standardized assessment</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">Text-based</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">No real-time audio practice</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">Random topics</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">Not exam-specific</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">No tracking</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">No progress monitoring</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">Generic assistant</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">Not exam-focused</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="text-slate-600 text-xl mt-0.5">✗</span>
+                  <div>
+                    <p className="text-slate-500 font-semibold mb-1">Basic suggestions</p>
+                    <p className="text-slate-600 text-sm leading-[1.5]">No exam-specific examples</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="relative py-32 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
+            <div className="space-y-6">
+              <h2 className="text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
+                Scale without switching tools
+              </h2>
+              <p className="text-slate-400 text-lg leading-[1.7]">
+                Everything you need to prepare, practice, and track your progress—all in one platform.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">🇨🇦</div>
+                <h3 className="text-lg font-bold text-white">CLB Scores</h3>
+                <p className="text-slate-400 text-sm leading-[1.5]">Direct Express Entry mapping</p>
+              </div>
+              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📋</div>
+                <h3 className="text-lg font-bold text-white">Real Scenarios</h3>
+                <p className="text-slate-400 text-sm leading-[1.5]">Official exam tasks</p>
+              </div>
+              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📊</div>
+                <h3 className="text-lg font-bold text-white">6-Criteria</h3>
+                <p className="text-slate-400 text-sm leading-[1.5]">Comprehensive evaluation</p>
+              </div>
+              <div className="group space-y-3 p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02]">
+                <div className="text-3xl group-hover:scale-110 transition-transform duration-300">📈</div>
+                <h3 className="text-lg font-bold text-white">Progress</h3>
+                <p className="text-slate-400 text-sm leading-[1.5]">Track improvement</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="relative py-32 px-4">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-5xl md:text-6xl font-black text-white mb-6 leading-[1.1] tracking-[-0.02em]">
+            Launch faster with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
+          </h2>
+          <p className="text-slate-400 text-xl mb-12 leading-[1.6] max-w-2xl mx-auto">
+            Join candidates preparing for Canadian immigration with the most accurate TEF exam simulator available.
           </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <SignUpButton mode="modal">
+              <button className="group px-8 py-4 rounded-full bg-white text-slate-900 font-semibold text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
+                Start for free
+              </button>
+            </SignUpButton>
+            <SignInButton mode="modal">
+              <button className="px-8 py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
+                Sign in
+              </button>
+            </SignInButton>
+          </div>
         </div>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <SignInButton mode="modal">
-            <button className="px-8 py-3 rounded-full bg-white text-slate-900 font-bold hover:bg-indigo-50 transition-all transform hover:scale-105">
-              Sign In
-            </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="px-8 py-3 rounded-full bg-indigo-600 text-white font-bold hover:bg-indigo-500 transition-all transform hover:scale-105 shadow-lg shadow-indigo-500/25">
-              Get Started
-            </button>
-          </SignUpButton>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }
@@ -63,7 +376,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
             className="font-black text-xl text-slate-900 dark:text-white cursor-pointer" 
             onClick={() => navigate('/dashboard')}
           >
-            TEF Master
+            Akseli
           </span>
           <div className="hidden md:flex gap-4 text-sm font-bold">
             <button 
