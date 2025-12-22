@@ -518,7 +518,6 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState<'partA' | 'partB'>('partA');
   const { t } = useLanguage();
   const { status, refreshStatus } = useSubscription();
-  const { checkCanStart } = useUsage();
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallReason, setPaywallReason] = useState<string>();
   const [checkoutMessage, setCheckoutMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -549,12 +548,58 @@ function Dashboard() {
     }
   }, [location.search, navigate, refreshStatus]);
 
-  const startExam = async (mode: 'partA' | 'partB' | 'full') => {
+  const canStartExamLightweight = (examType: 'full' | 'partA' | 'partB'): { canStart: boolean; reason?: string } => {
+    if (!status) {
+      return { canStart: false, reason: 'Loading subscription status...' };
+    }
+
+    if (status.subscriptionType === 'EXPIRED') {
+      return { canStart: false, reason: 'Subscription has expired' };
+    }
+
+    if (status.packExpirationDate) {
+      const expirationDate = new Date(status.packExpirationDate);
+      const now = new Date();
+      if (now >= expirationDate) {
+        return { canStart: false, reason: 'Pack has expired' };
+      }
+    }
+
+    if (examType === 'full') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.fullTestsUsed < status.limits.fullTests;
+      const hasPackCredits = status.packCredits && status.packCredits.fullTests.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily full test limit reached and no pack credits available' };
+      }
+    } else if (examType === 'partA') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.sectionAUsed < status.limits.sectionA;
+      const hasPackCredits = status.packCredits && status.packCredits.sectionA.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily Section A limit reached and no pack credits available' };
+      }
+    } else if (examType === 'partB') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.sectionBUsed < status.limits.sectionB;
+      const hasPackCredits = status.packCredits && status.packCredits.sectionB.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily Section B limit reached and no pack credits available' };
+      }
+    }
+
+    return { canStart: true };
+  };
+
+  const startExam = (mode: 'partA' | 'partB' | 'full') => {
     const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-    const result = await checkCanStart(examType);
+    const result = canStartExamLightweight(examType);
     
     if (result.canStart) {
-    navigate(`/exam/${mode}`);
+      navigate(`/exam/${mode}`);
     } else {
       setPaywallReason(result.reason);
       setShowPaywall(true);
@@ -595,7 +640,6 @@ function Dashboard() {
           </div>
         )}
 
-        {/* Pack Expiration Warning */}
         {status && status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date() && (() => {
           const expirationDate = new Date(status.packExpirationDate);
           const now = new Date();
@@ -606,7 +650,6 @@ function Dashboard() {
             return (
               <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 md:p-6">
                 <div className="flex items-start gap-3">
-                  <div className="text-2xl">⚠️</div>
                   <div className="flex-1">
                     <h3 className="text-base md:text-lg font-bold text-amber-400 mb-1">
                       Pack Expiring Soon
@@ -959,8 +1002,7 @@ function ResultView() {
         }
 
         // If not in localStorage, try fetching from backend
-        const token = await getToken();
-        const results = await persistenceService.getAllResults(user.id, token);
+        const results = await persistenceService.getAllResults(user.id, getToken);
         const found = results.find(r => r._id === id);
         if (found) {
           setResult(found);
@@ -1036,10 +1078,14 @@ function ExamView() {
   // Use the custom hook for result management
   const { result, isLoading, handleResult } = useExamResult({
     onSuccess: (savedResult) => {
-      console.log('✅ Exam completed successfully:', savedResult._id);
+      console.log('Exam completed successfully:', savedResult._id);
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
     },
     onError: (error) => {
-      console.error('❌ Exam error:', error);
+      console.error('Exam error:', error);
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
     },
     autoNavigate: true,
     sessionId: sessionId || undefined,
@@ -1054,12 +1100,28 @@ function ExamView() {
     // Validate session on page load/refresh
     const validateExistingSession = async () => {
       const storedSessionId = sessionStorage.getItem(`exam_session_${mode}`);
+      const storedScenario = sessionStorage.getItem(`exam_scenario_${mode}`);
+      
       if (storedSessionId) {
         const isValid = await validateSession(storedSessionId);
         if (isValid) {
           setSessionId(storedSessionId);
+          
+          // Restore scenario if it exists (for refresh recovery)
+          if (storedScenario) {
+            try {
+              const parsedScenario = JSON.parse(storedScenario);
+              setScenario(parsedScenario);
+              return; // Don't generate new scenario if we restored one
+            } catch (error) {
+              console.error('Error parsing stored scenario:', error);
+              // Fall through to generate new scenario
+            }
+          }
         } else {
           // Session invalid - usage already consumed
+          sessionStorage.removeItem(`exam_session_${mode}`);
+          sessionStorage.removeItem(`exam_scenario_${mode}`);
           alert('This exam session has expired. Usage was already consumed when the exam started.');
           navigate('/dashboard');
           return;
@@ -1072,41 +1134,44 @@ function ExamView() {
     // Check if scenario was passed via location state (for retakes)
     if (location.state?.scenario) {
       setScenario(location.state.scenario);
-    } else {
+      // Store scenario for refresh recovery
+      sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(location.state.scenario));
+    } else if (!sessionStorage.getItem(`exam_scenario_${mode}`)) {
+      // Only generate new scenario if we don't have one stored (for refresh recovery)
       // Generate new scenario, excluding completed tasks
       const loadCompletedTaskIds = async () => {
         try {
-          const token = await getToken();
-          const results = await persistenceService.getAllResults(user?.id || 'guest', token);
-          // Extract completed task IDs from results
+          const results = await persistenceService.getAllResults(user?.id || 'guest', getToken);
           const completedIds: number[] = [];
           results.forEach(result => {
             if (result.taskPartA?.id) completedIds.push(result.taskPartA.id);
             if (result.taskPartB?.id) completedIds.push(result.taskPartB.id);
           });
           
-          // Get random tasks excluding completed ones
           const { partA, partB } = getRandomTasks(completedIds);
-          setScenario({
+          const newScenario = {
             title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
             mode: mode,
             officialTasks: {
               partA,
               partB
             }
-          });
+          };
+          setScenario(newScenario);
+          sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
         } catch (error) {
           console.error('Error loading completed tasks:', error);
-          // Fallback to random selection without filtering
           const { partA, partB } = getRandomTasks();
-          setScenario({
+          const newScenario = {
             title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
             mode: mode,
             officialTasks: {
               partA,
               partB
             }
-          });
+          };
+          setScenario(newScenario);
+          sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
         }
       };
       
@@ -1114,7 +1179,6 @@ function ExamView() {
     }
   }, [mode, location.state, navigate, user, validateSession]);
 
-  // Initialize exam session when scenario is ready
   useEffect(() => {
     if (scenario && !sessionId && user) {
       const initializeExam = async () => {
@@ -1124,11 +1188,14 @@ function ExamView() {
         if (result.canStart && result.sessionId) {
           setSessionId(result.sessionId);
           sessionStorage.setItem(`exam_session_${mode}`, result.sessionId);
+          if (scenario) {
+            sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(scenario));
+          }
         } else {
           setPaywallReason(result.reason);
           setShowPaywall(true);
-          // Don't set scenario - prevent exam from starting
           setScenario(null);
+          sessionStorage.removeItem(`exam_scenario_${mode}`);
         }
       };
 

@@ -34,8 +34,21 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     req.userId = sessionClaims.sub; // 'sub' is the user ID in Clerk tokens
     next();
   } catch (error: any) {
-    console.error('Authentication error:', error.message);
-    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+    // Log full error in development, sanitized in production
+    const errorMessage = error.message || 'Unknown error';
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Authentication error:', errorMessage);
+    } else {
+      // In production, log without sensitive details
+      console.error('Authentication error:', errorMessage.includes('expired') ? 'Token expired' : 'Invalid token');
+    }
+    
+    // Return generic error message to avoid leaking sensitive information
+    return res.status(401).json({ 
+      error: 'Unauthorized: Invalid or expired token',
+      // Only include detailed error in development
+      ...(process.env.NODE_ENV === 'development' && { details: errorMessage })
+    });
   }
 }
 

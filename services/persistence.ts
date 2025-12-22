@@ -1,18 +1,26 @@
 
 import { EvaluationResult, SavedResult } from '../types';
 import { mongoDBService } from './mongodb';
+import { authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
 
 const STORAGE_KEY = 'tef_master_results';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+
+// Helper type for token getter function
+type TokenGetter = () => Promise<string | null>;
 
 export const persistenceService = {
   /**
    * Uploads audio recording to backend and returns recordingId
    * @param audioBlob - The audio file to upload
    * @param userId - User ID (will be overridden by backend from token)
-   * @param authToken - Optional Clerk session token for authentication
+   * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
    */
-  async uploadRecording(audioBlob: Blob, userId: string, authToken?: string | null): Promise<string | null> {
+  async uploadRecording(
+    audioBlob: Blob, 
+    userId: string, 
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<string | null> {
     try {
       // Validate blob
       if (!audioBlob || audioBlob.size === 0) {
@@ -41,25 +49,45 @@ export const persistenceService = {
       formData.append('audio', audioBlob, filename);
       // Don't send userId in body - backend will get it from token
       
-      const headers: HeadersInit = {};
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetch(`${BACKEND_URL}/api/recordings/upload`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('✅ Audio recording uploaded:', data.recordingId, `(${(audioBlob.size / 1024).toFixed(2)} KB)`);
-        return data.recordingId;
+      // Use authenticated fetch if getToken is provided, otherwise use regular fetch
+      if (typeof authTokenOrGetter === 'function') {
+        try {
+          const data = await authenticatedFetchFormData<{ recordingId: string }>(
+            `${BACKEND_URL}/api/recordings/upload`,
+            formData,
+            {
+              method: 'POST',
+              getToken: authTokenOrGetter,
+            }
+          );
+          console.log('✅ Audio recording uploaded:', data.recordingId, `(${(audioBlob.size / 1024).toFixed(2)} KB)`);
+          return data.recordingId;
+        } catch (error) {
+          console.error('⚠️ Recording upload failed:', error);
+          return null;
+        }
       } else {
-        const errorText = await response.text();
-        console.error('⚠️ Recording upload failed:', response.status, errorText);
-        return null;
+        // Fallback to regular fetch for backward compatibility
+        const headers: HeadersInit = {};
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(`${BACKEND_URL}/api/recordings/upload`, {
+          method: 'POST',
+          headers,
+          body: formData,
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Audio recording uploaded:', data.recordingId, `(${(audioBlob.size / 1024).toFixed(2)} KB)`);
+          return data.recordingId;
+        } else {
+          const errorText = await response.text();
+          console.error('⚠️ Recording upload failed:', response.status, errorText);
+          return null;
+        }
       }
     } catch (error) {
       console.error('❌ Recording upload error:', error);
@@ -69,7 +97,7 @@ export const persistenceService = {
 
   /**
    * Saves an evaluation result with MongoDB via backend API.
-   * @param authToken - Optional Clerk session token for authentication
+   * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
    */
   async saveResult(
     result: EvaluationResult, 
@@ -80,7 +108,7 @@ export const persistenceService = {
     taskPartA?: any, // TEFTask for Section A
     taskPartB?: any,  // TEFTask for Section B
     transcript?: string,  // Transcript of the exam
-    authToken?: string | null  // Clerk session token
+    authTokenOrGetter?: string | null | TokenGetter  // Clerk session token or getter function
   ): Promise<SavedResult> {
     
     // 1. Prepare the document with a temporary ID (will be replaced by MongoDB _id if save succeeds)
@@ -107,38 +135,72 @@ export const persistenceService = {
 
     // 3. Sync to MongoDB via backend API
     try {
-      const headers: HeadersInit = { 'Content-Type': 'application/json' };
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetch(`${BACKEND_URL}/api/results`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(newEntry),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const mongoId = data.insertedId || data._id;
-        if (mongoId) {
-          // Update the entry with MongoDB _id
-          newEntry._id = mongoId;
-          // Update localStorage with the MongoDB _id
-          const updatedExisting = this.getResultsSync();
-          const index = updatedExisting.findIndex(r => r._id === tempId || (r.timestamp === newEntry.timestamp && r.userId === userId));
-          if (index !== -1) {
-            updatedExisting[index] = newEntry;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedExisting));
+      // Use authenticated fetch if getToken is provided, otherwise use regular fetch
+      if (typeof authTokenOrGetter === 'function') {
+        try {
+          const data = await authenticatedFetchJSON<{ insertedId?: string; _id?: string }>(
+            `${BACKEND_URL}/api/results`,
+            {
+              method: 'POST',
+              getToken: authTokenOrGetter,
+              body: JSON.stringify(newEntry),
+            }
+          );
+          
+          const mongoId = data.insertedId || data._id;
+          if (mongoId) {
+            // Update the entry with MongoDB _id
+            newEntry._id = mongoId;
+            // Update localStorage with the MongoDB _id
+            const updatedExisting = this.getResultsSync();
+            const index = updatedExisting.findIndex(r => r._id === tempId || (r.timestamp === newEntry.timestamp && r.userId === userId));
+            if (index !== -1) {
+              updatedExisting[index] = newEntry;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedExisting));
+            }
+            console.log('✅ Successfully saved to MongoDB via backend:', mongoId);
+          } else {
+            console.log('✅ Saved to MongoDB (no ID returned)');
           }
-          console.log('✅ Successfully saved to MongoDB via backend:', mongoId);
-        } else {
-          console.log('✅ Saved to MongoDB (no ID returned)');
+        } catch (error) {
+          console.warn('⚠️ Backend save failed:', error);
+          console.log('   Result saved to localStorage as backup');
         }
       } else {
-        const errorText = await response.text();
-        console.warn('⚠️ Backend save failed:', response.status, errorText);
-        console.log('   Result saved to localStorage as backup');
+        // Fallback to regular fetch for backward compatibility
+        const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(`${BACKEND_URL}/api/results`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(newEntry),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const mongoId = data.insertedId || data._id;
+          if (mongoId) {
+            // Update the entry with MongoDB _id
+            newEntry._id = mongoId;
+            // Update localStorage with the MongoDB _id
+            const updatedExisting = this.getResultsSync();
+            const index = updatedExisting.findIndex(r => r._id === tempId || (r.timestamp === newEntry.timestamp && r.userId === userId));
+            if (index !== -1) {
+              updatedExisting[index] = newEntry;
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedExisting));
+            }
+            console.log('✅ Successfully saved to MongoDB via backend:', mongoId);
+          } else {
+            console.log('✅ Saved to MongoDB (no ID returned)');
+          }
+        } else {
+          const errorText = await response.text();
+          console.warn('⚠️ Backend save failed:', response.status, errorText);
+          console.log('   Result saved to localStorage as backup');
+        }
       }
     } catch (error) {
       console.error('❌ Backend connection failed:', error);
@@ -157,24 +219,43 @@ export const persistenceService = {
   /**
    * Fetches results, prioritizing MongoDB via backend if available, otherwise LocalStorage.
    * @param userId - User ID to fetch results for
-   * @param authToken - Optional Clerk session token for authentication
+   * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
    */
-  async getAllResults(userId: string = 'guest', authToken?: string | null): Promise<SavedResult[]> {
+  async getAllResults(userId: string = 'guest', authTokenOrGetter?: string | null | TokenGetter): Promise<SavedResult[]> {
     try {
-      const headers: HeadersInit = {};
-      if (authToken) {
-        headers['Authorization'] = `Bearer ${authToken}`;
-      }
-      
-      const response = await fetch(`${BACKEND_URL}/api/results/${userId}`, {
-        headers,
-      });
-      if (response.ok) {
-        const results = await response.json();
-        // Update local storage with fresh data from MongoDB
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-        console.log(`✅ Loaded ${results.length} results from MongoDB`);
-        return results;
+      // Use authenticated fetch if getToken is provided, otherwise use regular fetch
+      if (typeof authTokenOrGetter === 'function') {
+        try {
+          const results = await authenticatedFetchJSON<SavedResult[]>(
+            `${BACKEND_URL}/api/results/${userId}`,
+            {
+              getToken: authTokenOrGetter,
+            }
+          );
+          // Update local storage with fresh data from MongoDB
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+          console.log(`✅ Loaded ${results.length} results from MongoDB`);
+          return results;
+        } catch (error) {
+          console.log('⚠️ Backend not available, using localStorage:', error);
+        }
+      } else {
+        // Fallback to regular fetch for backward compatibility
+        const headers: HeadersInit = {};
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(`${BACKEND_URL}/api/results/${userId}`, {
+          headers,
+        });
+        if (response.ok) {
+          const results = await response.json();
+          // Update local storage with fresh data from MongoDB
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+          console.log(`✅ Loaded ${results.length} results from MongoDB`);
+          return results;
+        }
       }
     } catch (error) {
       console.log('⚠️ Backend not available, using localStorage:', error);

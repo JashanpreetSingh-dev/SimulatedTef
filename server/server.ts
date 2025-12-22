@@ -127,10 +127,21 @@ if (!clerkSecretKey) {
     // Start subscription expiry job (runs daily to expire cancelled subscriptions)
     startSubscriptionExpiryJob();
     
-    // Start worker if RUN_WORKER is set or in development
-    if (process.env.RUN_WORKER === 'true' || (process.env.NODE_ENV !== 'production' && process.env.RUN_WORKER !== 'false')) {
+    // Start worker if RUN_WORKER is explicitly set to 'true'
+    // In production, worker should run as separate service (RUN_WORKER=false or unset)
+    if (process.env.RUN_WORKER === 'true') {
       const { startWorker } = await import('./workers/evaluationWorker');
       startWorker();
+      console.log('✅ Worker started in same process (RUN_WORKER=true)');
+    } else if (process.env.NODE_ENV !== 'production') {
+      // Auto-start worker in development if not explicitly disabled
+      if (process.env.RUN_WORKER !== 'false') {
+        const { startWorker } = await import('./workers/evaluationWorker');
+        startWorker();
+        console.log('✅ Worker started in same process (development mode)');
+      }
+    } else {
+      console.log('ℹ️  Worker not started (RUN_WORKER not set to true). Run worker as separate service in production.');
     }
   } catch (error: any) {
     console.error('❌ Failed to initialize:', error.message);

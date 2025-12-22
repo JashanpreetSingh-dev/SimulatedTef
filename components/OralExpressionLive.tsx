@@ -655,8 +655,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
             wavBlob = recordedBlob;
             
             // Upload recording to GridFS
-            const token = await getToken();
-            recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', token) || undefined;
+            recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', getToken) || undefined;
             console.log('📦 Audio recording uploaded:', recordingId || 'failed');
             
             // Transcribe the recording using Gemini Audio API
@@ -697,7 +696,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           (fullUserTranscript.match(/\b(combien|comment|où|quand|qui|quoi|pourquoi|quel|quelle|quels|quelles)\b/gi) || []).length;
         
         // Submit evaluation job to queue (non-blocking)
-        const token = await getToken();
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
@@ -710,7 +708,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           scenario.title,
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
-          token
+          getToken
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
@@ -747,7 +745,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         try {
           const savedResult = await evaluationJobService.pollJobStatus(
             jobId,
-            token,
+            getToken,
             (progress) => {
               console.log(`📊 Job ${jobId} progress: ${progress}%`);
             }

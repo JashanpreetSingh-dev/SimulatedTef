@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { persistenceService } from '../services/persistence';
 import { SavedResult } from '../types';
+import { formatDateFrench } from '../utils/dateFormatting';
 
 type FilterMode = 'partA' | 'partB' | 'full';
 
@@ -18,8 +19,7 @@ export const HistoryList: React.FC = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
-      const token = await getToken();
-      const data = await persistenceService.getAllResults(userId, token);
+      const data = await persistenceService.getAllResults(userId, getToken);
       setResults(data);
       setLoading(false);
     };
@@ -141,7 +141,7 @@ export const HistoryList: React.FC = () => {
                     </span>
                   )}
                   <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                    {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {formatDateFrench(item.timestamp)}
                   </span>
                 </div>
 
@@ -205,7 +205,7 @@ export const HistoryList: React.FC = () => {
                     )}
                   </div>
                   <div className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider mt-0.5">
-                    {new Date(item.timestamp).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    {formatDateFrench(item.timestamp)}
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">

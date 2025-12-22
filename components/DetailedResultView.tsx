@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { SavedResult, UpgradedSentence, TEFTask } from '../types';
+import { authenticatedFetch } from '../services/authenticatedFetch';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -63,11 +64,8 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
           audioObjectUrlRef.current = null;
         }
         
-        const token = await getToken();
-        const response = await fetch(`${BACKEND_URL}/api/recordings/${result.recordingId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
+        const response = await authenticatedFetch(`${BACKEND_URL}/api/recordings/${result.recordingId}`, {
+          getToken: getToken,
         });
 
         if (!response.ok) {
