@@ -6,6 +6,7 @@
  * - MONGODB_URI (e.g., mongodb+srv://user:pass@cluster.mongodb.net/)
  * - MONGODB_DB_NAME (optional, defaults to 'tef_master')
  * - CLERK_SECRET_KEY (required for authentication)
+ * - SUPER_USER_ID (optional, Clerk user ID that bypasses all usage limits)
  * 
  * Run with: npm run server
  */

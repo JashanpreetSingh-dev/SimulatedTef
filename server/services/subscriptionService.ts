@@ -37,6 +37,14 @@ export interface CanStartExamResult {
   sessionId?: string;
 }
 
+/**
+ * Check if a user is a super user (bypasses all limits)
+ */
+function isSuperUser(userId: string): boolean {
+  const superUserId = process.env.SUPER_USER_ID;
+  return superUserId ? userId === superUserId : false;
+}
+
 export const subscriptionService = {
   /**
    * Get subscription status for a user
@@ -214,6 +222,11 @@ export const subscriptionService = {
    * Check if user can start an exam WITHOUT counting usage (read-only check)
    */
   async checkCanStartExam(userId: string, examType: ExamType): Promise<CanStartExamResult> {
+    // Super user bypasses all checks
+    if (isSuperUser(userId)) {
+      return { canStart: true };
+    }
+    
     const db = await connectDB();
     
     // Validate subscription data first
@@ -307,6 +320,15 @@ export const subscriptionService = {
    * Check if user can start an exam and create session if yes (COUNTS USAGE)
    */
   async canStartExam(userId: string, examType: ExamType): Promise<CanStartExamResult> {
+    // Super user bypasses all checks and limits
+    if (isSuperUser(userId)) {
+      const db = await connectDB();
+      const session = createExamSession(userId, examType);
+      const { _id, ...sessionToInsert } = session;
+      await db.collection('examSessions').insertOne(sessionToInsert as any);
+      return { canStart: true, sessionId: session.sessionId };
+    }
+    
     const db = await connectDB();
     
     // Validate subscription data first
