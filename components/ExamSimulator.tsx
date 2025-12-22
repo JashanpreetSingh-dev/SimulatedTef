@@ -1,12 +1,12 @@
 
 import React, { useState } from 'react';
-import { SavedResult, TEFTask } from '../types';
-import { persistenceService } from '../services/persistence';
 import { OralExpressionLive } from './OralExpressionLive';
 import { LoadingResult } from './LoadingResult';
 import { getRandomTasks } from '../services/tasks';
 import { useUser } from '@clerk/clerk-react';
 import { useExamResult } from '../hooks/useExamResult';
+import { useUsage } from '../hooks/useUsage';
+import { PaywallModal } from './PaywallModal';
 
 type SimulationMode = 'partA' | 'partB' | 'full';
 
@@ -15,6 +15,10 @@ export const ExamSimulator: React.FC = () => {
   const [simulationMode, setSimulationMode] = useState<SimulationMode | null>(null);
   const [loading, setLoading] = useState(false);
   const [scenario, setScenario] = useState<any>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [paywallReason, setPaywallReason] = useState<string>();
+  
+  const { startExam, loading: usageLoading } = useUsage();
   
   // Use the custom hook for result management
   const { result: evaluation, isLoading, handleResult, clearResult } = useExamResult({
@@ -23,13 +27,27 @@ export const ExamSimulator: React.FC = () => {
     },
     onError: (error) => {
       console.error('❌ Exam error:', error);
-      alert(`Une erreur est survenue: ${error.message}`);
+      const errorMessage = error instanceof Error ? error.message : error;
+      alert(`Une erreur est survenue: ${errorMessage}`);
     },
     autoNavigate: false, // Don't auto-navigate in ExamSimulator, show result inline
   });
 
-  const startSimulation = (mode: SimulationMode) => {
+  const startSimulation = async (mode: SimulationMode) => {
+    // Check subscription before starting
     setLoading(true);
+    
+    const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
+    const result = await startExam(examType);
+    
+    if (!result.canStart) {
+      setLoading(false);
+      setPaywallReason(result.reason || 'Cannot start exam. Please check your subscription.');
+      setShowPaywall(true);
+      return;
+    }
+    
+    // Subscription check passed, proceed with exam
     setSimulationMode(mode);
     clearResult(); // Clear previous result
     
@@ -140,19 +158,31 @@ export const ExamSimulator: React.FC = () => {
         <div>
           <h3 className="text-xs font-black uppercase text-slate-400 tracking-[0.3em] mb-8">Expression Orale</h3>
           <div className="grid md:grid-cols-3 gap-6">
-            <button onClick={() => startSimulation('partA')} className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] text-left hover:border-indigo-500 transition-all flex flex-col h-full shadow-sm">
+            <button 
+              onClick={() => startSimulation('partA')} 
+              disabled={loading || usageLoading}
+              className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] text-left hover:border-indigo-500 transition-all flex flex-col h-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-500/10 rounded-3xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">📞</div>
               <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">Section A</h4>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1">Solliciter des informations. Appelez pour poser des questions précises sur une annonce.</p>
               <div className="mt-8 text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest">4 minutes • Live Mic</div>
             </button>
-            <button onClick={() => startSimulation('partB')} className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] text-left hover:border-indigo-500 transition-all flex flex-col h-full shadow-sm">
+            <button 
+              onClick={() => startSimulation('partB')} 
+              disabled={loading || usageLoading}
+              className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] text-left hover:border-indigo-500 transition-all flex flex-col h-full shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-500/10 rounded-3xl flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform">🤝</div>
               <h4 className="text-xl font-black text-slate-900 dark:text-white mb-3">Section B</h4>
               <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1">Argumenter et convaincre. Présentez un projet et répondez aux objections d'un ami.</p>
               <div className="mt-8 text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">8 minutes • Live Mic</div>
             </button>
-            <button onClick={() => startSimulation('full')} className="group bg-indigo-600 p-10 rounded-[3rem] text-left hover:shadow-2xl hover:shadow-indigo-600/30 transition-all flex flex-col h-full text-white">
+            <button 
+              onClick={() => startSimulation('full')} 
+              disabled={loading || usageLoading}
+              className="group bg-indigo-600 p-10 rounded-[3rem] text-left hover:shadow-2xl hover:shadow-indigo-600/30 transition-all flex flex-col h-full text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <div className="w-16 h-16 bg-white/10 rounded-3xl flex items-center justify-center text-3xl mb-8 group-hover:rotate-12 transition-transform">🏆</div>
               <h4 className="text-xl font-black mb-3">Examen Complet</h4>
               <p className="text-sm text-indigo-100 font-medium leading-relaxed flex-1">Enchaînez les deux sections pour une simulation complète avec bulletin final.</p>
@@ -161,6 +191,12 @@ export const ExamSimulator: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        reason={paywallReason}
+      />
     </div>
   );
 };

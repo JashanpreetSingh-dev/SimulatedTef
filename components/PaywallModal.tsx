@@ -35,8 +35,8 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, rea
 
         <div className="space-y-3 mb-6">
           <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-            <h3 className="text-white font-semibold mb-1">Pro Monthly</h3>
-            <p className="text-slate-400 text-sm mb-2">$29/month • 1 full test, 2 Section A/B per day</p>
+            <h3 className="text-white font-semibold mb-1">Starter Pack</h3>
+            <p className="text-slate-400 text-sm mb-2">$19 one-time • 5 Full Tests, 3 Section A, 3 Section B • Valid 30 days</p>
             {isSignedIn ? (
               <button
                 onClick={handleViewPricing}
@@ -47,15 +47,15 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, rea
             ) : (
               <SignUpButton mode="modal">
                 <button className="w-full py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors">
-                  Sign Up to Upgrade
+                  Sign Up to Purchase
                 </button>
               </SignUpButton>
             )}
           </div>
 
-          <div className="p-4 bg-slate-800/50 rounded-xl border border-slate-700">
-            <h3 className="text-white font-semibold mb-1">5-Pack</h3>
-            <p className="text-slate-400 text-sm mb-2">$19 one-time • 5 full tests, valid year round</p>
+          <div className="p-4 bg-indigo-500/10 rounded-xl border border-indigo-500/20">
+            <h3 className="text-white font-semibold mb-1">Exam Ready Pack</h3>
+            <p className="text-slate-300 text-sm mb-2">$35 one-time • 15 Full Tests, 10 Section A, 10 Section B • Valid 30 days</p>
             {isSignedIn ? (
               <button
                 onClick={handleViewPricing}
