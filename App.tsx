@@ -11,6 +11,15 @@ import { getRandomTasks, getTaskById } from './services/tasks';
 import { persistenceService } from './services/persistence';
 import { useLanguage } from './contexts/LanguageContext';
 import { useExamResult } from './hooks/useExamResult';
+import { PricingSection } from './components/PricingSection';
+import { FeatureComparison } from './components/FeatureComparison';
+import { FAQSection } from './components/FAQSection';
+import { useUsage } from './hooks/useUsage';
+import { PaywallModal } from './components/PaywallModal';
+import { SubscriptionStatus } from './components/SubscriptionStatus';
+import { useSubscription } from './hooks/useSubscription';
+import { SubscriptionManagement } from './components/SubscriptionManagement';
+import { PricingPage } from './components/PricingPage';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -38,12 +47,15 @@ function LandingPage() {
             <p className="text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
               The exam simulator trusted by candidates preparing for Canadian immigration. Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
             </p>
+            <p className="text-slate-500 text-sm sm:text-base max-w-2xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-350">
+              Starting at $19 for 5 full tests • No credit card required for trial
+            </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
             <SignUpButton mode="modal">
               <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
-                Start for free
+                Start 3-Day Free Trial
               </button>
             </SignUpButton>
             <SignInButton mode="modal">
@@ -264,22 +276,43 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Pricing Section */}
+      <PricingSection />
+
+      {/* Feature Comparison Section */}
+      <FeatureComparison />
+
+      {/* FAQ Section */}
+      <FAQSection />
 
       {/* Final CTA Section */}
       <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
-            Launch faster with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Akseli</span>
+            Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">succeed</span>?
           </h2>
-          <p className="text-slate-400 text-base sm:text-lg md:text-xl mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
+          <p className="text-slate-400 text-base sm:text-lg md:text-xl mb-4 sm:mb-6 leading-[1.6] max-w-2xl mx-auto px-4">
             Join candidates preparing for Canadian immigration with the most accurate TEF exam simulator available.
+          </p>
+          <p className="text-slate-500 text-sm sm:text-base mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
+            Start with a free 3-day trial, or choose a plan that fits your needs.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4">
             <SignUpButton mode="modal">
               <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
-                Start for free
+                Start Free Trial
               </button>
             </SignUpButton>
+            <a
+              href="#pricing"
+              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98] text-center"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              View Pricing
+            </a>
             <SignInButton mode="modal">
               <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
                 Sign in
@@ -299,12 +332,41 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const { status } = useSubscription();
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsMobileMenuOpen(false);
+  };
+
+  const getSubscriptionBadge = () => {
+    if (!status) return null;
+    
+    // Show pack badge if active, otherwise show subscription type
+    if (status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
+      const packName = status.packType === 'STARTER_PACK' ? 'Starter Pack' : 'Exam Ready Pack';
+      return (
+        <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-500/20 text-indigo-400">
+          {packName}
+        </span>
+      );
+    }
+
+    const badges: Record<string, { text: string; color: string }> = {
+      'TRIAL': { text: 'Trial', color: 'bg-blue-500/20 text-blue-400' },
+      'EXPIRED': { text: 'Expired', color: 'bg-red-500/20 text-red-400' },
+    };
+
+    const badge = badges[status.subscriptionType];
+    if (!badge) return null;
+
+    return (
+      <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${badge.color}`}>
+        {badge.text}
+      </span>
+    );
   };
 
   return (
@@ -317,6 +379,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
           >
             Akseli
           </span>
+          {getSubscriptionBadge()}
           <div className="hidden md:flex gap-4 text-sm font-bold">
             <button 
               onClick={() => navigate('/dashboard')}
@@ -327,6 +390,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               onClick={() => navigate('/history')}
               className={isActive('/history') ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}>
               {t('nav.history')}
+            </button>
+            <button 
+              onClick={() => navigate('/dashboard/subscription')}
+              className={isActive('/dashboard/subscription') ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}>
+              Subscription
             </button>
           </div>
         </div>
@@ -413,6 +481,16 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               >
                 {t('nav.history')}
               </button>
+              <button 
+                onClick={() => handleNavigate('/dashboard/subscription')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                  isActive('/dashboard/subscription') 
+                    ? 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' 
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                Subscription
+              </button>
               <div className="border-t border-slate-200 dark:border-slate-800 my-2" />
               <button 
                 onClick={() => {
@@ -436,11 +514,96 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
 function Dashboard() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<'partA' | 'partB'>('partA');
   const { t } = useLanguage();
+  const { status, refreshStatus } = useSubscription();
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [paywallReason, setPaywallReason] = useState<string>();
+  const [checkoutMessage, setCheckoutMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Handle checkout redirect - only run once per checkout parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const checkout = params.get('checkout');
+    
+    if (!checkout) return; // No checkout parameter, skip
+    
+    if (checkout === 'success') {
+      setCheckoutMessage({ type: 'success', text: 'Payment successful! Your subscription has been activated.' });
+      // Refresh subscription status
+      refreshStatus();
+      // Clean up URL immediately to prevent re-running
+      navigate('/dashboard', { replace: true });
+      // Auto-dismiss after 5 seconds
+      const timer = setTimeout(() => setCheckoutMessage(null), 5000);
+      return () => clearTimeout(timer);
+    } else if (checkout === 'cancelled') {
+      setCheckoutMessage({ type: 'error', text: 'Payment was cancelled. You can try again anytime.' });
+      // Clean up URL immediately to prevent re-running
+      navigate('/dashboard', { replace: true });
+      // Auto-dismiss after 5 seconds
+      const timer = setTimeout(() => setCheckoutMessage(null), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [location.search, navigate, refreshStatus]);
+
+  const canStartExamLightweight = (examType: 'full' | 'partA' | 'partB'): { canStart: boolean; reason?: string } => {
+    if (!status) {
+      return { canStart: false, reason: 'Loading subscription status...' };
+    }
+
+    if (status.subscriptionType === 'EXPIRED') {
+      return { canStart: false, reason: 'Subscription has expired' };
+    }
+
+    if (status.packExpirationDate) {
+      const expirationDate = new Date(status.packExpirationDate);
+      const now = new Date();
+      if (now >= expirationDate) {
+        return { canStart: false, reason: 'Pack has expired' };
+      }
+    }
+
+    if (examType === 'full') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.fullTestsUsed < status.limits.fullTests;
+      const hasPackCredits = status.packCredits && status.packCredits.fullTests.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily full test limit reached and no pack credits available' };
+      }
+    } else if (examType === 'partA') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.sectionAUsed < status.limits.sectionA;
+      const hasPackCredits = status.packCredits && status.packCredits.sectionA.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily Section A limit reached and no pack credits available' };
+      }
+    } else if (examType === 'partB') {
+      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
+        status.usage.sectionBUsed < status.limits.sectionB;
+      const hasPackCredits = status.packCredits && status.packCredits.sectionB.remaining > 0;
+      
+      if (!hasTrialLimit && !hasPackCredits) {
+        return { canStart: false, reason: 'Daily Section B limit reached and no pack credits available' };
+      }
+    }
+
+    return { canStart: true };
+  };
 
   const startExam = (mode: 'partA' | 'partB' | 'full') => {
-    navigate(`/exam/${mode}`);
+    const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
+    const result = canStartExamLightweight(examType);
+    
+    if (result.canStart) {
+      navigate(`/exam/${mode}`);
+    } else {
+      setPaywallReason(result.reason);
+      setShowPaywall(true);
+    }
   };
 
   return (
@@ -450,6 +613,72 @@ function Dashboard() {
           <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">{t('dashboard.greeting')}, {user?.firstName}!</h2>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
+
+        {/* Checkout Success/Error Message */}
+        {checkoutMessage && (
+          <div className={`rounded-2xl p-4 md:p-6 border ${
+            checkoutMessage.type === 'success' 
+              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' 
+              : 'bg-red-500/10 border-red-500/20 text-red-400'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {checkoutMessage.type === 'success' ? (
+                  <span className="text-2xl">✅</span>
+                ) : (
+                  <span className="text-2xl">❌</span>
+                )}
+                <p className="font-semibold">{checkoutMessage.text}</p>
+              </div>
+              <button
+                onClick={() => setCheckoutMessage(null)}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {status && status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date() && (() => {
+          const expirationDate = new Date(status.packExpirationDate);
+          const now = new Date();
+          const diffTime = expirationDate.getTime() - now.getTime();
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          
+          if (diffDays <= 3 && diffDays > 0) {
+            return (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 md:p-6">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <h3 className="text-base md:text-lg font-bold text-amber-400 mb-1">
+                      Pack Expiring Soon
+                    </h3>
+                    <p className="text-xs md:text-sm text-amber-300 mb-2">
+                      Your {status.packType === 'STARTER_PACK' ? 'Starter Pack' : 'Exam Ready Pack'} expires in {diffDays} {diffDays === 1 ? 'day' : 'days'}.
+                    </p>
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      className="text-xs md:text-sm text-amber-400 hover:text-amber-300 font-semibold underline"
+                    >
+                      Purchase New Pack →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
+        {/* Subscription Status */}
+        <SubscriptionStatus />
+
+        <PaywallModal
+          isOpen={showPaywall}
+          onClose={() => setShowPaywall(false)}
+          reason={paywallReason}
+        />
 
         {/* Mobile: Tabs for Section A and B */}
         <div className="md:hidden space-y-4">
@@ -480,7 +709,35 @@ function Dashboard() {
           {/* Tab Content */}
           {activeTab === 'partA' && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partA')}>
-              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">📞</div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📞</div>
+              {status && (status.limits.sectionA > 0 || status.packCredits?.sectionA.remaining) && (
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Available</div>
+                  <div className="text-lg font-black text-blue-600 dark:text-blue-400">
+                    {(() => {
+                      const dailyRemaining = status.limits.sectionA > 0 
+                        ? Math.max(0, status.limits.sectionA - status.usage.sectionAUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.sectionA.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA) || (status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0) ? (
+                    <div className="text-xs text-slate-400 mt-0.5">
+                      {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && (
+                        <span>Daily: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
+                      )}
+                      {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && (
+                        <span>Pack: {status.packCredits.sectionA.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+              </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Section A</h3>
               <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
                 Posez des questions pour obtenir des informations. (4 min)
@@ -493,7 +750,35 @@ function Dashboard() {
 
           {activeTab === 'partB' && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partB')}>
-              <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">🤝</div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🤝</div>
+              {status && (status.limits.sectionB > 0 || status.packCredits?.sectionB.remaining) && (
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Available</div>
+                  <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+                    {(() => {
+                      const dailyRemaining = status.limits.sectionB > 0 
+                        ? Math.max(0, status.limits.sectionB - status.usage.sectionBUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.sectionB.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB) || (status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0) ? (
+                    <div className="text-xs text-slate-400 mt-0.5">
+                      {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && (
+                        <span>Daily: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
+                      )}
+                      {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && (
+                        <span>Pack: {status.packCredits.sectionB.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+              </div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Section B</h3>
               <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
                 Argumentez pour convaincre un ami. (8 min)
@@ -506,7 +791,35 @@ function Dashboard() {
 
           {/* Exam Complet - Always visible below tabs */}
           <div className="bg-indigo-600 rounded-2xl p-5 shadow-lg hover:shadow-xl hover:shadow-indigo-600/20 transition-all group cursor-pointer" onClick={() => startExam('full')}>
-            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl mb-4 group-hover:rotate-12 transition-transform">🏆</div>
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl group-hover:rotate-12 transition-transform">🏆</div>
+              {status && (
+                <div className="text-right">
+                  <div className="text-xs text-indigo-200 mb-1">Available</div>
+                  <div className="text-lg font-black text-white">
+                    {(() => {
+                      const dailyRemaining = status.limits.fullTests > 0 
+                        ? Math.max(0, status.limits.fullTests - status.usage.fullTestsUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.fullTests.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
+                    <div className="text-xs text-indigo-300 mt-0.5">
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
+                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                      )}
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
+                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
             <h3 className="text-lg font-bold text-white mb-1">Examen Complet</h3>
             <p className="text-indigo-100 text-xs leading-relaxed mb-3">
               Enchaînez les deux sections pour une simulation réelle. (12 min)
@@ -520,7 +833,35 @@ function Dashboard() {
         {/* Desktop: 3-column grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partA')}>
-            <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">📞</div>
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📞</div>
+              {status && (status.limits.sectionA > 0 || status.packCredits?.sectionA.remaining) && (
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Available</div>
+                  <div className="text-2xl font-black text-blue-600 dark:text-blue-400">
+                    {(() => {
+                      const dailyRemaining = status.limits.sectionA > 0 
+                        ? Math.max(0, status.limits.sectionA - status.usage.sectionAUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.sectionA.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA) || (status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0) ? (
+                    <div className="text-xs text-slate-400 mt-1">
+                      {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && (
+                        <span>Daily: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
+                      )}
+                      {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && (
+                        <span>Pack: {status.packCredits.sectionA.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Section A</h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               Posez des questions pour obtenir des informations. (4 min)
@@ -531,7 +872,35 @@ function Dashboard() {
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partB')}>
-            <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🤝</div>
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">🤝</div>
+              {status && (status.limits.sectionB > 0 || status.packCredits?.sectionB.remaining) && (
+                <div className="text-right">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Available</div>
+                  <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                    {(() => {
+                      const dailyRemaining = status.limits.sectionB > 0 
+                        ? Math.max(0, status.limits.sectionB - status.usage.sectionBUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.sectionB.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB) || (status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0) ? (
+                    <div className="text-xs text-slate-400 mt-1">
+                      {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && (
+                        <span>Daily: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
+                      )}
+                      {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && (
+                        <span>Pack: {status.packCredits.sectionB.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Section B</h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
               Argumentez pour convaincre un ami. (8 min)
@@ -542,7 +911,35 @@ function Dashboard() {
           </div>
 
           <div className="bg-indigo-600 rounded-3xl p-8 shadow-lg hover:shadow-xl hover:shadow-indigo-600/20 transition-all group cursor-pointer" onClick={() => startExam('full')}>
-            <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:rotate-12 transition-transform">🏆</div>
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform">🏆</div>
+              {status && (
+                <div className="text-right">
+                  <div className="text-xs text-indigo-200 mb-1">Available</div>
+                  <div className="text-2xl font-black text-white">
+                    {(() => {
+                      const dailyRemaining = status.limits.fullTests > 0 
+                        ? Math.max(0, status.limits.fullTests - status.usage.fullTestsUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.fullTests.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
+                    <div className="text-xs text-indigo-300 mt-1">
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
+                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                      )}
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
+                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
             <h3 className="text-xl font-bold text-white mb-2">Examen Complet</h3>
             <p className="text-indigo-100 text-sm leading-relaxed">
               Enchaînez les deux sections pour une simulation réelle. (12 min)
@@ -673,16 +1070,25 @@ function ExamView() {
   const { getToken } = useAuth();
   const { t } = useLanguage();
   const [scenario, setScenario] = useState<any>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [paywallReason, setPaywallReason] = useState<string>();
+  const { startExam, validateSession } = useUsage();
   
   // Use the custom hook for result management
   const { result, isLoading, handleResult } = useExamResult({
     onSuccess: (savedResult) => {
-      console.log('✅ Exam completed successfully:', savedResult._id);
+      console.log('Exam completed successfully:', savedResult._id);
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
     },
     onError: (error) => {
-      console.error('❌ Exam error:', error);
+      console.error('Exam error:', error);
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
     },
     autoNavigate: true,
+    sessionId: sessionId || undefined,
   });
 
   useEffect(() => {
@@ -691,49 +1097,111 @@ function ExamView() {
       return;
     }
 
+    // Validate session on page load/refresh
+    const validateExistingSession = async () => {
+      const storedSessionId = sessionStorage.getItem(`exam_session_${mode}`);
+      const storedScenario = sessionStorage.getItem(`exam_scenario_${mode}`);
+      
+      if (storedSessionId) {
+        const isValid = await validateSession(storedSessionId);
+        if (isValid) {
+          setSessionId(storedSessionId);
+          
+          // Restore scenario if it exists (for refresh recovery)
+          if (storedScenario) {
+            try {
+              const parsedScenario = JSON.parse(storedScenario);
+              setScenario(parsedScenario);
+              return; // Don't generate new scenario if we restored one
+            } catch (error) {
+              console.error('Error parsing stored scenario:', error);
+              // Fall through to generate new scenario
+            }
+          }
+        } else {
+          // Session invalid - usage already consumed
+          sessionStorage.removeItem(`exam_session_${mode}`);
+          sessionStorage.removeItem(`exam_scenario_${mode}`);
+          alert('This exam session has expired. Usage was already consumed when the exam started.');
+          navigate('/dashboard');
+          return;
+        }
+      }
+    };
+
+    validateExistingSession();
+
     // Check if scenario was passed via location state (for retakes)
     if (location.state?.scenario) {
       setScenario(location.state.scenario);
-    } else {
+      // Store scenario for refresh recovery
+      sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(location.state.scenario));
+    } else if (!sessionStorage.getItem(`exam_scenario_${mode}`)) {
+      // Only generate new scenario if we don't have one stored (for refresh recovery)
       // Generate new scenario, excluding completed tasks
       const loadCompletedTaskIds = async () => {
         try {
           const results = await persistenceService.getAllResults(user?.id || 'guest', getToken);
-          // Extract completed task IDs from results
           const completedIds: number[] = [];
           results.forEach(result => {
             if (result.taskPartA?.id) completedIds.push(result.taskPartA.id);
             if (result.taskPartB?.id) completedIds.push(result.taskPartB.id);
           });
           
-          // Get random tasks excluding completed ones
           const { partA, partB } = getRandomTasks(completedIds);
-          setScenario({
+          const newScenario = {
             title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
             mode: mode,
             officialTasks: {
               partA,
               partB
             }
-          });
+          };
+          setScenario(newScenario);
+          sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
         } catch (error) {
           console.error('Error loading completed tasks:', error);
-          // Fallback to random selection without filtering
           const { partA, partB } = getRandomTasks();
-          setScenario({
+          const newScenario = {
             title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
             mode: mode,
             officialTasks: {
               partA,
               partB
             }
-          });
+          };
+          setScenario(newScenario);
+          sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
         }
       };
       
       loadCompletedTaskIds();
     }
-  }, [mode, location.state, navigate, user]);
+  }, [mode, location.state, navigate, user, validateSession]);
+
+  useEffect(() => {
+    if (scenario && !sessionId && user) {
+      const initializeExam = async () => {
+        const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
+        const result = await startExam(examType);
+        
+        if (result.canStart && result.sessionId) {
+          setSessionId(result.sessionId);
+          sessionStorage.setItem(`exam_session_${mode}`, result.sessionId);
+          if (scenario) {
+            sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(scenario));
+          }
+        } else {
+          setPaywallReason(result.reason);
+          setShowPaywall(true);
+          setScenario(null);
+          sessionStorage.removeItem(`exam_scenario_${mode}`);
+        }
+      };
+
+      initializeExam();
+    }
+  }, [scenario, sessionId, user, mode, startExam]);
 
   // Show loading state if result is loading
   if (isLoading) {
@@ -765,8 +1233,16 @@ function ExamView() {
       <DashboardLayout>
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-8">
           <div className="max-w-7xl mx-auto py-20 text-center animate-pulse text-slate-400">
-            Loading exam...
+            {showPaywall ? 'Checking subscription...' : 'Loading exam...'}
           </div>
+          <PaywallModal
+            isOpen={showPaywall}
+            onClose={() => {
+              setShowPaywall(false);
+              navigate('/dashboard');
+            }}
+            reason={paywallReason}
+          />
         </div>
       </DashboardLayout>
     );
@@ -782,20 +1258,37 @@ function ExamView() {
           >
             ← {t('back.dashboard')}
           </button>
-          <OralExpressionLive scenario={scenario} onFinish={handleResult} />
+          {sessionId && <OralExpressionLive scenario={scenario} onFinish={handleResult} />}
         </div>
       </div>
     </DashboardLayout>
   );
 }
 
+function SubscriptionManagementView() {
+  return (
+    <DashboardLayout>
+      <SubscriptionManagement />
+    </DashboardLayout>
+  );
+}
+
+function PricingView() {
+  return <PricingPage />;
+}
+
 function ProtectedRoutes() {
+  // Trial will be auto-initialized when subscription status is first checked
+  // This happens automatically in useSubscription hook when user loads dashboard
+
   return (
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/history" element={<HistoryView />} />
       <Route path="/results/:id" element={<ResultView />} />
       <Route path="/exam/:mode" element={<ExamView />} />
+      <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
+      <Route path="/pricing" element={<PricingView />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

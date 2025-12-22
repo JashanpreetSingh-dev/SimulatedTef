@@ -68,6 +68,81 @@ export async function createIndexes(): Promise<void> {
     );
     console.log('✅ Created index: recordings.metadata.userId_uploadDate_idx');
     
+    // Subscriptions collection indexes
+    const subscriptionsCollection = db.collection('subscriptions');
+    
+    // Index for user subscription queries
+    await subscriptionsCollection.createIndex(
+      { userId: 1 },
+      { name: 'userId_idx', unique: true }
+    );
+    console.log('✅ Created index: subscriptions.userId_idx');
+    
+    // Index for Stripe customer lookups
+    await subscriptionsCollection.createIndex(
+      { stripeCustomerId: 1 },
+      { name: 'stripeCustomerId_idx' }
+    );
+    console.log('✅ Created index: subscriptions.stripeCustomerId_idx');
+    
+    // Index for pack expiry queries (find expired packs)
+    await subscriptionsCollection.createIndex(
+      { packExpirationDate: 1 },
+      { name: 'packExpirationDate_idx' }
+    );
+    console.log('✅ Created index: subscriptions.packExpirationDate_idx');
+    
+    // Index for pack type queries (analytics)
+    await subscriptionsCollection.createIndex(
+      { packType: 1 },
+      { name: 'packType_idx' }
+    );
+    console.log('✅ Created index: subscriptions.packType_idx');
+    
+    // Usage collection indexes
+    const usageCollection = db.collection('usage');
+    
+    // Compound index for daily usage queries
+    await usageCollection.createIndex(
+      { userId: 1, date: 1 },
+      { name: 'userId_date_idx', unique: true }
+    );
+    console.log('✅ Created index: usage.userId_date_idx');
+    
+    // Exam sessions collection indexes
+    const examSessionsCollection = db.collection('examSessions');
+    
+    // Index for session validation
+    await examSessionsCollection.createIndex(
+      { sessionId: 1 },
+      { name: 'sessionId_idx', unique: true }
+    );
+    console.log('✅ Created index: examSessions.sessionId_idx');
+    
+    // Compound index for user session queries
+    await examSessionsCollection.createIndex(
+      { userId: 1, createdAt: -1 },
+      { name: 'userId_createdAt_idx' }
+    );
+    console.log('✅ Created index: examSessions.userId_createdAt_idx');
+    
+    // Webhook events collection indexes
+    const webhookEventsCollection = db.collection('webhookEvents');
+    
+    // Index for idempotency checks
+    await webhookEventsCollection.createIndex(
+      { eventId: 1 },
+      { name: 'eventId_idx', unique: true }
+    );
+    console.log('✅ Created index: webhookEvents.eventId_idx');
+    
+    // Index for cleanup queries (processed events older than 30 days)
+    await webhookEventsCollection.createIndex(
+      { processed: 1, processedAt: 1 },
+      { name: 'processed_processedAt_idx' }
+    );
+    console.log('✅ Created index: webhookEvents.processed_processedAt_idx');
+    
     console.log('✅ All database indexes created successfully');
   } catch (error: any) {
     console.error('❌ Error creating indexes:', error.message);
