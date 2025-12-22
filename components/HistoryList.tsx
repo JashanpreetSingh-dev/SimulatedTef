@@ -18,8 +18,7 @@ export const HistoryList: React.FC = () => {
 
   useEffect(() => {
     const fetchResults = async () => {
-      const token = await getToken();
-      const data = await persistenceService.getAllResults(userId, token);
+      const data = await persistenceService.getAllResults(userId, getToken);
       setResults(data);
       setLoading(false);
     };

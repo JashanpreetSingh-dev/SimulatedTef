@@ -605,8 +605,7 @@ function ResultView() {
         }
 
         // If not in localStorage, try fetching from backend
-        const token = await getToken();
-        const results = await persistenceService.getAllResults(user.id, token);
+        const results = await persistenceService.getAllResults(user.id, getToken);
         const found = results.find(r => r._id === id);
         if (found) {
           setResult(found);
@@ -699,8 +698,7 @@ function ExamView() {
       // Generate new scenario, excluding completed tasks
       const loadCompletedTaskIds = async () => {
         try {
-          const token = await getToken();
-          const results = await persistenceService.getAllResults(user?.id || 'guest', token);
+          const results = await persistenceService.getAllResults(user?.id || 'guest', getToken);
           // Extract completed task IDs from results
           const completedIds: number[] = [];
           results.forEach(result => {
