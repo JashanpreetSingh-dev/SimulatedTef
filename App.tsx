@@ -14,6 +14,9 @@ import { useExamResult } from './hooks/useExamResult';
 import { PricingSection } from './components/PricingSection';
 import { FeatureComparison } from './components/FeatureComparison';
 import { FAQSection } from './components/FAQSection';
+import { ExamInterfaceShowcase } from './components/ExamInterfaceShowcase';
+import { ResultsDashboardShowcase } from './components/ResultsDashboardShowcase';
+import { useScrollAnimation } from './utils/animations';
 import { useUsage } from './hooks/useUsage';
 import { PaywallModal } from './components/PaywallModal';
 import { SubscriptionStatus } from './components/SubscriptionStatus';
@@ -29,6 +32,9 @@ if (!PUBLISHABLE_KEY) {
 
 function LandingPage() {
   const { t } = useLanguage();
+  const [featuresRef, featuresVisible] = useScrollAnimation();
+  const [comparisonRef, comparisonVisible] = useScrollAnimation();
+  const [ctaRef, ctaVisible] = useScrollAnimation();
   
   return (
     <div className="min-h-screen bg-slate-950">
@@ -68,8 +74,13 @@ function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
+      <section 
+        ref={featuresRef as React.RefObject<HTMLElement>}
+        className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 transition-all duration-1000 ${
+          featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6 sm:gap-12 mb-12 sm:mb-16 md:mb-20">
             <div className="space-y-3 sm:space-y-6">
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-[-0.02em]">
@@ -87,32 +98,40 @@ function LandingPage() {
           </div>
           
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-100">
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-indigo-500/30 transition-all duration-300">🎯</div>
+            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-500/20 ${
+              featuresVisible ? 'animate-slide-up delay-100' : 'opacity-0 translate-y-4'
+            }`}>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-indigo-500/30 group-hover:rotate-3 transition-all duration-300">🎯</div>
               <h3 className="text-base sm:text-xl font-bold text-white">Official Format</h3>
               <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real TEF Canada scenarios with exact time limits and official exam structure.
               </p>
             </div>
 
-            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-200">
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-cyan-500/30 transition-all duration-300">🤖</div>
+            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-cyan-500/20 ${
+              featuresVisible ? 'animate-slide-up delay-200' : 'opacity-0 translate-y-4'
+            }`}>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-cyan-500/30 group-hover:rotate-3 transition-all duration-300">🤖</div>
               <h3 className="text-base sm:text-xl font-bold text-white">AI Evaluation</h3>
               <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 CCI Paris framework evaluation with accurate CLB and CECR assessments.
               </p>
             </div>
 
-            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-300">
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all duration-300">🎙️</div>
+            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-emerald-500/20 ${
+              featuresVisible ? 'animate-slide-up delay-300' : 'opacity-0 translate-y-4'
+            }`}>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-emerald-500/30 group-hover:rotate-3 transition-all duration-300">🎙️</div>
               <h3 className="text-base sm:text-xl font-bold text-white">Live Audio</h3>
               <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real-time conversation practice with advanced speech recognition.
               </p>
             </div>
 
-            <div className="group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.02] animate-scale-in delay-400">
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-blue-500/30 transition-all duration-300">📊</div>
+            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl hover:bg-slate-900/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-blue-500/20 ${
+              featuresVisible ? 'animate-slide-up delay-400' : 'opacity-0 translate-y-4'
+            }`}>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-blue-500/30 group-hover:rotate-3 transition-all duration-300">📊</div>
               <h3 className="text-base sm:text-xl font-bold text-white">CLB Scoring</h3>
               <p className="text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Get TEF scores (0-699) and CLB levels for Canadian immigration.
@@ -122,9 +141,20 @@ function LandingPage() {
         </div>
       </section>
 
+      {/* Exam Interface Showcase */}
+      <ExamInterfaceShowcase />
+
+      {/* Results Dashboard Showcase */}
+      <ResultsDashboardShowcase />
+
       {/* Why Akseli Section */}
-      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-slate-900/30">
-        <div className="max-w-7xl mx-auto">
+      <section 
+        ref={comparisonRef as React.RefObject<HTMLElement>}
+        className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 bg-slate-900/30 transition-all duration-1000 ${
+          comparisonVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-16 md:mb-24">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-3 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
               Why Akseli beats <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">generic AI</span>
@@ -136,7 +166,9 @@ function LandingPage() {
 
           <div className="grid md:grid-cols-2 gap-4 sm:gap-6 md:gap-8">
             {/* Akseli Column */}
-            <div className="space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-indigo-500/20">
+            <div className={`space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/40 backdrop-blur-sm border border-indigo-500/20 transition-all duration-500 ${
+              comparisonVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-8'
+            }`}>
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
                 <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-base sm:text-xl font-black text-indigo-400 shadow-lg shadow-indigo-500/10">
                   A
@@ -144,68 +176,42 @@ function LandingPage() {
                 <h3 className="text-lg sm:text-2xl font-bold text-white">Akseli</h3>
               </div>
               
-              <div className="space-y-2 sm:space-y-5">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-2 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <span className="text-emerald-400 text-lg sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Official exam format</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Real scenarios, time limits, structure</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">CCI Paris framework</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Official TEF evaluation criteria</p>
+                    <p className="text-white font-semibold text-sm sm:text-base">Official exam format</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Real TEF Canada scenarios with time limits</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <span className="text-emerald-400 text-lg sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">CLB, CECR, TEF scores</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">0-699 scale, immigration-ready</p>
+                    <p className="text-white font-semibold text-sm sm:text-base">Official scoring</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">CLB & TEF scores (0-699) for immigration</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                  <span className="text-emerald-400 text-lg sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Real-time audio</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4] hidden sm:block">Live conversation practice</p>
+                    <p className="text-white font-semibold text-sm sm:text-base">Real-time audio practice</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Live conversation with AI examiner</p>
                   </div>
                 </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
+                <div className="flex items-start gap-2 group">
+                  <span className="text-emerald-400 text-lg sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
                   <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Official exam scenarios</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">OCR-extracted from real materials</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Performance tracking</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Full history and progress monitoring</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Specialized examiner AI</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Trained to act as official examiner</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3 group">
-                  <span className="text-emerald-400 text-base sm:text-xl mt-0.5 flex-shrink-0 group-hover:scale-110 transition-transform duration-200">✓</span>
-                  <div className="min-w-0">
-                    <p className="text-white font-semibold text-xs sm:text-base">Model answers & improvements</p>
-                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Detailed examples and upgrades</p>
+                    <p className="text-white font-semibold text-sm sm:text-base">Progress tracking</p>
+                    <p className="text-slate-400 text-xs sm:text-sm leading-[1.4]">Track your improvement over time</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* ChatGPT/Plain AI Column */}
-            <div className="space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/20 backdrop-blur-sm border border-slate-800/30">
+            <div className={`space-y-2 sm:space-y-6 p-4 sm:p-8 rounded-3xl bg-slate-900/20 backdrop-blur-sm border border-slate-800/30 transition-all duration-500 ${
+              comparisonVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-8'
+            }`}>
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
                 <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-2xl bg-slate-800/50 flex items-center justify-center text-base sm:text-xl font-black text-slate-500">
                   AI
@@ -213,61 +219,33 @@ function LandingPage() {
                 <h3 className="text-lg sm:text-2xl font-bold text-slate-500">ChatGPT / Plain AI</h3>
               </div>
               
-              <div className="space-y-2 sm:space-y-5">
+              <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <span className="text-slate-600 text-lg sm:text-xl mt-0.5 flex-shrink-0">✗</span>
                   <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Generic conversation</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No exam structure</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
-                  <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No framework</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">Generic feedback only</p>
+                    <p className="text-slate-500 font-semibold text-sm sm:text-base">No exam structure</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Just generic conversation practice</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <span className="text-slate-600 text-lg sm:text-xl mt-0.5 flex-shrink-0">✗</span>
                   <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No scoring</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No standardized assessment</p>
+                    <p className="text-slate-500 font-semibold text-sm sm:text-base">No official scoring</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Can't get CLB or TEF scores</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                  <span className="text-slate-600 text-lg sm:text-xl mt-0.5 flex-shrink-0">✗</span>
                   <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Text-based</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4] hidden sm:block">No real-time audio practice</p>
+                    <p className="text-slate-500 font-semibold text-sm sm:text-base">Text-based only</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">No real-time audio practice</p>
                   </div>
                 </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
+                <div className="flex items-start gap-2">
+                  <span className="text-slate-600 text-lg sm:text-xl mt-0.5 flex-shrink-0">✗</span>
                   <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Random topics</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Not exam-specific</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
-                  <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">No tracking</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">No progress monitoring</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
-                  <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Generic assistant</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Not exam-focused</p>
-                  </div>
-                </div>
-                <div className="hidden sm:flex items-start gap-2 sm:gap-3">
-                  <span className="text-slate-600 text-base sm:text-xl mt-0.5 flex-shrink-0">✗</span>
-                  <div className="min-w-0">
-                    <p className="text-slate-500 font-semibold text-xs sm:text-base">Basic suggestions</p>
-                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">No exam-specific examples</p>
+                    <p className="text-slate-500 font-semibold text-sm sm:text-base">No progress tracking</p>
+                    <p className="text-slate-600 text-xs sm:text-sm leading-[1.4]">Can't monitor your improvement</p>
                   </div>
                 </div>
               </div>
@@ -286,8 +264,13 @@ function LandingPage() {
       <FAQSection />
 
       {/* Final CTA Section */}
-      <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
-        <div className="max-w-5xl mx-auto text-center">
+      <section 
+        ref={ctaRef as React.RefObject<HTMLElement>}
+        className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 transition-all duration-1000 ${
+          ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+        }`}
+      >
+        <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
             Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">succeed</span>?
           </h2>
@@ -299,22 +282,23 @@ function LandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4">
             <SignUpButton mode="modal">
-              <button className="group w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-white/10 active:scale-[0.98]">
-                Start Free Trial
+              <button className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-white text-slate-900 font-semibold text-base sm:text-lg hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-white/20 active:scale-[0.98] overflow-hidden">
+                <span className="relative z-10">Start Free Trial</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-indigo-400/0 via-indigo-400/20 to-indigo-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
               </button>
             </SignUpButton>
             <a
               href="#pricing"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98] text-center"
+              className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-600/20 active:scale-[0.98] text-center"
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              View Pricing
+              <span className="relative z-10">View Pricing</span>
             </a>
             <SignInButton mode="modal">
-              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.02] active:scale-[0.98]">
+              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-slate-900/60 backdrop-blur-md text-white font-semibold text-base sm:text-lg hover:bg-slate-800/60 transition-all duration-300 border border-slate-800/50 hover:border-slate-700/50 hover:scale-[1.05] hover:shadow-xl hover:shadow-slate-600/20 active:scale-[0.98]">
                 Sign in
               </button>
             </SignInButton>

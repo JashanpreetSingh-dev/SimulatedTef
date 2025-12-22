@@ -11,31 +11,31 @@ export const FAQSection: React.FC = () => {
   const faqs: FAQItem[] = [
     {
       question: 'What happens after my free trial?',
-      answer: 'After your 3-day free trial ends, you can choose to subscribe to Pro Monthly, Pro Yearly, or purchase a 5-Pack. Your trial usage and progress are saved, so you can pick up right where you left off.',
+      answer: 'After your 3-day free trial ends, you can purchase a Starter Pack ($19) or Exam Ready Pack ($35) to continue practicing. Your trial usage and progress are saved, so you can pick up right where you left off.',
     },
     {
-      question: 'Can I cancel anytime?',
-      answer: 'Yes! You can cancel your Pro subscription at any time. Your subscription will remain active until the end of your current billing period, and you\'ll continue to have access until then.',
-    },
-    {
-      question: 'What\'s the difference between Pro and 5-Pack?',
-      answer: 'Pro subscriptions give you daily limits that reset every day (1 full test, 2 Section A, 2 Section B per day). The 5-Pack gives you 5 full tests total that you can use anytime - no daily limits, no expiration, but no individual Section A/B practice.',
+      question: 'What\'s the difference between Starter Pack and Exam Ready Pack?',
+      answer: 'The Starter Pack includes 5 Full Tests, 3 Section A, and 3 Section B (11 tests total) valid for 30 days. The Exam Ready Pack includes 15 Full Tests, 10 Section A, and 10 Section B (35 tests total) valid for 30 days. Both packs are one-time purchases with no recurring charges.',
     },
     {
       question: 'Do I need a credit card for the trial?',
-      answer: 'No credit card required! Start your free trial and explore all features. You only need to provide payment information if you decide to subscribe after your trial ends.',
+      answer: 'No credit card required! Start your free trial and explore all features. You only need to provide payment information if you decide to purchase a pack after your trial ends.',
     },
     {
-      question: 'Can I use 5-Pack if I have a Pro subscription?',
-      answer: 'Yes! You can purchase a 5-Pack even if you have an active Pro subscription. For full tests, the 5-Pack takes priority (if you have tests remaining), otherwise your Pro daily limits apply.',
+      question: 'How do test credits work?',
+      answer: 'Each pack gives you a set number of test credits that you can use anytime within the 30-day validity period. Full Tests, Section A, and Section B are separate credits - they don\'t count against each other. Once you use a credit, it\'s consumed and cannot be reused.',
     },
     {
-      question: 'How do daily limits work?',
-      answer: 'Daily limits reset at 12:00 AM UTC every day. For Pro plans, you get 1 full test, 2 Section A, and 2 Section B attempts per day. Full tests are separate from Section A/B - they don\'t count against each other.',
+      question: 'What happens when my pack expires?',
+      answer: 'When your 30-day validity period ends, any unused test credits expire. You can purchase a new pack at any time to continue practicing. Your exam history and progress are always saved regardless of pack status.',
     },
     {
-      question: 'When do limits reset?',
-      answer: 'All daily limits reset at 12:00 AM UTC (midnight UTC) every day. This ensures a consistent reset time for all users worldwide.',
+      question: 'Can I purchase multiple packs?',
+      answer: 'Yes! You can purchase a new pack even if you have an active pack. The new pack will replace your current one, and any unused credits from the previous pack will be lost. We recommend using all your credits before purchasing a new pack.',
+    },
+    {
+      question: 'Do all plans include the same features?',
+      answer: 'Yes! All plans (Free Trial, Starter Pack, and Exam Ready Pack) include AI evaluation, CLB scoring, CECR levels, detailed feedback, progress tracking, and exam history. The only difference is the number of test credits included.',
     },
   ];
 
@@ -44,7 +44,7 @@ export const FAQSection: React.FC = () => {
   };
 
   return (
-    <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
+    <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">

@@ -2,25 +2,21 @@ import React from 'react';
 
 export const FeatureComparison: React.FC = () => {
   const features = [
-    { name: 'Full Tests', trial: '1/day', monthly: '1/day', yearly: '1/day', pack: '5 total' },
-    { name: 'Section A', trial: '1/day', monthly: '2/day', yearly: '2/day', pack: 'Not available' },
-    { name: 'Section B', trial: '1/day', monthly: '2/day', yearly: '2/day', pack: 'Not available' },
-    { name: 'AI Evaluation', trial: '✓', monthly: '✓', yearly: '✓', pack: '✓' },
-    { name: 'CLB Scoring', trial: '✓', monthly: '✓', yearly: '✓', pack: '✓' },
-    { name: 'Progress Tracking', trial: '✓', monthly: '✓', yearly: '✓', pack: '✓' },
-    { name: 'Exam History', trial: '✓', monthly: 'Unlimited', yearly: 'Unlimited', pack: '✓' },
-    { name: 'Support', trial: 'Standard', monthly: 'Priority', yearly: 'Priority', pack: 'Standard' },
+    { name: 'Full Tests', trial: '1 per day', starter: '5 total', examReady: '15 total' },
+    { name: 'Section A', trial: '1 per day', starter: '3 total', examReady: '10 total' },
+    { name: 'Section B', trial: '1 per day', starter: '3 total', examReady: '10 total' },
+    { name: 'Validity', trial: '3 days', starter: '30 days', examReady: '30 days' },
   ];
 
   return (
-    <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 bg-slate-900/30">
-      <div className="max-w-7xl mx-auto">
+    <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 bg-slate-900/30">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
             Compare <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Plans</span>
           </h2>
           <p className="text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4">
-            See what's included in each plan to find the perfect fit for your preparation.
+            All plans include AI evaluation, CLB scoring, and progress tracking. Compare test counts to find the perfect fit.
           </p>
         </div>
 
@@ -36,13 +32,10 @@ export const FeatureComparison: React.FC = () => {
                     Free Trial
                   </th>
                   <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-slate-400 bg-slate-900/50">
-                    Pro Monthly
+                    Starter Pack
                   </th>
                   <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-slate-400 bg-slate-900/50">
-                    Pro Yearly
-                  </th>
-                  <th className="px-4 py-4 text-center text-xs font-black uppercase tracking-wider text-slate-400 bg-slate-900/50">
-                    5-Pack
+                    Exam Ready Pack
                   </th>
                 </tr>
               </thead>
@@ -56,13 +49,10 @@ export const FeatureComparison: React.FC = () => {
                       {feature.trial}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-slate-300">
-                      {feature.monthly}
+                      {feature.starter}
                     </td>
                     <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-slate-300">
-                      {feature.yearly}
-                    </td>
-                    <td className="px-4 py-4 whitespace-nowrap text-sm text-center text-slate-300">
-                      {feature.pack}
+                      {feature.examReady}
                     </td>
                   </tr>
                 ))}

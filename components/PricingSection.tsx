@@ -47,10 +47,6 @@ export const PricingSection: React.FC = () => {
       period: '',
       features: [
         '3 days free access',
-        'AI Evaluation',
-        'CLB Scoring',
-        'Progress Tracking',
-        'Exam History',
       ],
       limits: {
         fullTests: '1 per day',
@@ -68,10 +64,7 @@ export const PricingSection: React.FC = () => {
         '5 Full Tests',
         '3 Section A',
         '3 Section B',
-        '11 Tests Total',
         'Valid 30 days',
-        'AI Evaluation',
-        'CLB Scoring',
       ],
       limits: {
         fullTests: '5 total',
@@ -91,10 +84,7 @@ export const PricingSection: React.FC = () => {
         '15 Full Tests',
         '10 Section A',
         '10 Section B',
-        '35 Tests Total',
         'Valid 30 days',
-        'AI Evaluation',
-        'CLB Scoring',
       ],
       limits: {
         fullTests: '15 total',
@@ -109,8 +99,8 @@ export const PricingSection: React.FC = () => {
   ];
 
   return (
-    <section id="pricing" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto">
+    <section id="pricing" className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16">
+      <div className="max-w-6xl mx-auto">
         <div className="text-center mb-12 sm:mb-16 md:mb-20">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
             Simple, Transparent <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Pricing</span>
