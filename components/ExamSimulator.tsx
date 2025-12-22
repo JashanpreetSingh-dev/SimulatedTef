@@ -23,10 +23,10 @@ export const ExamSimulator: React.FC = () => {
   // Use the custom hook for result management
   const { result: evaluation, isLoading, handleResult, clearResult } = useExamResult({
     onSuccess: (savedResult) => {
-      console.log('✅ Exam completed successfully:', savedResult._id);
+      console.log('Exam completed successfully:', savedResult._id);
     },
     onError: (error) => {
-      console.error('❌ Exam error:', error);
+      console.error('Exam error:', error);
       const errorMessage = error instanceof Error ? error.message : error;
       alert(`Une erreur est survenue: ${errorMessage}`);
     },
@@ -47,9 +47,8 @@ export const ExamSimulator: React.FC = () => {
       return;
     }
     
-    // Subscription check passed, proceed with exam
     setSimulationMode(mode);
-    clearResult(); // Clear previous result
+    clearResult();
     
     const { partA, partB } = getRandomTasks();
     
