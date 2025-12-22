@@ -170,9 +170,11 @@ function LandingPage() {
               comparisonVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-8'
             }`}>
               <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-8">
-                <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center text-base sm:text-xl font-black text-indigo-400 shadow-lg shadow-indigo-500/10">
-                  A
-                </div>
+                <img 
+                  src="/logo.png" 
+                  alt="Akseli Logo" 
+                  className="w-8 h-8 sm:w-12 sm:h-12 object-contain"
+                />
                 <h3 className="text-lg sm:text-2xl font-bold text-white">Akseli</h3>
               </div>
               
@@ -357,12 +359,19 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
         <div className="flex items-center gap-4 md:gap-8">
-          <span 
-            className="font-black text-lg md:text-xl text-slate-900 dark:text-white cursor-pointer" 
+          <div 
+            className="flex items-center gap-2 cursor-pointer" 
             onClick={() => navigate('/dashboard')}
           >
-            Akseli
-          </span>
+            <img 
+              src="/logo.png" 
+              alt="Akseli Logo" 
+              className="h-6 md:h-8 w-auto"
+            />
+            <span className="font-black text-lg md:text-xl text-slate-900 dark:text-white">
+              Akseli
+            </span>
+          </div>
           {getSubscriptionBadge()}
           <div className="hidden md:flex gap-4 text-sm font-bold">
             <button 
