@@ -18,12 +18,54 @@ import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
+import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
+
+// Stripe webhook needs raw body for signature verification
+// This MUST be before express.json() middleware
+// Use express.raw() middleware specifically for the webhook endpoint
+app.post(
+  '/api/subscription/webhook',
+  express.raw({ type: 'application/json' }),
+  async (req, res) => {
+    try {
+      // Log body type for debugging
+      console.log('📦 Webhook received - Body type:', typeof req.body, 'IsBuffer:', Buffer.isBuffer(req.body));
+      
+      // Verify body is a Buffer
+      if (!Buffer.isBuffer(req.body)) {
+        console.error('❌ Webhook: Body is not a Buffer. Type:', typeof req.body, 'Value:', req.body);
+        return res.status(400).json({ error: 'Invalid request body format' });
+      }
+      
+      // Import and call webhook handler
+      const { subscriptionController } = await import('./controllers/subscriptionController');
+      
+      // Call handler - it's wrapped in asyncHandler so we need to handle it properly
+      const handler = subscriptionController.handleWebhook;
+      await handler(req, res, (err?: any) => {
+        if (err) {
+          console.error('❌ Webhook handler error:', err);
+          if (!res.headersSent) {
+            res.status(500).json({ error: 'Internal server error' });
+          }
+        }
+      });
+    } catch (error: any) {
+      console.error('❌ Webhook route error:', error);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    }
+  }
+);
+
+// JSON parsing for all other routes (after webhook route)
 app.use(express.json());
 
 // Extend Express Request type to include userId
@@ -81,6 +123,9 @@ if (!clerkSecretKey) {
   try {
     await connectDB();
     await createIndexes();
+    
+    // Start subscription expiry job (runs daily to expire cancelled subscriptions)
+    startSubscriptionExpiryJob();
     
     // Start worker if RUN_WORKER is set or in development
     if (process.env.RUN_WORKER === 'true' || (process.env.NODE_ENV !== 'production' && process.env.RUN_WORKER !== 'false')) {

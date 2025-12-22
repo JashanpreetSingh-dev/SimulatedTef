@@ -3,7 +3,7 @@ import { useAuth } from '@clerk/clerk-react';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
-export type PlanType = 'monthly' | 'yearly' | 'pack';
+export type PlanType = 'starter' | 'examReady';
 
 export const useCheckout = () => {
   const [loading, setLoading] = useState(false);
@@ -30,6 +30,16 @@ export const useCheckout = () => {
 
       if (!response.ok) {
         const error = await response.json();
+        // If user has active pack, return error with pack info for warning modal
+        if (error.hasActivePack) {
+          return { 
+            error: error.error || 'Cannot purchase pack', 
+            hasActivePack: true,
+            activePackType: error.activePackType,
+            activePackExpiration: error.activePackExpiration,
+            activePackCredits: error.activePackCredits,
+          };
+        }
         throw new Error(error.error || 'Failed to create checkout session');
       }
 

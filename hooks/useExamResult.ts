@@ -1,16 +1,19 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SavedResult } from '../types';
+import { useUsage } from './useUsage';
 
 interface UseExamResultOptions {
   onSuccess?: (result: SavedResult) => void;
   onError?: (error: Error | string) => void;
   autoNavigate?: boolean; // Whether to automatically navigate to result page
+  sessionId?: string; // Exam session ID to mark as completed
 }
 
 export const useExamResult = (options: UseExamResultOptions = {}) => {
-  const { onSuccess, onError, autoNavigate = true } = options;
+  const { onSuccess, onError, autoNavigate = true, sessionId } = options;
   const navigate = useNavigate();
+  const { completeSession } = useUsage();
   const [result, setResult] = useState<SavedResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,7 +35,20 @@ export const useExamResult = (options: UseExamResultOptions = {}) => {
       if (onError) {
         onError(error);
       }
+      // Mark session as failed if there was an error
+      if (sessionId) {
+        completeSession(sessionId, savedResult._id, 'failed').catch(err => {
+          console.error('Failed to mark exam session as failed:', err);
+        });
+      }
       return;
+    }
+
+    // Mark session as completed if sessionId is provided
+    if (sessionId && savedResult._id && !savedResult._id.startsWith('temp-')) {
+      completeSession(sessionId, savedResult._id, 'completed').catch(err => {
+        console.error('Failed to complete session:', err);
+      });
     }
 
     // Call success callback if provided
@@ -44,7 +60,7 @@ export const useExamResult = (options: UseExamResultOptions = {}) => {
     if (autoNavigate && savedResult._id && !savedResult._id.startsWith('temp-')) {
       navigate(`/results/${savedResult._id}`);
     }
-  }, [navigate, onSuccess, onError, autoNavigate]);
+  }, [navigate, onSuccess, onError, autoNavigate, sessionId, completeSession]);
 
   const handleError = useCallback((error: Error | string) => {
     setIsLoading(false);

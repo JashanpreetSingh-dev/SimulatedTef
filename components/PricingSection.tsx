@@ -1,20 +1,42 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PricingCard } from './PricingCard';
 import { useCheckout } from '../hooks/useCheckout';
 import { useUser, SignUpButton } from '@clerk/clerk-react';
+import { useSubscription } from '../hooks/useSubscription';
+import { UpgradeWarningModal } from './UpgradeWarningModal';
 
 export const PricingSection: React.FC = () => {
   const { initiateCheckout, loading, isSignedIn } = useCheckout();
   const { user } = useUser();
+  const { status } = useSubscription();
+  const [showUpgradeWarning, setShowUpgradeWarning] = useState(false);
+  const [pendingPackType, setPendingPackType] = useState<'starter' | 'examReady' | null>(null);
 
-  const handleCheckout = async (planType: 'monthly' | 'yearly' | 'pack') => {
+  const handleCheckout = async (planType: 'starter' | 'examReady') => {
     if (!isSignedIn) {
       // For signed-out users, show sign-up modal
       // The SignUpButton will handle this
       return;
     }
 
+    // Check if user has active pack
+    if (status?.packType && status?.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
+      // Show upgrade warning
+      setPendingPackType(planType);
+      setShowUpgradeWarning(true);
+      return;
+    }
+
+    // No active pack, proceed with checkout
     await initiateCheckout(planType);
+  };
+
+  const handleConfirmUpgrade = async () => {
+    if (pendingPackType) {
+      setShowUpgradeWarning(false);
+      await initiateCheckout(pendingPackType);
+      setPendingPackType(null);
+    }
   };
 
   const plans = [
@@ -38,70 +60,51 @@ export const PricingSection: React.FC = () => {
       ctaText: 'Start Free Trial',
     },
     {
-      plan: 'monthly' as const,
-      name: 'Pro Monthly',
-      price: '$29',
-      period: '/month',
-      originalPrice: '$32.48 with tax',
-      features: [
-        'Unlimited access',
-        'AI Evaluation',
-        'CLB Scoring',
-        'Progress Tracking',
-        'Unlimited History',
-        'Priority Support',
-      ],
-      limits: {
-        fullTests: '1 per day',
-        sectionA: '2 per day',
-        sectionB: '2 per day',
-      },
-      ctaText: 'Subscribe Monthly',
-      onCtaClick: () => handleCheckout('monthly'),
-    },
-    {
-      plan: 'yearly' as const,
-      name: 'Pro Yearly',
-      price: '$278',
-      period: '/year',
-      originalPrice: '$23.17/month',
-      features: [
-        'Unlimited access',
-        'AI Evaluation',
-        'CLB Scoring',
-        'Progress Tracking',
-        'Unlimited History',
-        'Priority Support',
-      ],
-      limits: {
-        fullTests: '1 per day',
-        sectionA: '2 per day',
-        sectionB: '2 per day',
-      },
-      ctaText: 'Subscribe Yearly',
-      onCtaClick: () => handleCheckout('yearly'),
-      highlighted: true,
-      badge: 'Most Popular',
-    },
-    {
-      plan: 'pack' as const,
-      name: '5-Pack',
+      plan: 'starter' as const,
+      name: 'Starter Pack',
       price: '$19',
       period: ' one-time',
       features: [
-        '5 full tests',
-        'Valid year round',
+        '5 Full Tests',
+        '3 Section A',
+        '3 Section B',
+        '11 Tests Total',
+        'Valid 30 days',
         'AI Evaluation',
         'CLB Scoring',
-        'Progress Tracking',
-        'No subscription',
       ],
       limits: {
-        fullTests: '5 total (no daily limit)',
+        fullTests: '5 total',
+        sectionA: '3 total',
+        sectionB: '3 total',
       },
-      ctaText: 'Buy 5-Pack',
-      onCtaClick: () => handleCheckout('pack'),
-      badge: 'Best Value',
+      ctaText: 'Buy Starter Pack',
+      onCtaClick: () => handleCheckout('starter'),
+      badge: 'Week 1 Intensive',
+    },
+    {
+      plan: 'examReady' as const,
+      name: 'Exam Ready Pack',
+      price: '$35',
+      period: ' one-time',
+      features: [
+        '15 Full Tests',
+        '10 Section A',
+        '10 Section B',
+        '35 Tests Total',
+        'Valid 30 days',
+        'AI Evaluation',
+        'CLB Scoring',
+      ],
+      limits: {
+        fullTests: '15 total',
+        sectionA: '10 total',
+        sectionB: '10 total',
+      },
+      ctaText: 'Buy Exam Ready Pack',
+      onCtaClick: () => handleCheckout('examReady'),
+      highlighted: true,
+      badge: '4 Weeks CLB 7',
     },
   ];
 
@@ -120,17 +123,59 @@ export const PricingSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {plans.map((planData) => (
-            <PricingCard
-              key={planData.plan}
-              {...planData}
-              isSignedIn={isSignedIn}
-              loading={loading}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {plans.map((planData) => {
+            // Determine if this is the user's current plan
+            const isCurrentPlan = status && status.isActive && (
+              (planData.plan === 'trial' && status.subscriptionType === 'TRIAL') ||
+              (planData.plan === 'starter' && status.packType === 'STARTER_PACK' && status.packExpirationDate && new Date(status.packExpirationDate) > new Date()) ||
+              (planData.plan === 'examReady' && status.packType === 'EXAM_READY_PACK' && status.packExpirationDate && new Date(status.packExpirationDate) > new Date())
+            );
+            
+            // Check if user has active pack (for upgrade warning)
+            const hasActivePack = status?.packType && status?.packExpirationDate && 
+              new Date(status.packExpirationDate) > new Date() &&
+              planData.plan !== 'trial';
+
+            return (
+              <PricingCard
+                key={planData.plan}
+                {...planData}
+                isSignedIn={isSignedIn}
+                loading={loading}
+                isCurrentPlan={isCurrentPlan}
+                hasActivePack={hasActivePack}
+              />
+            );
+          })}
         </div>
       </div>
+
+      {/* Upgrade Warning Modal */}
+      {status?.packType && status?.packExpirationDate && status?.packCredits && (
+        <UpgradeWarningModal
+          isOpen={showUpgradeWarning}
+          onClose={() => {
+            setShowUpgradeWarning(false);
+            setPendingPackType(null);
+          }}
+          onConfirm={handleConfirmUpgrade}
+          currentPack={{
+            type: status.packType,
+            expiration: status.packExpirationDate,
+            credits: status.packCredits,
+          }}
+          newPack={{
+            type: pendingPackType === 'starter' ? 'STARTER_PACK' : 'EXAM_READY_PACK',
+            name: pendingPackType === 'starter' ? 'Starter Pack' : 'Exam Ready Pack',
+            credits: {
+              fullTests: pendingPackType === 'starter' ? 5 : 15,
+              sectionA: pendingPackType === 'starter' ? 3 : 10,
+              sectionB: pendingPackType === 'starter' ? 3 : 10,
+            },
+          }}
+        />
+      )}
     </section>
   );
 };

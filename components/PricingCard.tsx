@@ -2,7 +2,7 @@ import React from 'react';
 import { SignUpButton, SignedIn, SignedOut } from '@clerk/clerk-react';
 
 interface PricingCardProps {
-  plan: 'trial' | 'monthly' | 'yearly' | 'pack';
+  plan: 'trial' | 'starter' | 'examReady';
   name: string;
   price: string;
   period?: string;
@@ -19,6 +19,8 @@ interface PricingCardProps {
   badge?: string;
   isSignedIn?: boolean;
   loading?: boolean;
+  isCurrentPlan?: boolean;
+  hasActivePack?: boolean;
 }
 
 export const PricingCard: React.FC<PricingCardProps> = ({
@@ -35,6 +37,8 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   badge,
   isSignedIn = false,
   loading = false,
+  isCurrentPlan = false,
+  hasActivePack = false,
 }) => {
   const cardClasses = highlighted
     ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500'
@@ -50,6 +54,15 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   };
 
   const CTAButton = () => {
+    // If this is the current plan, show "Current Plan" instead of button
+    if (isCurrentPlan && isSignedIn) {
+      return (
+        <div className="w-full py-4 px-6 rounded-full bg-slate-700/50 text-slate-300 font-semibold text-base text-center cursor-not-allowed">
+          Current Plan
+        </div>
+      );
+    }
+
     if (plan === 'trial') {
       return (
         <SignUpButton mode="modal">
@@ -73,8 +86,13 @@ export const PricingCard: React.FC<PricingCardProps> = ({
                 : 'bg-indigo-600 text-white hover:bg-indigo-700'
             }`}
           >
-            {loading ? 'Loading...' : ctaText}
+            {loading ? 'Loading...' : (hasActivePack ? 'Upgrade Pack' : ctaText)}
           </button>
+          {hasActivePack && (
+            <p className="text-xs text-amber-400 mt-2 text-center">
+              ⚠️ Your current pack will be replaced
+            </p>
+          )}
         </SignedIn>
         <SignedOut>
           <SignUpButton mode="modal">
