@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser, useClerk, useAuth } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
@@ -19,6 +19,7 @@ import { ResultsDashboardShowcase } from './components/ResultsDashboardShowcase'
 import { useScrollAnimation } from './utils/animations';
 import { useUsage } from './hooks/useUsage';
 import { PaywallModal } from './components/PaywallModal';
+import { ExamWarningModal } from './components/ExamWarningModal';
 import { SubscriptionStatus } from './components/SubscriptionStatus';
 import { useSubscription } from './hooks/useSubscription';
 import { SubscriptionManagement } from './components/SubscriptionManagement';
@@ -592,6 +593,10 @@ function Dashboard() {
     const result = canStartExamLightweight(examType);
     
     if (result.canStart) {
+      // When starting a new exam from the dashboard, always clear any previous
+      // session/scenario for this mode so we generate a fresh random task.
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
       navigate(`/exam/${mode}`);
     } else {
       setPaywallReason(result.reason);
@@ -1066,7 +1071,9 @@ function ExamView() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallReason, setPaywallReason] = useState<string>();
-  const { startExam, validateSession } = useUsage();
+  const [showWarning, setShowWarning] = useState(false);
+  const [hasSeenWarning, setHasSeenWarning] = useState(false);
+  const { startExam, checkCanStart, validateSession, loading: usageLoading } = useUsage();
   
   // Use the custom hook for result management
   const { result, isLoading, handleResult } = useExamResult({
@@ -1084,11 +1091,18 @@ function ExamView() {
     sessionId: sessionId || undefined,
   });
 
+  // Track if we've initialized to prevent re-running
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const initializedModeRef = useRef<string | null>(null);
+
   useEffect(() => {
     if (!mode || !['partA', 'partB', 'full'].includes(mode)) {
       navigate('/dashboard');
       return;
     }
+
+    // Only run initialization once per mode
+    if (hasInitialized && initializedModeRef.current === mode) return;
 
     // Validate session on page load/refresh
     const validateExistingSession = async () => {
@@ -1101,10 +1115,12 @@ function ExamView() {
           setSessionId(storedSessionId);
           
           // Restore scenario if it exists (for refresh recovery)
-          if (storedScenario) {
+          if (storedScenario && !scenario) {
             try {
               const parsedScenario = JSON.parse(storedScenario);
               setScenario(parsedScenario);
+              setHasInitialized(true);
+              initializedModeRef.current = mode;
               return; // Don't generate new scenario if we restored one
             } catch (error) {
               console.error('Error parsing stored scenario:', error);
@@ -1125,14 +1141,31 @@ function ExamView() {
     validateExistingSession();
 
     // Check if scenario was passed via location state (for retakes)
-    if (location.state?.scenario) {
+    if (location.state?.scenario && !scenario) {
       setScenario(location.state.scenario);
       // Store scenario for refresh recovery
       sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(location.state.scenario));
-    } else if (!sessionStorage.getItem(`exam_scenario_${mode}`)) {
+      setHasInitialized(true);
+      initializedModeRef.current = mode;
+    } else if (!scenario) {
+      // Check if we have a stored scenario first
+      const storedScenario = sessionStorage.getItem(`exam_scenario_${mode}`);
+      if (storedScenario) {
+        try {
+          const parsedScenario = JSON.parse(storedScenario);
+          setScenario(parsedScenario);
+          setHasInitialized(true);
+          initializedModeRef.current = mode;
+        } catch (error) {
+          console.error('Error parsing stored scenario:', error);
+          // Fall through to generate new scenario
+        }
+      }
+      
       // Only generate new scenario if we don't have one stored (for refresh recovery)
-      // Generate new scenario, excluding completed tasks
-      const loadCompletedTaskIds = async () => {
+      if (!storedScenario && !scenario) {
+        // Generate new scenario, excluding completed tasks
+        const loadCompletedTaskIds = async () => {
         try {
           const results = await persistenceService.getAllResults(user?.id || 'guest', getToken);
           const completedIds: number[] = [];
@@ -1152,6 +1185,8 @@ function ExamView() {
           };
           setScenario(newScenario);
           sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
+          setHasInitialized(true);
+          initializedModeRef.current = mode;
         } catch (error) {
           console.error('Error loading completed tasks:', error);
           const { partA, partB } = getRandomTasks();
@@ -1165,36 +1200,67 @@ function ExamView() {
           };
           setScenario(newScenario);
           sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
+          setHasInitialized(true);
+          initializedModeRef.current = mode;
         }
-      };
-      
-      loadCompletedTaskIds();
-    }
-  }, [mode, location.state, navigate, user, validateSession]);
-
-  useEffect(() => {
-    if (scenario && !sessionId && user) {
-      const initializeExam = async () => {
-        const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-        const result = await startExam(examType);
+        };
         
-        if (result.canStart && result.sessionId) {
-          setSessionId(result.sessionId);
-          sessionStorage.setItem(`exam_session_${mode}`, result.sessionId);
-          if (scenario) {
-            sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(scenario));
+        loadCompletedTaskIds();
+      }
+    }
+  }, [mode, navigate, user, validateSession, hasInitialized]);
+
+  // Reset initialization when mode changes
+  useEffect(() => {
+    if (initializedModeRef.current !== mode) {
+      setHasInitialized(false);
+      initializedModeRef.current = null;
+    }
+  }, [mode]);
+
+  // Check if user can start exam (without counting usage)
+  // Only check once when scenario is first set - don't block rendering
+  const [hasCheckedPermissions, setHasCheckedPermissions] = useState(false);
+  
+  useEffect(() => {
+    if (scenario && !sessionId && user && !hasCheckedPermissions) {
+      // Don't await - let it run in background
+      const checkExam = async () => {
+        try {
+          const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
+          const result = await checkCanStart(examType);
+          
+          setHasCheckedPermissions(true);
+          
+          if (!result.canStart) {
+            setPaywallReason(result.reason);
+            setShowPaywall(true);
+            // Don't clear scenario - let user see what they can't access
           }
-        } else {
-          setPaywallReason(result.reason);
-          setShowPaywall(true);
-          setScenario(null);
-          sessionStorage.removeItem(`exam_scenario_${mode}`);
+          // If canStart is true, we just continue - scenario is already set
+        } catch (error) {
+          console.error('Error checking exam permissions:', error);
+          setHasCheckedPermissions(true);
+          // Don't block the exam if check fails - let it proceed
         }
       };
 
-      initializeExam();
+      checkExam();
     }
-  }, [scenario, sessionId, user, mode, startExam]);
+  }, [scenario, sessionId, user, mode, checkCanStart, hasCheckedPermissions]);
+  
+  // Reset permission check and warning when mode changes
+  useEffect(() => {
+    setHasCheckedPermissions(false);
+    setHasSeenWarning(false);
+  }, [mode]);
+
+  // Show warning modal first when scenario is ready (only once, and only if user hasn't seen it)
+  useEffect(() => {
+    if (scenario && !showWarning && !showPaywall && hasInitialized && !hasSeenWarning) {
+      setShowWarning(true);
+    }
+  }, [scenario, showWarning, showPaywall, hasInitialized, hasSeenWarning]);
 
   // Show loading state if result is loading
   if (isLoading) {
@@ -1241,17 +1307,35 @@ function ExamView() {
     );
   }
 
+  const handleConfirmWarning = () => {
+    setShowWarning(false);
+    setHasSeenWarning(true);
+  };
+
+  const handleCancelWarning = () => {
+    setShowWarning(false);
+    setHasSeenWarning(true);
+    setScenario(null);
+    navigate('/dashboard');
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-3 md:p-8">
         <div className="max-w-7xl mx-auto">
           <button 
             onClick={() => navigate('/dashboard')}
-            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider"
+            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
           >
             ← {t('back.dashboard')}
           </button>
-          {sessionId && <OralExpressionLive scenario={scenario} onFinish={handleResult} />}
+          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} mode={mode} />}
+          <ExamWarningModal
+            isOpen={showWarning}
+            onConfirm={handleConfirmWarning}
+            onCancel={handleCancelWarning}
+            examType={mode}
+          />
         </div>
       </div>
     </DashboardLayout>

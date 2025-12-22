@@ -23,6 +23,21 @@ if (cleanApiKey && cleanApiKey.length < 20) {
 
 const ai = new GoogleGenAI({ apiKey: cleanApiKey });
 
+// Live API response timeout configuration
+// Adjust these values to control response wait times
+export const LIVE_API_CONFIG = {
+  // Connection timeout (how long to wait for WebSocket to establish)
+  connectionTimeout: 10000, // 10 seconds
+  
+  // Response wait time (how long to wait for AI response after user stops speaking)
+  // The Gemini API has built-in turn detection, but this controls client-side timeout handling
+  responseWaitTime: 30000, // 30 seconds - adjust if responses are taking too long
+  
+  // Turn detection timeout (how long of silence before considering user finished)
+  // This is primarily handled by the Gemini API, but can be adjusted if needed
+  turnDetectionTimeout: 800, // 800ms of silence
+} as const;
+
 export const encodeAudio = (bytes: Uint8Array) => {
   let binary = '';
   const len = bytes.byteLength;
@@ -172,7 +187,19 @@ export const geminiService = {
               data: base64
             }
           }, {
-            text: "Transcribe this audio recording. Include only the candidate's speech (ignore the examiner's voice). Return only the transcript text, no explanations."
+            text: [
+              "You will receive an audio recording of a two-speaker conversation.",
+              "Use your built-in diarization to identify speakers.",
+              "Assume the FIRST voice that speaks is the HUMAN CANDIDATE (label: \"User:\").",
+              "Assume the SECOND voice is the AI EXAMINER (label: \"Examiner:\").",
+              "",
+              "Your task:",
+              "1) Separate the speakers using diarization.",
+              "2) Produce a clean, continuous transcript in French, with natural spacing and punctuation.",
+              "3) Prefix each utterance or paragraph with either \"User:\" or \"Examiner:\" to indicate the speaker.",
+              "4) Retain both speakers' contributions in the transcript.",
+              "5) Do NOT add any explanations or commentary—only the labeled dialogue text."
+            ].join("\n")
           }]
         }]
       });
@@ -184,22 +211,47 @@ export const geminiService = {
     }
   },
 
-  async connectLive(callbacks: any, task: TEFTask, part: 'A' | 'B', ocrFacts?: string[]) {
+  async connectLive(
+    callbacks: any, 
+    task: TEFTask, 
+    part: 'A' | 'B', 
+    ocrFacts?: string[],
+    options?: {
+      responseTimeout?: number; // Timeout for waiting for AI response (ms)
+      turnDetectionTimeout?: number; // Timeout for detecting user turn end (ms)
+    }
+  ) {
     // Use the new prompt system
     const systemInstruction = makeExamInstructions(task, part, ocrFacts);
+
+    const config: any = {
+      responseModalities: [Modality.AUDIO],
+      speechConfig: {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
+      },
+      systemInstruction,
+      outputAudioTranscription: {}, // Model's speech transcription
+      inputAudioTranscription: {}, // User's speech transcription
+    };
+
+    // Add timeout configs if provided (if the SDK supports them)
+    // Note: These may not be directly supported by the SDK, but we can handle them client-side
+    // Use default from LIVE_API_CONFIG if not provided
+    const turnDetectionTimeout = options?.turnDetectionTimeout ?? LIVE_API_CONFIG.turnDetectionTimeout;
+    const responseTimeout = options?.responseTimeout ?? LIVE_API_CONFIG.responseWaitTime;
+    
+    if (responseTimeout) {
+      // Store in config for potential SDK support or client-side handling
+      config.responseTimeout = responseTimeout;
+    }
+    if (turnDetectionTimeout) {
+      config.turnDetectionTimeout = turnDetectionTimeout;
+    }
 
     return ai.live.connect({
       model: 'gemini-2.5-flash-native-audio-preview-12-2025',
       callbacks,
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
-        },
-        systemInstruction,
-        outputAudioTranscription: {}, // Model's speech transcription
-        inputAudioTranscription: {}, // User's speech transcription
-      },
+      config,
     });
   },
 

@@ -22,7 +22,7 @@ router.post('/check', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(400).json({ error: 'Invalid exam type' });
   }
 
-  const result = await subscriptionService.canStartExam(userId, examType);
+  const result = await subscriptionService.checkCanStartExam(userId, examType);
   res.json(result);
 }));
 

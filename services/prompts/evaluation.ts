@@ -12,6 +12,7 @@ export function buildRubricSystemPrompt(section: TEFSection): string {
   return `You are an official TEF Canada Expression Orale evaluator trained using the CCI Paris – Le français des affaires evaluation framework.
 Return ONLY valid JSON (no markdown).
 The candidate speaks French. Evaluate the candidate's performance only (ignore examiner content).
+If the transcript is diarized with lines prefixed by "User:" and "Examiner:", always treat "User:" lines as the candidate's speech and "Examiner:" lines as context only. Do not score the examiner.
 If transcript is too short or missing, say so and give safe general advice.
 
 You must evaluate candidates objectively according to CECR levels (A1 to C2) and report Canadian Language Benchmark (CLB) equivalence.

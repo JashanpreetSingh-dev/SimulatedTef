@@ -47,8 +47,20 @@ export const UpgradeWarningModal: React.FC<UpgradeWarningModalProps> = ({
   const daysRemaining = getDaysRemaining();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={(e) => {
+        // Prevent closing on backdrop click
+        e.stopPropagation();
+      }}
+    >
+      <div 
+        className="bg-slate-900 border border-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl"
+        onClick={(e) => {
+          // Prevent closing when clicking inside the modal
+          e.stopPropagation();
+        }}
+      >
         <div className="text-center mb-6">
           <div className="w-16 h-16 bg-amber-500/20 rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
             ⚠️

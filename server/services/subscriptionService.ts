@@ -211,7 +211,100 @@ export const subscriptionService = {
   },
 
   /**
-   * Check if user can start an exam and create session if yes
+   * Check if user can start an exam WITHOUT counting usage (read-only check)
+   */
+  async checkCanStartExam(userId: string, examType: ExamType): Promise<CanStartExamResult> {
+    const db = await connectDB();
+    
+    // Validate subscription data first
+    await this.validateSubscriptionData(userId);
+    
+    const status = await this.getSubscriptionStatus(userId);
+    const today = getTodayUTC();
+    
+    // Validate subscription hasn't expired
+    if (status.subscriptionType === 'EXPIRED') {
+      return { canStart: false, reason: 'Subscription has expired' };
+    }
+    
+    // Check if pack has expired
+    if (status.packExpirationDate) {
+      const expirationDate = new Date(status.packExpirationDate);
+      const now = new Date();
+      if (now >= expirationDate) {
+        return { canStart: false, reason: 'Pack has expired' };
+      }
+    }
+    
+    // Get today's usage (don't create if it doesn't exist - just check)
+    const usage = await db.collection('usage').findOne({ userId, date: today }) as unknown as Usage | null;
+    
+    // Check subscription and limits based on exam type (read-only)
+    if (examType === 'full') {
+      // Check if user has daily limit available (TRIAL)
+      if (status.isActive && status.subscriptionType === 'TRIAL') {
+        const fullTestsUsed = usage?.fullTestsUsed || 0;
+        if (fullTestsUsed < status.limits.fullTests) {
+          return { canStart: true }; // Daily limit available
+        }
+      }
+      
+      // Check pack credits
+      if (status.packCredits && status.packCredits.fullTests.remaining > 0) {
+        return { canStart: true }; // Pack credits available
+      }
+      
+      // No daily limit and no pack credits available
+      if (status.isActive || status.packCredits) {
+        return { canStart: false, reason: 'Daily full test limit reached and no pack credits available' };
+      } else {
+        return { canStart: false, reason: 'No active subscription or pack' };
+      }
+    } else if (examType === 'partA') {
+      // Check if user has daily limit available (TRIAL)
+      if (status.isActive && status.subscriptionType === 'TRIAL') {
+        const sectionAUsed = usage?.sectionAUsed || 0;
+        if (sectionAUsed < status.limits.sectionA) {
+          return { canStart: true }; // Daily limit available
+        }
+      }
+      
+      // Check pack credits
+      if (status.packCredits && status.packCredits.sectionA.remaining > 0) {
+        return { canStart: true }; // Pack credits available
+      }
+      
+      if (status.isActive || status.packCredits) {
+        return { canStart: false, reason: 'Daily Section A limit reached and no pack credits available' };
+      } else {
+        return { canStart: false, reason: 'No active subscription or pack' };
+      }
+    } else if (examType === 'partB') {
+      // Check if user has daily limit available (TRIAL)
+      if (status.isActive && status.subscriptionType === 'TRIAL') {
+        const sectionBUsed = usage?.sectionBUsed || 0;
+        if (sectionBUsed < status.limits.sectionB) {
+          return { canStart: true }; // Daily limit available
+        }
+      }
+      
+      // Check pack credits
+      if (status.packCredits && status.packCredits.sectionB.remaining > 0) {
+        return { canStart: true }; // Pack credits available
+      }
+      
+      if (status.isActive || status.packCredits) {
+        return { canStart: false, reason: 'Daily Section B limit reached and no pack credits available' };
+      } else {
+        return { canStart: false, reason: 'No active subscription or pack' };
+      }
+    }
+    
+    return { canStart: false, reason: 'Invalid exam type' };
+  },
+
+  /**
+   * Check if user can start an exam and create session if yes (COUNTS USAGE)
    */
   async canStartExam(userId: string, examType: ExamType): Promise<CanStartExamResult> {
     const db = await connectDB();

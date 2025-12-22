@@ -38,9 +38,11 @@ interface Props {
     title: string;
   };
   onFinish: (result: SavedResult) => void;
+  onSessionStart?: (examType: 'full' | 'partA' | 'partB') => Promise<{ canStart: boolean; sessionId?: string; reason?: string }>;
+  mode: 'partA' | 'partB' | 'full';
 }
 
-export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
+export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSessionStart, mode }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
@@ -59,6 +61,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
   const outputAudioCtxRef = useRef<AudioContext | null>(null);
   const nextStartTimeRef = useRef(0);
+  const usageCountedRef = useRef(false);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const isLiveRef = useRef(false);
   const isMountedRef = useRef(true);
@@ -132,6 +135,25 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
     if (status === 'connecting' || status === 'active') return;
     if (!isMountedRef.current) return;
     
+    // Count usage when user clicks the mic button (before starting session)
+    if (onSessionStart && !usageCountedRef.current) {
+      usageCountedRef.current = true;
+      const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
+      const result = await onSessionStart(examType);
+      
+      if (!result.canStart) {
+        console.error('Failed to count usage:', result.reason);
+        // If usage counting fails, don't start the session
+        alert(result.reason || 'Impossible de démarrer l\'examen. Veuillez réessayer.');
+        return;
+      }
+      
+      // Store sessionId if provided
+      if (result.sessionId) {
+        sessionStorage.setItem(`exam_session_${mode}`, result.sessionId);
+      }
+    }
+    
     isLiveRef.current = true;
     if (isMountedRef.current) {
       setStatus('connecting');
@@ -185,7 +207,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
             stream.getTracks().forEach(t => t.stop());
           }
         }
-      }, 10000); // 10 second timeout
+      }, 10000); // 10 second timeout - can be adjusted via LIVE_API_CONFIG.connectionTimeout
       
       const sessionPromise = geminiService.connectLive({
         onopen: () => {
@@ -196,6 +218,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           }
           
           setStatus('active');
+          
+          // Usage will be counted when user clicks the mic button (in startSession)
           
           if (!stream || !inputAudioCtxRef.current || !outputAudioCtxRef.current) {
             console.error("Missing stream or audio context in onopen");
@@ -284,17 +308,45 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
               };
               
               recognition.onerror = (event: any) => {
-                console.warn('Speech recognition error:', event.error);
+                const errorType = event.error;
+                // Network errors are common and non-critical - Gemini Live API provides transcription
+                if (errorType === 'network') {
+                  console.debug('⚠️ Web Speech API network error (non-critical - Gemini provides transcription):', errorType);
+                  // Don't restart on network errors - they're usually persistent
+                  return;
+                }
+                
+                // Other errors might be recoverable
+                console.warn('Speech recognition error:', errorType);
+                
+                // For non-network errors, we can try to restart
+                if (errorType !== 'no-speech' && errorType !== 'aborted' && isLiveRef.current && isMountedRef.current) {
+                  // Wait a bit before retrying
+                  setTimeout(() => {
+                    if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
+                      try {
+                        recognitionRef.current.start();
+                      } catch (e) {
+                        console.debug('Failed to restart recognition after error:', e);
+                      }
+                    }
+                  }, 1000);
+                }
               };
               
               recognition.onend = () => {
-                // Restart recognition if session is still active
-                if (isLiveRef.current && isMountedRef.current) {
-                  try {
-                    recognition.start();
-                  } catch (e) {
-                    console.debug('Recognition already started or error:', e);
-                  }
+                // Only restart recognition if session is still active and it wasn't stopped due to an error
+                if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
+                  // Small delay before restarting to avoid rapid restarts
+                  setTimeout(() => {
+                    if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
+                      try {
+                        recognitionRef.current.start();
+                      } catch (e) {
+                        console.debug('Recognition already started or error:', e);
+                      }
+                    }
+                  }, 500);
                 }
               };
               
@@ -523,7 +575,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
             setStatus('idle');
           }
         },
-      }, currentTask, currentPart);
+      }, currentTask, currentPart, undefined, {
+        // Optional: Configure response timeouts
+        // responseTimeout: 30000, // 30 seconds - uncomment to customize
+        // turnDetectionTimeout: 800, // 800ms - uncomment to customize (default from LIVE_API_CONFIG)
+      });
 
       clearTimeout(connectionTimeout);
       sessionRef.current = await sessionPromise;
@@ -599,7 +655,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         
         // Stop MediaRecorder and process the real-time recording
         let recordingId: string | undefined;
-        let transcript: string = '';
+        let audioTranscript: string | null = null; // Transcript from saved audio (examiner + candidate)
         let wavBlob: Blob | null = null;
         
         // Stop the MediaRecorder if it's still recording
@@ -654,39 +710,55 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
             // Use the blob directly
             wavBlob = recordedBlob;
             
-            // Upload recording to GridFS
+            // Upload recording to GridFS (for playback/debug)
             recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', getToken) || undefined;
             console.log('📦 Audio recording uploaded:', recordingId || 'failed');
-            
-            // Transcribe the recording using Gemini Audio API
-            if (wavBlob) {
-              try {
-                console.log('🎤 Transcribing audio recording...');
-                transcript = await geminiService.transcribeAudio(wavBlob);
-                console.log('✅ Transcription completed:', transcript.substring(0, 100) + (transcript.length > 100 ? '...' : ''));
-              } catch (transcribeError) {
-                console.error('❌ Error transcribing audio:', transcribeError);
-                // Fallback to live transcript if transcription fails
-                transcript = `PARTIE A:\n${transcriptA.current.trim() || '(aucune transcription)'}\n\nPARTIE B:\n${transcriptB.current.trim() || '(aucune transcription)'}`;
-              }
+
+            // Transcribe the saved audio for grading (cleaner, less fragmented text)
+            try {
+              console.log('🎤 Transcribing saved audio for evaluation...');
+              audioTranscript = await geminiService.transcribeAudio(wavBlob);
+              console.log('✅ Audio transcription completed:', audioTranscript.substring(0, 120) + (audioTranscript.length > 120 ? '...' : ''));
+            } catch (transcribeError) {
+              console.error('❌ Error transcribing saved audio:', transcribeError);
+              audioTranscript = null; // Fallback to live transcripts below
             }
           } catch (error) {
             console.error('❌ Error processing audio recording:', error);
-            // Fallback to live transcript if processing fails
-            transcript = `PARTIE A:\n${transcriptA.current.trim() || '(aucune transcription)'}\n\nPARTIE B:\n${transcriptB.current.trim() || '(aucune transcription)'}`;
+            audioTranscript = null;
           }
         } else {
-          // No audio recorded, use live transcript as fallback
-          console.warn('⚠️ No audio chunks recorded, using live transcript fallback');
-          transcript = `PARTIE A:\n${transcriptA.current.trim() || '(aucune transcription)'}\n\nPARTIE B:\n${transcriptB.current.trim() || '(aucune transcription)'}`;
+          // No audio recorded, we'll rely entirely on live transcripts
+          console.warn('⚠️ No audio chunks recorded, using live transcripts only');
+          audioTranscript = null;
         }
         
-        // Use transcribed text for evaluation (instead of live transcript)
-        const fullUserTranscript = transcript || `PARTIE A:\n${transcriptA.current.trim() || '(aucune transcription)'}\n\nPARTIE B:\n${transcriptB.current.trim() || '(aucune transcription)'}`;
+        // Build the text we send for evaluation.
+        // Primary source: clean transcription from saved audio (examiner + candidate),
+        // Fallback: live candidate-only transcripts (per section).
+        let fullUserTranscript: string;
+        if (audioTranscript) {
+          // Primary path: use clean diarized candidate transcript from saved audio.
+          // The prompt for transcribeAudio already tells Gemini that Speaker 1 (first voice)
+          // is the candidate and should be the only one in the output.
+          fullUserTranscript = audioTranscript.trim();
+        } else {
+          // Fallback: only candidate live transcripts available
+          if (scenario.mode === 'partA') {
+            fullUserTranscript = transcriptA.current.trim() || '(aucune transcription)';
+          } else if (scenario.mode === 'partB') {
+            fullUserTranscript = transcriptB.current.trim() || '(aucune transcription)';
+          } else {
+            fullUserTranscript = [
+              transcriptA.current.trim(),
+              transcriptB.current.trim()
+            ].filter(Boolean).join('\n\n').trim() || '(aucune transcription)';
+          }
+        }
         
         // Log what we're sending for debugging
         console.log('📝 Using transcript for evaluation:', {
-          source: transcript ? 'WAV transcription' : 'live transcript (fallback)',
+          source: audioTranscript ? 'saved audio transcription + candidate-only transcript' : 'candidate-only live transcript',
           length: fullUserTranscript.length,
           preview: fullUserTranscript.substring(0, 200) + (fullUserTranscript.length > 200 ? '...' : '')
         });
@@ -938,7 +1010,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
         <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[560px] transition-colors">
           <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between border-b border-white/5">
             <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
-            <button onClick={() => setShowImageFull(true)} className="text-white hover:text-indigo-400 transition-colors text-xs font-bold flex items-center gap-1">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowImageFull(true);
+              }} 
+              className="text-white hover:text-indigo-400 transition-colors text-xs font-bold flex items-center gap-1 cursor-pointer"
+            >
               <span>🔍</span> <span className="hidden sm:inline">Agrandir</span>
             </button>
           </div>
@@ -989,13 +1068,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
           <div className="relative group flex-shrink-0">
             <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-500/40 scale-150' : (isUserSpeaking ? 'bg-emerald-500/40 scale-125' : 'bg-white/5 scale-100')}`} />
             <button
-              onClick={status === 'active' ? handleNextOrFinish : startSession}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (status === 'active') {
+                  handleNextOrFinish();
+                } else {
+                  startSession();
+                }
+              }}
               disabled={status === 'connecting' || status === 'evaluating'}
-              className={`w-28 h-28 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-[16px] relative z-10 ${
+              className={`w-28 h-28 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-[16px] relative z-10 cursor-pointer ${
                 status === 'active' 
                   ? 'bg-rose-500 hover:bg-rose-600 ring-rose-500/20 active:scale-90' 
                   : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 ring-white/10 text-slate-900 dark:text-white hover:scale-105 active:scale-95'
-              }`}
+              } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
               {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-10 md:h-10 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
                status === 'evaluating' ? <span className="text-xl md:text-3xl animate-bounce">⚖️</span> :
@@ -1026,7 +1113,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish }) => {
                 target.src = 'https://placehold.co/1200x1600/1e293b/ffffff?text=DOCUMENT+MANQUANT';
               }}
             />
-            <button onClick={() => setShowImageFull(false)} className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg">
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowImageFull(false);
+              }} 
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg cursor-pointer z-50"
+            >
               <span className="text-2xl">✕</span>
             </button>
           </div>
