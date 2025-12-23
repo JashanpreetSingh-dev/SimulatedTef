@@ -3,11 +3,38 @@ import { TEFSection } from '../../types';
 /**
  * Builds the evaluation system prompt with CCI Paris framework
  */
-export function buildRubricSystemPrompt(section: TEFSection): string {
+export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean = false): string {
   const sectionFocus = section === 'OralExpression' 
     ? `- EO1 focus: interactional competence, asking relevant questions, clarity, register, turn-taking, reactivity.
 - EO2 focus: persuasion, argument structure, handling counter-arguments, coherence, examples, nuance.`
     : `- Focus on written expression quality, structure, coherence, and language mastery.`;
+
+  const fullExamGuidance = isFullExam ? `
+
+IMPORTANT - FULL EXAM EVALUATION (EO1 + EO2):
+You are evaluating a COMPLETE exam that includes BOTH Section A (EO1) and Section B (EO2). The transcript contains both tasks.
+
+EVALUATION APPROACH FOR FULL EXAM:
+1. Analyze the candidate's performance SEPARATELY for EO1 and EO2 within the combined transcript.
+2. Identify which parts of the transcript correspond to EO1 (Section A) and which correspond to EO2 (Section B).
+3. Score each task individually, then synthesize an OVERALL score that reflects performance across BOTH tasks.
+
+SCORING GUIDELINES FOR FULL EXAM:
+- If performance is STRONGLY UNEVEN (e.g., strong EO2 but weak EO1 with only 2-3 questions), the overall CLB level should reflect this imbalance.
+  * Example: Strong EO2 (CLB 8) but weak EO1 (CLB 5-6 due to insufficient questions) should result in overall CLB 6-7, NOT CLB 8.
+- If both tasks are performed at similar levels, the overall score should align with that consistent level.
+- The overall CLB level should be a balanced assessment that accounts for weaknesses in EITHER task, as the exam requires competency in BOTH interactional communication (EO1) AND argumentation (EO2).
+- Task fulfillment scores should reflect performance on BOTH tasks, not just the stronger one.
+
+CRITERIA EVALUATION FOR FULL EXAM:
+- taskFulfillment: Evaluate fulfillment for BOTH EO1 (did they ask sufficient relevant questions?) AND EO2 (did they present a coherent argument and handle counter-arguments?).
+- coherence: Assess coherence across both tasks, but also note any differences between the two sections.
+- lexicalRange: Consider vocabulary used across both tasks.
+- grammarControl: Evaluate grammar consistently across both tasks.
+- fluency: Assess fluency across the entire performance.
+- interaction: Evaluate interaction quality in EO1 AND argumentative skills in EO2.
+
+In your overall_comment, specifically address performance on BOTH tasks (e.g., "In Section A (EO1), the candidate asked only 2 questions, which was insufficient. However, in Section B (EO2), they demonstrated strong argumentation skills...").` : '';
 
   return `You are an official TEF Canada Expression Orale evaluator trained using the CCI Paris – Le français des affaires evaluation framework.
 Return ONLY valid JSON (no markdown).
@@ -21,6 +48,7 @@ General guidance:
 - Minor grammatical errors are acceptable from B2 and above.
 - Do not penalize accent unless comprehension is affected.
 - Judge effectiveness and clarity, not perfection.
+${fullExamGuidance}
 
 SCORING SYSTEM:
 - Overall score (score field): Provide a TEF score from 0 to 699 (integer). This represents the candidate's overall performance on the TEF Canada scale.
@@ -99,7 +127,10 @@ export function buildEvaluationUserMessage(
   timeLimitSec: number,
   prompt: string,
   candidateText: string,
-  estimatedQuestionsCount?: number
+  estimatedQuestionsCount?: number,
+  isFullExam: boolean = false,
+  taskPartA?: any,
+  taskPartB?: any
 ): string {
   const eo1Metrics = section === 'OralExpression' && estimatedQuestionsCount !== undefined
     ? `\nEO1 metric — estimated questions asked: ${estimatedQuestionsCount} (target 9–10).
@@ -107,10 +138,21 @@ Metric method: heuristic.
 When scoring Task fulfillment / pertinence and Interaction, account for whether enough relevant questions were asked.`
     : '';
 
+  const fullExamContext = isFullExam && taskPartA && taskPartB
+    ? `\n\n=== FULL EXAM CONTEXT ===
+This is a COMPLETE exam evaluation (mode: full) that includes BOTH tasks:
+- Section A (EO1): Task ID ${taskPartA.id || 'N/A'} - ${taskPartA.prompt || 'See combined prompt above'}
+- Section B (EO2): Task ID ${taskPartB.id || 'N/A'} - ${taskPartB.prompt || 'See combined prompt above'}
+
+The candidate transcript contains BOTH Section A and Section B responses combined.
+Please analyze performance separately for each section, then provide an overall score that fairly reflects competency across BOTH tasks.
+Remember: Weak performance in EITHER task should lower the overall CLB level.`
+    : '';
+
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}
+Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}
 
 Candidate transcript (French):
 ${candidateText || "(empty)"}`;

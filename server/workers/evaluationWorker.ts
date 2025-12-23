@@ -40,7 +40,10 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           transcript,
           scenarioId,
           timeLimitSec,
-          questionCount
+          questionCount,
+          mode,
+          taskPartA,
+          taskPartB
         );
 
         await job.updateProgress(80); // 80% - Evaluation complete

@@ -290,16 +290,23 @@ export const geminiService = {
     userContent: string,
     scenarioId?: number,
     timeLimitSec?: number,
-    estimatedQuestionsCount?: number
+    estimatedQuestionsCount?: number,
+    mode?: string,
+    taskPartA?: any,
+    taskPartB?: any
   ): Promise<EvaluationResult> {
-    const systemPrompt = buildRubricSystemPrompt(section);
+    const isFullExam = mode === 'full' && taskPartA && taskPartB;
+    const systemPrompt = buildRubricSystemPrompt(section, isFullExam);
     const userMessage = buildEvaluationUserMessage(
       section,
       scenarioId || 0,
       timeLimitSec || 0,
       prompt,
       userContent,
-      estimatedQuestionsCount
+      estimatedQuestionsCount,
+      isFullExam,
+      taskPartA,
+      taskPartB
     );
 
     // Use gemini-2.5-flash for better quota availability (free tier friendly)

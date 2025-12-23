@@ -77,6 +77,40 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const recordingStreamRef = useRef<MediaStream | null>(null);
   const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+  const recordedChunksPartARef = useRef<Blob[]>([]); // Store Part A audio chunks separately for full exam mode
+
+  // Helper function to stop MediaRecorder and wait for final chunks
+  const stopMediaRecorderAndWait = async (): Promise<void> => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try {
+        const stopPromise = new Promise<void>((resolve) => {
+          if (mediaRecorderRef.current) {
+            const originalHandler = mediaRecorderRef.current.onstop;
+            mediaRecorderRef.current.onstop = () => {
+              if (originalHandler) {
+                originalHandler.call(mediaRecorderRef.current);
+              }
+              console.log('🛑 MediaRecorder stopped, chunks:', recordedChunksRef.current.length);
+              resolve();
+            };
+            mediaRecorderRef.current.stop();
+          } else {
+            resolve();
+          }
+        });
+        
+        await Promise.race([
+          stopPromise,
+          new Promise(resolve => setTimeout(resolve, 2000))
+        ]);
+        
+        // Additional wait to ensure all chunks are available
+        await new Promise(resolve => setTimeout(resolve, 300));
+      } catch (e) {
+        console.error('Error stopping MediaRecorder:', e);
+      }
+    }
+  };
 
   const stopSession = () => {
     isLiveRef.current = false;
@@ -105,6 +139,18 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       });
       streamRef.current = null;
     }
+    // Stop MediaRecorder if it's running (don't wait - just stop it)
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch (e) {
+        console.debug("MediaRecorder already stopped", e);
+      }
+    }
+    // Reset MediaRecorder and audio destination refs so a fresh one can be created
+    mediaRecorderRef.current = null;
+    audioDestinationRef.current = null;
+    recordingStreamRef.current = null;
     // Note: Don't clear audio chunks here - we need them for upload after evaluation
     // Check AudioContext state before closing
     if (inputAudioCtxRef.current && inputAudioCtxRef.current.state !== 'closed') {
@@ -123,6 +169,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     }
     sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
     sourcesRef.current.clear();
+    // Reset timing ref for audio scheduling
+    nextStartTimeRef.current = 0;
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
@@ -132,8 +180,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   };
 
   const startSession = async () => {
-    if (status === 'connecting' || status === 'active') return;
+    if (status === 'connecting' || status === 'active') {
+      console.log('⚠️ startSession called but session already active/connecting, returning');
+      return;
+    }
     if (!isMountedRef.current) return;
+    
+    console.log(`🎙️ Starting session for Part ${currentPart}, task: ${currentTask.id}`);
     
     // Count usage when user clicks the mic button (before starting session)
     if (onSessionStart && !usageCountedRef.current) {
@@ -160,7 +213,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Initialize timer with current task's time limit
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
-      // Clear recorded chunks when starting a new session (only if not continuing Part B in full mode)
+      // Clear recorded chunks when starting Part A or when not in full mode
+      // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
         recordedChunksRef.current = [];
       }
@@ -169,9 +223,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     let stream: MediaStream | null = null;
     
     try {
-      // Initialize audio contexts
+      // Initialize audio contexts (create fresh ones for new session)
       inputAudioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
       outputAudioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      // Reset timing for audio scheduling
+      nextStartTimeRef.current = 0;
       
       // Request microphone access
       try {
@@ -251,6 +307,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               mimeType: mimeType as any
             });
             
+            // Always clear chunks when starting a new recording session
+            // For Part B in full mode, Part A chunks are already saved to recordedChunksPartARef
             recordedChunksRef.current = [];
             
             mediaRecorderRef.current.ondataavailable = (event) => {
@@ -610,14 +668,29 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
 
   const handleNextOrFinish = async () => {
     if (scenario.mode === 'full' && currentPart === 'A') {
+      // Stop Part A's MediaRecorder and save its chunks before transitioning to Part B
+      console.log('🔄 Transitioning from Part A to Part B...');
+      await stopMediaRecorderAndWait();
+      
+      // Save Part A's chunks to recordedChunksPartARef
+      recordedChunksPartARef.current = [...recordedChunksRef.current];
+      console.log('💾 Part A audio chunks saved:', recordedChunksPartARef.current.length, 'chunks');
+      
+      // Now stop the session (this will close WebSocket, audio contexts, etc.)
       stopSession();
+      
+      // Small delay to ensure cleanup completes before starting Part B
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Set Part B as current (this updates currentTask which is used in startSession)
       setCurrentPart('B');
       setTranscription('');
       setStatus('idle');
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
-      // Keep audio chunks from Part A - we'll merge everything at the end
+      console.log('✅ Ready for Part B - user can click mic to start');
+      // Part A chunks are now saved in recordedChunksPartARef, Part B will start fresh
     } else {
       // Stop session immediately
       stopSession();
@@ -695,15 +768,23 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         // Additional wait to ensure all chunks are available
         await new Promise(resolve => setTimeout(resolve, 300));
         
-        if (recordedChunksRef.current.length > 0) {
+        // For full mode, combine Part A and Part B chunks; otherwise just use current chunks
+        const chunksToProcess = scenario.mode === 'full' 
+          ? [...recordedChunksPartARef.current, ...recordedChunksRef.current]
+          : recordedChunksRef.current;
+        
+        if (chunksToProcess.length > 0) {
           try {
             console.log('🎙️ Processing real-time audio recording...', {
-              chunks: recordedChunksRef.current.length,
-              totalSize: recordedChunksRef.current.reduce((sum, chunk) => sum + chunk.size, 0)
+              mode: scenario.mode,
+              partAChunks: scenario.mode === 'full' ? recordedChunksPartARef.current.length : 0,
+              partBChunks: recordedChunksRef.current.length,
+              totalChunks: chunksToProcess.length,
+              totalSize: chunksToProcess.reduce((sum, chunk) => sum + chunk.size, 0)
             });
             
             // Combine all recorded chunks into a single blob
-            const recordedBlob = new Blob(recordedChunksRef.current, { 
+            const recordedBlob = new Blob(chunksToProcess, { 
               type: mediaRecorderRef.current?.mimeType || 'audio/webm' 
             });
             
@@ -787,6 +868,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         
         // Clear recorded chunks after upload
         recordedChunksRef.current = [];
+        recordedChunksPartARef.current = [];
         
         // Create placeholder result with jobId for loading state
         const placeholderResult: SavedResult = {
