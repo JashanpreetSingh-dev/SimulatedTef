@@ -37,6 +37,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         taskPartA,
         taskPartB,
         eo2RemainingSeconds,
+        fluencyAnalysis,
       } = job.data;
 
       try {
@@ -58,7 +59,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           mode,
           taskPartA,
           taskPartB,
-          eo2RemainingSeconds
+          eo2RemainingSeconds,
+          fluencyAnalysis
         );
 
         await job.updateProgress(80); // 80% - Evaluation complete

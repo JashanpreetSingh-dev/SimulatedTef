@@ -785,6 +785,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         // Stop MediaRecorder and process the real-time recording
         let recordingId: string | undefined;
         let audioTranscript: string | null = null; // Transcript from saved audio (examiner + candidate)
+        let fluencyAnalysis: any | null = null; // Optional fluency metrics derived from audio
         let wavBlob: Blob | null = null;
         
         // Stop the MediaRecorder if it's still recording
@@ -854,11 +855,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             // Transcribe the saved audio for grading (cleaner, less fragmented text)
             try {
               console.log('🎤 Transcribing saved audio for evaluation...');
-              audioTranscript = await geminiService.transcribeAudio(wavBlob);
-              console.log('✅ Audio transcription completed:', audioTranscript.substring(0, 120) + (audioTranscript.length > 120 ? '...' : ''));
+              const { transcript, fluency_analysis } = await geminiService.transcribeAudio(wavBlob);
+              audioTranscript = transcript || null;
+              fluencyAnalysis = fluency_analysis || null;
+              if (audioTranscript) {
+                console.log(
+                  '✅ Audio transcription completed:',
+                  audioTranscript.substring(0, 120) + (audioTranscript.length > 120 ? '...' : '')
+                );
+              } else {
+                console.warn('⚠️ Transcription JSON returned empty transcript.');
+              }
             } catch (transcribeError) {
               console.error('❌ Error transcribing saved audio:', transcribeError);
               audioTranscript = null; // Fallback to live transcripts below
+              fluencyAnalysis = null;
             }
           } catch (error) {
             console.error('❌ Error processing audio recording:', error);
@@ -923,6 +934,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
+          fluencyAnalysis ?? undefined,
           getToken
         );
         

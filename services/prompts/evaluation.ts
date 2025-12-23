@@ -4,7 +4,7 @@ import { TEFSection } from '../../types';
  * Builds the evaluation system prompt with CCI Paris framework
  */
 export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean = false): string {
-  const sectionFocus = section === 'OralExpression' 
+  const sectionFocus = section === 'OralExpression'
     ? `- EO1 focus: interactional competence, asking relevant questions, clarity, register, turn-taking, reactivity.
 - EO2 focus: persuasion, argument structure, handling counter-arguments, coherence, examples, nuance.`
     : `- Focus on written expression quality, structure, coherence, and language mastery.`;
@@ -48,6 +48,11 @@ General guidance:
 - Minor grammatical errors are acceptable from B2 and above.
 - Do not penalize accent unless comprehension is affected.
 - Judge effectiveness and clarity, not perfection.
+
+OPTIONAL FLUENCY ANALYSIS (if provided):
+- You may receive an additional section labelled "FLUENCY ANALYSIS (from audio)" that contains objective metrics derived from the candidate's audio (hesitation_rate, filler_words_per_min, average_pause_seconds, self_corrections, fluency_comment).
+- Use these metrics ONLY to inform the \"fluency\" and \"interaction\" criteria (scores and comments). They should NOT directly change grammar or vocabulary scores.
+- If this section is missing, rely solely on the transcript to infer fluency.
 ${fullExamGuidance}
 
 SCORING SYSTEM:
@@ -131,7 +136,8 @@ export function buildEvaluationUserMessage(
   isFullExam: boolean = false,
   taskPartA?: any,
   taskPartB?: any,
-  eo2RemainingSeconds?: number
+  eo2RemainingSeconds?: number,
+  fluencyAnalysis?: any
 ): string {
   const eo1Metrics = section === 'OralExpression' && estimatedQuestionsCount !== undefined
     ? `\nEO1 metric — estimated questions asked: ${estimatedQuestionsCount} (target 9–10).
@@ -158,10 +164,20 @@ Remember: Weak performance in EITHER task should lower the overall CLB level.`
 - If this value is high (>= 60), the candidate likely stopped the task significantly before the end of the allotted time.`
       : '';
 
+  const fluencyContext =
+    fluencyAnalysis && section === 'OralExpression'
+      ? `\n\n=== FLUENCY ANALYSIS (from audio) ===
+hesitation_rate: ${fluencyAnalysis.hesitation_rate ?? 'unknown'}
+filler_words_per_min: ${typeof fluencyAnalysis.filler_words_per_min === 'number' ? fluencyAnalysis.filler_words_per_min : 'unknown'}
+average_pause_seconds: ${typeof fluencyAnalysis.average_pause_seconds === 'number' ? fluencyAnalysis.average_pause_seconds : 'unknown'}
+self_corrections: ${typeof fluencyAnalysis.self_corrections === 'number' ? fluencyAnalysis.self_corrections : 'unknown'}
+fluency_comment: ${fluencyAnalysis.fluency_comment ?? 'N/A'}`
+      : '';
+
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}${eo2TimeContext}
+Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}${eo2TimeContext}${fluencyContext}
 
 Candidate transcript (French):
 ${candidateText || "(empty)"}`;

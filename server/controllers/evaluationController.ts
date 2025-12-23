@@ -27,6 +27,7 @@ export const evaluationController = {
       taskPartA,
       taskPartB,
       eo2RemainingSeconds,
+      fluencyAnalysis,
     } = req.body;
 
     // Validate required fields
@@ -53,6 +54,7 @@ export const evaluationController = {
         taskPartA,
         taskPartB,
         eo2RemainingSeconds,
+        fluencyAnalysis,
       } as EvaluationJobData,
       {
         priority: 1, // Higher priority = processed first

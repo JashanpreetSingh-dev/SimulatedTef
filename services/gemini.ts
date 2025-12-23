@@ -160,7 +160,16 @@ function blobToBase64(blob: globalThis.Blob): Promise<string> {
 
 export const geminiService = {
 
-  async transcribeAudio(audioBlob: globalThis.Blob): Promise<string> {
+  async transcribeAudio(audioBlob: globalThis.Blob): Promise<{
+    transcript: string;
+    fluency_analysis?: {
+      hesitation_rate?: string;
+      filler_words_per_min?: number;
+      average_pause_seconds?: number;
+      self_corrections?: number;
+      fluency_comment?: string;
+    };
+  }> {
     try {
       // Convert blob to base64
       const base64 = await blobToBase64(audioBlob);
@@ -175,23 +184,77 @@ export const geminiService = {
             }
           }, {
             text: [
-              "You will receive an audio recording of a two-speaker conversation.",
-              "Use your built-in diarization to identify speakers.",
-              "Assume the FIRST voice that speaks is the HUMAN CANDIDATE (label: \"User:\").",
-              "Assume the SECOND voice is the AI EXAMINER (label: \"Examiner:\").",
+              "You will receive an audio recording of a two-speaker conversation for a TEF Canada oral exam simulation.",
               "",
-              "Your task:",
-              "1) Separate the speakers using diarization.",
-              "2) Produce a clean, continuous transcript in French, with natural spacing and punctuation.",
+              "Speaker assumptions:",
+              "- The FIRST voice that speaks is the HUMAN CANDIDATE (label: \"User:\").",
+              "- The SECOND voice is the AI EXAMINER (label: \"Examiner:\").",
+              "",
+              "Your tasks (ALL required):",
+              "1) Use your built-in diarization to separate speakers.",
+              "2) Produce a clean, continuous transcript in FRENCH, with natural spacing and punctuation.",
               "3) Prefix each utterance or paragraph with either \"User:\" or \"Examiner:\" to indicate the speaker.",
-              "4) Retain both speakers' contributions in the transcript.",
-              "5) Do NOT add any explanations or commentary—only the labeled dialogue text."
+              "4) Retain BOTH speakers' contributions in the transcript.",
+              "5) Do NOT add any explanations or commentary in the transcript—only the labeled dialogue text.",
+              "",
+              "6) Analyse ONLY the User's speech (the candidate) for fluency and disfluencies.",
+              "   Consider: hesitations (\"euh\", long pauses, restarts), filler words, average pause duration, and self-corrections.",
+              "",
+              "IMPORTANT OUTPUT FORMAT:",
+              "- You must return ONLY valid JSON matching this schema:",
+              "{",
+              "  \"transcript\": string,  // diarized dialogue in French, with lines like 'User: ...' and 'Examiner: ...', no extra comments",
+              "  \"fluency_analysis\": {",
+              "    \"hesitation_rate\": string,           // one of: \"low\", \"medium\", \"high\"",
+              "    \"filler_words_per_min\": number,     // approximate numeric count per minute, based on User's speech",
+              "    \"average_pause_seconds\": number,    // approximate average pause length in seconds between User phrases",
+              "    \"self_corrections\": number,         // approximate count of times the User restarts or clearly corrects themselves",
+              "    \"fluency_comment\": string           // short English summary of the User's fluency (hesitations, fillers, rhythm)",
+              "  }",
+              "}"
             ].join("\n")
           }]
-        }]
+        }],
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              transcript: { type: Type.STRING },
+              fluency_analysis: {
+                type: Type.OBJECT,
+                properties: {
+                  hesitation_rate: { type: Type.STRING },
+                  filler_words_per_min: { type: Type.NUMBER },
+                  average_pause_seconds: { type: Type.NUMBER },
+                  self_corrections: { type: Type.NUMBER },
+                  fluency_comment: { type: Type.STRING },
+                },
+              },
+            },
+          },
+        }
       });
-      
-      return response.text.trim();
+
+      let parsed: any;
+      try {
+        parsed = response.text ? JSON.parse(response.text) : {};
+      } catch (e) {
+        console.error('❌ Failed to parse transcription JSON, falling back to raw text:', e);
+        return {
+          transcript: (response.text || '').trim(),
+        };
+      }
+
+      const transcript = (parsed?.transcript ?? '').toString().trim();
+      const fluency_analysis = parsed?.fluency_analysis && typeof parsed.fluency_analysis === 'object'
+        ? parsed.fluency_analysis
+        : undefined;
+
+      return {
+        transcript,
+        fluency_analysis,
+      };
     } catch (error: any) {
       console.error('❌ Error transcribing audio:', error);
       throw error;
@@ -281,7 +344,8 @@ export const geminiService = {
     mode?: string,
     taskPartA?: any,
     taskPartB?: any,
-    eo2RemainingSeconds?: number
+    eo2RemainingSeconds?: number,
+    fluencyAnalysis?: any
   ): Promise<EvaluationResult> {
     const isFullExam = mode === 'full' && taskPartA && taskPartB;
     const systemPrompt = buildRubricSystemPrompt(section, isFullExam);
@@ -295,7 +359,8 @@ export const geminiService = {
       isFullExam,
       taskPartA,
       taskPartB,
-      eo2RemainingSeconds
+      eo2RemainingSeconds,
+      fluencyAnalysis
     );
 
     // Use gemini-2.5-flash for better quota availability (free tier friendly)

@@ -20,6 +20,11 @@ export interface EvaluationJobData {
    * Undefined for non-EO2 runs or when not provided.
    */
   eo2RemainingSeconds?: number;
+  /**
+   * Optional fluency metrics derived from the saved audio (hesitations, fillers, pauses, etc.).
+   * Passed through to the evaluation model as extra context for fluency/interaction scoring.
+   */
+  fluencyAnalysis?: any;
 }
 
 export interface EvaluationJobResult {
