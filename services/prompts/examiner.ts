@@ -152,6 +152,9 @@ export function getWarning10Prompt(): string {
  * Timeout prompt
  */
 export function getTimeoutPrompt(): string {
-  return `Le temps est écoulé. Demande au candidat de conclure en 10–15 secondes. Ensuite, conclus toi-même en 1 phrase et annonce la fin de l'épreuve.`;
+  return `Le temps est écoulé.
+1) Demande au candidat de conclure très rapidement (10–15 secondes maximum).
+2) Ensuite, conclus toi-même en 1 phrase et annonce clairement la fin de l'épreuve.
+3) Pour EO2 (ami(e) sceptique): si les arguments du candidat t'ont vraiment convaincu(e), dis que tu es prêt(e) à accepter sa proposition; sinon, dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un des deux (pas les deux).`;
 }
 

@@ -23,7 +23,21 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
   worker = new Worker<EvaluationJobData, EvaluationJobResult>(
     'evaluation',
     async (job) => {
-      const { section, prompt, transcript, scenarioId, timeLimitSec, questionCount, userId, recordingId, mode, title, taskPartA, taskPartB } = job.data;
+      const {
+        section,
+        prompt,
+        transcript,
+        scenarioId,
+        timeLimitSec,
+        questionCount,
+        userId,
+        recordingId,
+        mode,
+        title,
+        taskPartA,
+        taskPartB,
+        eo2RemainingSeconds,
+      } = job.data;
 
       try {
         // Update job progress
@@ -43,7 +57,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           questionCount,
           mode,
           taskPartA,
-          taskPartB
+          taskPartB,
+          eo2RemainingSeconds
         );
 
         await job.updateProgress(80); // 80% - Evaluation complete

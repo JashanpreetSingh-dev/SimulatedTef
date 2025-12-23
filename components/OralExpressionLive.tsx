@@ -71,6 +71,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const transcriptB = useRef('');
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
+  const hasSent60ControlRef = useRef(false);
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -267,6 +268,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Initialize timer with current task's time limit
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
+      hasSent60ControlRef.current = false;
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -903,6 +905,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           (fullUserTranscript.match(/\b(combien|comment|où|quand|qui|quoi|pourquoi|quel|quelle|quels|quelles)\b/gi) || []).length;
         
         // Submit evaluation job to queue (non-blocking)
+        const eo2RemainingSeconds =
+          (scenario.mode === 'partB' || scenario.mode === 'full') && currentPart === 'B'
+            ? timeLeft
+            : undefined;
+
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
@@ -915,6 +922,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.title,
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
+          eo2RemainingSeconds,
           getToken
         );
         
@@ -1042,6 +1050,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       }, 100);
     }
   }, [status, timeLeft]);
+
+  // EO2 time awareness for examiner: single internal signal when about 60 seconds remain.
+  useEffect(() => {
+    if (status !== 'active' || currentPart !== 'B' || !sessionRef.current) return;
+    if (timeLeft <= 60 && timeLeft > 0 && !hasSent60ControlRef.current && !isUserSpeaking && !isModelSpeaking) {
+      hasSent60ControlRef.current = true;
+      try {
+        sessionRef.current.sendRealtimeInput({
+          text:
+            "NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): il reste environ une minute à l'épreuve EO2. " +
+            "Prépare une conclusion naturelle: soit tu te montres vraiment convaincu(e) par les arguments du candidat, " +
+            "soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix.",
+        });
+      } catch (e) {
+        console.debug('Failed to send 60s internal EO2 control message', e);
+      }
+    }
+  }, [status, currentPart, timeLeft, isUserSpeaking, isModelSpeaking]);
 
   useEffect(() => {
     isMountedRef.current = true;

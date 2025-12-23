@@ -130,7 +130,8 @@ export function buildEvaluationUserMessage(
   estimatedQuestionsCount?: number,
   isFullExam: boolean = false,
   taskPartA?: any,
-  taskPartB?: any
+  taskPartB?: any,
+  eo2RemainingSeconds?: number
 ): string {
   const eo1Metrics = section === 'OralExpression' && estimatedQuestionsCount !== undefined
     ? `\nEO1 metric — estimated questions asked: ${estimatedQuestionsCount} (target 9–10).
@@ -149,10 +150,18 @@ Please analyze performance separately for each section, then provide an overall 
 Remember: Weak performance in EITHER task should lower the overall CLB level.`
     : '';
 
+  const eo2TimeContext =
+    section === 'OralExpression' && typeof eo2RemainingSeconds === 'number'
+      ? `\n\nEO2 TIME CONTEXT:
+- Remaining seconds on the Section B (EO2) timer when the exam ended (from UI timer): ${eo2RemainingSeconds}.
+- If this value is very low (<= 20), assume the conversation ended naturally at the time limit.
+- If this value is high (>= 60), the candidate likely stopped the task significantly before the end of the allotted time.`
+      : '';
+
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}
+Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}${eo2TimeContext}
 
 Candidate transcript (French):
 ${candidateText || "(empty)"}`;
