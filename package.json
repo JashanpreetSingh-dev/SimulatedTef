@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "server": "tsx server/server.ts",
     "worker": "tsx server/workers/evaluationWorker.ts",
-    "start": "tsx server/server.ts"
+    "start": "tsx server/server.ts",
+    "generate-instructions": "tsx scripts/generate-instructions-audio.ts"
   },
   "dependencies": {
     "@clerk/backend": "^2.29.0",

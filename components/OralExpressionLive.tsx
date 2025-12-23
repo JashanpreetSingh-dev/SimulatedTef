@@ -179,9 +179,59 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     }
   };
 
-  const startSession = async () => {
+  // Play voice instructions before starting the session
+  const playInstructionsAndStartSession = async () => {
     if (status === 'connecting' || status === 'active') {
-      console.log('⚠️ startSession called but session already active/connecting, returning');
+      console.log('⚠️ playInstructionsAndStartSession called but session already active/connecting, returning');
+      return;
+    }
+    if (!isMountedRef.current) return;
+
+    // Set status to connecting while we play instructions
+    setStatus('connecting');
+
+    try {
+      // Load pre-recorded instructions audio from public directory
+      const audioPath = currentPart === 'A' 
+        ? '/instructions_part_a.wav'
+        : '/instructions_part_b.wav';
+
+      console.log(`🎤 Playing instructions for Part ${currentPart} from ${audioPath}...`);
+      
+      // Use HTML5 Audio API for simpler playback of static files
+      const audio = new Audio(audioPath);
+      
+      // Wait for audio to finish playing
+      await new Promise<void>((resolve, reject) => {
+        audio.onended = () => {
+          console.log('✅ Instructions audio finished');
+          resolve();
+        };
+        audio.onerror = (error) => {
+          console.warn('⚠️ Failed to play instructions audio, proceeding without instructions:', error);
+          resolve(); // Still proceed even if audio fails
+        };
+        audio.play().catch((error) => {
+          console.warn('⚠️ Failed to play instructions audio, proceeding without instructions:', error);
+          resolve(); // Still proceed even if audio fails
+        });
+      });
+
+      // Small delay after instructions finish
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Now start the actual session (status is already 'connecting')
+      await startSession();
+    } catch (error) {
+      console.error('❌ Error playing instructions:', error);
+      // If instructions fail, proceed with starting the session anyway
+      await startSession();
+    }
+  };
+
+  const startSession = async () => {
+    if (status === 'active') {
+      console.log('⚠️ startSession called but session already active, returning');
       return;
     }
     if (!isMountedRef.current) return;
@@ -197,6 +247,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       if (!result.canStart) {
         console.error('Failed to count usage:', result.reason);
         // If usage counting fails, don't start the session
+        setStatus('idle'); // Reset status if we can't start
         alert(result.reason || 'Impossible de démarrer l\'examen. Veuillez réessayer.');
         return;
       }
@@ -209,7 +260,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     
     isLiveRef.current = true;
     if (isMountedRef.current) {
-      setStatus('connecting');
+      // Only set status if not already connecting (from instructions)
+      if (status !== 'connecting') {
+        setStatus('connecting');
+      }
       // Initialize timer with current task's time limit
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
@@ -1156,7 +1210,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 if (status === 'active') {
                   handleNextOrFinish();
                 } else {
-                  startSession();
+                  playInstructionsAndStartSession();
                 }
               }}
               disabled={status === 'connecting' || status === 'evaluating'}

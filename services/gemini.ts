@@ -159,19 +159,6 @@ function blobToBase64(blob: globalThis.Blob): Promise<string> {
 }
 
 export const geminiService = {
-  async generateAudio(text: string): Promise<string> {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
-      contents: [{ parts: [{ text: `Veuillez lire ce texte : ${text}` }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } },
-        },
-      },
-    });
-    return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || '';
-  },
 
   async transcribeAudio(audioBlob: globalThis.Blob): Promise<string> {
     try {
