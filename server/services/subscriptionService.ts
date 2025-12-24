@@ -742,13 +742,13 @@ export const subscriptionService = {
     const packCredits = {
       STARTER_PACK: {
         fullTests: 5,
-        sectionA: 3,
-        sectionB: 3,
-      },
-      EXAM_READY_PACK: {
-        fullTests: 15,
         sectionA: 10,
         sectionB: 10,
+      },
+      EXAM_READY_PACK: {
+        fullTests: 20,
+        sectionA: 20,
+        sectionB: 20,
       },
     };
     

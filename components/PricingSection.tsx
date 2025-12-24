@@ -62,14 +62,14 @@ export const PricingSection: React.FC = () => {
       period: ' one-time',
       features: [
         '5 Full Tests',
-        '3 Section A',
-        '3 Section B',
+        '10 Section A',
+        '10 Section B',
         'Valid 30 days',
       ],
       limits: {
         fullTests: '5 total',
-        sectionA: '3 total',
-        sectionB: '3 total',
+        sectionA: '10 total',
+        sectionB: '10 total',
       },
       ctaText: 'Buy Starter Pack',
       onCtaClick: () => handleCheckout('starter'),
@@ -81,15 +81,15 @@ export const PricingSection: React.FC = () => {
       price: '$35',
       period: ' one-time',
       features: [
-        '15 Full Tests',
-        '10 Section A',
-        '10 Section B',
+        '20 Full Tests',
+        '20 Section A',
+        '20 Section B',
         'Valid 30 days',
       ],
       limits: {
-        fullTests: '15 total',
-        sectionA: '10 total',
-        sectionB: '10 total',
+        fullTests: '20 total',
+        sectionA: '20 total',
+        sectionB: '20 total',
       },
       ctaText: 'Buy Exam Ready Pack',
       onCtaClick: () => handleCheckout('examReady'),
@@ -159,9 +159,9 @@ export const PricingSection: React.FC = () => {
             type: pendingPackType === 'starter' ? 'STARTER_PACK' : 'EXAM_READY_PACK',
             name: pendingPackType === 'starter' ? 'Starter Pack' : 'Exam Ready Pack',
             credits: {
-              fullTests: pendingPackType === 'starter' ? 5 : 15,
-              sectionA: pendingPackType === 'starter' ? 3 : 10,
-              sectionB: pendingPackType === 'starter' ? 3 : 10,
+              fullTests: pendingPackType === 'starter' ? 5 : 20,
+              sectionA: pendingPackType === 'starter' ? 10 : 20,
+              sectionB: pendingPackType === 'starter' ? 10 : 20,
             },
           }}
         />
