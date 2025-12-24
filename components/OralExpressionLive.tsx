@@ -1154,19 +1154,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   }
 
   return (
-    <div className="space-y-3 md:space-y-6">
+    <div className="space-y-3 md:space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-2">
           {scenario.mode !== 'partB' && (
-            <div className={`px-3 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
           )}
           {scenario.mode !== 'partA' && (
-            <div className={`px-3 md:px-5 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
           )}
         </div>
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-3">
           {status === 'active' && timeLeft > 0 && (
-            <div className={`px-4 md:px-6 py-1.5 md:py-2.5 rounded-xl md:rounded-[1.25rem] text-base md:text-lg font-black tabular-nums transition-all ${
+            <div className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl md:rounded-xl text-base md:text-base font-black tabular-nums transition-all ${
               timeLeft <= 60 
                 ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse' 
                 : timeLeft <= 120
@@ -1180,9 +1180,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 md:gap-8">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[560px] transition-colors">
-          <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between border-b border-white/5">
+      <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
+          <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-white/5">
             <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
             <button 
               onClick={(e) => {
@@ -1195,11 +1195,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               <span>🔍</span> <span className="hidden sm:inline">Agrandir</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 md:p-5 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
             <img 
               src={getImagePath(currentTask.image)} 
               alt="Task Document" 
-              className="w-full h-auto rounded-xl md:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
+              className="w-full h-auto rounded-xl md:rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.warn(`Initial path failed: ${target.src}. Trying fallback...`);
@@ -1227,7 +1227,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 target.src = 'https://placehold.co/600x800/1e293b/ffffff?text=DOCUMENT+OFFICIEL\nMANQUANT';
               }}
             />
-            <div className="mt-4 md:mt-8 p-4 md:p-6 bg-white dark:bg-slate-800/80 backdrop-blur rounded-xl md:rounded-[2rem] border border-slate-100 dark:border-slate-700 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
+            <div className="mt-4 md:mt-5 p-4 md:p-4 bg-white dark:bg-slate-800/80 backdrop-blur rounded-xl md:rounded-xl border border-slate-100 dark:border-slate-700 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
                <strong className="text-slate-900 dark:text-white not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
             </div>
           </div>
@@ -1235,7 +1235,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
 
         <div 
           ref={micSectionRef}
-          className="bg-slate-900 dark:bg-slate-900 rounded-2xl md:rounded-[2.5rem] p-4 md:p-12 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-12 relative overflow-hidden shadow-2xl transition-colors"
+          className="bg-slate-900 dark:bg-slate-900 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
         >
           <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-500' : (isUserSpeaking ? 'bg-emerald-500' : 'bg-transparent')}`} />
           
@@ -1252,23 +1252,23 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 }
               }}
               disabled={status === 'connecting' || status === 'evaluating'}
-              className={`w-28 h-28 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-[16px] relative z-10 cursor-pointer ${
+              className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-12 relative z-10 cursor-pointer ${
                 status === 'active' 
                   ? 'bg-rose-500 hover:bg-rose-600 ring-rose-500/20 active:scale-90' 
                   : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 ring-white/10 text-slate-900 dark:text-white hover:scale-105 active:scale-95'
               } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-10 md:h-10 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
-               status === 'evaluating' ? <span className="text-xl md:text-3xl animate-bounce">⚖️</span> :
+              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
+               status === 'evaluating' ? <span className="text-xl md:text-2xl animate-bounce">⚖️</span> :
                <>
-                <span className="text-3xl md:text-5xl mb-0.5 md:mb-2">{status === 'active' ? '⏹' : '🎙'}</span>
+                <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
                 <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
                </>}
             </button>
           </div>
 
-          <div className="text-left md:text-center space-y-1.5 md:space-y-3 z-10 flex-1 md:flex-none">
-            <h4 className="text-white font-black text-base md:text-2xl tracking-tight">
+          <div className="text-left md:text-center space-y-1.5 md:space-y-2 z-10 flex-1 md:flex-none">
+            <h4 className="text-white font-black text-base md:text-xl tracking-tight">
               {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
             <p className="text-slate-400 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>

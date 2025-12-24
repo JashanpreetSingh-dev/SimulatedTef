@@ -40,59 +40,82 @@ export const SubscriptionStatus: React.FC = () => {
   const hasPack = status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date();
   const packDaysRemaining = getPackDaysRemaining();
 
+  // Combined card when both trial and pack are active
+  if (hasTrial && hasPack) {
+    return (
+      <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex-1 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            {/* Trial Section */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-sm font-bold text-white">Free Trial</h3>
+                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Active</span>
+              </div>
+              <p className="text-xs text-slate-400">
+                {status.trialDaysRemaining !== undefined ? `${status.trialDaysRemaining}d left` : ''} • Daily: {status.limits.fullTests} Full, {status.limits.sectionA} A, {status.limits.sectionB} B
+              </p>
+            </div>
+
+            {/* Pack Section */}
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-sm font-bold text-white">{getPackName()}</h3>
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Active</span>
+              </div>
+              <p className="text-xs text-slate-400">
+                {packDaysRemaining !== null && packDaysRemaining > 0 ? `${packDaysRemaining}d left` : ''}
+                {status.packCredits && ` • Full: ${status.packCredits.fullTests.remaining}/${status.packCredits.fullTests.total}, A: ${status.packCredits.sectionA.remaining}/${status.packCredits.sectionA.total}, B: ${status.packCredits.sectionB.remaining}/${status.packCredits.sectionB.total}`}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleUpgrade}
+            className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
+          >
+            Upgrade
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {/* TRIAL Status */}
-      {hasTrial && (
-        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 md:p-6">
+      {/* TRIAL Status Only */}
+      {hasTrial && !hasPack && (
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-base md:text-lg font-black text-white">Free Trial</h3>
-                <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Active</span>
+                <h3 className="text-sm font-bold text-white">Free Trial</h3>
+                <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Active</span>
               </div>
-              {status.trialDaysRemaining !== undefined && (
-                <p className="text-xs md:text-sm text-slate-400">
-                  {status.trialDaysRemaining} days remaining
-                </p>
-              )}
-              <div className="mt-2 space-y-1">
-                <p className="text-xs text-slate-400">
-                  Daily: {status.limits.fullTests} Full, {status.limits.sectionA} Section A, {status.limits.sectionB} Section B
-                </p>
-              </div>
+              <p className="text-xs text-slate-400">
+                {status.trialDaysRemaining !== undefined ? `${status.trialDaysRemaining}d left` : ''} • Daily: {status.limits.fullTests} Full, {status.limits.sectionA} A, {status.limits.sectionB} B
+              </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Pack Status */}
-      {hasPack && (
-        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 md:p-6">
+      {/* Pack Status Only */}
+      {!hasTrial && hasPack && (
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-base md:text-lg font-black text-white">{getPackName()}</h3>
-                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Active</span>
+                <h3 className="text-sm font-bold text-white">{getPackName()}</h3>
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Active</span>
               </div>
-              {packDaysRemaining !== null && packDaysRemaining > 0 && (
-                <p className="text-xs md:text-sm text-slate-400">
-                  {packDaysRemaining} days remaining
-                </p>
-              )}
-              {status.packCredits && (
-                <div className="mt-2 space-y-1">
-                  <p className="text-xs text-slate-400">
-                    Full: {status.packCredits.fullTests.remaining}/{status.packCredits.fullTests.total} • 
-                    Section A: {status.packCredits.sectionA.remaining}/{status.packCredits.sectionA.total} • 
-                    Section B: {status.packCredits.sectionB.remaining}/{status.packCredits.sectionB.total}
-                  </p>
-                </div>
-              )}
+              <p className="text-xs text-slate-400">
+                {packDaysRemaining !== null && packDaysRemaining > 0 ? `${packDaysRemaining}d left` : ''}
+                {status.packCredits && ` • Full: ${status.packCredits.fullTests.remaining}/${status.packCredits.fullTests.total}, A: ${status.packCredits.sectionA.remaining}/${status.packCredits.sectionA.total}, B: ${status.packCredits.sectionB.remaining}/${status.packCredits.sectionB.total}`}
+              </p>
             </div>
             <button
               onClick={handleUpgrade}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
+              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
             >
               Upgrade
             </button>
@@ -102,17 +125,17 @@ export const SubscriptionStatus: React.FC = () => {
 
       {/* No active subscription or pack */}
       {!hasTrial && !hasPack && (
-        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4 md:p-6">
+        <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className="text-base md:text-lg font-black text-white">No Active Plan</h3>
-                <span className="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-bold">Expired</span>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">No Active Plan</h3>
+                <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded-full text-xs font-bold">Expired</span>
               </div>
             </div>
             <button
               onClick={handleUpgrade}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
+              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
             >
               View Plans
             </button>

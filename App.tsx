@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser, useClerk, useAuth } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
 import { OralExpressionLive } from './components/OralExpressionLive';
@@ -24,6 +24,9 @@ import { SubscriptionStatus } from './components/SubscriptionStatus';
 import { useSubscription } from './hooks/useSubscription';
 import { SubscriptionManagement } from './components/SubscriptionManagement';
 import { PricingPage } from './components/PricingPage';
+import { TermsOfService } from './components/TermsOfService';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
+import { Footer } from './components/Footer';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -38,7 +41,7 @@ function LandingPage() {
   const [ctaRef, ctaVisible] = useScrollAnimation();
   
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-950 flex flex-col">
       {/* Hero Section */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/20 via-slate-950 to-slate-950" />
@@ -308,11 +311,13 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      <Footer variant="dark" />
     </div>
   );
 }
 
-function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
   const { signOut } = useClerk();
   const navigate = useNavigate();
@@ -357,8 +362,8 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col">
+      <nav className="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 md:px-6 py-3 md:py-4 flex justify-between items-center min-h-[57px]">
         <div className="flex items-center gap-4 md:gap-8">
           <div 
             className="flex items-center gap-2 cursor-pointer" 
@@ -373,7 +378,9 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
               Akseli
             </span>
           </div>
-          {getSubscriptionBadge()}
+          <div className="h-6 flex items-center">
+            {getSubscriptionBadge()}
+          </div>
           <div className="hidden md:flex gap-4 text-sm font-bold">
             <button 
               onClick={() => navigate('/dashboard')}
@@ -500,7 +507,11 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
         </>
       )}
 
-      {children}
+      <div className="flex-1">
+        {children}
+      </div>
+
+      <Footer variant="light" />
     </div>
   );
 }
@@ -670,7 +681,9 @@ function Dashboard() {
         })()}
 
         {/* Subscription Status */}
-        <SubscriptionStatus />
+        <div className="hidden md:block">
+          <SubscriptionStatus />
+        </div>
 
         <PaywallModal
           isOpen={showPaywall}
@@ -1321,8 +1334,8 @@ function ExamView() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-3 md:p-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-3 md:p-6">
+        <div className="max-w-6xl mx-auto">
           <button 
             onClick={() => navigate('/dashboard')}
             className="mb-3 md:mb-6 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
@@ -1345,7 +1358,9 @@ function ExamView() {
 function SubscriptionManagementView() {
   return (
     <DashboardLayout>
-      <SubscriptionManagement />
+      <div className="h-full flex flex-col overflow-hidden">
+        <SubscriptionManagement />
+      </div>
     </DashboardLayout>
   );
 }
@@ -1359,16 +1374,20 @@ function ProtectedRoutes() {
   // This happens automatically in useSubscription hook when user loads dashboard
 
   return (
-    <Routes>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/history" element={<HistoryView />} />
-      <Route path="/results/:id" element={<ResultView />} />
-      <Route path="/exam/:mode" element={<ExamView />} />
-      <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
-      <Route path="/pricing" element={<PricingView />} />
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/history" element={<HistoryView />} />
+        <Route path="/results/:id" element={<ResultView />} />
+        <Route path="/exam/:mode" element={<ExamView />} />
+        <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
+        <Route path="/pricing" element={<PricingView />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </>
   );
 }
 
@@ -1482,6 +1501,8 @@ function App() {
         <SignedOut>
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </SignedOut>
