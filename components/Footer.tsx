@@ -15,7 +15,17 @@ export const Footer: React.FC<FooterProps> = ({ variant = 'dark' }) => {
           <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-500 dark:text-slate-400'}`}>
             © {new Date().getFullYear()} Akseli. All rights reserved.
           </p>
-          <div className="flex gap-4 sm:gap-6">
+          <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-end">
+            <a
+              href="mailto:support@akseli.ca"
+              className={`text-sm transition-colors ${
+                isDark 
+                  ? 'text-slate-400 hover:text-white' 
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+              }`}
+            >
+              support@akseli.ca
+            </a>
             <Link
               to="/terms"
               className={`text-sm transition-colors ${

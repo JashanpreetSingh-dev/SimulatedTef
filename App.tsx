@@ -73,6 +73,20 @@ function LandingPage() {
                 Sign in
               </button>
             </SignInButton>
+            <a 
+              href="https://www.producthunt.com/products/akseli?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-akseli" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-block hover:opacity-80 transition-opacity duration-300"
+            >
+              <img 
+                alt="Akseli - An AI-enabled TEF Canada Speaking Test Simulator | Product Hunt" 
+                width="200" 
+                height="43" 
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1054152&theme=dark&t=1766600261177"
+                className="h-9 sm:h-10"
+              />
+            </a>
           </div>
         </div>
       </section>
