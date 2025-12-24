@@ -2,38 +2,19 @@ import React, { useState } from 'react';
 import { useSubscription } from '../hooks/useSubscription';
 import { useAuth } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
+import { useCheckout } from '../hooks/useCheckout';
+import { UpgradeWarningModal } from './UpgradeWarningModal';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export const SubscriptionManagement: React.FC = () => {
-  const { status, loading, refreshStatus } = useSubscription();
+  const { status, loading } = useSubscription();
   const { getToken } = useAuth();
   const navigate = useNavigate();
+  const { initiateCheckout } = useCheckout();
   const [loadingPortal, setLoadingPortal] = useState(false);
+  const [showUpgradeWarning, setShowUpgradeWarning] = useState(false);
+  const [pendingPackType, setPendingPackType] = useState<'starter' | 'examReady' | null>(null);
 
-  const handleManageSubscription = async () => {
-    setLoadingPortal(true);
-    try {
-      const token = await getToken();
-      const response = await fetch(`${BACKEND_URL}/api/subscription/manage`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to get management URL');
-      }
-
-      const data = await response.json();
-      window.location.href = data.url;
-    } catch (err: any) {
-      console.error('Error opening portal:', err);
-      alert('Failed to open subscription management. Please try again.');
-    } finally {
-      setLoadingPortal(false);
-    }
-  };
 
   if (loading || !status) {
     return (
@@ -61,9 +42,33 @@ export const SubscriptionManagement: React.FC = () => {
     return diffDays > 0 ? diffDays : 0;
   };
 
+  const handleCheckout = async (planType: 'starter' | 'examReady') => {
+    // Check if user has active pack
+    if (status?.packType && status?.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
+      // Show upgrade warning
+      setPendingPackType(planType);
+      setShowUpgradeWarning(true);
+      return;
+    }
+
+    // No active pack, proceed with checkout
+    await initiateCheckout(planType);
+  };
+
+  const handleConfirmUpgrade = async () => {
+    if (pendingPackType) {
+      setShowUpgradeWarning(false);
+      await initiateCheckout(pendingPackType);
+      setPendingPackType(null);
+    }
+  };
+
   const hasTrial = status.isActive && status.subscriptionType === 'TRIAL';
   const hasPack = status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date();
   const packDaysRemaining = getPackDaysRemaining();
+  
+  const isStarterPackActive = status.packType === 'STARTER_PACK' && hasPack;
+  const isExamReadyPackActive = status.packType === 'EXAM_READY_PACK' && hasPack;
 
   return (
     <div className="max-w-6xl mx-auto p-4 flex flex-col h-full min-h-0">
@@ -79,134 +84,259 @@ export const SubscriptionManagement: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-4">
-          {/* TRIAL Status */}
-          {hasTrial && (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="text-base md:text-lg font-bold text-white mb-1">Free Trial</h2>
-                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Active</span>
-                </div>
-              </div>
+        <div className="space-y-6 pb-4">
+          {/* Current Status Section */}
+          <div>
+            <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Current Status</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* TRIAL Status */}
+              {hasTrial && (
+                <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-base md:text-lg font-bold text-white mb-1">Free Trial</h3>
+                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-full text-xs font-bold">Active</span>
+                    </div>
+                  </div>
 
-              {status.trialDaysRemaining !== undefined && (
-                <div className="mb-3 pb-3 border-b border-slate-700">
-                  <p className="text-xs text-slate-400 mb-0.5">Trial Days Remaining</p>
-                  <p className="text-xl md:text-2xl font-black text-white">{status.trialDaysRemaining}</p>
+                  {status.trialDaysRemaining !== undefined && (
+                    <div className="mb-3 pb-3 border-b border-slate-700">
+                      <p className="text-xs text-slate-400 mb-0.5">Trial Days Remaining</p>
+                      <p className="text-xl md:text-2xl font-black text-white">{status.trialDaysRemaining}</p>
+                    </div>
+                  )}
+
+                  <div className="mt-3">
+                    <h4 className="text-xs md:text-sm font-semibold text-white mb-2">Daily Usage</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-400">Full Tests</span>
+                        <span className="text-white font-semibold">
+                          {status.usage.fullTestsUsed} / {status.limits.fullTests}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-400">Section A</span>
+                        <span className="text-white font-semibold">
+                          {status.usage.sectionAUsed} / {status.limits.sectionA}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs md:text-sm">
+                        <span className="text-slate-400">Section B</span>
+                        <span className="text-white font-semibold">
+                          {status.usage.sectionBUsed} / {status.limits.sectionB}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-2">Resets at midnight UTC</p>
+                  </div>
                 </div>
               )}
 
-              <div className="mt-3">
-                <h3 className="text-xs md:text-sm font-semibold text-white mb-2">Daily Usage</h3>
-                <div className="space-y-2">
+              {/* Pack Status */}
+              {hasPack && (
+                <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <h3 className="text-base md:text-lg font-bold text-white mb-1">{getPackName()}</h3>
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Active</span>
+                    </div>
+                  </div>
+
+                  {packDaysRemaining !== null && packDaysRemaining > 0 && (
+                    <div className="mb-3 pb-3 border-b border-slate-700">
+                      <p className="text-xs text-slate-400 mb-0.5">Days Remaining</p>
+                      <p className="text-xl md:text-2xl font-black text-white">{packDaysRemaining}</p>
+                    </div>
+                  )}
+
+                  {status.packExpirationDate && (
+                    <div className="mb-3 pb-3 border-b border-slate-700">
+                      <p className="text-xs text-slate-400 mb-0.5">Expiration Date</p>
+                      <p className="text-sm text-white font-semibold">
+                        {new Date(status.packExpirationDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
+
+                  {status.packCredits && (
+                    <div className="mt-3">
+                      <h4 className="text-xs md:text-sm font-semibold text-white mb-2">Pack Credits</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs md:text-sm">
+                          <span className="text-slate-400">Full Tests</span>
+                          <span className="text-white font-semibold">
+                            {status.packCredits.fullTests.remaining} / {status.packCredits.fullTests.total}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs md:text-sm">
+                          <span className="text-slate-400">Section A</span>
+                          <span className="text-white font-semibold">
+                            {status.packCredits.sectionA.remaining} / {status.packCredits.sectionA.total}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs md:text-sm">
+                          <span className="text-slate-400">Section B</span>
+                          <span className="text-white font-semibold">
+                            {status.packCredits.sectionB.remaining} / {status.packCredits.sectionB.total}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* No active subscription or pack */}
+              {!hasTrial && !hasPack && (
+                <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5 lg:col-span-2">
+                  <div className="text-center">
+                    <h3 className="text-base md:text-lg font-bold text-white mb-1">No Active Plan</h3>
+                    <p className="text-xs md:text-sm text-slate-400">Purchase a pack to get started</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Available Packs Section */}
+          <div>
+            <h2 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wider">Available Packs</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* Starter Pack Card */}
+              <div className={`bg-slate-900/40 border-2 rounded-xl p-4 md:p-5 ${isStarterPackActive ? 'border-emerald-500' : 'border-slate-800'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-base md:text-lg font-bold text-white mb-1">Starter Pack</h3>
+                    {isStarterPackActive && (
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Current</span>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl md:text-2xl font-black text-white">$19</div>
+                    <div className="text-xs text-slate-400">one-time</div>
+                  </div>
+                </div>
+
+                <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-xs md:text-sm">
                     <span className="text-slate-400">Full Tests</span>
-                    <span className="text-white font-semibold">
-                      {status.usage.fullTestsUsed} / {status.limits.fullTests}
-                    </span>
+                    <span className="text-white font-semibold">5 total</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
                     <span className="text-slate-400">Section A</span>
-                    <span className="text-white font-semibold">
-                      {status.usage.sectionAUsed} / {status.limits.sectionA}
-                    </span>
+                    <span className="text-white font-semibold">10 total</span>
                   </div>
                   <div className="flex items-center justify-between text-xs md:text-sm">
                     <span className="text-slate-400">Section B</span>
-                    <span className="text-white font-semibold">
-                      {status.usage.sectionBUsed} / {status.limits.sectionB}
-                    </span>
+                    <span className="text-white font-semibold">10 total</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <span className="text-slate-400">Valid for</span>
+                    <span className="text-white font-semibold">30 days</span>
                   </div>
                 </div>
-                <p className="text-xs text-slate-500 mt-2">Resets at midnight UTC</p>
-              </div>
-            </div>
-          )}
 
-          {/* Pack Status */}
-          {hasPack && (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h2 className="text-base md:text-lg font-bold text-white mb-1">{getPackName()}</h2>
-                  <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Active</span>
-                </div>
-              </div>
-
-              {packDaysRemaining !== null && packDaysRemaining > 0 && (
-                <div className="mb-3 pb-3 border-b border-slate-700">
-                  <p className="text-xs text-slate-400 mb-0.5">Days Remaining</p>
-                  <p className="text-xl md:text-2xl font-black text-white">{packDaysRemaining}</p>
-                </div>
-              )}
-
-              {status.packExpirationDate && (
-                <div className="mb-3 pb-3 border-b border-slate-700">
-                  <p className="text-xs text-slate-400 mb-0.5">Expiration Date</p>
-                  <p className="text-sm text-white font-semibold">
-                    {new Date(status.packExpirationDate).toLocaleDateString()}
+                <button
+                  onClick={() => handleCheckout('starter')}
+                  disabled={isStarterPackActive}
+                  className={`w-full py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition-colors ${
+                    isStarterPackActive
+                      ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
+                >
+                  {isStarterPackActive ? 'Current Pack' : (hasPack ? 'Upgrade to Starter Pack' : 'Buy Starter Pack')}
+                </button>
+                {hasPack && !isStarterPackActive && (
+                  <p className="text-xs text-amber-400 mt-1.5 text-center">
+                    ⚠️ Upgrading replaces current pack
                   </p>
-                </div>
-              )}
+                )}
+              </div>
 
-              {status.packCredits && (
-                <div className="mt-3">
-                  <h3 className="text-xs md:text-sm font-semibold text-white mb-2">Pack Credits</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-slate-400">Full Tests</span>
-                      <span className="text-white font-semibold">
-                        {status.packCredits.fullTests.remaining} / {status.packCredits.fullTests.total}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-slate-400">Section A</span>
-                      <span className="text-white font-semibold">
-                        {status.packCredits.sectionA.remaining} / {status.packCredits.sectionA.total}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-slate-400">Section B</span>
-                      <span className="text-white font-semibold">
-                        {status.packCredits.sectionB.remaining} / {status.packCredits.sectionB.total}
-                      </span>
-                    </div>
+              {/* Exam Ready Pack Card */}
+              <div className={`bg-slate-900/40 border-2 rounded-xl p-4 md:p-5 ${isExamReadyPackActive ? 'border-emerald-500' : 'border-slate-800'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <h3 className="text-base md:text-lg font-bold text-white mb-1">Exam Ready Pack</h3>
+                    {isExamReadyPackActive && (
+                      <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Current</span>
+                    )}
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xl md:text-2xl font-black text-white">$35</div>
+                    <div className="text-xs text-slate-400">one-time</div>
                   </div>
                 </div>
-              )}
 
-              <div className="mt-4 pt-3 border-t border-slate-700">
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <span className="text-slate-400">Full Tests</span>
+                    <span className="text-white font-semibold">20 total</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <span className="text-slate-400">Section A</span>
+                    <span className="text-white font-semibold">20 total</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <span className="text-slate-400">Section B</span>
+                    <span className="text-white font-semibold">20 total</span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs md:text-sm">
+                    <span className="text-slate-400">Valid for</span>
+                    <span className="text-white font-semibold">30 days</span>
+                  </div>
+                </div>
+
                 <button
-                  onClick={() => navigate('/pricing')}
-                  className="w-full py-2 px-4 bg-indigo-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-indigo-700 transition-colors"
+                  onClick={() => handleCheckout('examReady')}
+                  disabled={isExamReadyPackActive}
+                  className={`w-full py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition-colors ${
+                    isExamReadyPackActive
+                      ? 'bg-slate-700/50 text-slate-400 cursor-not-allowed'
+                      : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
                 >
-                  Upgrade Pack
+                  {isExamReadyPackActive ? 'Current Pack' : (hasPack ? 'Upgrade to Exam Ready Pack' : 'Buy Exam Ready Pack')}
                 </button>
-                <p className="text-xs text-slate-500 mt-1.5 text-center">
-                  ⚠️ Upgrading replaces current pack
-                </p>
+                {hasPack && !isExamReadyPackActive && (
+                  <p className="text-xs text-amber-400 mt-1.5 text-center">
+                    ⚠️ Upgrading replaces current pack
+                  </p>
+                )}
               </div>
             </div>
-          )}
-
-          {/* No active pack */}
-          {!hasPack && !hasTrial && (
-            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-4 md:p-5 lg:col-span-2">
-              <div className="text-center">
-                <h2 className="text-base md:text-lg font-bold text-white mb-1">No Active Pack</h2>
-                <p className="text-xs md:text-sm text-slate-400 mb-4">Purchase a pack to get started</p>
-                <button
-                  onClick={() => navigate('/pricing')}
-                  className="w-full max-w-xs mx-auto py-2 px-4 bg-indigo-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:bg-indigo-700 transition-colors"
-                >
-                  View Plans
-                </button>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
+
+      {/* Upgrade Warning Modal */}
+      {showUpgradeWarning && (
+        <UpgradeWarningModal
+          isOpen={showUpgradeWarning}
+          onClose={() => {
+            setShowUpgradeWarning(false);
+            setPendingPackType(null);
+          }}
+          onConfirm={handleConfirmUpgrade}
+          currentPack={{
+            type: status.packType!,
+            name: getPackName() || '',
+            expiration: status.packExpirationDate!,
+            credits: status.packCredits!,
+          }}
+          newPack={{
+            type: pendingPackType === 'starter' ? 'STARTER_PACK' : 'EXAM_READY_PACK',
+            name: pendingPackType === 'starter' ? 'Starter Pack' : 'Exam Ready Pack',
+            credits: {
+              fullTests: pendingPackType === 'starter' ? 5 : 20,
+              sectionA: pendingPackType === 'starter' ? 10 : 20,
+              sectionB: pendingPackType === 'starter' ? 10 : 20,
+            },
+          }}
+        />
+      )}
     </div>
   );
 };

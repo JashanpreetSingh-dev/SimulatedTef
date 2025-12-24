@@ -46,12 +46,58 @@ GEMINI_API_KEY=your_gemini_api_key_here
 MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+STRIPE_SECRET_KEY=your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+
+# Stripe Price IDs (for pack purchases)
+STRIPE_PRICE_ID_STARTER_PACK=price_xxxxx
+STRIPE_PRICE_ID_EXAM_READY_PACK=price_xxxxx
 
 # Optional
 MONGODB_DB_NAME=tef_master
 VITE_BACKEND_URL=http://localhost:3001
 PORT=3001
 ```
+
+### 2.1. Testing Stripe Webhooks Locally
+
+To test Stripe webhooks locally, use the Stripe CLI:
+
+**1. Install Stripe CLI:**
+- **Windows**: Download from [Stripe CLI releases](https://github.com/stripe/stripe-cli/releases) or use `scoop install stripe`
+- **macOS**: `brew install stripe/stripe-cli/stripe`
+- **Linux**: See [Stripe CLI installation guide](https://stripe.com/docs/stripe-cli)
+
+**2. Login to Stripe:**
+```bash
+stripe login
+```
+This will open your browser to authenticate with your Stripe account.
+
+**3. Forward webhooks to your local server:**
+```bash
+stripe listen --forward-to localhost:3001/api/subscription/webhook
+```
+
+**4. Copy the webhook signing secret:**
+After running `stripe listen`, you'll see output like:
+```
+> Ready! Your webhook signing secret is whsec_xxxxx (^C to quit)
+```
+
+**5. Update your `.env.local` file:**
+```env
+STRIPE_WEBHOOK_SECRET=whsec_xxxxx
+```
+
+**6. Trigger test events:**
+In a new terminal, you can trigger test events:
+```bash
+# Test checkout completion
+stripe trigger checkout.session.completed
+```
+
+**Note:** The webhook secret from `stripe listen` is different from production webhook secrets. Make sure to use the local secret when testing locally.
 
 ### 3. Run Locally
 

@@ -95,6 +95,12 @@ export const SubscriptionStatus: React.FC = () => {
                 {status.trialDaysRemaining !== undefined ? `${status.trialDaysRemaining}d left` : ''} • Daily: {status.limits.fullTests} Full, {status.limits.sectionA} A, {status.limits.sectionB} B
               </p>
             </div>
+            <button
+              onClick={handleUpgrade}
+              className="px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-semibold hover:bg-indigo-700 transition-colors whitespace-nowrap"
+            >
+              Upgrade
+            </button>
           </div>
         </div>
       )}
