@@ -8,6 +8,7 @@ import { EvaluationJobData, EvaluationJobResult } from '../jobs/jobTypes';
 import { geminiService } from '../../services/gemini';
 import { resultsService } from '../services/resultsService';
 import { closeDB } from '../db/connection';
+import { logDirectApiCall } from '../../services/geminiLogger';
 
 let worker: Worker<EvaluationJobData, EvaluationJobResult> | null = null;
 
@@ -60,7 +61,11 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           taskPartA,
           taskPartB,
           eo2RemainingSeconds,
-          fluencyAnalysis
+          fluencyAnalysis,
+          {
+            userId,
+            sessionId: job.id,
+          }
         );
 
         await job.updateProgress(80); // 80% - Evaluation complete

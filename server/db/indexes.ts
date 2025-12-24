@@ -143,6 +143,37 @@ export async function createIndexes(): Promise<void> {
     );
     console.log('✅ Created index: webhookEvents.processed_processedAt_idx');
     
+    // API logs collection indexes
+    const apiLogsCollection = db.collection('api_logs');
+    
+    // Compound index for user queries sorted by timestamp
+    await apiLogsCollection.createIndex(
+      { userId: 1, timestamp: -1 },
+      { name: 'userId_timestamp_idx' }
+    );
+    console.log('✅ Created index: api_logs.userId_timestamp_idx');
+    
+    // Index for timestamp queries (for date range filtering)
+    await apiLogsCollection.createIndex(
+      { timestamp: -1 },
+      { name: 'timestamp_idx' }
+    );
+    console.log('✅ Created index: api_logs.timestamp_idx');
+    
+    // Compound index for function name and timestamp
+    await apiLogsCollection.createIndex(
+      { functionName: 1, timestamp: -1 },
+      { name: 'functionName_timestamp_idx' }
+    );
+    console.log('✅ Created index: api_logs.functionName_timestamp_idx');
+    
+    // Index for session tracking
+    await apiLogsCollection.createIndex(
+      { sessionId: 1, timestamp: -1 },
+      { name: 'sessionId_timestamp_idx' }
+    );
+    console.log('✅ Created index: api_logs.sessionId_timestamp_idx');
+    
     console.log('✅ All database indexes created successfully');
   } catch (error: any) {
     console.error('❌ Error creating indexes:', error.message);

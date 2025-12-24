@@ -3,6 +3,7 @@ import { GoogleGenAI, Type, Modality, Blob } from "@google/genai";
 import { TEFSection, EvaluationResult, TEFTask } from "../types";
 import { makeExamInstructions } from "./prompts/examiner";
 import { buildRubricSystemPrompt, buildEvaluationUserMessage } from "./prompts/evaluation";
+import { logDirectApiCall } from "./geminiLogger";
 
 // Get API key and validate
 const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
@@ -160,7 +161,14 @@ function blobToBase64(blob: globalThis.Blob): Promise<string> {
 
 export const geminiService = {
 
-  async transcribeAudio(audioBlob: globalThis.Blob): Promise<{
+  async transcribeAudio(
+    audioBlob: globalThis.Blob,
+    options?: {
+      userId?: string;
+      sessionId?: string;
+      authToken?: string | (() => Promise<string | null>);
+    }
+  ): Promise<{
     transcript: string;
     fluency_analysis?: {
       hesitation_rate?: string;
@@ -170,12 +178,15 @@ export const geminiService = {
       fluency_comment?: string;
     };
   }> {
+    const startTime = Date.now();
+    const model = "gemini-2.5-flash-preview-09-2025";
+    
     try {
       // Convert blob to base64
       const base64 = await blobToBase64(audioBlob);
       
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-preview-09-2025",
+        model,
         contents: [{
           parts: [{
             inlineData: {
@@ -236,6 +247,26 @@ export const geminiService = {
         }
       });
 
+      const duration = Date.now() - startTime;
+      
+      // Log successful API call (non-blocking)
+      logDirectApiCall(
+        'transcribeAudio',
+        model,
+        response,
+        duration,
+        'success',
+        {
+          userId: options?.userId,
+          sessionId: options?.sessionId,
+          authToken: options?.authToken,
+          metadata: {
+            audioBlobSize: audioBlob.size,
+            audioBlobType: audioBlob.type,
+          },
+        }
+      );
+
       let parsed: any;
       try {
         parsed = response.text ? JSON.parse(response.text) : {};
@@ -256,6 +287,29 @@ export const geminiService = {
         fluency_analysis,
       };
     } catch (error: any) {
+      const duration = Date.now() - startTime;
+      
+      // Log failed API call (non-blocking)
+      logDirectApiCall(
+        'transcribeAudio',
+        model,
+        {},
+        duration,
+        'error',
+        {
+          userId: options?.userId,
+          sessionId: options?.sessionId,
+          authToken: options?.authToken,
+          errorMessage: error?.message || 'Unknown error',
+          metadata: {
+            audioBlobSize: audioBlob.size,
+            audioBlobType: audioBlob.type,
+            errorType: error?.name,
+            errorCode: error?.code,
+          },
+        }
+      );
+      
       console.error('❌ Error transcribing audio:', error);
       throw error;
     }
@@ -305,33 +359,89 @@ export const geminiService = {
     });
   },
 
-  async generateScenario(section: TEFSection): Promise<string> {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
-      contents: `Generate a TEF Canada ${section} task in JSON.`,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            content: { type: Type.STRING },
-            questions: {
-              type: Type.ARRAY,
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  question: { type: Type.STRING },
-                  options: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  correctAnswer: { type: Type.INTEGER }
+  async generateScenario(
+    section: TEFSection,
+    options?: {
+      userId?: string;
+      sessionId?: string;
+      authToken?: string | (() => Promise<string | null>);
+    }
+  ): Promise<string> {
+    const startTime = Date.now();
+    const model = "gemini-2.5-flash-preview-09-2025";
+    
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        contents: `Generate a TEF Canada ${section} task in JSON.`,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              title: { type: Type.STRING },
+              content: { type: Type.STRING },
+              questions: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    question: { type: Type.STRING },
+                    options: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    correctAnswer: { type: Type.INTEGER }
+                  }
                 }
               }
             }
           }
         }
-      }
-    });
-    return response.text;
+      });
+      
+      const duration = Date.now() - startTime;
+      
+      // Log successful API call (non-blocking)
+      logDirectApiCall(
+        'generateScenario',
+        model,
+        response,
+        duration,
+        'success',
+        {
+          userId: options?.userId,
+          sessionId: options?.sessionId,
+          authToken: options?.authToken,
+          metadata: {
+            section,
+          },
+        }
+      );
+      
+      return response.text;
+    } catch (error: any) {
+      const duration = Date.now() - startTime;
+      
+      // Log failed API call (non-blocking)
+      logDirectApiCall(
+        'generateScenario',
+        model,
+        {},
+        duration,
+        'error',
+        {
+          userId: options?.userId,
+          sessionId: options?.sessionId,
+          authToken: options?.authToken,
+          errorMessage: error?.message || 'Unknown error',
+          metadata: {
+            section,
+            errorType: error?.name,
+            errorCode: error?.code,
+          },
+        }
+      );
+      
+      throw error;
+    }
   },
 
   async evaluateResponse(
@@ -345,8 +455,15 @@ export const geminiService = {
     taskPartA?: any,
     taskPartB?: any,
     eo2RemainingSeconds?: number,
-    fluencyAnalysis?: any
+    fluencyAnalysis?: any,
+    options?: {
+      userId?: string;
+      sessionId?: string;
+      authToken?: string | (() => Promise<string | null>);
+    }
   ): Promise<EvaluationResult> {
+    const startTime = Date.now();
+    const model = "gemini-2.5-flash-preview-09-2025";
     const isFullExam = mode === 'full' && taskPartA && taskPartB;
     const systemPrompt = buildRubricSystemPrompt(section, isFullExam);
     const userMessage = buildEvaluationUserMessage(
@@ -371,7 +488,7 @@ export const geminiService = {
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash-preview-09-2025",
+          model,
           contents: [
             { parts: [{ text: systemPrompt }] },
             { parts: [{ text: userMessage }] }
@@ -472,7 +589,34 @@ export const geminiService = {
         }
       }
     });
-    return JSON.parse(response.text);
+    
+    const duration = Date.now() - startTime;
+    const result = JSON.parse(response.text);
+    
+    // Log successful API call (non-blocking)
+    logDirectApiCall(
+      'evaluateResponse',
+      model,
+      response,
+      duration,
+      'success',
+      {
+        userId: options?.userId,
+        sessionId: options?.sessionId,
+        authToken: options?.authToken,
+        metadata: {
+          section,
+          mode,
+          isFullExam,
+          scenarioId,
+          userContentLength: userContent.length,
+          promptLength: prompt.length,
+          retryAttempt: attempt,
+        },
+      }
+    );
+    
+    return result;
       } catch (error: any) {
         lastError = error;
         // Check if it's a rate limit error (429)
@@ -491,7 +635,31 @@ export const geminiService = {
       }
     }
     
-    // If we exhausted all retries, throw the last error
+    // If we exhausted all retries, log the error and throw
+    const duration = Date.now() - startTime;
+    logDirectApiCall(
+      'evaluateResponse',
+      model,
+      {},
+      duration,
+      'error',
+      {
+        userId: options?.userId,
+        sessionId: options?.sessionId,
+        authToken: options?.authToken,
+        errorMessage: lastError?.message || 'Unknown error',
+        metadata: {
+          section,
+          mode,
+          isFullExam,
+          scenarioId,
+          retryAttempts: maxRetries,
+          errorType: lastError?.name,
+          errorCode: lastError?.code,
+        },
+      }
+    );
+    
     throw lastError;
   }
 };
