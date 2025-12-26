@@ -1158,48 +1158,48 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-2">
           {scenario.mode !== 'partB' && (
-            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white dark:text-white shadow-lg' : 'bg-indigo-100/70 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600'}`}>Partie A</div>
           )}
           {scenario.mode !== 'partA' && (
-            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white dark:text-white shadow-lg' : 'bg-indigo-100/70 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600'}`}>Partie B</div>
           )}
         </div>
         <div className="flex items-center gap-2 md:gap-3">
           {status === 'active' && timeLeft > 0 && (
             <div className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl md:rounded-xl text-base md:text-base font-black tabular-nums transition-all ${
               timeLeft <= 60 
-                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse' 
+                ? 'bg-rose-300 dark:bg-rose-500 text-white dark:text-white shadow-lg shadow-rose-300/30 dark:shadow-rose-500/30 animate-pulse' 
                 : timeLeft <= 120
-                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
-                : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-amber-300 dark:bg-amber-500 text-white dark:text-white shadow-lg shadow-amber-300/30 dark:shadow-amber-500/30'
+                : 'bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white shadow-lg shadow-indigo-400/30 dark:shadow-indigo-500/30'
             }`}>
               {formatTime(timeLeft)}
             </div>
           )}
-          {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-500 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
+          {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-300 dark:text-rose-400 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-300 dark:bg-rose-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
-          <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-white/5">
-            <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
+        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
+          <div className="bg-slate-100 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
+            <span className="text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
             <button 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setShowImageFull(true);
               }} 
-              className="text-white hover:text-indigo-400 transition-colors text-xs font-bold flex items-center gap-1 cursor-pointer"
+              className="text-slate-600 dark:text-slate-400 hover:text-indigo-400 dark:hover:text-indigo-300 transition-colors text-xs font-bold flex items-center gap-1 cursor-pointer"
             >
               <span>🔍</span> <span className="hidden sm:inline">Agrandir</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 md:p-5 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 md:p-5 bg-indigo-100/70 dark:bg-slate-800/50 relative group scrollbar-hide">
             <img 
               src={getImagePath(currentTask.image)} 
               alt="Task Document" 
-              className="w-full h-auto rounded-xl md:rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
+              className="w-full h-auto rounded-xl md:rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 mx-auto transition-transform hover:scale-[1.01]"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.warn(`Initial path failed: ${target.src}. Trying fallback...`);
@@ -1227,20 +1227,20 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 target.src = 'https://placehold.co/600x800/1e293b/ffffff?text=DOCUMENT+OFFICIEL\nMANQUANT';
               }}
             />
-            <div className="mt-4 md:mt-5 p-4 md:p-4 bg-white dark:bg-slate-800/80 backdrop-blur rounded-xl md:rounded-xl border border-slate-100 dark:border-slate-700 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
-               <strong className="text-slate-900 dark:text-white not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
+            <div className="mt-4 md:mt-5 p-4 md:p-4 bg-indigo-100/70 dark:bg-slate-700/50 backdrop-blur rounded-xl md:rounded-xl border border-slate-200 dark:border-slate-600 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
+               <strong className="text-slate-900 dark:text-slate-100 not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
             </div>
           </div>
         </div>
 
         <div 
           ref={micSectionRef}
-          className="bg-slate-900 dark:bg-slate-900 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
+          className="bg-indigo-400 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
         >
-          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-500' : (isUserSpeaking ? 'bg-emerald-500' : 'bg-transparent')}`} />
+          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-300' : (isUserSpeaking ? 'bg-emerald-300' : 'bg-transparent')}`} />
           
           <div className="relative group flex-shrink-0">
-            <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-500/40 scale-150' : (isUserSpeaking ? 'bg-emerald-500/40 scale-125' : 'bg-white/5 scale-100')}`} />
+            <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-300/40 scale-150' : (isUserSpeaking ? 'bg-emerald-300/40 scale-125' : 'bg-indigo-100/70/5 scale-100')}`} />
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -1254,11 +1254,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               disabled={status === 'connecting' || status === 'evaluating'}
               className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-12 relative z-10 cursor-pointer ${
                 status === 'active' 
-                  ? 'bg-rose-500 hover:bg-rose-600 ring-rose-500/20 active:scale-90' 
-                  : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 ring-white/10 text-slate-900 dark:text-white hover:scale-105 active:scale-95'
+                  ? 'bg-rose-300 dark:bg-rose-500 hover:bg-rose-400 dark:hover:bg-rose-600 ring-rose-300/20 dark:ring-rose-500/20 active:scale-90' 
+                  : 'bg-indigo-100/70 dark:bg-slate-700/50 hover:bg-indigo-100 dark:hover:bg-slate-700 ring-white/10 dark:ring-white/5 text-slate-900 dark:text-slate-100 hover:scale-105 active:scale-95'
               } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
+              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" /> : 
                status === 'evaluating' ? <span className="text-xl md:text-2xl animate-bounce">⚖️</span> :
                <>
                 <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
@@ -1271,7 +1271,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             <h4 className="text-white font-black text-base md:text-xl tracking-tight">
               {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
-            <p className="text-slate-400 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
+            <p className="text-indigo-100 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
         </div>
       </div>
@@ -1293,7 +1293,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 e.stopPropagation();
                 setShowImageFull(false);
               }} 
-              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg cursor-pointer z-50"
+              className="absolute top-4 right-4 bg-indigo-100/70/10 hover:bg-indigo-100/70/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg cursor-pointer z-50"
             >
               <span className="text-2xl">✕</span>
             </button>

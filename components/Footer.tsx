@@ -9,42 +9,43 @@ export const Footer: React.FC<FooterProps> = ({ variant = 'dark' }) => {
   const isDark = variant === 'dark';
   
   return (
-    <footer className={`border-t ${isDark ? 'border-slate-800/50 bg-slate-950' : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950'} py-6 px-4 sm:px-6 md:sticky md:bottom-0 z-10`}>
+    <footer className={`border-t ${isDark ? 'border-slate-200 dark:border-slate-700 bg-indigo-100/70 dark:bg-slate-800/70' : 'border-slate-200 dark:border-slate-700 bg-indigo-100/70 dark:bg-slate-800/70'} py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:sticky md:bottom-0 z-10 transition-colors duration-300`}>
       <div className={`max-w-6xl mx-auto`}>
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-500 dark:text-slate-400'}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
+          <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-600 dark:text-slate-400' : 'text-slate-600 dark:text-slate-400'} text-center sm:text-left`}>
             © {new Date().getFullYear()} Akseli. All rights reserved.
           </p>
-          <div className="flex flex-wrap gap-4 sm:gap-6 justify-center sm:justify-end">
+          <div className="flex flex-wrap gap-2 sm:gap-4 md:gap-6 justify-center sm:justify-end text-xs sm:text-sm">
             <a
               href="mailto:support@akseli.ca"
-              className={`text-sm transition-colors ${
+              className={`transition-colors ${
                 isDark 
-                  ? 'text-slate-400 hover:text-white' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              support@akseli.ca
+              <span className="hidden sm:inline">support@akseli.ca</span>
+              <span className="sm:hidden">Support</span>
             </a>
             <Link
               to="/terms"
-              className={`text-sm transition-colors ${
+              className={`transition-colors ${
                 isDark 
-                  ? 'text-slate-400 hover:text-white' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Terms of Service
+              Terms
             </Link>
             <Link
               to="/privacy"
-              className={`text-sm transition-colors ${
+              className={`transition-colors ${
                 isDark 
-                  ? 'text-slate-400 hover:text-white' 
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  ? 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' 
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Privacy Policy
+              Privacy
             </Link>
           </div>
         </div>

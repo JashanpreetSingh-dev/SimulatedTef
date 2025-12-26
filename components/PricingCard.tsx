@@ -41,11 +41,11 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   hasActivePack = false,
 }) => {
   const cardClasses = highlighted
-    ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 border-indigo-500'
-    : 'bg-slate-900/40 border-slate-800';
+    ? 'bg-gradient-to-br from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-indigo-600 border-indigo-300 dark:border-indigo-400'
+    : 'bg-indigo-100/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700';
 
-  const textClasses = highlighted ? 'text-white' : 'text-white';
-  const subtitleClasses = highlighted ? 'text-indigo-100' : 'text-slate-400';
+  const textClasses = highlighted ? 'text-white dark:text-white' : 'text-slate-800 dark:text-slate-100';
+  const subtitleClasses = highlighted ? 'text-indigo-100 dark:text-indigo-100' : 'text-slate-500 dark:text-slate-400';
 
   const handleClick = () => {
     if (onCtaClick) {
@@ -57,7 +57,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     // If this is the current plan, show "Current Plan" instead of button
     if (isCurrentPlan && isSignedIn) {
       return (
-        <div className="w-full py-4 px-6 rounded-full bg-slate-700/50 text-slate-300 font-semibold text-base text-center cursor-not-allowed">
+        <div className="w-full py-4 px-6 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-semibold text-base text-center cursor-not-allowed">
           Current Plan
         </div>
       );
@@ -66,7 +66,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     if (plan === 'trial') {
       return (
         <SignUpButton mode="modal">
-          <button className="w-full py-4 px-6 rounded-full bg-white text-slate-900 font-semibold text-base hover:bg-indigo-50 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+          <button className="w-full py-4 px-6 rounded-full bg-indigo-100/50 dark:bg-slate-700/50 text-slate-800 dark:text-slate-100 font-semibold text-base hover:bg-indigo-100 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
             {ctaText}
           </button>
         </SignUpButton>
@@ -82,14 +82,14 @@ export const PricingCard: React.FC<PricingCardProps> = ({
             disabled={loading}
             className={`w-full py-4 px-6 rounded-full font-semibold text-base transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 ${
               highlighted
-                ? 'bg-white text-indigo-600 hover:bg-indigo-50'
-                : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                ? 'bg-white/20 dark:bg-white/20 text-white dark:text-white hover:bg-white/30 dark:hover:bg-white/30'
+                : 'bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white hover:bg-indigo-500 dark:hover:bg-indigo-600'
             }`}
           >
             {loading ? 'Loading...' : (hasActivePack ? 'Upgrade Pack' : ctaText)}
           </button>
           {hasActivePack && (
-            <p className="text-xs text-amber-400 mt-2 text-center">
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 text-center">
               ⚠️ Your current pack will be replaced
             </p>
           )}
@@ -99,8 +99,8 @@ export const PricingCard: React.FC<PricingCardProps> = ({
             <button
               className={`w-full py-4 px-6 rounded-full font-semibold text-base transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
                 highlighted
-                  ? 'bg-white text-indigo-600 hover:bg-indigo-50'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  ? 'bg-white/20 dark:bg-white/20 text-white dark:text-white hover:bg-white/30 dark:hover:bg-white/30'
+                  : 'bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white hover:bg-indigo-500 dark:hover:bg-indigo-600'
               }`}
             >
               {ctaText}
@@ -114,12 +114,18 @@ export const PricingCard: React.FC<PricingCardProps> = ({
   return (
     <div
       className={`relative p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
-        highlighted ? 'hover:shadow-indigo-600/30' : 'hover:shadow-slate-900/50'
+        highlighted 
+          ? 'hover:shadow-indigo-400/30 dark:hover:shadow-indigo-500/30' 
+          : 'hover:shadow-slate-200/50 dark:hover:shadow-slate-700/50'
       } ${cardClasses}`}
     >
       {badge && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <span className="px-4 py-1 bg-indigo-500 text-white text-xs font-black uppercase tracking-wider rounded-full">
+          <span className={`px-4 py-1.5 text-indigo-600 dark:text-indigo-200 text-xs font-black uppercase tracking-wider rounded-full backdrop-blur-sm ${
+            highlighted 
+              ? 'bg-white/20 dark:bg-white/20 border-2 border-white/50 dark:border-white/50 shadow-lg shadow-white/20 dark:shadow-white/20' 
+              : 'bg-indigo-300/80 dark:bg-indigo-500/80 border-2 border-indigo-400/60 dark:border-indigo-600/60 shadow-lg shadow-indigo-400/30 dark:shadow-indigo-600/30'
+          }`}>
             {badge}
           </span>
         </div>
@@ -164,10 +170,10 @@ export const PricingCard: React.FC<PricingCardProps> = ({
           )}
         </div>
 
-        <div className="border-t border-slate-700/50 pt-4 space-y-3">
+        <div className={`border-t ${highlighted ? 'border-white/20 dark:border-white/20' : 'border-slate-200 dark:border-slate-700'} pt-4 space-y-3`}>
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-2">
-              <span className={`text-lg mt-0.5 ${highlighted ? 'text-indigo-200' : 'text-emerald-400'}`}>
+              <span className={`text-lg mt-0.5 ${highlighted ? 'text-white dark:text-white' : 'text-emerald-400 dark:text-emerald-300'}`}>
                 ✓
               </span>
               <span className={`text-sm ${subtitleClasses}`}>{feature}</span>

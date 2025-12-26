@@ -6,21 +6,21 @@ import { Footer } from './Footer';
 function PrivacyPolicyContent() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-      <div className="bg-slate-900/40 backdrop-blur-sm rounded-3xl border border-slate-800/50 p-6 md:p-10 lg:p-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-white mb-2 tracking-tight">
+      <div className="bg-indigo-100/50 backdrop-blur-sm rounded-3xl border border-slate-200 p-6 md:p-10 lg:p-12">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black text-slate-800 mb-2 tracking-tight">
             Privacy Policy
           </h1>
-          <p className="text-slate-400 text-sm mb-8">
+          <p className="text-slate-500 text-sm mb-8">
             Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           </p>
 
-          <div className="prose prose-invert prose-slate max-w-none space-y-6 text-slate-300 leading-relaxed">
+          <div className="prose prose-slate max-w-none space-y-6 text-slate-600 leading-relaxed">
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">1. Information Collection</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">1. Information Collection</h2>
               <p>
                 We collect information that you provide directly to us and information collected automatically through your use of our service.
               </p>
-              <h3 className="text-lg font-semibold text-white mt-6 mb-3">Information Provided by You</h3>
+              <h3 className="text-lg font-semibold text-slate-800 mt-6 mb-3">Information Provided by You</h3>
               <p>
                 When you create an account through Clerk authentication, we collect:
               </p>
@@ -35,7 +35,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">2. Audio Recording Collection and Storage</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">2. Audio Recording Collection and Storage</h2>
               <p>
                 When you use our exam simulation service, we collect and store audio recordings of your oral expression exercises. These recordings are:
               </p>
@@ -51,7 +51,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">3. Data Processing</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">3. Data Processing</h2>
               <p>
                 Your audio recordings are processed using Google Gemini AI for evaluation purposes. The AI system:
               </p>
@@ -67,7 +67,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">4. Data Storage</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">4. Data Storage</h2>
               <p>
                 We store your data in MongoDB, a secure cloud database service. The following information is stored:
               </p>
@@ -83,7 +83,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">5. Payment Information</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">5. Payment Information</h2>
               <p>
                 Payment processing is handled entirely by Stripe, a third-party payment processor. We do not:
               </p>
@@ -98,7 +98,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">6. Data Usage</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">6. Data Usage</h2>
               <p>
                 We use your information to:
               </p>
@@ -116,7 +116,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">7. Data Retention</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">7. Data Retention</h2>
               <p>
                 We retain your data for as long as your account is active or as needed to provide you with our services. Specifically:
               </p>
@@ -131,7 +131,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">8. User Rights</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">8. User Rights</h2>
               <p>
                 You have the right to:
               </p>
@@ -148,7 +148,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">9. Third-Party Services</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">9. Third-Party Services</h2>
               <p>
                 We use the following third-party services that may have access to your information:
               </p>
@@ -164,7 +164,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">10. Security Measures</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">10. Security Measures</h2>
               <p>
                 We implement various security measures to protect your information:
               </p>
@@ -181,14 +181,14 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">11. Children's Privacy</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">11. Children's Privacy</h2>
               <p>
                 Our service is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately and we will take steps to delete such information.
               </p>
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">12. Policy Updates</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">12. Policy Updates</h2>
               <p>
                 We may update this Privacy Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. We will notify you of any material changes by:
               </p>
@@ -203,7 +203,7 @@ function PrivacyPolicyContent() {
             </section>
 
             <section>
-              <h2 className="text-xl md:text-2xl font-bold text-white mt-8 mb-4">13. Contact Information</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 mt-8 mb-4">13. Contact Information</h2>
               <p>
                 If you have questions, concerns, or requests regarding this Privacy Policy or your personal information, please contact us through your account dashboard or by using the contact information provided in our Terms of Service.
               </p>
@@ -223,14 +223,14 @@ export const PrivacyPolicy: React.FC = () => {
         </DashboardLayout>
       </SignedIn>
       <SignedOut>
-        <div className="min-h-screen bg-slate-950 flex flex-col">
-          <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 px-4 md:px-6 py-4 flex justify-between items-center">
-            <span className="font-black text-lg text-white">Akseli</span>
+        <div className="min-h-screen bg-indigo-100 flex flex-col">
+          <div className="sticky top-0 z-50 bg-indigo-100/50/80 backdrop-blur-md border-b border-slate-200 px-4 md:px-6 py-4 flex justify-between items-center">
+            <span className="font-black text-lg text-slate-800">Akseli</span>
           </div>
           <div className="flex-1">
             <PrivacyPolicyContent />
           </div>
-          <Footer variant="dark" />
+          <Footer variant="light" />
         </div>
       </SignedOut>
     </>

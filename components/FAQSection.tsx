@@ -47,10 +47,10 @@ export const FAQSection: React.FC = () => {
     <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
-            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-indigo-300 to-cyan-400">Questions</span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 dark:text-slate-100 mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
+            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Questions</span>
           </h2>
-          <p className="text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4">
+          <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4">
             Everything you need to know about our plans and pricing.
           </p>
         </div>
@@ -59,16 +59,16 @@ export const FAQSection: React.FC = () => {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="bg-slate-900/40 border border-slate-800 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-700"
+              className="bg-indigo-100/70 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm"
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-slate-900/30 transition-colors"
+                className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 hover:bg-indigo-100/70 dark:hover:bg-slate-700/50 transition-colors"
               >
-                <span className="text-base sm:text-lg font-semibold text-white pr-8">
+                <span className="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 pr-8">
                   {faq.question}
                 </span>
-                <span className={`text-2xl text-slate-400 transition-transform duration-300 flex-shrink-0 ${
+                <span className={`text-2xl text-slate-500 dark:text-slate-400 transition-transform duration-300 flex-shrink-0 ${
                   openIndex === index ? 'rotate-180' : ''
                 }`}>
                   ↓
@@ -76,7 +76,7 @@ export const FAQSection: React.FC = () => {
               </button>
               {openIndex === index && (
                 <div className="px-6 pb-5">
-                  <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed">
                     {faq.answer}
                   </p>
                 </div>

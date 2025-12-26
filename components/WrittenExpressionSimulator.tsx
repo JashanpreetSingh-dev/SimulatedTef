@@ -53,32 +53,32 @@ export const WrittenExpressionSimulator: React.FC<Props> = ({ task, onFinish }) 
   return (
     <div className="grid lg:grid-cols-2 gap-8 animate-in fade-in duration-500">
       {/* Task Panel */}
-      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-800 shadow-sm h-fit sticky top-24">
+      <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-[2.5rem] p-10 border border-slate-200 dark:border-slate-700 shadow-sm h-fit sticky top-24 transition-colors">
         <div className="flex items-center justify-between mb-8">
-          <span className="px-4 py-1.5 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-100 dark:border-indigo-500/20">
+          <span className="px-4 py-1.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded-full text-[10px] font-black uppercase tracking-widest border border-indigo-200 dark:border-indigo-800">
             Expression Écrite - Section {task.section}
           </span>
-          <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">
+          <div className="text-xl font-black text-slate-800 dark:text-slate-100 tabular-nums">
             {formatTime(timeLeft)}
           </div>
         </div>
 
-        <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6 leading-tight">
+        <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-6 leading-tight">
           {task.subject}
         </h3>
         
-        <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400 leading-relaxed italic">
+        <div className="p-6 bg-indigo-100/70 dark:bg-slate-700/50 rounded-2xl border border-slate-200 dark:border-slate-600 text-sm text-slate-500 dark:text-slate-400 leading-relaxed italic">
           "{task.instruction}"
         </div>
 
         <div className="mt-10 space-y-4">
-          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-400">
+          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
             <span>Objectif mots</span>
             <span>{wordCount} / {task.minWords}</span>
           </div>
-          <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+          <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
             <div 
-              className={`h-full transition-all duration-500 ${wordCount >= task.minWords ? 'bg-emerald-500' : 'bg-indigo-500'}`}
+              className={`h-full transition-all duration-500 ${wordCount >= task.minWords ? 'bg-emerald-300 dark:bg-emerald-500' : 'bg-indigo-300 dark:bg-indigo-500'}`}
               style={{ width: `${Math.min((wordCount / task.minWords) * 100, 100)}%` }}
             />
           </div>
@@ -91,13 +91,13 @@ export const WrittenExpressionSimulator: React.FC<Props> = ({ task, onFinish }) 
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Commencez à rédiger ici..."
-          className="w-full h-[500px] p-10 bg-white dark:bg-slate-900 rounded-[2.5rem] border border-slate-200 dark:border-slate-800 text-lg leading-relaxed text-slate-900 dark:text-slate-100 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all resize-none shadow-sm"
+          className="w-full h-[500px] p-10 bg-indigo-100/70 dark:bg-slate-800/50 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 text-lg leading-relaxed text-slate-800 dark:text-slate-100 focus:ring-4 focus:ring-indigo-300/10 dark:focus:ring-indigo-500/10 focus:border-indigo-300 dark:focus:border-indigo-500 outline-none transition-all resize-none shadow-sm"
         />
 
         <button
           onClick={handleFinish}
           disabled={isEvaluating || text.length < 50}
-          className="w-full py-6 bg-indigo-600 text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-indigo-600/30 disabled:opacity-50 disabled:grayscale"
+          className="w-full py-6 bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-indigo-400/30 dark:shadow-indigo-500/30 disabled:opacity-50 disabled:grayscale"
         >
           {isEvaluating ? (
             <span className="flex items-center justify-center gap-3">
