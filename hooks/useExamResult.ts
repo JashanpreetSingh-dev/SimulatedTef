@@ -8,6 +8,8 @@ interface UseExamResultOptions {
   onError?: (error: Error | string) => void;
   autoNavigate?: boolean; // Whether to automatically navigate to result page
   sessionId?: string; // Exam session ID to mark as completed
+  mockExamId?: string; // Mock exam ID if this is part of a mock exam
+  module?: 'oralExpression' | 'reading' | 'listening'; // Module type for mock exams
 }
 
 export const useExamResult = (options: UseExamResultOptions = {}) => {

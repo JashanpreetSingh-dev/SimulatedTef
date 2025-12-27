@@ -818,5 +818,82 @@ export const subscriptionService = {
     const { expireCancelledSubscriptions } = await import('../jobs/subscriptionExpiry');
     return await expireCancelledSubscriptions();
   },
+
+  /**
+   * Check if user can start a mock exam (uses fullTests credit)
+   */
+  async canStartMockExam(userId: string): Promise<CanStartExamResult> {
+    // Mock exam uses same credit as full exam
+    return this.canStartExam(userId, 'full');
+  },
+
+  /**
+   * Get user's active incomplete mock exam
+   */
+  async getActiveMockExam(userId: string): Promise<any> {
+    const db = await connectDB();
+    
+    const usage = await db.collection('usage').findOne({ userId });
+    const activeMockExamId = usage?.activeMockExamId as string | undefined;
+    
+    if (!activeMockExamId) {
+      return null;
+    }
+    
+    const session = await db.collection('examSessions').findOne({
+      userId,
+      mockExamId: activeMockExamId,
+      examType: 'mock',
+      completed: false,
+    });
+    
+    return session;
+  },
+
+  /**
+   * Check if user has completed a specific mock exam
+   */
+  async hasCompletedMockExam(userId: string, mockExamId: string): Promise<boolean> {
+    const db = await connectDB();
+
+    const usage = await db.collection('usage').findOne({ userId });
+    const completedMockExamIds = (usage?.completedMockExamIds as string[]) || [];
+
+    return completedMockExamIds.includes(mockExamId);
+  },
+
+  /**
+   * Get all completed mock exam IDs for a user
+   */
+  async getCompletedMockExamIds(userId: string): Promise<string[]> {
+    const db = await connectDB();
+
+    const usage = await db.collection('usage').findOne({ userId });
+    const completedMockExamIds = (usage?.completedMockExamIds as string[]) || [];
+
+    return completedMockExamIds;
+  },
+
+  /**
+   * Mark mock exam as completed
+   */
+  async markMockExamCompleted(userId: string, mockExamId: string): Promise<void> {
+    const db = await connectDB();
+    
+    await db.collection('usage').updateOne(
+      { userId },
+      {
+        $addToSet: { completedMockExamIds: mockExamId },
+        $unset: {
+          activeMockExamId: '',
+          activeMockExamSessionId: '',
+        },
+        $set: {
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      { upsert: true }
+    );
+  },
 };
 

@@ -22,8 +22,10 @@ export const resultsController = {
 
     const limit = parseInt(req.query.limit as string) || 50;
     const skip = parseInt(req.query.skip as string) || 0;
+    const mockExamId = req.query.mockExamId as string;
+    const module = req.query.module as string;
 
-    const results = await resultsService.findByUserId(authenticatedUserId || '', limit, skip);
+    const results = await resultsService.findByUserId(authenticatedUserId || '', limit, skip, mockExamId, module);
 
     res.json(results);
   }),

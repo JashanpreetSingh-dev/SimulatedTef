@@ -10,6 +10,22 @@ export interface Question {
   explanation: string;
 }
 
+// Reading/Listening Question (stored in MongoDB)
+export interface ReadingListeningQuestion {
+  questionId: string; // Unique question identifier (e.g., "reading_1_q1")
+  taskId: string; // Foreign key to task (references task.taskId)
+  type: 'reading' | 'listening'; // Question type (only for MCQ questions)
+  questionNumber: number; // Question number within task (1-40)
+  question: string; // Question text
+  questionText?: string; // Optional: Question-specific text/passage (for reading questions that reference specific parts)
+  options: string[]; // Array of exactly 4 answer options
+  correctAnswer: number; // Index 0-3 indicating correct option
+  explanation: string; // Explanation of why the correct answer is right
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface TEFTask {
   id: number;
   section: string;
@@ -42,6 +58,69 @@ export interface ExamScenario {
     partA: TEFTask;
     partB: TEFTask;
   };
+}
+
+// Reading Task (stored in MongoDB)
+export interface ReadingTask {
+  taskId: string; // Unique identifier
+  type: 'reading';
+  prompt: string; // Main instruction/prompt
+  content: string; // Reading passage text
+  timeLimitSec: number; // Time limit in seconds, typically 3600 for 60 minutes
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Listening Task (stored in MongoDB)
+export interface ListeningTask {
+  taskId: string; // Unique identifier
+  type: 'listening';
+  prompt: string; // Main instruction/prompt
+  audioUrl: string; // Audio file path
+  timeLimitSec: number; // Time limit in seconds, typically 2400 for 40 minutes
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Base Task interface (unified for all types)
+export interface Task {
+  taskId: string; // Unique identifier
+  type: 'oralA' | 'oralB' | 'reading' | 'listening';
+  prompt: string; // Main instruction/prompt
+  timeLimitSec: number;
+  
+  // Type-specific content (only one will be populated based on type)
+  image?: string; // For oralA/oralB - image path
+  content?: string; // For reading - passage text
+  audioUrl?: string; // For listening - audio file path
+  
+  // Type-specific data
+  suggested_questions?: string[]; // For oralA only
+  counter_arguments?: string[]; // For oralB only
+  
+  // Metadata
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// MCQ Result with question-by-question breakdown
+export interface MCQResult {
+  taskId: string;
+  answers: number[]; // User's selected answers (40 answers for Reading/Listening)
+  score: number; // Score out of 40 (number of correct answers)
+  totalQuestions: number; // Always 40 for Reading/Listening
+  questionResults: Array<{
+    questionId: string;
+    question: string; // Question text (for display in results)
+    options: string[]; // All 4 options (for display in results)
+    userAnswer: number; // Selected answer index
+    correctAnswer: number; // Correct answer index
+    isCorrect: boolean;
+    explanation: string; // Explanation shown if user got it wrong (or always shown)
+  }>; // Question-by-question breakdown for results display
 }
 
 export interface UpgradedSentence {
@@ -92,6 +171,18 @@ export interface SavedResult extends EvaluationResult, MongoDocument {
   taskPartA?: TEFTask; // Task data for Section A
   taskPartB?: TEFTask; // Task data for Section B
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
+  // Mock exam fields
+  mockExamId?: string; // Unique identifier for this mock exam (e.g., "oralA_1-oralB_2-reading_3-listening_4")
+  module?: 'oralExpression' | 'reading' | 'listening'; // Module this result belongs to
+  readingResult?: MCQResult; // Reading module result (score out of 40)
+  listeningResult?: MCQResult; // Listening module result (score out of 40)
+  oralExpressionResult?: {
+    clbLevel: number;
+    feedback: string;
+    strengths: string[];
+    weaknesses: string[];
+    // ... existing oral expression result structure
+  };
 }
 
 export interface UserProfile extends MongoDocument {

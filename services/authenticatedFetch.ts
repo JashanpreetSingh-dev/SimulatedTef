@@ -2,7 +2,10 @@
  * Utility for making authenticated fetch requests with automatic token refresh on 401 errors
  */
 
-const isDev = import.meta.env.DEV || process.env.NODE_ENV !== 'production';
+// Check if we're in a Vite environment (client-side) or Node.js (server-side)
+const isDev = typeof import.meta !== 'undefined' && import.meta.env 
+  ? import.meta.env.DEV 
+  : process.env.NODE_ENV !== 'production';
 
 export interface AuthenticatedFetchOptions extends RequestInit {
   /**

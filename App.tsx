@@ -5,6 +5,7 @@ import { OralExpressionLive } from './components/OralExpressionLive';
 import { HistoryList } from './components/HistoryList';
 import { DetailedResultView } from './components/DetailedResultView';
 import { LoadingResult } from './components/LoadingResult';
+import { MockExamView } from './components/MockExamView';
 import { SavedResult } from './types';
 import { getRandomTasks, getTaskById } from './services/tasks';
 import { persistenceService } from './services/persistence';
@@ -915,8 +916,8 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Desktop: 3-column grid */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6">
+        {/* Desktop: 4-column grid (3 exam types + mock exam) */}
+        <div className="hidden md:grid md:grid-cols-4 gap-6">
           <div className="bg-indigo-100 dark:bg-slate-800/50 rounded-3xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group cursor-pointer" onClick={() => startExam('partA')}>
             <div className="flex items-start justify-between mb-6">
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">📞</div>
@@ -1033,6 +1034,46 @@ function Dashboard() {
               Commencer <span className="ml-2">→</span>
             </div>
           </div>
+
+          {/* Mock Exam Card */}
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-8 shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transition-all group cursor-pointer" onClick={() => navigate('/mock-exam')}>
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform">📚</div>
+              {status && (
+                <div className="text-right">
+                  <div className="text-xs text-purple-100 mb-1">Available</div>
+                  <div className="text-2xl font-black text-white">
+                    {(() => {
+                      const dailyRemaining = status.limits.fullTests > 0 
+                        ? Math.max(0, status.limits.fullTests - status.usage.fullTestsUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.fullTests.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
+                    <div className="text-xs text-purple-200 mt-1">
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
+                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                      )}
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
+                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Mock Exam</h3>
+            <p className="text-purple-100 text-sm leading-relaxed">
+              Complete 3-module exam: Oral Expression, Reading, and Listening
+            </p>
+            <div className="mt-6 flex items-center text-white font-bold text-sm">
+              Start Mock Exam <span className="ml-2">→</span>
+            </div>
+          </div>
         </div>
       </main>
     </DashboardLayout>
@@ -1108,9 +1149,21 @@ function ResultView() {
   }, [id, user, getToken]);
 
   if (loading) {
+    // For reading/listening results, show a simple loading state (they're scored instantly)
+    // For oral expression results, check if we have the result ID to determine if it needs evaluation
+    // Since we're loading from localStorage first, if it's not there it might be evaluating
+    // But for reading/listening, results are always ready, so show simple spinner
     return (
       <DashboardLayout>
-        <LoadingResult />
+        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 flex items-center justify-center p-8">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 relative">
+              <div className="absolute inset-0 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
+              <div className="absolute inset-0 border-4 border-indigo-500 dark:border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
+            <p className="text-slate-600 dark:text-slate-400 font-medium">Chargement des résultats...</p>
+          </div>
+        </div>
       </DashboardLayout>
     );
   }
@@ -1141,7 +1194,7 @@ function ResultView() {
         <div className="max-w-7xl mx-auto">
           <DetailedResultView 
             result={result} 
-            onBack={() => navigate('/history')} 
+            onBack={() => navigate(result.mockExamId ? `/mock-exam/${result.mockExamId}` : '/history')} 
           />
         </div>
       </div>
@@ -1368,7 +1421,7 @@ function ExamView() {
           <div className="max-w-7xl mx-auto">
             <DetailedResultView 
               result={result} 
-              onBack={() => navigate('/history')} 
+              onBack={() => navigate(result.mockExamId ? `/mock-exam/${result.mockExamId}` : '/history')} 
             />
           </div>
         </div>
@@ -1418,7 +1471,7 @@ function ExamView() {
           >
             ← {t('back.dashboard')}
           </button>
-          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} mode={mode} />}
+          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} />}
           <ExamWarningModal
             isOpen={showWarning}
             onConfirm={handleConfirmWarning}
@@ -1456,6 +1509,16 @@ function ProtectedRoutes() {
         <Route path="/history" element={<HistoryView />} />
         <Route path="/results/:id" element={<ResultView />} />
         <Route path="/exam/:mode" element={<ExamView />} />
+        <Route path="/mock-exam/:mockExamId" element={
+          <DashboardLayout>
+            <MockExamView />
+          </DashboardLayout>
+        } />
+        <Route path="/mock-exam" element={
+          <DashboardLayout>
+            <MockExamView />
+          </DashboardLayout>
+        } />
         <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
         <Route path="/pricing" element={<PricingView />} />
         <Route path="/terms" element={<TermsOfService />} />

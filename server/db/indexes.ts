@@ -143,6 +143,106 @@ export async function createIndexes(): Promise<void> {
     );
     console.log('✅ Created index: webhookEvents.processed_processedAt_idx');
     
+    // Reading Tasks collection indexes
+    const readingTasksCollection = db.collection('readingTasks');
+    
+    // Unique index on taskId
+    await readingTasksCollection.createIndex(
+      { taskId: 1 },
+      { name: 'taskId_idx', unique: true }
+    );
+    console.log('✅ Created index: readingTasks.taskId_idx');
+    
+    // Compound index for filtering active tasks by type
+    await readingTasksCollection.createIndex(
+      { isActive: 1, type: 1 },
+      { name: 'isActive_type_idx' }
+    );
+    console.log('✅ Created index: readingTasks.isActive_type_idx');
+    
+    // Listening Tasks collection indexes
+    const listeningTasksCollection = db.collection('listeningTasks');
+    
+    // Unique index on taskId
+    await listeningTasksCollection.createIndex(
+      { taskId: 1 },
+      { name: 'taskId_idx', unique: true }
+    );
+    console.log('✅ Created index: listeningTasks.taskId_idx');
+    
+    // Compound index for filtering active tasks by type
+    await listeningTasksCollection.createIndex(
+      { isActive: 1, type: 1 },
+      { name: 'isActive_type_idx' }
+    );
+    console.log('✅ Created index: listeningTasks.isActive_type_idx');
+    
+    // Questions collection indexes
+    const questionsCollection = db.collection('questions');
+    
+    // Compound index for fetching questions by taskId sorted by questionNumber
+    await questionsCollection.createIndex(
+      { taskId: 1, questionNumber: 1 },
+      { name: 'taskId_questionNumber_idx' }
+    );
+    console.log('✅ Created index: questions.taskId_questionNumber_idx');
+    
+    // Unique index on questionId
+    await questionsCollection.createIndex(
+      { questionId: 1 },
+      { name: 'questionId_idx', unique: true }
+    );
+    console.log('✅ Created index: questions.questionId_idx');
+    
+    // Index for filtering active questions
+    await questionsCollection.createIndex(
+      { isActive: 1 },
+      { name: 'isActive_idx' }
+    );
+    console.log('✅ Created index: questions.isActive_idx');
+    
+    // Results collection - add indexes for mock exam results
+    // Unique constraint for sessionId + module (prevents duplicate results per module)
+    await resultsCollection.createIndex(
+      { sessionId: 1, module: 1 },
+      { name: 'sessionId_module_idx', unique: true, sparse: true }
+    );
+    console.log('✅ Created index: results.sessionId_module_idx');
+    
+    // Index for querying results by mockExamId
+    await resultsCollection.createIndex(
+      { mockExamId: 1, createdAt: -1 },
+      { name: 'mockExamId_createdAt_idx', sparse: true }
+    );
+    console.log('✅ Created index: results.mockExamId_createdAt_idx');
+    
+    // Exam Sessions collection - add indexes for mock exam sessions
+    await examSessionsCollection.createIndex(
+      { mockExamId: 1, userId: 1 },
+      { name: 'mockExamId_userId_idx', sparse: true }
+    );
+    console.log('✅ Created index: examSessions.mockExamId_userId_idx');
+    
+    // Usage collection - add indexes for mock exam tracking
+    await usageCollection.createIndex(
+      { activeMockExamId: 1 },
+      { name: 'activeMockExamId_idx', sparse: true }
+    );
+    console.log('✅ Created index: usage.activeMockExamId_idx');
+    
+    // Mock Exams indexes
+    await db.collection('mockExams').createIndex(
+      { mockExamId: 1 },
+      { unique: true, name: 'mockExamId_idx' }
+    );
+    console.log('✅ Created index: mockExams.mockExamId_idx');
+    
+    await db.collection('mockExams').createIndex(
+      { isActive: 1 },
+      { name: 'isActive_idx' }
+    );
+    console.log('✅ Created index: mockExams.isActive_idx');
+    
     console.log('✅ All database indexes created successfully');
   } catch (error: any) {
     console.error('❌ Error creating indexes:', error.message);

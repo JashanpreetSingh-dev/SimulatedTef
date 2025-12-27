@@ -6,7 +6,9 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { subscriptionService } from '../services/subscriptionService';
 import { asyncHandler } from '../middleware/errorHandler';
+import { mcqSubmissionLimiter } from '../middleware/rateLimiter';
 import { Request, Response } from 'express';
+import { connectDB } from '../db/connection';
 
 const router = Router();
 
@@ -17,7 +19,31 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { examType } = req.body;
+  const { examType, mockExamId } = req.body;
+
+  // Handle mock exam start
+  if (mockExamId) {
+    const { mockExamController } = await import('../controllers/mockExamController');
+
+    // Check if user can start this mock exam
+    const canStart = await mockExamController.canStartMockExam(userId, mockExamId);
+    if (!canStart) {
+      return res.status(403).json({ error: 'Cannot start mock exam' });
+    }
+
+    // Create mock exam session
+    const sessionResult = await mockExamController.createMockExamSession(userId, mockExamId);
+    if (!sessionResult.success) {
+      return res.status(400).json({ error: sessionResult.error || 'Failed to create mock exam session' });
+    }
+
+    return res.json({
+      sessionId: sessionResult.sessionId,
+      mockExamId: mockExamId
+    });
+  }
+
+  // Handle regular exam start
   if (!examType || !['full', 'partA', 'partB'].includes(examType)) {
     return res.status(400).json({ error: 'Invalid exam type' });
   }
@@ -69,6 +95,271 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
 
   await subscriptionService.completeExamSession(userId, sessionId, resultId, status);
   res.json({ success: true });
+}));
+
+// ===== Mock Exam Endpoints =====
+
+// GET /api/exam/mock-exams - List available mock exams for user
+router.get('/mock-exams', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const mockExams = await mockExamController.listAvailableMockExams(userId);
+  res.json(mockExams);
+}));
+
+// POST /api/exam/select-mock - Select/create mock exam
+router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    // Check for active mock exam
+    const activeMockExam = await subscriptionService.getActiveMockExam(userId);
+    if (activeMockExam) {
+      return res.status(400).json({ 
+        error: 'You have an incomplete mock exam. Complete it first or abandon it.',
+        activeMockExamId: activeMockExam.mockExamId 
+      });
+    }
+
+    const { predefinedMockExamId } = req.body; // Optional: predefined mock exam ID
+    
+    // Note: We don't check credits here because canStartExam consumes credits
+    // The mock exam controller will check and consume credits in its transaction
+    // Import mock exam controller
+    const { mockExamController } = await import('../controllers/mockExamController');
+    const result = await mockExamController.selectMockExam(userId, predefinedMockExamId);
+    
+    res.json(result);
+  } catch (error: any) {
+    console.error('Error in /select-mock endpoint:', error);
+    throw error; // Let asyncHandler handle it
+  }
+}));
+
+// GET /api/exam/mock/:mockExamId/status - Get mock exam status
+router.get('/mock/:mockExamId/status', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamId } = req.params;
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const status = await mockExamController.getMockExamStatus(userId, mockExamId);
+  
+  if (!status) {
+    return res.status(404).json({ error: 'Mock exam not found' });
+  }
+  
+  res.json(status);
+}));
+
+// GET /api/exam/mock/:mockExamId/modules - Get modules for mock exam
+router.get('/mock/:mockExamId/modules', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamId } = req.params;
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const modules = await mockExamController.getMockExamModules(userId, mockExamId);
+  
+  if (!modules) {
+    return res.status(404).json({ error: 'Mock exam not found' });
+  }
+  
+  res.json(modules);
+}));
+
+// POST /api/exam/start-module - Start a specific module within mock exam
+router.post('/start-module', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamId, module } = req.body;
+  
+  if (!mockExamId || !module) {
+    return res.status(400).json({ error: 'mockExamId and module are required' });
+  }
+  
+  if (!['reading', 'listening'].includes(module)) {
+    return res.status(400).json({ error: 'Invalid module. Must be reading or listening' });
+  }
+
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const result = await mockExamController.startModule(userId, mockExamId, module);
+  
+  if (!result) {
+    return res.status(404).json({ error: 'Mock exam not found' });
+  }
+  
+  res.json(result);
+}));
+
+// POST /api/exam/complete-module - Complete a module and save result
+router.post('/complete-module', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamId, module, result } = req.body;
+  
+  if (!mockExamId || !module || !result) {
+    return res.status(400).json({ error: 'mockExamId, module, and result are required' });
+  }
+  
+  if (!['oralExpression', 'reading', 'listening'].includes(module)) {
+    return res.status(400).json({ error: 'Invalid module' });
+  }
+
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const completionResult = await mockExamController.completeModule(userId, mockExamId, module, result);
+  
+  if (!completionResult) {
+    return res.status(404).json({ error: 'Mock exam not found' });
+  }
+  
+  res.json(completionResult);
+}));
+
+// GET /api/exam/mock/status - Check for active and completed mock exams
+router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const activeMockExam = await subscriptionService.getActiveMockExam(userId);
+  let completedMockExamIds = await subscriptionService.getCompletedMockExamIds(userId);
+  const originalCompletedIds = [...completedMockExamIds];
+
+  // Filter out completed exam IDs that don't correspond to real exams or don't have results
+  if (completedMockExamIds.length > 0) {
+    const { mockExamController } = await import('../controllers/mockExamController');
+    const allExams = await mockExamController.listAllMockExams();
+    const validExamIds = allExams.map(exam => exam.mockExamId);
+
+    // Also check that completed exams have results
+    const db = await connectDB();
+    const examsWithResults = [];
+
+    for (const examId of completedMockExamIds) {
+      if (!validExamIds.includes(examId)) continue;
+
+      // Check if this exam has results for the user
+      const resultCount = await db.collection('results').countDocuments({
+        userId,
+        mockExamId: examId
+      });
+
+      if (resultCount > 0) {
+        examsWithResults.push(examId);
+      }
+    }
+
+    completedMockExamIds = examsWithResults;
+
+    // Clean up invalid completed exam IDs from user's usage document
+    if (examsWithResults.length !== originalCompletedIds.length) {
+      const db = await connectDB();
+      await db.collection('usage').updateOne(
+        { userId },
+        { $set: { completedMockExamIds: examsWithResults } },
+        { upsert: true }
+      );
+    }
+  }
+
+  if (activeMockExam) {
+    const { mockExamController } = await import('../controllers/mockExamController');
+    const status = await mockExamController.getMockExamStatus(userId, activeMockExam.mockExamId);
+
+    // Check if this active exam is actually fully completed
+    const isFullyCompleted = status && status.completedModules.length === 2 &&
+                           status.completedModules.includes('reading') &&
+                           status.completedModules.includes('listening');
+
+    if (isFullyCompleted) {
+      // If fully completed, don't return as active, just add to completed list
+      const updatedCompletedIds = [...completedMockExamIds];
+      if (!updatedCompletedIds.includes(activeMockExam.mockExamId)) {
+        updatedCompletedIds.push(activeMockExam.mockExamId);
+      }
+
+      res.json({
+        hasActiveMockExam: false,
+        completedMockExamIds: updatedCompletedIds
+      });
+    } else {
+      // Return as active only if not fully completed
+      res.json({
+        hasActiveMockExam: true,
+        activeMockExam: status,
+        completedMockExamIds
+      });
+    }
+  } else {
+    res.json({
+      hasActiveMockExam: false,
+      completedMockExamIds
+    });
+  }
+}));
+
+// GET /api/exam/resume-mock/:mockExamId - Resume an incomplete mock exam
+router.get('/resume-mock/:mockExamId', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { mockExamId } = req.params;
+  const { mockExamController } = await import('../controllers/mockExamController');
+  const status = await mockExamController.resumeMockExam(userId, mockExamId);
+  
+  if (!status) {
+    return res.status(404).json({ error: 'Mock exam not found' });
+  }
+  
+  res.json(status);
+}));
+
+// POST /api/exam/submit-mcq - Submit MCQ answers for Reading/Listening
+router.post('/submit-mcq', requireAuth, mcqSubmissionLimiter, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { taskId, answers, module, mockExamId, sessionId } = req.body;
+  
+  if (!taskId || !answers || !module || !mockExamId || !sessionId) {
+    return res.status(400).json({ error: 'taskId, answers, module, mockExamId, and sessionId are required' });
+  }
+  
+  if (!Array.isArray(answers) || answers.length > 40) {
+    return res.status(400).json({ error: 'answers must be an array of at most 40 numbers (0-3)' });
+  }
+  
+  if (!['reading', 'listening'].includes(module)) {
+    return res.status(400).json({ error: 'module must be reading or listening' });
+  }
+
+  const { mcqController } = await import('../controllers/mcqController');
+  const result = await mcqController.submitMCQ(userId, taskId, answers, module, mockExamId, sessionId);
+  
+  res.json(result);
 }));
 
 export default router;

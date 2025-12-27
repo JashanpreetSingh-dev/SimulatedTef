@@ -11,23 +11,52 @@ const MAX_LIMIT = 100;
 
 export const resultsService = {
   /**
-   * Find results by user ID with pagination
+   * Find results by user ID with pagination and optional filters
    */
   async findByUserId(
     userId: string,
     limit: number = DEFAULT_LIMIT,
-    skip: number = 0
+    skip: number = 0,
+    mockExamId?: string,
+    module?: string
   ): Promise<SavedResult[]> {
     const db = await connectDB();
-    
+
+    // Build filter query
+    const filter: any = { userId };
+    if (mockExamId) {
+      filter.mockExamId = mockExamId;
+    }
+    if (module) {
+      filter.module = module;
+    }
+
     const results = await db.collection('results')
-      .find({ userId })
+      .find(filter)
       .sort({ timestamp: -1 })
       .limit(Math.min(limit, MAX_LIMIT))
       .skip(skip)
       .toArray();
-    
+
     return results as unknown as SavedResult[];
+  },
+
+  /**
+   * Update result metadata (for adding mock exam fields)
+   */
+  async updateResultMetadata(resultId: string, metadata: { mockExamId: string; module: string }): Promise<void> {
+    const db = await connectDB();
+
+    await db.collection('results').updateOne(
+      { _id: new ObjectId(resultId) },
+      {
+        $set: {
+          mockExamId: metadata.mockExamId,
+          module: metadata.module,
+          updatedAt: new Date().toISOString(),
+        },
+      }
+    );
   },
 
   /**

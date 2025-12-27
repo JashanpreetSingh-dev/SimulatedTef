@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { SavedResult, UpgradedSentence, TEFTask } from '../types';
 import { authenticatedFetch } from '../services/authenticatedFetch';
+import { QuestionResultsView } from './QuestionResultsView';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -116,6 +117,44 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
     return tasks;
   }, [result.mode, result.taskPartA, result.taskPartB]);
 
+  // For reading/listening results, show simple header
+  if (result.module === 'reading' || result.module === 'listening') {
+    return (
+      <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
+        {/* Header with Back Button */}
+        <button
+          onClick={onBack}
+          className="text-indigo-400 dark:text-indigo-300 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:opacity-70 transition-opacity"
+        >
+          <span>←</span> Retour à la liste
+        </button>
+
+        {/* Simple Header */}
+        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 shadow-sm transition-colors">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100">
+            {result.module === 'reading' ? 'Reading Comprehension' : 'Listening Comprehension'} Results
+          </h2>
+        </div>
+
+        {/* Question Results */}
+        {result.module === 'reading' && result.readingResult && (
+          <QuestionResultsView
+            result={result.readingResult}
+            moduleName="Reading"
+          />
+        )}
+
+        {result.module === 'listening' && result.listeningResult && (
+          <QuestionResultsView
+            result={result.listeningResult}
+            moduleName="Listening"
+          />
+        )}
+      </div>
+    );
+  }
+
+  // For oral expression results, show full detailed view
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
       {/* Header with Back Button */}
@@ -270,12 +309,6 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
         </div>
       )}
 
-      {/* Main Result Card */}
-      <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl sm:rounded-[3rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-8 md:p-12 shadow-sm transition-colors">
-        {/* Title Section */}
-        <div className="mb-6 sm:mb-12 pb-4 sm:pb-8 border-b border-slate-200 dark:border-slate-700">
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">{result.title}</h3>
-        </div>
 
         {/* Transcript */}
         {result.transcript && (
@@ -348,46 +381,6 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
           </div>
         )}
 
-        {/* Strengths and Weaknesses */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-12">
-          {/* Strengths */}
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 sm:p-8 rounded-xl sm:rounded-[2rem] border border-emerald-100 dark:border-emerald-800 transition-colors">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-emerald-400 dark:text-emerald-300 mb-4 sm:mb-6 tracking-widest flex items-center gap-2">
-              <span>✓</span> Points Forts
-            </h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {result.strengths && result.strengths.length > 0 ? (
-                result.strengths.map((strength, i) => (
-                  <li key={i} className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed flex items-start gap-2">
-                    <span className="text-emerald-500 dark:text-emerald-400 mt-1">•</span>
-                    <span>{strength}</span>
-                  </li>
-                ))
-              ) : (
-                <li className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic">Aucun point fort identifié</li>
-              )}
-            </ul>
-          </div>
-
-          {/* Weaknesses */}
-          <div className="bg-rose-50 dark:bg-rose-900/20 p-4 sm:p-8 rounded-xl sm:rounded-[2rem] border border-rose-100 dark:border-rose-800 transition-colors">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 mb-4 sm:mb-6 tracking-widest flex items-center gap-2">
-              <span>!</span> Points à Améliorer
-            </h4>
-            <ul className="space-y-2 sm:space-y-3">
-              {result.weaknesses && result.weaknesses.length > 0 ? (
-                result.weaknesses.map((weakness, i) => (
-                  <li key={i} className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed flex items-start gap-2">
-                    <span className="text-rose-300 dark:text-rose-400 mt-1">•</span>
-                    <span>{weakness}</span>
-                  </li>
-                ))
-              ) : (
-                <li className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic">Aucun point à améliorer identifié</li>
-              )}
-            </ul>
-          </div>
-        </div>
 
         {/* Top Improvements */}
         {topImprovements.length > 0 && (
@@ -451,33 +444,7 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
           </div>
         )}
 
-        {/* Grammar and Vocabulary Notes */}
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8 mb-6 sm:mb-12">
-          <div className="bg-indigo-100/70 dark:bg-slate-700/50 p-4 sm:p-8 rounded-xl sm:rounded-[2rem] border border-slate-200 dark:border-slate-600 transition-colors">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3 sm:mb-4 tracking-widest">Notes de Grammaire</h4>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed italic">
-              {result.grammarNotes || "Aucune note spécifique"}
-            </p>
-          </div>
-          <div className="bg-indigo-100/70 dark:bg-slate-700/50 p-4 sm:p-8 rounded-xl sm:rounded-[2rem] border border-slate-200 dark:border-slate-600 transition-colors">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3 sm:mb-4 tracking-widest">Notes de Vocabulaire</h4>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed italic">
-              {result.vocabularyNotes || "Aucune note spécifique"}
-            </p>
-          </div>
-        </div>
 
-        {/* General Feedback */}
-        {result.feedback && (
-          <div className="p-4 sm:p-8 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl sm:rounded-[2rem] border border-indigo-200 dark:border-indigo-800 transition-colors">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-indigo-400 dark:text-indigo-300 mb-3 sm:mb-4 tracking-widest">Commentaire Général</h4>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              {result.feedback}
-            </p>
-          </div>
-        )}
-
-      </div>
     </div>
   );
 };
