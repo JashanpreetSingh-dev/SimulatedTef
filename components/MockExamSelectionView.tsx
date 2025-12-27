@@ -186,18 +186,14 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
           </div>
 
           {/* Tabs */}
-          <div className="flex space-x-1 mb-6">
+          <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-6">
             <button
               onClick={() => setActiveTab('mock-test')}
               className={`
-                px-6 py-3 rounded-lg font-semibold transition-all
+                flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all
                 ${activeTab === 'mock-test'
-                  ? theme === 'dark'
-                    ? 'bg-indigo-600 text-white shadow-lg'
-                    : 'bg-indigo-600 text-white shadow-lg'
-                  : theme === 'dark'
-                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }
               `}
             >
@@ -206,14 +202,10 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
             <button
               onClick={() => setActiveTab('completed')}
               className={`
-                px-6 py-3 rounded-lg font-semibold transition-all relative
+                flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all relative
                 ${activeTab === 'completed'
-                  ? theme === 'dark'
-                    ? 'bg-green-600 text-white shadow-lg'
-                    : 'bg-green-600 text-white shadow-lg'
-                  : theme === 'dark'
-                  ? 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-                  : 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50'
+                  ? 'bg-indigo-100 dark:bg-indigo-900/50 text-green-400 dark:text-green-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }
               `}
             >
@@ -332,7 +324,16 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                 {isComplete ? 'Complete' : isIncomplete ? 'Incomplete' : 'New'}
                               </span>
                               {hasStarted && (
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
+                                  <div className={`
+                                    px-2 py-1 rounded text-xs font-medium
+                                    ${activeMockExam.completedModules.includes('oralExpression')
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                      : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                                    }
+                                  `}>
+                                    Expression Orale: {activeMockExam.completedModules.includes('oralExpression') ? '✓' : '○'}
+                                  </div>
                                   <div className={`
                                     px-2 py-1 rounded text-xs font-medium
                                     ${activeMockExam.completedModules.includes('reading')
@@ -355,7 +356,10 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                               )}
                             </div>
                     {!hasStarted && (
-                      <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
+                          Expression Orale
+                        </div>
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
                           Reading (40 Q - sequential)
                         </div>

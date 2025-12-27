@@ -66,34 +66,34 @@ export const HistoryList: React.FC = () => {
   return (
     <div className="h-full flex flex-col animate-in fade-in duration-700">
       {/* Tabs for filtering - fixed */}
-      <div className="flex-shrink-0 bg-indigo-100/70 dark:bg-slate-800/70 pb-0 transition-colors">
-        <div className="flex gap-1 sm:gap-2 border-b border-slate-200 dark:border-slate-700 overflow-x-auto scrollbar-hide bg-indigo-100/70 dark:bg-slate-800/70 transition-colors">
+      <div className="flex-shrink-0 mb-6">
+        <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setFilterMode('partA')}
-            className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
+            className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 ${
               filterMode === 'partA'
-                ? 'text-blue-400 dark:text-blue-400 border-b-2 border-blue-400 dark:border-blue-400'
-                : 'text-slate-500 dark:text-slate-400 hover:text-blue-400 dark:hover:text-blue-400'
+                ? 'bg-indigo-100 dark:bg-indigo-900/50 text-blue-400 dark:text-blue-400 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             A
           </button>
           <button
             onClick={() => setFilterMode('partB')}
-            className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
+            className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 ${
               filterMode === 'partB'
-                ? 'text-emerald-400 dark:text-emerald-400 border-b-2 border-emerald-400 dark:border-emerald-400'
-                : 'text-slate-500 dark:text-slate-400 hover:text-emerald-400 dark:hover:text-emerald-400'
+                ? 'bg-indigo-100 dark:bg-indigo-900/50 text-emerald-400 dark:text-emerald-400 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             B
           </button>
           <button
             onClick={() => setFilterMode('full')}
-            className={`px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap flex-shrink-0 ${
+            className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 ${
               filterMode === 'full'
-                ? 'text-indigo-400 dark:text-indigo-400 border-b-2 border-indigo-400 dark:border-indigo-400'
-                : 'text-slate-500 dark:text-slate-400 hover:text-indigo-400 dark:hover:text-indigo-400'
+                ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             Complet

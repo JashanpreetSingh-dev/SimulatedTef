@@ -906,12 +906,52 @@ function Dashboard() {
                 </div>
               )}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">Examen Complet</h3>
+            <h3 className="text-lg font-bold text-white mb-1">Expression Orale - Complet</h3>
             <p className="text-indigo-100 text-xs leading-relaxed mb-3">
               Enchaînez les deux sections pour une simulation réelle. (12 min)
             </p>
             <div className="flex items-center text-white font-bold text-xs">
               Commencer <span className="ml-1">→</span>
+            </div>
+          </div>
+
+          {/* Mock Exam Card */}
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-5 shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transition-all group cursor-pointer" onClick={() => navigate('/mock-exam')}>
+            <div className="flex items-start justify-between mb-4">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl group-hover:rotate-12 transition-transform">📚</div>
+              {status && (
+                <div className="text-right">
+                  <div className="text-xs text-purple-100 mb-1">Available</div>
+                  <div className="text-lg font-black text-white">
+                    {(() => {
+                      const dailyRemaining = status.limits.fullTests > 0 
+                        ? Math.max(0, status.limits.fullTests - status.usage.fullTestsUsed)
+                        : 0;
+                      const packRemaining = status.packCredits?.fullTests.remaining || 0;
+                      const total = dailyRemaining + packRemaining;
+                      return total > 0 ? total : '0';
+                    })()}
+                  </div>
+                  {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
+                    <div className="text-xs text-purple-200 mt-0.5">
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
+                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                      )}
+                      {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
+                      {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
+                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+            <h3 className="text-lg font-bold text-white mb-1">Mock Exam</h3>
+            <p className="text-purple-100 text-xs leading-relaxed mb-3">
+              Complete 3-module exam: Oral Expression, Reading, and Listening
+            </p>
+            <div className="flex items-center text-white font-bold text-xs">
+              Start Mock Exam <span className="ml-1">→</span>
             </div>
           </div>
         </div>
@@ -1026,7 +1066,7 @@ function Dashboard() {
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Examen Complet</h3>
+            <h3 className="text-xl font-bold text-white mb-2">Expression Orale - Complet</h3>
             <p className="text-indigo-100 text-sm leading-relaxed">
               Enchaînez les deux sections pour une simulation réelle. (12 min)
             </p>

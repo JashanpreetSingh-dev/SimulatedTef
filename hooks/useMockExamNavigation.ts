@@ -54,10 +54,8 @@ export function useMockExamNavigation({
         }
       );
 
-      if (status.hasActiveMockExam && status.activeMockExam) {
-        // Navigate to the route with mockExamId to maintain URL state
-        navigate(`/mock-exam/${status.activeMockExam.mockExamId}`, { replace: true });
-      }
+      // Don't automatically navigate - let user choose from selection screen
+      // The active mock exam will be shown in the selection screen with "Resume" button
     } catch (error) {
       console.error('Failed to check existing mock exam:', error);
       // If check fails, just show selection screen
@@ -95,28 +93,33 @@ export function useMockExamNavigation({
         sessionId = status.sessionId;
         onSessionIdSet(sessionId);
       } else {
-        // No sessionId means it might be completed or we need to resume
-        // Try to resume to get sessionId (this will fail gracefully if it's completed)
-        try {
-          const resumeData = await authenticatedFetchJSON<{
-            sessionId: string;
-            completedModules: string[];
-          }>(
-            `${BACKEND_URL}/api/exam/resume-mock/${examId}`,
-            {
-              method: 'GET',
-              getToken,
-            }
-          );
-          sessionId = resumeData.sessionId;
-          onSessionIdSet(sessionId);
-          // Update completed modules from resume data
-          const updatedModules = resumeData.completedModules || [];
-          onCompletedModulesSet(updatedModules);
-        } catch (resumeError) {
-          // Resume failed - likely a completed exam, no sessionId needed
-          // sessionId remains null, which is fine for viewing completed exams
+        // No sessionId - check if this is a completed exam (all modules completed)
+        // If all modules are completed, sessionId can be null
+        if (completedModules.length === 3) {
+          // All modules completed - this is fine, no sessionId needed
           onSessionIdSet(null);
+        } else {
+          // Not all modules completed but no session - try to resume
+          try {
+            const resumeData = await authenticatedFetchJSON<{
+              sessionId: string;
+              completedModules: string[];
+            }>(
+              `${BACKEND_URL}/api/exam/resume-mock/${examId}`,
+              {
+                method: 'GET',
+                getToken,
+              }
+            );
+            sessionId = resumeData.sessionId;
+            onSessionIdSet(sessionId);
+            // Update completed modules from resume data
+            const updatedModules = resumeData.completedModules || [];
+            onCompletedModulesSet(updatedModules);
+          } catch (resumeError) {
+            // Resume failed - sessionId remains null
+            onSessionIdSet(null);
+          }
         }
       }
       
@@ -124,8 +127,9 @@ export function useMockExamNavigation({
     } catch (error) {
       console.error('Failed to load mock exam from URL:', error);
       // If status fails, assume it's completed and show all modules as completed
-      const completedModules = ['reading', 'listening'];
+      const completedModules = ['oralExpression', 'reading', 'listening'];
       onCompletedModulesSet(completedModules);
+      onSessionIdSet(null);
       return { sessionId: null, completedModules };
     } finally {
       onInitializingSet(false);

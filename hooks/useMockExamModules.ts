@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
 import { getReadingTaskWithQuestions, getListeningTaskWithQuestions } from '../services/tasks';
-import { MCQResult, ReadingTask, ListeningTask, ReadingListeningQuestion } from '../types';
+import { MCQResult, ReadingTask, ListeningTask, ReadingListeningQuestion, SavedResult, TEFTask } from '../types';
 import { MockExamPhase } from './useMockExamState';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export interface ModuleStartData {
+  oralExpression?: { scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } };
   reading?: { task: ReadingTask; questions: ReadingListeningQuestion[] };
   listening?: { task: ListeningTask; questions: ReadingListeningQuestion[] };
 }
@@ -19,6 +20,7 @@ export interface UseMockExamModulesOptions {
   onPhaseSet: (phase: MockExamPhase) => void;
   onCompletedModulesSet: (modules: string[]) => void;
   onJustCompletedModuleSet: (module: string | null) => void;
+  onOralExpressionScenarioSet: (scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } | null) => void;
   onReadingTaskSet: (task: ReadingTask | null) => void;
   onReadingQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
   onListeningTaskSet: (task: ListeningTask | null) => void;
@@ -36,6 +38,7 @@ export function useMockExamModules({
   onPhaseSet,
   onCompletedModulesSet,
   onJustCompletedModuleSet,
+  onOralExpressionScenarioSet,
   onReadingTaskSet,
   onReadingQuestionsSet,
   onListeningTaskSet,
@@ -90,7 +93,7 @@ export function useMockExamModules({
     onClearModuleData();
   }, [refreshModuleStatus, onJustCompletedModuleSet, onPhaseSet, onClearModuleData]);
   
-  const startModule = useCallback(async (module: 'reading' | 'listening'): Promise<ModuleStartData | null> => {
+  const startModule = useCallback(async (module: 'oralExpression' | 'reading' | 'listening'): Promise<ModuleStartData | null> => {
     if (!mockExamId || !sessionId) {
       const errorMsg = `Cannot start module: ${!mockExamId ? 'Mock exam not selected' : 'Session not initialized'}`;
       console.error(errorMsg);
@@ -107,7 +110,7 @@ export function useMockExamModules({
         sessionId: string;
         task?: ReadingTask | ListeningTask;
         questions?: ReadingListeningQuestion[];
-        scenario?: any;
+        scenario?: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string };
       }>(
         `${BACKEND_URL}/api/exam/start-module`,
         {
@@ -123,7 +126,15 @@ export function useMockExamModules({
         }
       );
       
-      if (module === 'reading') {
+      if (module === 'oralExpression') {
+        if (moduleData.scenario) {
+          onOralExpressionScenarioSet(moduleData.scenario);
+          onPhaseSet('oralExpression');
+          return { oralExpression: { scenario: moduleData.scenario } };
+        } else {
+          throw new Error('Failed to fetch oral expression scenario');
+        }
+      } else if (module === 'reading') {
         let task: ReadingTask;
         let questions: ReadingListeningQuestion[];
         
@@ -188,6 +199,7 @@ export function useMockExamModules({
     onErrorSet,
     onLoadingStart,
     onLoadingStop,
+    onOralExpressionScenarioSet,
     onReadingTaskSet,
     onReadingQuestionsSet,
     onListeningTaskSet,
@@ -196,8 +208,8 @@ export function useMockExamModules({
   ]);
   
   const completeModule = useCallback(async (
-    module: 'reading' | 'listening',
-    result: MCQResult | { clbLevel: string; feedback: string; strengths: string[]; weaknesses: string[] }
+    module: 'oralExpression' | 'reading' | 'listening',
+    result: SavedResult | MCQResult | { clbLevel: string; feedback: string; strengths: string[]; weaknesses: string[] }
   ): Promise<string | null> => {
     if (!mockExamId || !sessionId) {
       console.error('Cannot complete module: missing mockExamId or sessionId');
@@ -248,8 +260,16 @@ export function useMockExamModules({
     return resultId;
   }, [completeModule, navigate]);
   
+  const completeOralExpressionModule = useCallback(async (result: SavedResult): Promise<string | null> => {
+    const resultId = await completeModule('oralExpression', result);
+    // For mock exams, don't navigate to results page - return to module selector
+    // The module selector will show loading state if result.isLoading is true
+    // If result.isLoading is false, the module is already completed and can view results
+    return resultId;
+  }, [completeModule]);
+  
   const viewModuleResults = useCallback(async (
-    module: 'reading' | 'listening',
+    module: 'oralExpression' | 'reading' | 'listening',
     userId: string
   ): Promise<void> => {
     if (!mockExamId || !userId) {
@@ -316,6 +336,7 @@ export function useMockExamModules({
     startModule,
     completeReadingModule,
     completeListeningModule,
+    completeOralExpressionModule,
     viewModuleResults,
     refreshModuleStatus,
     handleModuleComplete,

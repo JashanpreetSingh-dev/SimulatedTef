@@ -35,7 +35,7 @@ export function calculateMCQScore(input: ScoringInput): ScoringResult {
   // Sort questions by questionNumber to ensure correct order
   const sortedQuestions = [...questions].sort((a, b) => a.questionNumber - b.questionNumber);
   
-  // Build questionResults array
+  // Build normalized questionResults array (only store questionId, userAnswer, isCorrect)
   const questionResults = sortedQuestions.map((question, index) => {
     const userAnswer = index < answers.length ? answers[index] : -1; // -1 means not answered
     const correctAnswer = question.correctAnswer;
@@ -43,12 +43,8 @@ export function calculateMCQScore(input: ScoringInput): ScoringResult {
     
     return {
       questionId: question.questionId,
-      question: question.question,
-      options: question.options,
       userAnswer,
-      correctAnswer,
       isCorrect,
-      explanation: question.explanation,
     };
   });
   

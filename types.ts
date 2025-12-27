@@ -106,21 +106,20 @@ export interface Task {
   updatedAt: string;
 }
 
+// Normalized question result entry (stored in database)
+export interface NormalizedQuestionResult {
+  questionId: string;
+  userAnswer: number; // Selected answer index (-1 if not answered)
+  isCorrect: boolean;
+}
+
 // MCQ Result with question-by-question breakdown
 export interface MCQResult {
   taskId: string;
   answers: number[]; // User's selected answers (40 answers for Reading/Listening)
   score: number; // Score out of 40 (number of correct answers)
   totalQuestions: number; // Always 40 for Reading/Listening
-  questionResults: Array<{
-    questionId: string;
-    question: string; // Question text (for display in results)
-    options: string[]; // All 4 options (for display in results)
-    userAnswer: number; // Selected answer index
-    correctAnswer: number; // Correct answer index
-    isCorrect: boolean;
-    explanation: string; // Explanation shown if user got it wrong (or always shown)
-  }>; // Question-by-question breakdown for results display
+  questionResults: Array<NormalizedQuestionResult>; // Normalized question results (only questionId, userAnswer, isCorrect)
 }
 
 export interface UpgradedSentence {

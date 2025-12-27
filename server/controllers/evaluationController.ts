@@ -61,7 +61,7 @@ export const evaluationController = {
       }
     );
 
-    console.log(`📋 Evaluation job ${job.id} submitted by user ${req.userId}`);
+    console.log(`Evaluation job ${job.id} submitted by user ${req.userId}`);
 
     // Return immediately with job ID
     res.status(202).json({

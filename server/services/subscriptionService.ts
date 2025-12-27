@@ -163,7 +163,7 @@ export const subscriptionService = {
     
     // Prevent negative pack counts
     if (subscription.packFullTestsUsed !== undefined && subscription.packFullTestsUsed < 0) {
-      console.warn(`⚠️ Fixing negative packFullTestsUsed for user ${userId}`);
+      console.warn(`Fixing negative packFullTestsUsed for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packFullTestsUsed: 0, updatedAt: new Date().toISOString() } }
@@ -171,7 +171,7 @@ export const subscriptionService = {
     }
     
     if (subscription.packSectionAUsed !== undefined && subscription.packSectionAUsed < 0) {
-      console.warn(`⚠️ Fixing negative packSectionAUsed for user ${userId}`);
+      console.warn(`Fixing negative packSectionAUsed for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packSectionAUsed: 0, updatedAt: new Date().toISOString() } }
@@ -179,7 +179,7 @@ export const subscriptionService = {
     }
     
     if (subscription.packSectionBUsed !== undefined && subscription.packSectionBUsed < 0) {
-      console.warn(`⚠️ Fixing negative packSectionBUsed for user ${userId}`);
+      console.warn(`Fixing negative packSectionBUsed for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packSectionBUsed: 0, updatedAt: new Date().toISOString() } }
@@ -190,7 +190,7 @@ export const subscriptionService = {
     if (subscription.packFullTestsTotal !== undefined && 
         subscription.packFullTestsUsed !== undefined &&
         subscription.packFullTestsUsed > subscription.packFullTestsTotal) {
-      console.warn(`⚠️ Fixing packFullTestsUsed > packFullTestsTotal for user ${userId}`);
+      console.warn(`Fixing packFullTestsUsed > packFullTestsTotal for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packFullTestsUsed: subscription.packFullTestsTotal, updatedAt: new Date().toISOString() } }
@@ -200,7 +200,7 @@ export const subscriptionService = {
     if (subscription.packSectionATotal !== undefined && 
         subscription.packSectionAUsed !== undefined &&
         subscription.packSectionAUsed > subscription.packSectionATotal) {
-      console.warn(`⚠️ Fixing packSectionAUsed > packSectionATotal for user ${userId}`);
+      console.warn(`Fixing packSectionAUsed > packSectionATotal for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packSectionAUsed: subscription.packSectionATotal, updatedAt: new Date().toISOString() } }
@@ -210,7 +210,7 @@ export const subscriptionService = {
     if (subscription.packSectionBTotal !== undefined && 
         subscription.packSectionBUsed !== undefined &&
         subscription.packSectionBUsed > subscription.packSectionBTotal) {
-      console.warn(`⚠️ Fixing packSectionBUsed > packSectionBTotal for user ${userId}`);
+      console.warn(`Fixing packSectionBUsed > packSectionBTotal for user ${userId}`);
       await db.collection('subscriptions').updateOne(
         { userId },
         { $set: { packSectionBUsed: subscription.packSectionBTotal, updatedAt: new Date().toISOString() } }
@@ -361,7 +361,7 @@ export const subscriptionService = {
     
     // Validate usage counts are non-negative
     if (usage.fullTestsUsed < 0 || usage.sectionAUsed < 0 || usage.sectionBUsed < 0) {
-      console.warn(`⚠️ Fixing negative usage counts for user ${userId}`);
+      console.warn(`Fixing negative usage counts for user ${userId}`);
       await db.collection('usage').updateOne(
         { userId, date: today },
         { 
@@ -421,7 +421,7 @@ export const subscriptionService = {
           } catch (error: any) {
             // If transaction failed due to limit reached, fall through to pack check
             if (error.message !== 'Daily full test limit reached') {
-              console.error(`❌ Error in canStartExam transaction:`, error);
+              console.error(`Error in canStartExam transaction:`, error);
               throw error;
             }
             // Continue to pack check below
@@ -468,7 +468,7 @@ export const subscriptionService = {
             return { canStart: true, sessionId: sessionId2 };
           }
         } catch (error: any) {
-          console.error(`❌ Error in pack transaction:`, error);
+          console.error(`Error in pack transaction:`, error);
           return { canStart: false, reason: 'Pack full tests no longer available' };
         } finally {
           await mongoSession2.endSession();
@@ -536,7 +536,7 @@ export const subscriptionService = {
             return { canStart: true, sessionId };
           }
         } catch (error: any) {
-          console.error(`❌ Error in pack Section A transaction:`, error);
+          console.error(`Error in pack Section A transaction:`, error);
           return { canStart: false, reason: 'Pack Section A credits no longer available' };
         } finally {
           await mongoSession.endSession();
@@ -604,7 +604,7 @@ export const subscriptionService = {
             return { canStart: true, sessionId };
           }
         } catch (error: any) {
-          console.error(`❌ Error in pack Section B transaction:`, error);
+          console.error(`Error in pack Section B transaction:`, error);
           return { canStart: false, reason: 'Pack Section B credits no longer available' };
         } finally {
           await mongoSession.endSession();
@@ -795,7 +795,7 @@ export const subscriptionService = {
       if (subscription.packType && subscription.packExpirationDate) {
         const oldExpiration = new Date(subscription.packExpirationDate);
         if (oldExpiration > new Date()) {
-          console.warn(`⚠️ User ${userId} is upgrading pack: ${subscription.packType} -> ${packType}. Old credits will be lost.`);
+          console.warn(`User ${userId} is upgrading pack: ${subscription.packType} -> ${packType}. Old credits will be lost.`);
         }
       }
       
@@ -840,12 +840,23 @@ export const subscriptionService = {
       return null;
     }
     
+    // Find session - don't filter by completed=false because we want to show resumable exams
+    // Even if completed=true is set, if not all 3 modules are done, it should still be resumable
     const session = await db.collection('examSessions').findOne({
       userId,
       mockExamId: activeMockExamId,
       examType: 'mock',
-      completed: false,
     });
+    
+    if (!session) {
+      return null;
+    }
+    
+    // Check if all 3 modules are completed - if so, don't return as active
+    const completedModules = (session.completedModules as string[]) || [];
+    if (completedModules.length === 3) {
+      return null; // Fully completed, not active
+    }
     
     return session;
   },

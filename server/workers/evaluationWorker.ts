@@ -16,7 +16,7 @@ let worker: Worker<EvaluationJobData, EvaluationJobResult> | null = null;
  */
 export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
   if (worker) {
-    console.log('⚠️ Worker already started');
+    console.log('Worker already started');
     return worker;
   }
 
@@ -44,7 +44,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         // Update job progress
         await job.updateProgress(10); // 10% - Starting
 
-        console.log(`🔄 Processing evaluation job ${job.id} for user ${userId}`);
+        console.log(`Processing evaluation job ${job.id} for user ${userId}`);
 
         // Call Gemini API for evaluation (this is the slow part)
         await job.updateProgress(30); // 30% - Processing
@@ -82,7 +82,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
         await job.updateProgress(100); // 100% - Complete
 
-        console.log(`✅ Evaluation job ${job.id} completed, result ID: ${savedResult._id}`);
+        console.log(`Evaluation job ${job.id} completed, result ID: ${savedResult._id}`);
 
         // Return result ID
         return {
@@ -90,7 +90,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           success: true,
         };
       } catch (error: any) {
-        console.error(`❌ Evaluation job ${job.id} failed:`, error);
+        console.error(`Evaluation job ${job.id} failed:`, error);
         // Job failed - will be retried automatically by BullMQ
         throw error;
       }
@@ -111,22 +111,22 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
   // Worker event handlers
   worker.on('completed', (job) => {
-    console.log(`✅ Job ${job.id} completed successfully`);
+    console.log(`Job ${job.id} completed successfully`);
   });
 
   worker.on('failed', (job, err) => {
-    console.error(`❌ Job ${job?.id} failed:`, err.message);
+    console.error(`Job ${job?.id} failed:`, err.message);
   });
 
   worker.on('error', (err) => {
-    console.error('❌ Worker error:', err);
+    console.error('Worker error:', err);
   });
 
   worker.on('active', (job) => {
-    console.log(`🔄 Job ${job.id} is now active`);
+    console.log(`Job ${job.id} is now active`);
   });
 
-  console.log('✅ Evaluation worker started');
+  console.log('Evaluation worker started');
 
   return worker;
 }
@@ -139,7 +139,7 @@ export async function stopWorker(): Promise<void> {
     console.log('Stopping evaluation worker...');
     await worker.close();
     worker = null;
-    console.log('✅ Evaluation worker stopped');
+    console.log('Evaluation worker stopped');
   }
   // Close database connection
   await closeDB();

@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { MCQResult } from '../types';
+import { useAuth } from '@clerk/clerk-react';
+import { MCQResult, ReadingListeningQuestion, NormalizedQuestionResult } from '../types';
 import { MCQQuestion, MCQQuestionData } from './MCQQuestion';
+import { getQuestionsByTaskId } from '../services/tasks';
 
 interface QuestionResultsViewProps {
   result: MCQResult;
@@ -9,18 +11,108 @@ interface QuestionResultsViewProps {
   className?: string;
 }
 
+// Type guard to check if question result is in old format (has 'question' property)
+function isOldFormatQuestionResult(q: any): q is NormalizedQuestionResult & { question: string; options: string[]; correctAnswer: number; explanation: string } {
+  return 'question' in q;
+}
+
+// Enriched question result with full question details
+interface EnrichedQuestionResult extends NormalizedQuestionResult {
+  question: string;
+  questionText?: string;
+  options: string[];
+  correctAnswer: number;
+  explanation: string;
+}
 
 export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
   result,
-  moduleName,
   className = '',
 }) => {
   const { theme } = useTheme();
+  const { getToken } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [questions, setQuestions] = useState<ReadingListeningQuestion[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [enrichedResults, setEnrichedResults] = useState<EnrichedQuestionResult[]>([]);
+
+  // Check if results are in old format (already have full question data)
+  const isOldFormat = result.questionResults.length > 0 && isOldFormatQuestionResult(result.questionResults[0]);
+
+  // Fetch questions if in new normalized format
+  useEffect(() => {
+    if (isOldFormat) {
+      // Old format: convert to enriched format directly
+      const enriched = result.questionResults.map(q => {
+        const oldFormatQ = q as NormalizedQuestionResult & { question: string; questionText?: string; options: string[]; correctAnswer: number; explanation: string };
+        return {
+          questionId: oldFormatQ.questionId,
+          userAnswer: oldFormatQ.userAnswer,
+          isCorrect: oldFormatQ.isCorrect,
+          question: oldFormatQ.question,
+          questionText: oldFormatQ.questionText,
+          options: oldFormatQ.options,
+          correctAnswer: oldFormatQ.correctAnswer,
+          explanation: oldFormatQ.explanation,
+        };
+      });
+      setEnrichedResults(enriched);
+      return;
+    }
+
+    // New format: fetch questions from API
+    const fetchQuestions = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const fetchedQuestions = await getQuestionsByTaskId(result.taskId, getToken);
+        if (fetchedQuestions.length === 0) {
+          setError('No questions found');
+          setLoading(false);
+          return;
+        }
+
+        setQuestions(fetchedQuestions);
+
+        // Create a map of questions by questionId for quick lookup
+        const questionMap = new Map<string, ReadingListeningQuestion>();
+        fetchedQuestions.forEach(q => questionMap.set(q.questionId, q));
+
+        // Enrich normalized questionResults with full question details
+        const enriched = result.questionResults.map(qr => {
+          const question = questionMap.get(qr.questionId);
+          if (!question) {
+            console.warn(`Question not found for questionId: ${qr.questionId}`);
+            return null;
+          }
+          return {
+            questionId: qr.questionId,
+            userAnswer: qr.userAnswer,
+            isCorrect: qr.isCorrect,
+            question: question.question,
+            questionText: question.questionText,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            explanation: question.explanation,
+          };
+        }).filter((q): q is EnrichedQuestionResult => q !== null);
+
+        setEnrichedResults(enriched);
+      } catch (err) {
+        console.error('Failed to fetch questions:', err);
+        setError('Failed to load question details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [result.taskId, result.questionResults, isOldFormat, getToken]);
 
   // Navigation functions
   const goToNextQuestion = () => {
-    if (currentQuestionIndex < questionsToShow.length - 1) {
+    if (currentQuestionIndex < enrichedResults.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
@@ -31,17 +123,43 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
     }
   };
 
-  // Show all questions (like exam interface)
-  const questionsToShow = result.questionResults;
-
   const isFirstQuestion = currentQuestionIndex === 0;
-  const isLastQuestion = currentQuestionIndex === questionsToShow.length - 1;
+  const isLastQuestion = currentQuestionIndex === enrichedResults.length - 1;
 
 
-  const correctCount = result.questionResults.filter(q => q.isCorrect).length;
-  const incorrectCount = result.questionResults.filter(q => !q.isCorrect).length;
+  const currentQuestion = enrichedResults[currentQuestionIndex];
 
-  const currentQuestion = questionsToShow[currentQuestionIndex];
+  // Loading state
+  if (loading) {
+    return (
+      <div className={className}>
+        <div className={`
+          p-8 text-center rounded-lg
+          ${theme === 'dark' ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-300'}
+        `}>
+          <p className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>
+            Loading questions...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || enrichedResults.length === 0) {
+    return (
+      <div className={className}>
+        <div className={`
+          p-8 text-center rounded-lg
+          ${theme === 'dark' ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-300'}
+        `}>
+          <p className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>
+            {error || 'No questions to display'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentQuestion) {
     return (
@@ -61,6 +179,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
   const questionData: MCQQuestionData = {
     questionId: currentQuestion.questionId,
     question: currentQuestion.question,
+    questionText: currentQuestion.questionText,
     options: currentQuestion.options,
     correctAnswer: currentQuestion.correctAnswer,
     userAnswer: currentQuestion.userAnswer,
@@ -83,7 +202,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
               px-3 py-1 rounded text-sm
               ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700 border border-slate-300'}
             `}>
-              Question {currentQuestionIndex + 1} of {questionsToShow.length}
+              Question {currentQuestionIndex + 1} of {enrichedResults.length}
             </div>
           </div>
         </div>

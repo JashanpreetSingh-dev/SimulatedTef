@@ -1,26 +1,41 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+
+interface ModuleResult {
+  resultId?: string;
+  isLoading?: boolean;
+  score?: number;
+  clbLevel?: string;
+  scoreOutOf?: number;
+}
 
 interface MockExamModuleSelectorProps {
   mockExamId: string;
   completedModules: string[];
-  onModuleSelect: (module: 'reading' | 'listening') => void;
-  onViewResults?: (module: 'reading' | 'listening') => void;
+  loadingModules?: string[]; // Modules that are completed but still loading (evaluating)
+  moduleResults?: Record<string, ModuleResult>; // Result data for each module
+  onModuleSelect: (module: 'oralExpression' | 'reading' | 'listening') => void;
+  onViewResults?: (module: 'oralExpression' | 'reading' | 'listening') => void;
   onFinish?: () => void;
   onCancel?: () => void;
   justCompletedModule?: string | null;
 }
 
 interface ModuleInfo {
-  id: 'reading' | 'listening';
+  id: 'oralExpression' | 'reading' | 'listening';
   name: string;
   description: string;
   duration: string;
 }
 
 const MODULES: ModuleInfo[] = [
+  {
+    id: 'oralExpression',
+    name: 'Oral Expression',
+    description: 'Full exam with Section A (EO1) and Section B (EO2), real-time AI conversation',
+    duration: '~30 minutes',
+  },
   {
     id: 'reading',
     name: 'Reading Comprehension',
@@ -36,23 +51,30 @@ const MODULES: ModuleInfo[] = [
 ];
 
 export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
-  mockExamId,
-  completedModules,
+  completedModules = [],
+  loadingModules = [],
+  moduleResults = {},
   onModuleSelect,
   onViewResults,
-  onFinish,
   onCancel,
   justCompletedModule,
 }) => {
   const { theme } = useTheme();
 
-  const allModulesCompleted = completedModules.length === 2;
+  const allModulesCompleted = completedModules.length === 3;
 
   const getModuleStatus = (moduleId: string) => {
     if (completedModules.includes(moduleId)) {
+      if (loadingModules && loadingModules.includes(moduleId)) {
+        return 'loading';
+      }
       return 'completed';
     }
     return 'available';
+  };
+  
+  const getModuleResult = (moduleId: string) => {
+    return moduleResults[moduleId];
   };
 
   return (
@@ -92,7 +114,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 text-center font-semibold
                 ${theme === 'dark' ? 'text-blue-200' : 'text-blue-800'}
               `}>
-                ✓ {justCompletedModule === 'reading' ? 'Reading Comprehension' : 'Listening Comprehension'} completed successfully!
+                ✓ {justCompletedModule === 'oralExpression' ? 'Oral Expression' : justCompletedModule === 'reading' ? 'Reading Comprehension' : 'Listening Comprehension'} completed successfully!
               </p>
             </div>
           )}
@@ -113,17 +135,22 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
         </div>
 
         {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {MODULES.map((module) => {
             const status = getModuleStatus(module.id);
             const isCompleted = status === 'completed';
+            const isLoading = status === 'loading';
 
             return (
               <div
                 key={module.id}
                 className={`
-                  p-6 rounded-lg border-2 transition-all
-                  ${isCompleted
+                  p-6 rounded-lg border-2 transition-all flex flex-col
+                  ${isLoading
+                    ? theme === 'dark'
+                      ? 'bg-yellow-900/20 border-yellow-600 cursor-default opacity-90'
+                      : 'bg-yellow-50 border-yellow-500 cursor-default opacity-90'
+                    : isCompleted
                     ? theme === 'dark'
                       ? 'bg-green-900/20 border-green-600 cursor-default opacity-75'
                       : 'bg-green-50 border-green-500 cursor-default opacity-75'
@@ -133,75 +160,123 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                   }
                 `}
                 onClick={() => {
-                  if (!isCompleted) {
+                  if (!isCompleted && !isLoading) {
                     onModuleSelect(module.id);
                   }
                 }}
-                role={isCompleted ? undefined : 'button'}
-                tabIndex={isCompleted ? undefined : 0}
+                role={isCompleted || isLoading ? undefined : 'button'}
+                tabIndex={isCompleted || isLoading ? undefined : 0}
                 onKeyDown={(e) => {
-                  if (!isCompleted && (e.key === 'Enter' || e.key === ' ')) {
+                  if (!isCompleted && !isLoading && (e.key === 'Enter' || e.key === ' ')) {
                     e.preventDefault();
                     onModuleSelect(module.id);
                   }
                 }}
               >
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className={`
-                    text-xl font-semibold
-                    ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
-                  `}>
-                    {module.name}
-                  </h3>
-                  {isCompleted ? (
-                    <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  )}
-                </div>
-
-                <p className={`
-                  text-sm mb-3
-                  ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
-                `}>
-                  {module.description}
-                </p>
-
-                <div className={`
-                  text-xs font-semibold
-                  ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}
-                `}>
-                  Duration: {module.duration}
-                </div>
-
-                {isCompleted && (
-                  <div className="mt-4 space-y-2">
-                    <div className={`
-                      text-center py-2 rounded font-semibold text-sm
-                      ${theme === 'dark' ? 'bg-green-900/30 text-green-200' : 'bg-green-100 text-green-800'}
+                {/* Top content section */}
+                <div className="flex-grow">
+                  <div className="flex items-start justify-between mb-4">
+                    <h3 className={`
+                      text-xl font-semibold
+                      ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
                     `}>
-                      ✓ Completed
-                    </div>
-                    {onViewResults && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onViewResults(module.id);
-                        }}
-                        className={`
-                          w-full py-2 px-4 rounded font-semibold text-sm transition-colors
-                          ${theme === 'dark'
-                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                      {module.name}
+                    </h3>
+                    {isLoading ? (
+                      <svg className="w-6 h-6 text-yellow-500 flex-shrink-0 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : isCompleted ? (
+                      <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-6 h-6 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
+                  </div>
+
+                  <p className={`
+                    text-sm mb-3
+                    ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
+                  `}>
+                    {module.description}
+                  </p>
+
+                  <div className={`
+                    text-xs font-semibold
+                    ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}
+                  `}>
+                    Duration: {module.duration}
+                  </div>
+                </div>
+
+                {/* Bottom status/button section - aligned across all cards */}
+                {(isCompleted || isLoading) && (
+                  <div className="mt-6 space-y-2">
+                    {isLoading ? (
+                      <div className={`
+                        text-center py-2 rounded font-semibold text-sm
+                        ${theme === 'dark' ? 'bg-yellow-900/30 text-yellow-200' : 'bg-yellow-100 text-yellow-800'}
+                      `}>
+                        ⏳ Evaluating...
+                      </div>
+                    ) : (
+                      <>
+                        <div className={`
+                          text-center py-2 rounded font-semibold text-sm
+                          ${theme === 'dark' ? 'bg-green-900/30 text-green-200' : 'bg-green-100 text-green-800'}
+                        `}>
+                          ✓ Completed
+                        </div>
+                        {(() => {
+                          const result = getModuleResult(module.id);
+                          // Show score if available and not currently loading
+                          if (result && typeof result.score === 'number' && result.score !== undefined && result.isLoading !== true) {
+                            return (
+                              <div className={`
+                                text-center py-2 rounded
+                                ${theme === 'dark' ? 'bg-slate-700/50 text-slate-200' : 'bg-slate-100 text-slate-700'}
+                              `}>
+                                <div className="text-lg font-bold">
+                                  {result.score}
+                                  {result.scoreOutOf && ` / ${result.scoreOutOf}`}
+                                </div>
+                                {result.clbLevel && (
+                                  <div className="text-xs mt-1 font-semibold">
+                                    {result.clbLevel}
+                                  </div>
+                                )}
+                                {!result.clbLevel && result.scoreOutOf === 40 && (
+                                  <div className="text-xs mt-1">
+                                    {((result.score / result.scoreOutOf) * 100).toFixed(0)}% correct
+                                  </div>
+                                )}
+                              </div>
+                            );
                           }
-                        `}
-                      >
-                        📊 See Results
-                      </button>
+                          return null;
+                        })()}
+                        {onViewResults && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onViewResults(module.id);
+                            }}
+                            className={`
+                              w-full py-2 px-4 rounded font-semibold text-sm transition-colors
+                              ${theme === 'dark'
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              }
+                            `}
+                          >
+                            📊 See Results
+                          </button>
+                        )}
+                      </>
                     )}
                   </div>
                 )}
@@ -220,7 +295,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
             text-sm
             ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
           `}>
-            Progress: {completedModules.length} of 2 modules completed
+            Progress: {completedModules.length} of 3 modules completed
           </p>
           <div className={`
             mt-2 w-full h-2 rounded-full overflow-hidden
@@ -231,7 +306,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 h-full transition-all duration-300
                 ${theme === 'dark' ? 'bg-indigo-500' : 'bg-indigo-600'}
               `}
-              style={{ width: `${(completedModules.length / 2) * 100}%` }}
+              style={{ width: `${(completedModules.length / 3) * 100}%` }}
             />
           </div>
         </div>

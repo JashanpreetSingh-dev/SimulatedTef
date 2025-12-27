@@ -1,18 +1,22 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { authenticatedFetchJSON } from '../services/authenticatedFetch';
 import { MockExamSelectionView } from './MockExamSelectionView';
 import { MockExamModuleSelector } from './MockExamModuleSelector';
 import { ReadingComprehensionExam } from './ReadingComprehensionExam';
 import { ListeningComprehensionExam } from './ListeningComprehensionExam';
+import { OralExpressionLive } from './OralExpressionLive';
 import { ModuleLoadingScreen } from './ModuleLoadingScreen';
-import { MCQResult } from '../types';
+import { MCQResult, SavedResult } from '../types';
 import { useMockExamState } from '../hooks/useMockExamState';
 import { useMockExamLoading } from '../hooks/useMockExamLoading';
 import { useMockExamErrors } from '../hooks/useMockExamErrors';
 import { useMockExamNavigation } from '../hooks/useMockExamNavigation';
 import { useMockExamModules } from '../hooks/useMockExamModules';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export const MockExamView: React.FC = () => {
   const navigate = useNavigate();
@@ -20,6 +24,9 @@ export const MockExamView: React.FC = () => {
   const { getToken } = useAuth();
   const { user } = useUser();
   const { theme } = useTheme();
+  const [loadingModules, setLoadingModules] = useState<string[]>([]);
+  const [moduleResults, setModuleResults] = useState<Record<string, { resultId?: string; isLoading?: boolean; score?: number; clbLevel?: string; scoreOutOf?: number }>>({});
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // State management
   const { state, actions: stateActions } = useMockExamState();
@@ -58,6 +65,7 @@ export const MockExamView: React.FC = () => {
     startModule,
     completeReadingModule,
     completeListeningModule,
+    completeOralExpressionModule,
     viewModuleResults,
   } = useMockExamModules({
     mockExamId: state.mockExamId,
@@ -65,6 +73,7 @@ export const MockExamView: React.FC = () => {
     onPhaseSet: stateActions.setPhase,
     onCompletedModulesSet: stateActions.setCompletedModules,
     onJustCompletedModuleSet: stateActions.setJustCompletedModule,
+    onOralExpressionScenarioSet: stateActions.setOralExpressionScenario,
     onReadingTaskSet: stateActions.setReadingTask,
     onReadingQuestionsSet: stateActions.setReadingQuestions,
     onListeningTaskSet: stateActions.setListeningTask,
@@ -83,9 +92,20 @@ export const MockExamView: React.FC = () => {
   };
   
   // Handle module selection
-  const handleModuleSelect = async (module: 'reading' | 'listening') => {
+  const handleModuleSelect = async (module: 'oralExpression' | 'reading' | 'listening') => {
     console.log('Module selected:', module, { mockExamId: state.mockExamId, sessionId: state.sessionId });
     await startModule(module);
+  };
+  
+  // Handle Oral Expression module completion
+  const handleOralExpressionComplete = async (result: SavedResult) => {
+    // Ensure result has mockExamId and module fields for mock exam context
+    const resultWithMockExamFields: SavedResult = {
+      ...result,
+      mockExamId: state.mockExamId!,
+      module: 'oralExpression',
+    };
+    await completeOralExpressionModule(resultWithMockExamFields);
   };
   
   // Handle Reading module completion
@@ -98,8 +118,95 @@ export const MockExamView: React.FC = () => {
     await completeListeningModule(result);
   };
   
+  // Fetch module status and results
+  useEffect(() => {
+    // Clear any existing polling interval
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+    }
+    
+    const fetchModuleData = async (): Promise<boolean> => {
+      if (!state.mockExamId || !getToken) return false;
+      
+      try {
+        const modules = await authenticatedFetchJSON<{
+          modules: Array<{ 
+            name: string; 
+            status: string; 
+            resultId?: string; 
+            isLoading?: boolean;
+            score?: number;
+            clbLevel?: string;
+            scoreOutOf?: number;
+          }>;
+        }>(
+          `${BACKEND_URL}/api/exam/mock/${state.mockExamId}/modules`,
+          {
+            method: 'GET',
+            getToken,
+          }
+        );
+        
+        if (modules?.modules) {
+          const loading = modules.modules
+            .filter(m => m.isLoading === true)
+            .map(m => m.name);
+          setLoadingModules(loading);
+          
+          // Build results map
+          const resultsMap: Record<string, any> = {};
+          modules.modules.forEach(m => {
+            if (m.name) {
+              resultsMap[m.name] = {
+                resultId: m.resultId,
+                isLoading: m.isLoading,
+                score: m.score,
+                clbLevel: m.clbLevel,
+                scoreOutOf: m.scoreOutOf,
+              };
+            }
+          });
+          setModuleResults(resultsMap);
+          
+          // Return whether there are any loading modules
+          return loading.length > 0;
+        }
+      } catch (error) {
+        console.error('Failed to fetch module data:', error);
+        // Don't crash the component if this fails
+      }
+      return false;
+    };
+    
+    if (state.phase === 'module-selector' && state.mockExamId && getToken) {
+      // Initial fetch
+      fetchModuleData().then((hasLoadingModules) => {
+        // Only set up polling if there are loading modules
+        if (hasLoadingModules) {
+          pollingIntervalRef.current = setInterval(async () => {
+            const stillLoading = await fetchModuleData();
+            // Stop polling if no modules are loading anymore
+            if (!stillLoading && pollingIntervalRef.current) {
+              clearInterval(pollingIntervalRef.current);
+              pollingIntervalRef.current = null;
+            }
+          }, 5000);
+        }
+      });
+    }
+    
+    // Cleanup function
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [state.mockExamId, state.phase, getToken]);
+  
   // Handle viewing results for completed modules
-  const handleViewResults = async (module: 'reading' | 'listening') => {
+  const handleViewResults = async (module: 'oralExpression' | 'reading' | 'listening') => {
     if (!user?.id) {
       console.error('Missing user.id');
       return;
@@ -110,6 +217,17 @@ export const MockExamView: React.FC = () => {
   // Show loading state for module preparation
   if (loading && loadingModule) {
     return <ModuleLoadingScreen moduleName={loadingModule} />;
+  }
+  
+  // Show initializing state
+  if (initializing && state.phase === 'module-selector') {
+    return (
+      <div className="min-h-screen p-8 flex items-center justify-center bg-indigo-100 dark:bg-slate-900">
+        <div className="text-center">
+          <p className="text-slate-600 dark:text-slate-300">Loading mock exam...</p>
+        </div>
+      </div>
+    );
   }
   
   // Show error state
@@ -136,7 +254,7 @@ export const MockExamView: React.FC = () => {
   }
   
   // Render based on phase
-  console.log('MockExamView render - phase:', state.phase);
+  console.log('MockExamView render - phase:', state.phase, 'mockExamId:', state.mockExamId);
   switch (state.phase) {
     case 'selection':
       console.log('Rendering MockExamSelectionView');
@@ -148,6 +266,15 @@ export const MockExamView: React.FC = () => {
       );
     
     case 'module-selector':
+      if (!state.mockExamId) {
+        return (
+          <div className="min-h-screen p-8 flex items-center justify-center bg-indigo-100 dark:bg-slate-900">
+            <div className="text-center">
+              <p className="text-slate-600 dark:text-slate-300">Loading mock exam...</p>
+            </div>
+          </div>
+        );
+      }
       return (
         <>
           {error && (
@@ -171,8 +298,10 @@ export const MockExamView: React.FC = () => {
             </div>
           )}
           <MockExamModuleSelector
-            mockExamId={state.mockExamId!}
-            completedModules={state.completedModules}
+            mockExamId={state.mockExamId}
+            completedModules={state.completedModules || []}
+            loadingModules={loadingModules}
+            moduleResults={moduleResults}
             onModuleSelect={handleModuleSelect}
             onViewResults={handleViewResults}
             onCancel={() => navigate('/mock-exam')}
@@ -180,6 +309,15 @@ export const MockExamView: React.FC = () => {
           />
         </>
       );
+    
+    case 'oralExpression':
+      return state.oralExpressionScenario ? (
+        <OralExpressionLive
+          scenario={state.oralExpressionScenario}
+          mode="full"
+          onFinish={handleOralExpressionComplete}
+        />
+      ) : null;
     
     case 'reading':
       return state.readingTask && state.readingQuestions.length > 0 ? (
@@ -205,21 +343,21 @@ export const MockExamView: React.FC = () => {
                 console.error('Failed to get current answers:', error);
               }
               
-              // Create MCQ result with current answers
+              // Create MCQ result with current answers (normalized format)
               const result: MCQResult = {
                 taskId: state.readingTask.taskId,
                 answers: currentAnswers,
                 score: 0, // Will be calculated by backend
                 totalQuestions: state.readingQuestions.length,
-                questionResults: state.readingQuestions.map((q, index) => ({
-                  questionId: q.questionId,
-                  question: q.question,
-                  options: q.options,
-                  correctAnswer: q.correctAnswer,
-                  userAnswer: currentAnswers[index] ?? -1, // -1 for unanswered
-                  isCorrect: false, // Will be calculated by backend
-                  explanation: q.explanation || ''
-                }))
+                questionResults: state.readingQuestions.map((q, index) => {
+                  const userAnswer = currentAnswers[index] ?? -1; // -1 for unanswered
+                  const isCorrect = userAnswer === q.correctAnswer;
+                  return {
+                    questionId: q.questionId,
+                    userAnswer,
+                    isCorrect,
+                  };
+                })
               };
               
               await handleReadingComplete(result);
@@ -254,21 +392,21 @@ export const MockExamView: React.FC = () => {
                 console.error('Failed to get current answers:', error);
               }
               
-              // Create MCQ result with current answers
+              // Create MCQ result with current answers (normalized format)
               const result: MCQResult = {
                 taskId: state.listeningTask.taskId,
                 answers: currentAnswers,
                 score: 0, // Will be calculated by backend
                 totalQuestions: state.listeningQuestions.length,
-                questionResults: state.listeningQuestions.map((q, index) => ({
-                  questionId: q.questionId,
-                  question: q.question,
-                  options: q.options,
-                  correctAnswer: q.correctAnswer,
-                  userAnswer: currentAnswers[index] ?? -1, // -1 for unanswered
-                  isCorrect: false, // Will be calculated by backend
-                  explanation: q.explanation || ''
-                }))
+                questionResults: state.listeningQuestions.map((q, index) => {
+                  const userAnswer = currentAnswers[index] ?? -1; // -1 for unanswered
+                  const isCorrect = userAnswer === q.correctAnswer;
+                  return {
+                    questionId: q.questionId,
+                    userAnswer,
+                    isCorrect,
+                  };
+                })
               };
               
               await handleListeningComplete(result);

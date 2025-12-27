@@ -28,7 +28,7 @@ export const redis = new Redis(redisUrl, {
 });
 
 redis.on('connect', async () => {
-  console.log('✅ Connected to Redis');
+  console.log('Connected to Redis');
   
   // Check eviction policy (BullMQ requires 'noeviction')
   try {
@@ -36,29 +36,29 @@ redis.on('connect', async () => {
     const policy = maxmemoryPolicy[1];
     
     if (policy !== 'noeviction') {
-      console.warn('⚠️  WARNING: Redis eviction policy is set to:', policy);
-      console.warn('⚠️  BullMQ requires "noeviction" policy to prevent job data loss.');
-      console.warn('⚠️  For cloud Redis: Check your provider dashboard (Railway/Redis Cloud/Upstash)');
-      console.warn('⚠️  For local Redis: Run: redis-cli CONFIG SET maxmemory-policy noeviction');
-      console.warn('⚠️  See REDIS_CLOUD_SETUP.md for detailed instructions');
+      console.warn('WARNING: Redis eviction policy is set to:', policy);
+      console.warn('BullMQ requires "noeviction" policy to prevent job data loss.');
+      console.warn('For cloud Redis: Check your provider dashboard (Railway/Redis Cloud/Upstash)');
+      console.warn('For local Redis: Run: redis-cli CONFIG SET maxmemory-policy noeviction');
+      console.warn('See REDIS_CLOUD_SETUP.md for detailed instructions');
     } else {
-      console.log('✅ Redis eviction policy is correctly set to "noeviction"');
+      console.log('Redis eviction policy is correctly set to "noeviction"');
     }
   } catch (error) {
     // Ignore if config command fails (might not have permissions)
-    console.warn('⚠️  Could not check Redis eviction policy (may need admin permissions)');
+    console.warn('Could not check Redis eviction policy (may need admin permissions)');
   }
 });
 
 redis.on('error', (err) => {
-  console.error('❌ Redis error:', err.message);
+  console.error('Redis error:', err.message);
   if (!redisUrl.includes('localhost')) {
     console.error('Make sure Redis is running or REDIS_URL is set correctly');
   }
 });
 
 redis.on('close', () => {
-  console.log('⚠️ Redis connection closed');
+  console.log('Redis connection closed');
 });
 
 // Export connection object for BullMQ

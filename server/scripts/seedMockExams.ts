@@ -10,16 +10,16 @@ import { createMockExam } from '../models/MockExam';
 
 async function seedMockExams(): Promise<void> {
   try {
-    console.log('🚀 Starting mock exam seeding...\n');
+    console.log('Starting mock exam seeding...\n');
 
     const db = await connectDB();
-    console.log('✅ Connected to MongoDB\n');
+    console.log('Connected to MongoDB\n');
 
     const mockExamsCollection = db.collection('mockExams');
 
     // Check current state
     const existingCount = await mockExamsCollection.countDocuments();
-    console.log(`📊 Currently ${existingCount} mock exams in database`);
+    console.log(`Currently ${existingCount} mock exams in database`);
 
     // Mock Exam 1: Complete mock exam with all sections
     const mockExam1 = createMockExam(
@@ -65,26 +65,26 @@ async function seedMockExams(): Promise<void> {
 
     const mockExams = [mockExam1, mockExam2, mockExam3];
 
-    console.log(`\n🔧 Processing ${mockExams.length} mock exams to seed...`);
+    console.log(`\nProcessing ${mockExams.length} mock exams to seed...`);
 
     for (const mockExam of mockExams) {
-      console.log(`📝 Processing: ${mockExam.mockExamId} - ${mockExam.name}`);
+      console.log(`Processing: ${mockExam.mockExamId} - ${mockExam.name}`);
 
       // Check if already exists
       const existing = await mockExamsCollection.findOne({ mockExamId: mockExam.mockExamId });
       if (!existing) {
         const result = await mockExamsCollection.insertOne(mockExam);
-        console.log(`   ✅ Created mock exam: ${mockExam.mockExamId}`);
+        console.log(`   Created mock exam: ${mockExam.mockExamId}`);
       } else {
-        console.log(`   ⏭️  Mock exam ${mockExam.mockExamId} already exists, skipping`);
+        console.log(`   Mock exam ${mockExam.mockExamId} already exists, skipping`);
       }
     }
 
-    console.log('\n✅ Mock exam seeding completed!');
+    console.log('\nMock exam seeding completed!');
     process.exit(0);
 
   } catch (error: any) {
-    console.error('\n❌ Seeding failed:', error.message);
+    console.error('\nSeeding failed:', error.message);
     console.error(error.stack);
     process.exit(1);
   }

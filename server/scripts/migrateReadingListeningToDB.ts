@@ -120,7 +120,7 @@ function validateListeningTask(task: ListeningTaskInput, taskIndex: number, audi
   if (!isCloudUrl) {
     const audioPath = join(process.cwd(), 'public', task.audioUrl);
     if (!existsSync(audioPath)) {
-      console.warn(`  ⚠️  Warning: Listening Task ${taskIndex + 1}: Audio file not found at ${audioPath} (using as placeholder)`);
+      console.warn(`  Warning: Listening Task ${taskIndex + 1}: Audio file not found at ${audioPath} (using as placeholder)`);
       // Don't throw error - allow placeholder for now
     }
   }
@@ -139,7 +139,7 @@ async function migrateReadingTasks(db: any, tasks: ReadingTaskInput[]): Promise<
   const readingTasksCollection = db.collection('readingTasks');
   const questionsCollection = db.collection('questions');
   
-  console.log(`\n📚 Migrating ${tasks.length} Reading tasks...`);
+  console.log(`\nMigrating ${tasks.length} Reading tasks...`);
   
   for (let i = 0; i < tasks.length; i++) {
     const taskInput = tasks[i];
@@ -151,7 +151,7 @@ async function migrateReadingTasks(db: any, tasks: ReadingTaskInput[]): Promise<
       const existingTask = await readingTasksCollection.findOne({ taskId: taskInput.taskId });
       
       if (existingTask) {
-        console.log(`  ⏭️  Skipping Reading task ${taskInput.taskId} (already exists)`);
+        console.log(`  Skipping Reading task ${taskInput.taskId} (already exists)`);
         continue;
       }
       
@@ -166,7 +166,7 @@ async function migrateReadingTasks(db: any, tasks: ReadingTaskInput[]): Promise<
       
       // Insert task
       await readingTasksCollection.insertOne(task);
-      console.log(`  ✅ Imported Reading task: ${taskInput.taskId}`);
+      console.log(`  Imported Reading task: ${taskInput.taskId}`);
       
       // Insert questions separately
       const questionDocs = taskInput.questions.map((q, idx) => 
@@ -188,13 +188,13 @@ async function migrateReadingTasks(db: any, tasks: ReadingTaskInput[]): Promise<
       const existingQuestions = await questionsCollection.countDocuments({ taskId: taskInput.taskId });
       if (existingQuestions === 0) {
         await questionsCollection.insertMany(questionDocs);
-        console.log(`    ✅ Imported 40 questions for ${taskInput.taskId}`);
+        console.log(`    Imported 40 questions for ${taskInput.taskId}`);
       } else {
-        console.log(`    ⏭️  Skipping questions for ${taskInput.taskId} (already exist)`);
+        console.log(`    Skipping questions for ${taskInput.taskId} (already exist)`);
       }
       
     } catch (error: any) {
-      console.error(`  ❌ Error importing Reading task ${taskInput.taskId}:`, error.message);
+      console.error(`  Error importing Reading task ${taskInput.taskId}:`, error.message);
       throw error;
     }
   }
@@ -207,7 +207,7 @@ async function migrateListeningTasks(db: any, tasks: ListeningTaskInput[]): Prom
   const listeningTasksCollection = db.collection('listeningTasks');
   const questionsCollection = db.collection('questions');
   
-  console.log(`\n🎧 Migrating ${tasks.length} Listening tasks...`);
+  console.log(`\nMigrating ${tasks.length} Listening tasks...`);
   
   for (let i = 0; i < tasks.length; i++) {
     const taskInput = tasks[i];
@@ -219,7 +219,7 @@ async function migrateListeningTasks(db: any, tasks: ListeningTaskInput[]): Prom
       const existingTask = await listeningTasksCollection.findOne({ taskId: taskInput.taskId });
       
       if (existingTask) {
-        console.log(`  ⏭️  Skipping Listening task ${taskInput.taskId} (already exists)`);
+        console.log(`  Skipping Listening task ${taskInput.taskId} (already exists)`);
         continue;
       }
       
@@ -234,7 +234,7 @@ async function migrateListeningTasks(db: any, tasks: ListeningTaskInput[]): Prom
       
       // Insert task
       await listeningTasksCollection.insertOne(task);
-      console.log(`  ✅ Imported Listening task: ${taskInput.taskId}`);
+      console.log(`  Imported Listening task: ${taskInput.taskId}`);
       
       // Insert questions separately
       const questionDocs = taskInput.questions.map((q, idx) => 
@@ -255,13 +255,13 @@ async function migrateListeningTasks(db: any, tasks: ListeningTaskInput[]): Prom
       const existingQuestions = await questionsCollection.countDocuments({ taskId: taskInput.taskId });
       if (existingQuestions === 0) {
         await questionsCollection.insertMany(questionDocs);
-        console.log(`    ✅ Imported 40 questions for ${taskInput.taskId}`);
+        console.log(`    Imported 40 questions for ${taskInput.taskId}`);
       } else {
-        console.log(`    ⏭️  Skipping questions for ${taskInput.taskId} (already exist)`);
+        console.log(`    Skipping questions for ${taskInput.taskId} (already exist)`);
       }
       
     } catch (error: any) {
-      console.error(`  ❌ Error importing Listening task ${taskInput.taskId}:`, error.message);
+      console.error(`  Error importing Listening task ${taskInput.taskId}:`, error.message);
       throw error;
     }
   }
@@ -272,18 +272,18 @@ async function migrateListeningTasks(db: any, tasks: ListeningTaskInput[]): Prom
  */
 async function migrate(): Promise<void> {
   try {
-    console.log('🚀 Starting Reading/Listening data migration...\n');
+    console.log('Starting Reading/Listening data migration...\n');
     
     // Connect to database
     const db = await connectDB();
-    console.log('✅ Connected to MongoDB\n');
+    console.log('Connected to MongoDB\n');
     
     // Read JSON files
     const readingTasksPath = join(process.cwd(), 'data', 'reading_tasks.json');
     const listeningTasksPath = join(process.cwd(), 'data', 'listening_tasks.json');
     
     if (!existsSync(readingTasksPath)) {
-      console.warn(`⚠️  Warning: ${readingTasksPath} not found. Skipping Reading tasks migration.`);
+      console.warn(`Warning: ${readingTasksPath} not found. Skipping Reading tasks migration.`);
     } else {
       const readingTasksData = readFileSync(readingTasksPath, 'utf-8');
       const readingTasks: ReadingTaskInput[] = JSON.parse(readingTasksData);
@@ -296,7 +296,7 @@ async function migrate(): Promise<void> {
     }
     
     if (!existsSync(listeningTasksPath)) {
-      console.warn(`⚠️  Warning: ${listeningTasksPath} not found. Skipping Listening tasks migration.`);
+      console.warn(`Warning: ${listeningTasksPath} not found. Skipping Listening tasks migration.`);
     } else {
       const listeningTasksData = readFileSync(listeningTasksPath, 'utf-8');
       const listeningTasks: ListeningTaskInput[] = JSON.parse(listeningTasksData);
@@ -309,14 +309,14 @@ async function migrate(): Promise<void> {
     }
     
     // Create indexes
-    console.log('\n📊 Creating indexes...');
+    console.log('\nCreating indexes...');
     await createIndexes();
     
-    console.log('\n✅ Migration completed successfully!');
+    console.log('\nMigration completed successfully!');
     process.exit(0);
     
   } catch (error: any) {
-    console.error('\n❌ Migration failed:', error.message);
+    console.error('\nMigration failed:', error.message);
     console.error(error.stack);
     process.exit(1);
   }

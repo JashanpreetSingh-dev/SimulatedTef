@@ -32,7 +32,7 @@ function getConfig(): {
   const name = process.env.CREATE_MOCK_NAME;
   const description = process.env.CREATE_MOCK_DESCRIPTION;
 
-  console.log('📋 Using configuration:');
+  console.log('Using configuration:');
   console.log(`   Oral A: ${oralA} ${process.env.CREATE_MOCK_ORAL_A ? '(from env)' : '(default)'}`);
   console.log(`   Oral B: ${oralB} ${process.env.CREATE_MOCK_ORAL_B ? '(from env)' : '(default)'}`);
   console.log(`   Reading: ${reading} ${process.env.CREATE_MOCK_READING ? '(from env)' : '(default)'}`);
@@ -42,19 +42,19 @@ function getConfig(): {
 
   // Validate ranges
   if (oralA < 1 || oralA > 3) {
-    console.error('❌ Oral A task ID must be between 1 and 3');
+    console.error('Oral A task ID must be between 1 and 3');
     process.exit(1);
   }
   if (oralB < 1 || oralB > 3) {
-    console.error('❌ Oral B task ID must be between 1 and 3');
+    console.error('Oral B task ID must be between 1 and 3');
     process.exit(1);
   }
   if (reading !== 1) {
-    console.error('❌ Reading task ID must be 1 (only one reading task available)');
+    console.error('Reading task ID must be 1 (only one reading task available)');
     process.exit(1);
   }
   if (listening !== 1) {
-    console.error('❌ Listening task ID must be 1 (only one listening task available)');
+    console.error('Listening task ID must be 1 (only one listening task available)');
     process.exit(1);
   }
 
@@ -63,10 +63,10 @@ function getConfig(): {
 
 async function createCustomMockExam(): Promise<void> {
   try {
-    console.log('🚀 Creating custom mock exam...\n');
+    console.log('Creating custom mock exam...\n');
 
     const config = getConfig();
-    console.log('📋 Configuration:');
+    console.log('Configuration:');
     console.log(`   Oral A: ${config.oralA}`);
     console.log(`   Oral B: ${config.oralB}`);
     console.log(`   Reading: ${config.reading}`);
@@ -75,7 +75,7 @@ async function createCustomMockExam(): Promise<void> {
     console.log(`   Description: ${config.description || 'Auto-generated'}\n`);
 
     const db = await connectDB();
-    console.log('✅ Connected to MongoDB\n');
+    console.log('Connected to MongoDB\n');
 
     const mockExamsCollection = db.collection('mockExams');
 
@@ -102,19 +102,19 @@ async function createCustomMockExam(): Promise<void> {
     // Insert into database
     const result = await mockExamsCollection.insertOne(mockExam);
 
-    console.log('✅ Custom mock exam created successfully!');
-    console.log(`📋 Mock Exam ID: ${mockExamId}`);
-    console.log(`📝 Name: ${name}`);
-    console.log(`🔢 Oral Expression A: Task ${config.oralA}`);
-    console.log(`🔢 Oral Expression B: Task ${config.oralB}`);
-    console.log(`📖 Reading: Task ${config.reading}`);
-    console.log(`🎧 Listening: Task ${config.listening}`);
-    console.log(`🆔 Database ID: ${result.insertedId}`);
+    console.log('Custom mock exam created successfully!');
+    console.log(`Mock Exam ID: ${mockExamId}`);
+    console.log(`Name: ${name}`);
+    console.log(`Oral Expression A: Task ${config.oralA}`);
+    console.log(`Oral Expression B: Task ${config.oralB}`);
+    console.log(`Reading: Task ${config.reading}`);
+    console.log(`Listening: Task ${config.listening}`);
+    console.log(`Database ID: ${result.insertedId}`);
 
     process.exit(0);
 
   } catch (error: any) {
-    console.error('\n❌ Failed to create mock exam:', error.message);
+    console.error('\nFailed to create mock exam:', error.message);
     console.error(error.stack);
     process.exit(1);
   }
