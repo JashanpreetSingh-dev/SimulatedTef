@@ -175,7 +175,7 @@ export const geminiService = {
       const base64 = await blobToBase64(audioBlob);
       
       const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash-preview-09-2025",
+        model: "gemini-2.5-flash",
         contents: [{
           parts: [{
             inlineData: {
