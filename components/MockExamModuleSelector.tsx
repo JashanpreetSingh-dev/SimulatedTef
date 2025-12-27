@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 
 
 interface ModuleResult {
@@ -60,8 +61,34 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
   justCompletedModule,
 }) => {
   const { theme } = useTheme();
+  const { t } = useLanguage();
 
   const allModulesCompleted = completedModules.length === 3;
+  
+  const getModuleInfo = (moduleId: string) => {
+    switch (moduleId) {
+      case 'oralExpression':
+        return {
+          name: t('modules.oralExpression'),
+          description: t('modules.oralExpressionDescription'),
+          duration: t('modules.oralExpressionDuration'),
+        };
+      case 'reading':
+        return {
+          name: t('modules.reading'),
+          description: t('modules.readingDescription'),
+          duration: t('modules.readingDuration'),
+        };
+      case 'listening':
+        return {
+          name: t('modules.listening'),
+          description: t('modules.listeningDescription'),
+          duration: t('modules.listeningDuration'),
+        };
+      default:
+        return { name: '', description: '', duration: '' };
+    }
+  };
 
   const getModuleStatus = (moduleId: string) => {
     if (completedModules.includes(moduleId)) {
@@ -73,7 +100,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
     return 'available';
   };
   
-  const getModuleResult = (moduleId: string) => {
+  const getModuleResult = (moduleId: string): ModuleResult | undefined => {
     return moduleResults[moduleId];
   };
 
@@ -93,7 +120,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors
               `}
             >
-              ← Retour à la liste
+              ← {t('back.toList')}
             </button>
           )}
           <div className="mb-4">
@@ -101,7 +128,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
               text-3xl font-bold
               ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
             `}>
-              Mock Exam Modules
+              {t('mockExam.modules')}
             </h1>
           </div>
 
@@ -114,7 +141,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 text-center font-semibold
                 ${theme === 'dark' ? 'text-blue-200' : 'text-blue-800'}
               `}>
-                ✓ {justCompletedModule === 'oralExpression' ? 'Oral Expression' : justCompletedModule === 'reading' ? 'Reading Comprehension' : 'Listening Comprehension'} completed successfully!
+                ✓ {justCompletedModule === 'oralExpression' ? t('modules.oralExpression') : justCompletedModule === 'reading' ? t('modules.reading') : t('modules.listening')} {t('mockExam.moduleCompleted')}
               </p>
             </div>
           )}
@@ -128,7 +155,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 text-center font-semibold
                 ${theme === 'dark' ? 'text-green-200' : 'text-green-800'}
               `}>
-                🎉 All modules completed! You can review your results or finish the mock exam.
+                🎉 {t('mockExam.allModulesCompleted')}
               </p>
             </div>
           )}
@@ -137,6 +164,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
         {/* Modules Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {MODULES.map((module) => {
+            const moduleInfo = getModuleInfo(module.id);
             const status = getModuleStatus(module.id);
             const isCompleted = status === 'completed';
             const isLoading = status === 'loading';
@@ -180,7 +208,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                       text-xl font-semibold
                       ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
                     `}>
-                      {module.name}
+                      {moduleInfo.name}
                     </h3>
                     {isLoading ? (
                       <svg className="w-6 h-6 text-yellow-500 flex-shrink-0 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -202,14 +230,14 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                     text-sm mb-3
                     ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
                   `}>
-                    {module.description}
+                    {moduleInfo.description}
                   </p>
 
                   <div className={`
                     text-xs font-semibold
                     ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}
                   `}>
-                    Duration: {module.duration}
+                    {t('common.duration')}: {moduleInfo.duration}
                   </div>
                 </div>
 
@@ -221,7 +249,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                         text-center py-2 rounded font-semibold text-sm
                         ${theme === 'dark' ? 'bg-yellow-900/30 text-yellow-200' : 'bg-yellow-100 text-yellow-800'}
                       `}>
-                        ⏳ Evaluating...
+                        ⏳ {t('status.evaluating')}
                       </div>
                     ) : (
                       <>
@@ -229,29 +257,32 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                           text-center py-2 rounded font-semibold text-sm
                           ${theme === 'dark' ? 'bg-green-900/30 text-green-200' : 'bg-green-100 text-green-800'}
                         `}>
-                          ✓ Completed
+                          ✓ {t('status.completed')}
                         </div>
                         {(() => {
                           const result = getModuleResult(module.id);
                           // Show score if available and not currently loading
                           if (result && typeof result.score === 'number' && result.score !== undefined && result.isLoading !== true) {
+                            const score = result.score;
+                            const scoreOutOf = result.scoreOutOf;
+                            const clbLevel = result.clbLevel;
                             return (
                               <div className={`
                                 text-center py-2 rounded
                                 ${theme === 'dark' ? 'bg-slate-700/50 text-slate-200' : 'bg-slate-100 text-slate-700'}
                               `}>
                                 <div className="text-lg font-bold">
-                                  {result.score}
-                                  {result.scoreOutOf && ` / ${result.scoreOutOf}`}
+                                  {score}
+                                  {scoreOutOf && ` / ${scoreOutOf}`}
                                 </div>
-                                {result.clbLevel && (
+                                {clbLevel && (
                                   <div className="text-xs mt-1 font-semibold">
-                                    {result.clbLevel}
+                                    {clbLevel}
                                   </div>
                                 )}
-                                {!result.clbLevel && result.scoreOutOf === 40 && (
+                                {!clbLevel && scoreOutOf === 40 && (
                                   <div className="text-xs mt-1">
-                                    {((result.score / result.scoreOutOf) * 100).toFixed(0)}% correct
+                                    {((score / scoreOutOf) * 100).toFixed(0)}% correct
                                   </div>
                                 )}
                               </div>
@@ -273,7 +304,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                               }
                             `}
                           >
-                            📊 See Results
+                            📊 {t('actions.seeResults')}
                           </button>
                         )}
                       </>

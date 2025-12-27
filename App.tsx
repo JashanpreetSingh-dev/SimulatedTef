@@ -778,7 +778,7 @@ function Dashboard() {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Section A
+              {t('dashboard.sectionA')}
             </button>
             <button
               onClick={() => setActiveTab('partB')}
@@ -788,7 +788,7 @@ function Dashboard() {
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              Section B
+              {t('dashboard.sectionB')}
             </button>
           </div>
 
@@ -799,7 +799,7 @@ function Dashboard() {
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📞</div>
               {status && (status.limits.sectionA > 0 || status.packCredits?.sectionA.remaining) && (
                 <div className="text-right">
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Available</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('common.available')}</div>
                   <div className="text-lg font-black text-blue-400 dark:text-blue-300">
                     {(() => {
                       const dailyRemaining = status.limits.sectionA > 0 
@@ -813,23 +813,23 @@ function Dashboard() {
                   {(status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA) || (status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0) ? (
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                       {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && (
-                        <span>Daily: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
+                        <span>{t('common.daily')}: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
                       )}
                       {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && <span> • </span>}
                       {status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && (
-                        <span>Pack: {status.packCredits.sectionA.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.sectionA.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
               </div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Section A</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">{t('dashboard.sectionA')}</h3>
               <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
-                Posez des questions pour obtenir des informations. (4 min)
+                {t('dashboard.sectionADescription')}
               </p>
               <div className="flex items-center text-blue-400 dark:text-blue-300 font-bold text-xs">
-                Commencer <span className="ml-1">→</span>
+                {t('common.commencer')} <span className="ml-1">→</span>
               </div>
             </div>
           )}
@@ -840,7 +840,7 @@ function Dashboard() {
                 <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/50 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🤝</div>
               {status && (status.limits.sectionB > 0 || status.packCredits?.sectionB.remaining) && (
                 <div className="text-right">
-                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">Available</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('common.available')}</div>
                   <div className="text-lg font-black text-emerald-400 dark:text-emerald-300">
                     {(() => {
                       const dailyRemaining = status.limits.sectionB > 0 
@@ -854,23 +854,23 @@ function Dashboard() {
                   {(status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB) || (status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0) ? (
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                       {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && (
-                        <span>Daily: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
+                        <span>{t('common.daily')}: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
                       )}
                       {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && <span> • </span>}
                       {status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && (
-                        <span>Pack: {status.packCredits.sectionB.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.sectionB.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
               </div>
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Section B</h3>
+              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">{t('dashboard.sectionB')}</h3>
               <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-3">
-                Argumentez pour convaincre un ami. (8 min)
+                {t('dashboard.sectionBDescription')}
               </p>
               <div className="flex items-center text-emerald-400 dark:text-emerald-300 font-bold text-xs">
-                Commencer <span className="ml-1">→</span>
+                {t('common.commencer')} <span className="ml-1">→</span>
               </div>
             </div>
           )}
@@ -881,7 +881,7 @@ function Dashboard() {
               <div className="w-10 h-10 bg-indigo-100/20 rounded-xl flex items-center justify-center text-xl group-hover:rotate-12 transition-transform">🏆</div>
               {status && (
                 <div className="text-right">
-                  <div className="text-xs text-indigo-200 mb-1">Available</div>
+                  <div className="text-xs text-indigo-200 mb-1">{t('common.available')}</div>
                   <div className="text-lg font-black text-white">
                     {(() => {
                       const dailyRemaining = status.limits.fullTests > 0 
@@ -895,23 +895,23 @@ function Dashboard() {
                   {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
                     <div className="text-xs text-indigo-300 mt-0.5">
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
-                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                        <span>{t('common.daily')}: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
                       )}
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
                       {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
-                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.fullTests.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">Expression Orale - Complet</h3>
+            <h3 className="text-lg font-bold text-white mb-1">{t('dashboard.oralExpressionComplete')}</h3>
             <p className="text-indigo-100 text-xs leading-relaxed mb-3">
-              Enchaînez les deux sections pour une simulation réelle. (12 min)
+              {t('dashboard.oralExpressionDescription')}
             </p>
             <div className="flex items-center text-white font-bold text-xs">
-              Commencer <span className="ml-1">→</span>
+              {t('common.commencer')} <span className="ml-1">→</span>
             </div>
           </div>
 
@@ -921,7 +921,7 @@ function Dashboard() {
               <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl group-hover:rotate-12 transition-transform">📚</div>
               {status && (
                 <div className="text-right">
-                  <div className="text-xs text-purple-100 mb-1">Available</div>
+                  <div className="text-xs text-purple-100 mb-1">{t('common.available')}</div>
                   <div className="text-lg font-black text-white">
                     {(() => {
                       const dailyRemaining = status.limits.fullTests > 0 
@@ -935,23 +935,23 @@ function Dashboard() {
                   {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
                     <div className="text-xs text-purple-200 mt-0.5">
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
-                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                        <span>{t('common.daily')}: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
                       )}
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
                       {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
-                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.fullTests.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-lg font-bold text-white mb-1">Mock Exam</h3>
+            <h3 className="text-lg font-bold text-white mb-1">{t('dashboard.mockExam')}</h3>
             <p className="text-purple-100 text-xs leading-relaxed mb-3">
-              Complete 3-module exam: Oral Expression, Reading, and Listening
+              {t('dashboard.mockExamDescription')}
             </p>
             <div className="flex items-center text-white font-bold text-xs">
-              Start Mock Exam <span className="ml-1">→</span>
+              {t('common.startMockExam')} <span className="ml-1">→</span>
             </div>
           </div>
         </div>
@@ -977,23 +977,23 @@ function Dashboard() {
                   {(status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA) || (status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0) ? (
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                       {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && (
-                        <span>Daily: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
+                        <span>{t('common.daily')}: {status.limits.sectionA - status.usage.sectionAUsed}/{status.limits.sectionA}</span>
                       )}
                       {status.limits.sectionA > 0 && status.usage.sectionAUsed < status.limits.sectionA && status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && <span> • </span>}
                       {status.packCredits?.sectionA.remaining && status.packCredits.sectionA.remaining > 0 && (
-                        <span>Pack: {status.packCredits.sectionA.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.sectionA.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Section A</h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">{t('dashboard.sectionA')}</h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-              Posez des questions pour obtenir des informations. (4 min)
+              {t('dashboard.sectionADescription')}
             </p>
             <div className="mt-6 flex items-center text-blue-400 dark:text-blue-300 font-bold text-sm">
-              Commencer <span className="ml-2">→</span>
+              {t('common.commencer')} <span className="ml-2">→</span>
             </div>
           </div>
 
@@ -1016,23 +1016,23 @@ function Dashboard() {
                   {(status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB) || (status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0) ? (
                     <div className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                       {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && (
-                        <span>Daily: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
+                        <span>{t('common.daily')}: {status.limits.sectionB - status.usage.sectionBUsed}/{status.limits.sectionB}</span>
                       )}
                       {status.limits.sectionB > 0 && status.usage.sectionBUsed < status.limits.sectionB && status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && <span> • </span>}
                       {status.packCredits?.sectionB.remaining && status.packCredits.sectionB.remaining > 0 && (
-                        <span>Pack: {status.packCredits.sectionB.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.sectionB.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">Section B</h3>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">{t('dashboard.sectionB')}</h3>
             <p className="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">
-              Argumentez pour convaincre un ami. (8 min)
+              {t('dashboard.sectionBDescription')}
             </p>
             <div className="mt-6 flex items-center text-emerald-400 dark:text-emerald-300 font-bold text-sm">
-              Commencer <span className="ml-2">→</span>
+              {t('common.commencer')} <span className="ml-2">→</span>
             </div>
           </div>
 
@@ -1041,7 +1041,7 @@ function Dashboard() {
               <div className="w-12 h-12 bg-indigo-100/20 rounded-2xl flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform">🏆</div>
               {status && (
                 <div className="text-right">
-                  <div className="text-xs text-indigo-200 mb-1">Available</div>
+                  <div className="text-xs text-indigo-200 mb-1">{t('common.available')}</div>
                   <div className="text-2xl font-black text-white">
                     {(() => {
                       const dailyRemaining = status.limits.fullTests > 0 
@@ -1055,23 +1055,23 @@ function Dashboard() {
                   {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
                     <div className="text-xs text-indigo-300 mt-1">
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
-                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                        <span>{t('common.daily')}: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
                       )}
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
                       {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
-                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.fullTests.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Expression Orale - Complet</h3>
+            <h3 className="text-xl font-bold text-white mb-2">{t('dashboard.oralExpressionComplete')}</h3>
             <p className="text-indigo-100 text-sm leading-relaxed">
-              Enchaînez les deux sections pour une simulation réelle. (12 min)
+              {t('dashboard.oralExpressionDescription')}
             </p>
             <div className="mt-6 flex items-center text-white font-bold text-sm">
-              Commencer <span className="ml-2">→</span>
+              {t('common.commencer')} <span className="ml-2">→</span>
             </div>
           </div>
 
@@ -1081,7 +1081,7 @@ function Dashboard() {
               <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform">📚</div>
               {status && (
                 <div className="text-right">
-                  <div className="text-xs text-purple-100 mb-1">Available</div>
+                  <div className="text-xs text-purple-100 mb-1">{t('common.available')}</div>
                   <div className="text-2xl font-black text-white">
                     {(() => {
                       const dailyRemaining = status.limits.fullTests > 0 
@@ -1095,23 +1095,23 @@ function Dashboard() {
                   {(status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests) || (status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0) ? (
                     <div className="text-xs text-purple-200 mt-1">
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && (
-                        <span>Daily: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
+                        <span>{t('common.daily')}: {status.limits.fullTests - status.usage.fullTestsUsed}/{status.limits.fullTests}</span>
                       )}
                       {status.limits.fullTests > 0 && status.usage.fullTestsUsed < status.limits.fullTests && status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && <span> • </span>}
                       {status.packCredits?.fullTests.remaining && status.packCredits.fullTests.remaining > 0 && (
-                        <span>Pack: {status.packCredits.fullTests.remaining}</span>
+                        <span>{t('common.pack')}: {status.packCredits.fullTests.remaining}</span>
                       )}
                     </div>
                   ) : null}
                 </div>
               )}
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Mock Exam</h3>
+            <h3 className="text-xl font-bold text-white mb-2">{t('dashboard.mockExam')}</h3>
             <p className="text-purple-100 text-sm leading-relaxed">
-              Complete 3-module exam: Oral Expression, Reading, and Listening
+              {t('dashboard.mockExamDescription')}
             </p>
             <div className="mt-6 flex items-center text-white font-bold text-sm">
-              Start Mock Exam <span className="ml-2">→</span>
+              {t('common.startMockExam')} <span className="ml-2">→</span>
             </div>
           </div>
         </div>

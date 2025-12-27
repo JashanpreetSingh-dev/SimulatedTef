@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { SavedResult, UpgradedSentence, TEFTask } from '../types';
 import { authenticatedFetch } from '../services/authenticatedFetch';
 import { QuestionResultsView } from './QuestionResultsView';
@@ -35,14 +36,15 @@ const getSectionBadgeColor = (mode: string) => {
   return 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 border-indigo-200 dark:border-indigo-700';
 };
 
-const getSectionLabel = (mode: string) => {
-  if (mode === 'partA') return 'A';
-  if (mode === 'partB') return 'B';
-  return 'Complet';
+const getSectionLabel = (mode: string, t: (key: string) => string) => {
+  if (mode === 'partA') return t('results.sectionA');
+  if (mode === 'partB') return t('results.sectionB');
+  return t('results.complete');
 };
 
 const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
   const { getToken } = useAuth();
+  const { t } = useLanguage();
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
   const [audioError, setAudioError] = useState<string | null>(null);
@@ -107,9 +109,9 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
   const tasksToDisplay = useMemo(() => {
     const tasks: Array<{ task: TEFTask; label: string }> = [];
     if (result.mode === 'partA' && result.taskPartA) {
-      tasks.push({ task: result.taskPartA, label: 'Section A' });
+      tasks.push({ task: result.taskPartA, label: `Section ${t('results.sectionA')}` });
     } else if (result.mode === 'partB' && result.taskPartB) {
-      tasks.push({ task: result.taskPartB, label: 'Section B' });
+      tasks.push({ task: result.taskPartB, label: `Section ${t('results.sectionB')}` });
     } else if (result.mode === 'full') {
       if (result.taskPartA) tasks.push({ task: result.taskPartA, label: 'Section A' });
       if (result.taskPartB) tasks.push({ task: result.taskPartB, label: 'Section B' });
@@ -172,7 +174,7 @@ const DetailedResultViewComponent: React.FC<Props> = ({ result, onBack }) => {
           <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4">
             {/* Section Badge */}
             <div className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg border font-black text-xs sm:text-sm uppercase tracking-wider ${getSectionBadgeColor(result.mode)}`}>
-              Section {getSectionLabel(result.mode)}
+              Section {getSectionLabel(result.mode, t)}
             </div>
 
             {/* CLB Pill */}

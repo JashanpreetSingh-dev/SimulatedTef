@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
 
 type TabType = 'mock-test' | 'completed';
@@ -39,6 +40,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
 }) => {
   const { getToken } = useAuth();
   const { theme } = useTheme();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mockExams, setMockExams] = useState<MockExam[]>([]);
@@ -140,9 +142,9 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
     } catch (error: any) {
       console.error('Failed to start mock exam:', error);
       if (error.message?.includes('credits')) {
-        setError('You need credits to start a mock exam. Please purchase a pack.');
+        setError(t('errors.creditsNeeded'));
       } else {
-        setError('Failed to start mock exam. Please try again.');
+        setError(t('errors.startFailed'));
       }
     } finally {
       setLoading(false);
@@ -173,7 +175,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                 disabled:opacity-50 disabled:cursor-not-allowed
               `}
             >
-              ← Retour au tableau de bord
+              ← {t('back.dashboard')}
             </button>
           )}
           <div className="mb-4">
@@ -181,7 +183,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
               text-3xl font-bold
               ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
             `}>
-              Mock Exams
+              {t('mockExam.titlePlural')}
             </h1>
           </div>
 
@@ -197,7 +199,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                 }
               `}
             >
-              Mock Tests
+              {t('mockExam.mockTests')}
             </button>
             <button
               onClick={() => setActiveTab('completed')}
@@ -209,7 +211,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                 }
               `}
             >
-              Completed
+              {t('mockExam.completed')}
               {completedMockExamIds.length > 0 && (
                 <span className={`
                   absolute -top-2 -right-2 px-2 py-1 rounded-full text-xs font-bold
@@ -247,7 +249,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
               {loadingExams || checkingStatus ? (
           <div className="text-center py-8">
                   <p className={theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}>
-                    {loadingExams ? 'Loading mock exams...' : 'Checking exam status...'}
+                    {loadingExams ? t('mockExam.loading') : t('mockExam.checkingStatus')}
                   </p>
           </div>
         ) : mockExams.length > 0 ? (
@@ -267,7 +269,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                     const isComplete = isActiveExam && completedCount === 3;
                     // Only show as active/started if there's actually progress (completedCount > 0)
                     const hasStarted = isActiveExam && completedCount > 0;
-                    const actionText = hasStarted ? 'Resume' : 'Start';
+                    const actionText = hasStarted ? t('actions.resume') : t('actions.start');
                     const actionHandler = hasStarted ? handleResumeMockExam : () => handleStartMockExam(exam.mockExamId);
 
                     return (
@@ -321,7 +323,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                   : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                                 }
                               `}>
-                                {isComplete ? 'Complete' : isIncomplete ? 'Incomplete' : 'New'}
+                                {isComplete ? t('status.completed') : isIncomplete ? t('status.incomplete') : t('status.new')}
                               </span>
                               {hasStarted && (
                                 <div className="flex gap-2 flex-wrap">
@@ -332,7 +334,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
                                   `}>
-                                    Expression Orale: {activeMockExam.completedModules.includes('oralExpression') ? '✓' : '○'}
+                                    {t('modules.oralExpression')}: {activeMockExam.completedModules.includes('oralExpression') ? '✓' : '○'}
                                   </div>
                                   <div className={`
                                     px-2 py-1 rounded text-xs font-medium
@@ -341,7 +343,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
                                   `}>
-                                    Reading: {activeMockExam.completedModules.includes('reading') ? '✓' : '○'}
+                                    {t('modules.reading')}: {activeMockExam.completedModules.includes('reading') ? '✓' : '○'}
                                   </div>
                                   <div className={`
                                     px-2 py-1 rounded text-xs font-medium
@@ -350,7 +352,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
                                   `}>
-                                    Listening: {activeMockExam.completedModules.includes('listening') ? '✓' : '○'}
+                                    {t('modules.listening')}: {activeMockExam.completedModules.includes('listening') ? '✓' : '○'}
                                   </div>
                                 </div>
                               )}
@@ -358,13 +360,13 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                     {!hasStarted && (
                       <div className="grid grid-cols-3 gap-2 text-xs">
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          Expression Orale
+                          {t('modules.oralExpression')}
                         </div>
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          Reading (40 Q - sequential)
+                          {t('modules.reading')} (40 Q - sequential)
                         </div>
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          Listening (40 Q)
+                          {t('modules.listening')} (40 Q)
                         </div>
                       </div>
                     )}
@@ -393,7 +395,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                     text-lg
                     ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
                   `}>
-                    All available mock exams have been completed. Check the Completed tab to view your results.
+                    {t('mockExam.allCompleted')}
                   </p>
                 </div>
               )}
@@ -428,13 +430,13 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                             text-lg font-semibold mb-2
                             ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
                           `}>
-                            Mock Exam Completed
+                            {t('mockExam.completedTitle')}
                           </h3>
                           <p className={`
                             text-sm mb-3
                             ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
                           `}>
-                            All modules completed. View your final results.
+                            {t('mockExam.allModulesCompleted')}
                           </p>
                           <div className="flex gap-4 text-sm">
                             <div className={`
@@ -445,12 +447,12 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                             <div className={`
                               px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800
                             `}>
-                              Reading: Complete
+                              {t('modules.reading')}: {t('status.completed')}
                             </div>
                             <div className={`
                               px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800
                             `}>
-                              Listening: Complete
+                              {t('modules.listening')}: {t('status.completed')}
                             </div>
                           </div>
                         </div>
@@ -460,7 +462,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                               text-sm font-semibold
                               ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}
                             `}>
-                              View Results
+                              {t('actions.viewResults')}
                             </span>
                             <svg className="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -477,7 +479,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
               text-lg
               ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
             `}>
-                    No completed mock exams yet. Complete your first mock exam to see it here!
+                    {t('mockExam.noCompleted')}
             </p>
           </div>
         )}
