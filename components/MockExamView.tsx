@@ -312,11 +312,21 @@ export const MockExamView: React.FC = () => {
     
     case 'oralExpression':
       return state.oralExpressionScenario ? (
-        <OralExpressionLive
-          scenario={state.oralExpressionScenario}
-          mode="full"
-          onFinish={handleOralExpressionComplete}
-        />
+        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
+          <div className="max-w-6xl mx-auto">
+            <button 
+              onClick={() => stateActions.setPhase('module-selector')}
+              className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
+            >
+              ← Retour aux modules
+            </button>
+            <OralExpressionLive
+              scenario={state.oralExpressionScenario}
+              mode="full"
+              onFinish={handleOralExpressionComplete}
+            />
+          </div>
+        </div>
       ) : null;
     
     case 'reading':
