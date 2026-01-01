@@ -9,7 +9,7 @@ export const Footer: React.FC<FooterProps> = ({ variant = 'dark' }) => {
   const isDark = variant === 'dark';
   
   return (
-    <footer className={`border-t ${isDark ? 'border-slate-200 dark:border-slate-700 bg-indigo-100/70 dark:bg-slate-800/70' : 'border-slate-200 dark:border-slate-700 bg-indigo-100/70 dark:bg-slate-800/70'} py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:sticky md:bottom-0 z-10 transition-colors duration-300`}>
+    <footer className={`border-t ${isDark ? 'border-slate-200 dark:border-slate-700 bg-indigo-100 dark:bg-slate-800' : 'border-slate-200 dark:border-slate-700 bg-indigo-100 dark:bg-slate-800'} py-3 sm:py-4 md:py-6 px-4 sm:px-6 md:sticky md:bottom-0 z-10 transition-colors duration-300`}>
       <div className={`max-w-6xl mx-auto`}>
         <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
           <p className={`text-xs sm:text-sm ${isDark ? 'text-slate-600 dark:text-slate-400' : 'text-slate-600 dark:text-slate-400'} text-center sm:text-left`}>

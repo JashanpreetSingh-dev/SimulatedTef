@@ -6,6 +6,7 @@ import { connectDB } from "../db/connection";
 import { createExamSession } from "../models/examSession";
 import { readingTaskService } from "./readingTaskService";
 import { listeningTaskService } from "./listeningTaskService";
+import { writtenTaskService } from "./writtenTaskService";
 import { questionService } from "./questionService";
 import { subscriptionService } from "./subscriptionService";
 import { createUsage, getTodayUTC } from "../models/usage";
@@ -88,6 +89,9 @@ export const mockExamService = {
         // Oral expression is handled as live recording, not multiple choice
         const randomId = Math.floor(Math.random() * 1000) + 1;
         return { id: randomId };
+      case "writtenExpression":
+        // For written expression, return both Section A and Section B tasks
+        return await writtenTaskService.getRandomTasks();
       default:
         return null;
     }
@@ -228,7 +232,9 @@ export const mockExamService = {
         !predefinedMock.oralATaskId ||
         !predefinedMock.oralBTaskId ||
         !predefinedMock.readingTaskId ||
-        !predefinedMock.listeningTaskId
+        !predefinedMock.listeningTaskId ||
+        !predefinedMock.writtenATaskId ||
+        !predefinedMock.writtenBTaskId
       ) {
         throw new Error(
           `Mock exam ${predefinedMockExamId} is incomplete - all sections must be defined`
@@ -247,9 +253,15 @@ export const mockExamService = {
       const listeningTask = await listeningTaskService.getTaskById(
         predefinedMock.listeningTaskId
       );
+      const writtenATask = await writtenTaskService.getTaskById(
+        predefinedMock.writtenATaskId
+      );
+      const writtenBTask = await writtenTaskService.getTaskById(
+        predefinedMock.writtenBTaskId
+      );
 
-      if (!readingTask || !listeningTask) {
-        throw new Error("No active Reading/Listening tasks available");
+      if (!readingTask || !listeningTask || !writtenATask || !writtenBTask) {
+        throw new Error("No active tasks available for all modules");
       }
 
       // Check if user has already completed this mock exam
@@ -389,6 +401,8 @@ export const mockExamService = {
               `oralB_${oralBTask.id}`,
               readingTask.taskId,
               listeningTask.taskId,
+              writtenATask.id,
+              writtenBTask.id,
             ],
             currentModule: null,
           });
@@ -438,11 +452,14 @@ export const mockExamService = {
             `oralB_${oralBTask.id}`,
             readingTask.taskId,
             listeningTask.taskId,
+            writtenATask.id,
+            writtenBTask.id,
           ],
           modules: [
             { name: "oralExpression", status: "available" },
             { name: "reading", status: "available" },
             { name: "listening", status: "available" },
+            { name: "writtenExpression", status: "available" },
           ],
         };
       } catch (transactionError: any) {
@@ -484,7 +501,7 @@ export const mockExamService = {
         .find({
           userId,
           mockExamId,
-          module: { $in: ["oralExpression", "reading", "listening"] },
+          module: { $in: ["oralExpression", "reading", "listening", "writtenExpression"] },
           isLoading: { $ne: true }, // Exclude loading results
         })
         .toArray();
@@ -493,8 +510,8 @@ export const mockExamService = {
         ...new Set(results.map((r: any) => r.module)),
       ];
 
-      // If we have results for all 3 modules, consider it completed
-      if (completedModulesFromResults.length === 3) {
+      // If we have results for all 4 modules, consider it completed
+      if (completedModulesFromResults.length === 4) {
         return {
           mockExamId,
           completedModules: completedModulesFromResults,
@@ -507,7 +524,7 @@ export const mockExamService = {
     }
 
     const completedModules = (session.completedModules as string[]) || [];
-    const allModules = ["oralExpression", "reading", "listening"];
+    const allModules = ["oralExpression", "reading", "listening", "writtenExpression"];
     const availableModules = allModules.filter(
       (m) => !completedModules.includes(m)
     );
@@ -547,7 +564,7 @@ export const mockExamService = {
 
     let completedModules: string[] = [];
 
-    const allModules = ["oralExpression", "reading", "listening"];
+    const allModules = ["oralExpression", "reading", "listening", "writtenExpression"];
 
     // Get all results for this mock exam in a single query
     const results = await db
@@ -740,6 +757,65 @@ export const mockExamService = {
       };
     }
 
+    // For Written Expression, return both Section A and Section B tasks
+    if (module === "writtenExpression") {
+      const taskIds = examSession.taskIds as string[];
+      const writtenATaskId = taskIds.find((id) => id.startsWith("written_A")) || "";
+      const writtenBTaskId = taskIds.find((id) => id.startsWith("written_B")) || "";
+
+      let taskA: any;
+      let taskB: any;
+
+      // If written task IDs are stored in session, use them
+      if (writtenATaskId && writtenBTaskId) {
+        taskA = await writtenTaskService.getTaskById(writtenATaskId);
+        taskB = await writtenTaskService.getTaskById(writtenBTaskId);
+
+        if (!taskA || !taskB) {
+          throw new Error(
+            `Written tasks not found: taskA=${writtenATaskId}, taskB=${writtenBTaskId}`
+          );
+        }
+      } else {
+        // Generate random tasks on the fly
+        const randomTasks = await writtenTaskService.getRandomTasks();
+        if (!randomTasks) {
+          throw new Error("Failed to get random written expression tasks");
+        }
+        taskA = randomTasks.taskA;
+        taskB = randomTasks.taskB;
+
+        // Update the session to store these task IDs for consistency
+        const updatedTaskIds = [
+          ...taskIds,
+          taskA.id,
+          taskB.id,
+        ];
+        await db.collection("examSessions").updateOne(
+          { userId, mockExamId },
+          {
+            $set: {
+              taskIds: updatedTaskIds,
+              updatedAt: new Date().toISOString(),
+            },
+          }
+        );
+      }
+
+      // Get mock exam name for title
+      const mockExam = await db.collection("mockExams").findOne({ mockExamId });
+      const examName = mockExam?.name || "Mock Exam";
+
+      return {
+        sessionId: examSession.sessionId,
+        tasks: {
+          taskA,
+          taskB,
+        },
+        title: `${examName} - Written Expression`,
+      };
+    }
+
     // For Oral Expression, return scenario with partA and partB tasks
     if (module === "oralExpression") {
       const taskIds = examSession.taskIds as string[];
@@ -815,7 +891,7 @@ export const mockExamService = {
   async completeModule(
     userId: string,
     mockExamId: string,
-    module: "oralExpression" | "reading" | "listening",
+    module: "oralExpression" | "reading" | "listening" | "writtenExpression",
     result: any
   ): Promise<{
     success: boolean;
@@ -841,16 +917,16 @@ export const mockExamService = {
       let resultId: string | undefined;
 
       await session.withTransaction(async () => {
-        // For oralExpression, save the result to database if not already saved
-        if (module === "oralExpression" && result) {
-          // Ensure result has mockExamId and module fields
-          const resultToSave: any = {
-            ...result,
-            userId,
-            mockExamId,
-            module: "oralExpression",
-            updatedAt: new Date().toISOString(),
-          };
+        // For oralExpression and writtenExpression, save the result to database if not already saved
+        if ((module === "oralExpression" || module === "writtenExpression") && result) {
+            // Ensure result has mockExamId and module fields
+            const resultToSave: any = {
+              ...result,
+              userId,
+              mockExamId,
+              module: module,
+              updatedAt: new Date().toISOString(),
+            };
 
           // Remove temp IDs - MongoDB will generate a real ID
           const { _id: tempId, ...resultWithoutId } = resultToSave;
@@ -866,7 +942,7 @@ export const mockExamService = {
                 {
                   userId,
                   mockExamId,
-                  module: "oralExpression",
+                  module: module,
                   isLoading: true,
                 },
                 { session }
@@ -914,7 +990,7 @@ export const mockExamService = {
               const savedResult = await db
                 .collection("results")
                 .findOneAndUpdate(
-                  { userId, mockExamId, module: "oralExpression" },
+                  { userId, mockExamId, module: module },
                   { $set: resultWithoutId },
                   { upsert: true, returnDocument: "after", session }
                 );
@@ -939,7 +1015,7 @@ export const mockExamService = {
             { session }
           );
         } else {
-          // For non-oralExpression modules (reading/listening), mark as completed normally
+          // For non-oralExpression/writtenExpression modules (reading/listening), mark as completed normally
           await db.collection("examSessions").updateOne(
             { userId, mockExamId },
             {
@@ -960,7 +1036,7 @@ export const mockExamService = {
 
         const completedModules =
           (updatedSession?.completedModules as string[]) || [];
-        allModulesCompleted = completedModules.length === 3;
+        allModulesCompleted = completedModules.length === 4;
 
         if (allModulesCompleted) {
           // Mark mock exam as fully completed

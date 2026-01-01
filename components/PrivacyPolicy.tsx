@@ -1,6 +1,6 @@
 import React from 'react';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
-import { DashboardLayout } from '../App';
+import { DashboardLayout } from '../layouts/DashboardLayout';
 import { Footer } from './Footer';
 
 function PrivacyPolicyContent() {

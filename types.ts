@@ -44,6 +44,7 @@ export interface WrittenTask {
   subject: string;
   instruction: string;
   minWords: number;
+  modelAnswer?: string; // Model answer from knowledge base
 }
 
 export interface ExamScenario {
@@ -143,6 +144,11 @@ export interface EvaluationResult {
   top_improvements?: string[];
   upgraded_sentences?: UpgradedSentence[];
   model_answer?: string;
+  // Written Expression specific - structured by section
+  model_answer_sectionA?: string;  // Model answer for Section A (fait divers)
+  model_answer_sectionB?: string;   // Model answer for Section B (argumentation)
+  corrections_sectionA?: UpgradedSentence[];  // Corrections for Section A
+  corrections_sectionB?: UpgradedSentence[];  // Corrections for Section B
 }
 
 export interface UserResponse {
@@ -172,7 +178,7 @@ export interface SavedResult extends EvaluationResult, MongoDocument {
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
   // Mock exam fields
   mockExamId?: string; // Unique identifier for this mock exam (e.g., "oralA_1-oralB_2-reading_3-listening_4")
-  module?: 'oralExpression' | 'reading' | 'listening'; // Module this result belongs to
+  module?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression'; // Module this result belongs to
   readingResult?: MCQResult; // Reading module result (score out of 40)
   listeningResult?: MCQResult; // Listening module result (score out of 40)
   oralExpressionResult?: {
@@ -181,6 +187,18 @@ export interface SavedResult extends EvaluationResult, MongoDocument {
     strengths: string[];
     weaknesses: string[];
     // ... existing oral expression result structure
+  };
+  writtenExpressionResult?: {
+    sectionA: {
+      text: string;
+      task: WrittenTask;
+      result?: EvaluationResult; // Optional: individual section result if evaluated separately
+    };
+    sectionB: {
+      text: string;
+      task: WrittenTask;
+      result?: EvaluationResult; // Optional: individual section result if evaluated separately
+    };
   };
 }
 

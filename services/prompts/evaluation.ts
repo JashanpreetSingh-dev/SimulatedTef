@@ -80,6 +80,12 @@ Use these criteria (adapt comments to the section):
 OUTPUT FORMAT:
 Required keys: score, clbLevel, cecrLevel, overall_comment, criteria, strengths, weaknesses, top_improvements, upgraded_sentences, model_answer
 
+For WrittenExpression with two sections (Section A + Section B), also provide:
+- model_answer_sectionA: Model answer for Section A (fait divers, 80-120 words)
+- model_answer_sectionB: Model answer for Section B (argumentation, 200-250 words)
+- corrections_sectionA: Array of 2-4 UpgradedSentence objects with corrections for Section A
+- corrections_sectionB: Array of 2-4 UpgradedSentence objects with corrections for Section B
+
 Level requirements:
 - clbLevel: Canadian Language Benchmark (format: "CLB X" where X is a single number, e.g., "CLB 7", "CLB 5", "CLB 9")
   IMPORTANT: Use a single CLB level, NOT a range. Choose the level that best represents the candidate's performance.
@@ -112,6 +118,15 @@ model_answer: Provide a model answer (in French) that demonstrates how a strong 
 For EO1: Show a natural conversation flow with 8-10 relevant questions, appropriate register, and clear communication.
 For EO2: Show a persuasive argument with clear structure, effective counter-argument handling, and strong examples.
 Keep it realistic and appropriate for the TEF Canada context (2-3 paragraphs or a structured dialogue example).
+
+FOR WRITTEN EXPRESSION WITH TWO SECTIONS (Section A + Section B):
+If evaluating WrittenExpression with both Section A (fait divers) and Section B (argumentation), you MUST provide:
+- model_answer_sectionA: A model fait divers (80-120 words) in French for Section A - REQUIRED, must be actual text, not a message
+- model_answer_sectionB: A model argumentation (200-250 words) in French for Section B - REQUIRED, must be actual text, not a message
+- corrections_sectionA: An array of 2-4 UpgradedSentence objects with corrections specific to Section A
+- corrections_sectionB: An array of 2-4 UpgradedSentence objects with corrections specific to Section B
+
+IMPORTANT: When providing model_answer_sectionA and model_answer_sectionB, DO NOT put messages like "Not applicable" or "Refer to..." in the model_answer field. Either omit model_answer entirely, or provide a brief combined example. The model_answer_sectionA and model_answer_sectionB fields MUST contain actual French text responses, not explanatory messages.
 
 IMPORTANT (UI requirement): upgraded_sentences must be an array of 3–5 objects, each with EXACT keys:
 - weak: a short quote from the candidate (French) that can be improved
@@ -148,12 +163,30 @@ When scoring Task fulfillment / pertinence and Interaction, account for whether 
   const fullExamContext = isFullExam && taskPartA && taskPartB
     ? `\n\n=== FULL EXAM CONTEXT ===
 This is a COMPLETE exam evaluation (mode: full) that includes BOTH tasks:
-- Section A (EO1): Task ID ${taskPartA.id || 'N/A'} - ${taskPartA.prompt || 'See combined prompt above'}
-- Section B (EO2): Task ID ${taskPartB.id || 'N/A'} - ${taskPartB.prompt || 'See combined prompt above'}
+- Section A (EO1): Task ID ${taskPartA.id || 'N/A'} - ${taskPartA.prompt || taskPartA.subject || 'See combined prompt above'}
+- Section B (EO2): Task ID ${taskPartB.id || 'N/A'} - ${taskPartB.prompt || taskPartB.subject || 'See combined prompt above'}
 
 The candidate transcript contains BOTH Section A and Section B responses combined.
 Please analyze performance separately for each section, then provide an overall score that fairly reflects competency across BOTH tasks.
-Remember: Weak performance in EITHER task should lower the overall CLB level.`
+Remember: Weak performance in EITHER task should lower the overall CLB level.
+
+${section === 'WrittenExpression' ? `\nIMPORTANT FOR WRITTEN EXPRESSION:
+- Section A is a "fait divers" (news story) - 80-120 words
+- Section B is an "argumentation" (argumentative essay) - 200-250 words
+- The transcript is formatted as: "Section A (Fait divers):\n[text]\n\nSection B (Argumentation):\n[text]"
+- You MUST provide separate model answers and corrections for each section:
+  * model_answer_sectionA: A model fait divers (80-120 words) in French
+  * model_answer_sectionB: A model argumentation (200-250 words) in French
+  * corrections_sectionA: 2-4 specific corrections for Section A (extract quotes from Section A text)
+  * corrections_sectionB: 2-4 specific corrections for Section B (extract quotes from Section B text)
+- Identify which part of the transcript belongs to Section A vs Section B before providing corrections.
+${taskPartA?.modelAnswer ? `\nREFERENCE MODEL ANSWER FOR SECTION A:
+Below is a reference model answer from the knowledge base. Use this as guidance for format, vocabulary, and structure when creating your model_answer_sectionA. However, adapt it to match the specific prompt given to the candidate.
+---\n${taskPartA.modelAnswer}\n---` : ''}
+${taskPartB?.modelAnswer ? `\nREFERENCE MODEL ANSWER FOR SECTION B:
+Below is a reference model answer from the knowledge base. Use this as guidance for format, vocabulary, and structure when creating your model_answer_sectionB. However, adapt it to match the specific prompt given to the candidate.
+---\n${taskPartB.modelAnswer}\n---` : ''}
+When creating your model answers, use the reference examples above to understand the expected format, level of vocabulary, and structure. Your model answers should be similar in quality and style, but tailored to the specific prompts the candidate received.` : ''}`
     : '';
 
   const eo2TimeContext =

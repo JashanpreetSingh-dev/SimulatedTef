@@ -192,8 +192,8 @@ router.post('/start-module', requireAuth, asyncHandler(async (req: Request, res:
     return res.status(400).json({ error: 'mockExamId and module are required' });
   }
   
-  if (!['oralExpression', 'reading', 'listening'].includes(module)) {
-    return res.status(400).json({ error: 'Invalid module. Must be oralExpression, reading, or listening' });
+  if (!['oralExpression', 'reading', 'listening', 'writtenExpression'].includes(module)) {
+    return res.status(400).json({ error: 'Invalid module. Must be oralExpression, reading, listening, or writtenExpression' });
   }
 
   const { mockExamService } = await import('../services/mockExamService');
@@ -219,7 +219,7 @@ router.post('/complete-module', requireAuth, asyncHandler(async (req: Request, r
     return res.status(400).json({ error: 'mockExamId, module, and result are required' });
   }
   
-  if (!['oralExpression', 'reading', 'listening'].includes(module)) {
+  if (!['oralExpression', 'reading', 'listening', 'writtenExpression'].includes(module)) {
     return res.status(400).json({ error: 'Invalid module' });
   }
 
@@ -288,11 +288,12 @@ router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: R
     const { mockExamService } = await import('../services/mockExamService');
     const status = await mockExamService.getMockExamStatus(userId, activeMockExam.mockExamId);
 
-    // Check if this active exam is actually fully completed (all 3 modules)
-    const isFullyCompleted = status && status.completedModules.length === 3 &&
+    // Check if this active exam is actually fully completed (all 4 modules)
+    const isFullyCompleted = status && status.completedModules.length === 4 &&
                            status.completedModules.includes('oralExpression') &&
                            status.completedModules.includes('reading') &&
-                           status.completedModules.includes('listening');
+                           status.completedModules.includes('listening') &&
+                           status.completedModules.includes('writtenExpression');
 
     if (isFullyCompleted) {
       // If fully completed, don't return as active, just add to completed list

@@ -18,7 +18,7 @@ export const ExamSessionSchema = z.object({
   // Mock exam specific fields
   mockExamId: z.string().optional(),
   taskIds: z.array(z.string()).optional(),
-  currentModule: z.enum(['oralExpression', 'reading', 'listening']).nullable().optional(),
+  currentModule: z.enum(['oralExpression', 'reading', 'listening', 'writtenExpression']).nullable().optional(),
   completedModules: z.array(z.string()).optional(),
   moduleSessions: z.record(z.string()).optional(), // { [module: string]: string }
 });
@@ -43,7 +43,7 @@ export function createExamSession(
   options?: {
     mockExamId?: string;
     taskIds?: string[];
-    currentModule?: 'oralExpression' | 'reading' | 'listening' | null;
+    currentModule?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression' | null;
     completedModules?: string[];
     moduleSessions?: Record<string, string>;
   }

@@ -95,7 +95,7 @@ export function useMockExamNavigation({
       } else {
         // No sessionId - check if this is a completed exam (all modules completed)
         // If all modules are completed, sessionId can be null
-        if (completedModules.length === 3) {
+        if (completedModules.length === 4) {
           // All modules completed - this is fine, no sessionId needed
           onSessionIdSet(null);
         } else {

@@ -8,6 +8,7 @@ import { MockExamModuleSelector } from './MockExamModuleSelector';
 import { ReadingComprehensionExam } from './ReadingComprehensionExam';
 import { ListeningComprehensionExam } from './ListeningComprehensionExam';
 import { OralExpressionLive } from './OralExpressionLive';
+import { WrittenExpressionExam } from './writtenExpression';
 import { ModuleLoadingScreen } from './ModuleLoadingScreen';
 import { MCQResult, SavedResult } from '../types';
 import { useMockExamState } from '../hooks/useMockExamState';
@@ -66,6 +67,7 @@ export const MockExamView: React.FC = () => {
     completeReadingModule,
     completeListeningModule,
     completeOralExpressionModule,
+    completeWrittenExpressionModule,
     viewModuleResults,
   } = useMockExamModules({
     mockExamId: state.mockExamId,
@@ -78,6 +80,7 @@ export const MockExamView: React.FC = () => {
     onReadingQuestionsSet: stateActions.setReadingQuestions,
     onListeningTaskSet: stateActions.setListeningTask,
     onListeningQuestionsSet: stateActions.setListeningQuestions,
+    onWrittenExpressionTasksSet: stateActions.setWrittenExpressionTasks,
     onClearModuleData: stateActions.clearModuleData,
     onErrorSet: setErrorState,
     onLoadingStart: (module) => startLoading('module', module),
@@ -92,7 +95,7 @@ export const MockExamView: React.FC = () => {
   };
   
   // Handle module selection
-  const handleModuleSelect = async (module: 'oralExpression' | 'reading' | 'listening') => {
+  const handleModuleSelect = async (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression') => {
     console.log('Module selected:', module, { mockExamId: state.mockExamId, sessionId: state.sessionId });
     await startModule(module);
   };
@@ -116,6 +119,17 @@ export const MockExamView: React.FC = () => {
   // Handle Listening module completion
   const handleListeningComplete = async (result: MCQResult) => {
     await completeListeningModule(result);
+  };
+
+  // Handle Written Expression module completion
+  const handleWrittenExpressionComplete = async (result: SavedResult) => {
+    // Ensure result has mockExamId and module fields for mock exam context
+    const resultWithMockExamFields: SavedResult = {
+      ...result,
+      mockExamId: state.mockExamId!,
+      module: 'writtenExpression',
+    };
+    await completeWrittenExpressionModule(resultWithMockExamFields);
   };
   
   // Fetch module status and results
@@ -206,7 +220,7 @@ export const MockExamView: React.FC = () => {
   }, [state.mockExamId, state.phase, getToken]);
   
   // Handle viewing results for completed modules
-  const handleViewResults = async (module: 'oralExpression' | 'reading' | 'listening') => {
+  const handleViewResults = async (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression') => {
     if (!user?.id) {
       console.error('Missing user.id');
       return;
@@ -424,6 +438,17 @@ export const MockExamView: React.FC = () => {
               stateActions.setPhase('module-selector');
             }
           }}
+        />
+      ) : null;
+    
+    case 'writtenExpression':
+      return state.writtenExpressionTaskA && state.writtenExpressionTaskB ? (
+        <WrittenExpressionExam
+          taskA={state.writtenExpressionTaskA}
+          taskB={state.writtenExpressionTaskB}
+          title={`Mock Exam - Written Expression`}
+          mockExamId={state.mockExamId!}
+          onFinish={handleWrittenExpressionComplete}
         />
       ) : null;
     

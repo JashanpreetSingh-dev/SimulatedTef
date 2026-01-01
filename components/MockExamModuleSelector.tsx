@@ -16,15 +16,15 @@ interface MockExamModuleSelectorProps {
   completedModules: string[];
   loadingModules?: string[]; // Modules that are completed but still loading (evaluating)
   moduleResults?: Record<string, ModuleResult>; // Result data for each module
-  onModuleSelect: (module: 'oralExpression' | 'reading' | 'listening') => void;
-  onViewResults?: (module: 'oralExpression' | 'reading' | 'listening') => void;
+  onModuleSelect: (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression') => void;
+  onViewResults?: (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression') => void;
   onFinish?: () => void;
   onCancel?: () => void;
   justCompletedModule?: string | null;
 }
 
 interface ModuleInfo {
-  id: 'oralExpression' | 'reading' | 'listening';
+  id: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression';
   name: string;
   description: string;
   duration: string;
@@ -49,6 +49,12 @@ const MODULES: ModuleInfo[] = [
     description: 'Auto-advancing questions with audio playback, 40 multiple-choice questions',
     duration: '~40 minutes',
   },
+  {
+    id: 'writtenExpression',
+    name: 'Written Expression',
+    description: 'Section A: 25 min fait divers (80-120 words), Section B: 35 min argumentative essay (200-250 words)',
+    duration: '60 minutes',
+  },
 ];
 
 export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
@@ -63,7 +69,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
   const { theme } = useTheme();
   const { t } = useLanguage();
 
-  const allModulesCompleted = completedModules.length === 3;
+  const allModulesCompleted = completedModules.length === 4;
   
   const getModuleInfo = (moduleId: string) => {
     switch (moduleId) {
@@ -84,6 +90,12 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
           name: t('modules.listening'),
           description: t('modules.listeningDescription'),
           duration: t('modules.listeningDuration'),
+        };
+      case 'writtenExpression':
+        return {
+          name: 'Written Expression',
+          description: 'Section A: 25 min fait divers (80-120 words), Section B: 35 min argumentative essay (200-250 words)',
+          duration: '60 minutes',
         };
       default:
         return { name: '', description: '', duration: '' };
@@ -141,7 +153,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 text-center font-semibold
                 ${theme === 'dark' ? 'text-blue-200' : 'text-blue-800'}
               `}>
-                ✓ {justCompletedModule === 'oralExpression' ? t('modules.oralExpression') : justCompletedModule === 'reading' ? t('modules.reading') : t('modules.listening')} {t('mockExam.moduleCompleted')}
+                ✓ {justCompletedModule === 'oralExpression' ? t('modules.oralExpression') : justCompletedModule === 'reading' ? t('modules.reading') : justCompletedModule === 'listening' ? t('modules.listening') : 'Written Expression'} {t('mockExam.moduleCompleted')}
               </p>
             </div>
           )}
@@ -162,7 +174,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
         </div>
 
         {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {MODULES.map((module) => {
             const moduleInfo = getModuleInfo(module.id);
             const status = getModuleStatus(module.id);
@@ -326,7 +338,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
             text-sm
             ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
           `}>
-            Progress: {completedModules.length} of 3 modules completed
+            Progress: {completedModules.length} of 4 modules completed
           </p>
           <div className={`
             mt-2 w-full h-2 rounded-full overflow-hidden
@@ -337,7 +349,7 @@ export const MockExamModuleSelector: React.FC<MockExamModuleSelectorProps> = ({
                 h-full transition-all duration-300
                 ${theme === 'dark' ? 'bg-indigo-500' : 'bg-indigo-600'}
               `}
-              style={{ width: `${(completedModules.length / 3) * 100}%` }}
+              style={{ width: `${(completedModules.length / 4) * 100}%` }}
             />
           </div>
         </div>

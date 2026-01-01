@@ -456,7 +456,34 @@ export const geminiService = {
                 required: ["weak", "better", "why"]
               }
             },
-            model_answer: { type: Type.STRING }
+            model_answer: { type: Type.STRING },
+            // Written Expression specific fields (optional)
+            model_answer_sectionA: { type: Type.STRING },
+            model_answer_sectionB: { type: Type.STRING },
+            corrections_sectionA: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  weak: { type: Type.STRING },
+                  better: { type: Type.STRING },
+                  why: { type: Type.STRING }
+                },
+                required: ["weak", "better", "why"]
+              }
+            },
+            corrections_sectionB: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  weak: { type: Type.STRING },
+                  better: { type: Type.STRING },
+                  why: { type: Type.STRING }
+                },
+                required: ["weak", "better", "why"]
+              }
+            }
             // REMOVED: overall_band_estimate, cecr_level, clb_equivalence, approximate_tef_band
           },
           required: [

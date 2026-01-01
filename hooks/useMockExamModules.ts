@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
 import { getReadingTaskWithQuestions, getListeningTaskWithQuestions } from '../services/tasks';
-import { MCQResult, ReadingTask, ListeningTask, ReadingListeningQuestion, SavedResult, TEFTask } from '../types';
+import { MCQResult, ReadingTask, ListeningTask, ReadingListeningQuestion, SavedResult, TEFTask, WrittenTask } from '../types';
 import { MockExamPhase } from './useMockExamState';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
@@ -12,6 +12,7 @@ export interface ModuleStartData {
   oralExpression?: { scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } };
   reading?: { task: ReadingTask; questions: ReadingListeningQuestion[] };
   listening?: { task: ListeningTask; questions: ReadingListeningQuestion[] };
+  writtenExpression?: { tasks: { taskA: WrittenTask; taskB: WrittenTask }; title: string };
 }
 
 export interface UseMockExamModulesOptions {
@@ -25,6 +26,7 @@ export interface UseMockExamModulesOptions {
   onReadingQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
   onListeningTaskSet: (task: ListeningTask | null) => void;
   onListeningQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
+  onWrittenExpressionTasksSet: (taskA: WrittenTask | null, taskB: WrittenTask | null) => void;
   onClearModuleData: () => void;
   onErrorSet: (error: string | null) => void;
   onLoadingStart: (module: string) => void;
@@ -43,6 +45,7 @@ export function useMockExamModules({
   onReadingQuestionsSet,
   onListeningTaskSet,
   onListeningQuestionsSet,
+  onWrittenExpressionTasksSet,
   onClearModuleData,
   onErrorSet,
   onLoadingStart,
@@ -93,7 +96,7 @@ export function useMockExamModules({
     onClearModuleData();
   }, [refreshModuleStatus, onJustCompletedModuleSet, onPhaseSet, onClearModuleData]);
   
-  const startModule = useCallback(async (module: 'oralExpression' | 'reading' | 'listening'): Promise<ModuleStartData | null> => {
+  const startModule = useCallback(async (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression'): Promise<ModuleStartData | null> => {
     if (!mockExamId || !sessionId) {
       const errorMsg = `Cannot start module: ${!mockExamId ? 'Mock exam not selected' : 'Session not initialized'}`;
       console.error(errorMsg);
@@ -111,6 +114,8 @@ export function useMockExamModules({
         task?: ReadingTask | ListeningTask;
         questions?: ReadingListeningQuestion[];
         scenario?: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string };
+        tasks?: { taskA: WrittenTask; taskB: WrittenTask };
+        title?: string;
       }>(
         `${BACKEND_URL}/api/exam/start-module`,
         {
@@ -182,6 +187,14 @@ export function useMockExamModules({
         onListeningQuestionsSet(questions);
         onPhaseSet('listening');
         return { listening: { task, questions } };
+      } else if (module === 'writtenExpression') {
+        if (moduleData.tasks && moduleData.title) {
+          onWrittenExpressionTasksSet(moduleData.tasks.taskA, moduleData.tasks.taskB);
+          onPhaseSet('writtenExpression');
+          return { writtenExpression: { tasks: moduleData.tasks, title: moduleData.title } };
+        } else {
+          throw new Error('Failed to fetch written expression tasks');
+        }
       }
       
       return null;
@@ -204,11 +217,12 @@ export function useMockExamModules({
     onReadingQuestionsSet,
     onListeningTaskSet,
     onListeningQuestionsSet,
+    onWrittenExpressionTasksSet,
     onPhaseSet,
   ]);
   
   const completeModule = useCallback(async (
-    module: 'oralExpression' | 'reading' | 'listening',
+    module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression',
     result: SavedResult | MCQResult | { clbLevel: string; feedback: string; strengths: string[]; weaknesses: string[] }
   ): Promise<string | null> => {
     if (!mockExamId || !sessionId) {
@@ -268,8 +282,14 @@ export function useMockExamModules({
     return resultId;
   }, [completeModule]);
   
+  const completeWrittenExpressionModule = useCallback(async (result: SavedResult): Promise<string | null> => {
+    const resultId = await completeModule('writtenExpression', result);
+    // For mock exams, don't navigate to results page - return to module selector
+    return resultId;
+  }, [completeModule]);
+
   const viewModuleResults = useCallback(async (
-    module: 'oralExpression' | 'reading' | 'listening',
+    module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression',
     userId: string
   ): Promise<void> => {
     if (!mockExamId || !userId) {
@@ -337,6 +357,7 @@ export function useMockExamModules({
     completeReadingModule,
     completeListeningModule,
     completeOralExpressionModule,
+    completeWrittenExpressionModule,
     viewModuleResults,
     refreshModuleStatus,
     handleModuleComplete,

@@ -35,7 +35,9 @@ export const evaluationJobService = {
     taskPartB: any,
     eo2RemainingSeconds: number | undefined,
     fluencyAnalysis: any | undefined,
-    authTokenOrGetter: string | null | TokenGetter
+    authTokenOrGetter: string | null | TokenGetter,
+    writtenSectionAText?: string,
+    writtenSectionBText?: string
   ): Promise<{ jobId: string }> {
     // Use authenticated fetch if getToken is provided, otherwise use regular fetch
     if (typeof authTokenOrGetter === 'function') {
@@ -58,6 +60,8 @@ export const evaluationJobService = {
             taskPartB,
             eo2RemainingSeconds,
             fluencyAnalysis,
+            writtenSectionAText,
+            writtenSectionBText,
           }),
         }
       );
@@ -86,6 +90,8 @@ export const evaluationJobService = {
           taskPartB,
           eo2RemainingSeconds,
           fluencyAnalysis,
+          writtenSectionAText,
+          writtenSectionBText,
         }),
       });
 

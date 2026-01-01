@@ -841,7 +841,7 @@ export const subscriptionService = {
     }
     
     // Find session - don't filter by completed=false because we want to show resumable exams
-    // Even if completed=true is set, if not all 3 modules are done, it should still be resumable
+    // Even if completed=true is set, if not all 4 modules are done, it should still be resumable
     const session = await db.collection('examSessions').findOne({
       userId,
       mockExamId: activeMockExamId,
@@ -852,9 +852,9 @@ export const subscriptionService = {
       return null;
     }
     
-    // Check if all 3 modules are completed - if so, don't return as active
+    // Check if all 4 modules are completed - if so, don't return as active
     const completedModules = (session.completedModules as string[]) || [];
-    if (completedModules.length === 3) {
+    if (completedModules.length === 4) {
       return null; // Fully completed, not active
     }
     

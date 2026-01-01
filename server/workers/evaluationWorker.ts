@@ -65,8 +65,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
         await job.updateProgress(80); // 80% - Evaluation complete
 
-        // Save result to database
-        const savedResult = await resultsService.create({
+        // Build the result object
+        const resultToSave: any = {
           ...result,
           userId,
           recordingId,
@@ -78,7 +78,24 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           timestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-        } as any);
+        };
+
+        // For written expression, add structured writtenExpressionResult
+        if (section === 'WrittenExpression' && job.data.writtenSectionAText && job.data.writtenSectionBText) {
+          resultToSave.writtenExpressionResult = {
+            sectionA: {
+              text: job.data.writtenSectionAText,
+              task: taskPartA,
+            },
+            sectionB: {
+              text: job.data.writtenSectionBText,
+              task: taskPartB,
+            },
+          };
+        }
+
+        // Save result to database
+        const savedResult = await resultsService.create(resultToSave);
 
         await job.updateProgress(100); // 100% - Complete
 

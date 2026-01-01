@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import { ReadingTask, ListeningTask, ReadingListeningQuestion, TEFTask } from '../types';
+import { ReadingTask, ListeningTask, ReadingListeningQuestion, TEFTask, WrittenTask } from '../types';
 
-export type MockExamPhase = 'selection' | 'module-selector' | 'oralExpression' | 'reading' | 'listening' | 'loading';
+export type MockExamPhase = 'selection' | 'module-selector' | 'oralExpression' | 'reading' | 'listening' | 'writtenExpression' | 'loading';
 
 export interface MockExamState {
   phase: MockExamPhase;
@@ -17,6 +17,8 @@ export interface MockExamState {
   readingQuestions: ReadingListeningQuestion[];
   listeningTask: ListeningTask | null;
   listeningQuestions: ReadingListeningQuestion[];
+  writtenExpressionTaskA: WrittenTask | null;
+  writtenExpressionTaskB: WrittenTask | null;
 }
 
 export interface MockExamStateActions {
@@ -33,6 +35,7 @@ export interface MockExamStateActions {
   setReadingQuestions: (questions: ReadingListeningQuestion[]) => void;
   setListeningTask: (task: ListeningTask | null) => void;
   setListeningQuestions: (questions: ReadingListeningQuestion[]) => void;
+  setWrittenExpressionTasks: (taskA: WrittenTask | null, taskB: WrittenTask | null) => void;
   
   // Utility actions
   clearModuleData: () => void;
@@ -53,6 +56,13 @@ export function useMockExamState() {
   const [readingQuestions, setReadingQuestions] = useState<ReadingListeningQuestion[]>([]);
   const [listeningTask, setListeningTask] = useState<ListeningTask | null>(null);
   const [listeningQuestions, setListeningQuestions] = useState<ReadingListeningQuestion[]>([]);
+  const [writtenExpressionTaskA, setWrittenExpressionTaskA] = useState<WrittenTask | null>(null);
+  const [writtenExpressionTaskB, setWrittenExpressionTaskB] = useState<WrittenTask | null>(null);
+  
+  const setWrittenExpressionTasks = useCallback((taskA: WrittenTask | null, taskB: WrittenTask | null) => {
+    setWrittenExpressionTaskA(taskA);
+    setWrittenExpressionTaskB(taskB);
+  }, []);
   
   // Utility actions
   const clearModuleData = useCallback(() => {
@@ -61,6 +71,8 @@ export function useMockExamState() {
     setReadingQuestions([]);
     setListeningTask(null);
     setListeningQuestions([]);
+    setWrittenExpressionTaskA(null);
+    setWrittenExpressionTaskB(null);
   }, []);
   
   const resetState = useCallback(() => {
@@ -85,6 +97,8 @@ export function useMockExamState() {
     readingQuestions,
     listeningTask,
     listeningQuestions,
+    writtenExpressionTaskA,
+    writtenExpressionTaskB,
   };
   
   const actions: MockExamStateActions = {
@@ -99,6 +113,7 @@ export function useMockExamState() {
     setReadingQuestions,
     setListeningTask,
     setListeningQuestions,
+    setWrittenExpressionTasks,
     clearModuleData,
     resetState,
   };
