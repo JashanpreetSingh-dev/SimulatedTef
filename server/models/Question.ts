@@ -16,6 +16,7 @@ export const QuestionSchema = z.object({
   options: z.array(z.string()).length(4), // Must have exactly 4 options
   correctAnswer: z.number().int().min(0).max(3), // Must be 0, 1, 2, or 3
   explanation: z.string().min(1), // Required explanation
+  audioId: z.string().optional(), // Optional: Reference to AudioItem for listening questions
   isActive: z.boolean().default(true),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -45,7 +46,8 @@ export function createQuestion(
   correctAnswer: number,
   explanation: string,
   isActive: boolean = true,
-  questionText?: string // Optional: Question-specific text/passage
+  questionText?: string, // Optional: Question-specific text/passage
+  audioId?: string // Optional: Reference to AudioItem for listening questions
 ): ReadingListeningQuestion {
   // Validate options array has exactly 4 items
   if (options.length !== 4) {
@@ -73,6 +75,7 @@ export function createQuestion(
     options,
     correctAnswer,
     explanation,
+    audioId,
     isActive,
     createdAt: now,
     updatedAt: now,

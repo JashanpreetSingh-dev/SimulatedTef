@@ -10,6 +10,7 @@ import subscriptionRouter from './subscription';
 import usageRouter from './usage';
 import examRouter from './exam';
 import tasksRouter from './tasks';
+import audioRouter from './audio';
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use('/subscription', subscriptionRouter);
 router.use('/usage', usageRouter);
 router.use('/exam', examRouter);
 router.use('/tasks', tasksRouter);
+router.use('/audio', audioRouter);
 
 export default router;
 

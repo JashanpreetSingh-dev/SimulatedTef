@@ -102,3 +102,98 @@ export function validateMockExamReferences(references: {
     errors
   };
 }
+
+/**
+ * Validate listening question structure (audio_items format)
+ */
+export function validateListeningQuestionStructure(data: {
+  section?: string;
+  audio_items?: Array<{
+    audio_id?: string;
+    section_id?: number;
+    repeatable?: boolean;
+    audio_script?: string;
+    questions?: Array<{
+      question_id?: number;
+      question?: string;
+      options?: { A?: string; B?: string; C?: string; D?: string };
+      correct_answer?: string;
+    }>;
+  }>;
+}): { valid: boolean; error?: string } {
+  if (!data.audio_items || !Array.isArray(data.audio_items)) {
+    return { valid: false, error: 'Missing or invalid audio_items array' };
+  }
+
+  let totalQuestions = 0;
+  const sectionCounts: { [key: number]: number } = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+  for (const item of data.audio_items) {
+    if (!item.audio_id || typeof item.audio_id !== 'string') {
+      return { valid: false, error: 'Audio item missing or invalid audio_id' };
+    }
+
+    if (!item.section_id || typeof item.section_id !== 'number' || item.section_id < 1 || item.section_id > 4) {
+      return { valid: false, error: `Audio item ${item.audio_id} has invalid section_id (must be 1-4)` };
+    }
+
+    if (typeof item.repeatable !== 'boolean') {
+      return { valid: false, error: `Audio item ${item.audio_id} missing or invalid repeatable field` };
+    }
+
+    if (!item.audio_script || typeof item.audio_script !== 'string' || item.audio_script.trim() === '') {
+      return { valid: false, error: `Audio item ${item.audio_id} missing or invalid audio_script` };
+    }
+
+    if (!item.questions || !Array.isArray(item.questions)) {
+      return { valid: false, error: `Audio item ${item.audio_id} missing or invalid questions array` };
+    }
+
+    for (const q of item.questions) {
+      if (typeof q.question_id !== 'number' || q.question_id < 1 || q.question_id > 40) {
+        return { valid: false, error: `Question has invalid question_id (must be 1-40)` };
+      }
+
+      if (!q.question || typeof q.question !== 'string' || q.question.trim() === '') {
+        return { valid: false, error: `Question ${q.question_id} missing or invalid question text` };
+      }
+
+      if (!q.options || typeof q.options !== 'object') {
+        return { valid: false, error: `Question ${q.question_id} missing or invalid options` };
+      }
+
+      if (!q.options.A || !q.options.B || !q.options.C || !q.options.D) {
+        return { valid: false, error: `Question ${q.question_id} missing one or more options (A, B, C, D)` };
+      }
+
+      if (!q.correct_answer || !['A', 'B', 'C', 'D'].includes(q.correct_answer)) {
+        return { valid: false, error: `Question ${q.question_id} missing or invalid correct_answer (must be A, B, C, or D)` };
+      }
+
+      totalQuestions++;
+      sectionCounts[item.section_id]++;
+    }
+  }
+
+  if (totalQuestions !== 40) {
+    return { valid: false, error: `Expected 40 questions total, got ${totalQuestions}` };
+  }
+
+  if (sectionCounts[1] !== 4) {
+    return { valid: false, error: `Section 1 should have 4 questions, got ${sectionCounts[1]}` };
+  }
+
+  if (sectionCounts[2] !== 6) {
+    return { valid: false, error: `Section 2 should have 6 questions, got ${sectionCounts[2]}` };
+  }
+
+  if (sectionCounts[3] !== 10) {
+    return { valid: false, error: `Section 3 should have 10 questions, got ${sectionCounts[3]}` };
+  }
+
+  if (sectionCounts[4] !== 20) {
+    return { valid: false, error: `Section 4 should have 20 questions, got ${sectionCounts[4]}` };
+  }
+
+  return { valid: true };
+}

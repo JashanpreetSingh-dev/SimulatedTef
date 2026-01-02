@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
-import { getReadingTaskWithQuestions, getListeningTaskWithQuestions } from '../services/tasks';
+import { getReadingTaskWithQuestions, getListeningTaskWithQuestions, AudioItemMetadata } from '../services/tasks';
 import { MCQResult, ReadingTask, ListeningTask, ReadingListeningQuestion, SavedResult, TEFTask, WrittenTask } from '../types';
 import { MockExamPhase } from './useMockExamState';
 
@@ -11,7 +11,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 export interface ModuleStartData {
   oralExpression?: { scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } };
   reading?: { task: ReadingTask; questions: ReadingListeningQuestion[] };
-  listening?: { task: ListeningTask; questions: ReadingListeningQuestion[] };
+  listening?: { task: ListeningTask; questions: ReadingListeningQuestion[]; audioItems?: AudioItemMetadata[] | null };
   writtenExpression?: { tasks: { taskA: WrittenTask; taskB: WrittenTask }; title: string };
 }
 
@@ -26,6 +26,7 @@ export interface UseMockExamModulesOptions {
   onReadingQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
   onListeningTaskSet: (task: ListeningTask | null) => void;
   onListeningQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
+  onListeningAudioItemsSet: (audioItems: AudioItemMetadata[] | null) => void;
   onWrittenExpressionTasksSet: (taskA: WrittenTask | null, taskB: WrittenTask | null) => void;
   onClearModuleData: () => void;
   onErrorSet: (error: string | null) => void;
@@ -45,6 +46,7 @@ export function useMockExamModules({
   onReadingQuestionsSet,
   onListeningTaskSet,
   onListeningQuestionsSet,
+  onListeningAudioItemsSet,
   onWrittenExpressionTasksSet,
   onClearModuleData,
   onErrorSet,
@@ -166,10 +168,13 @@ export function useMockExamModules({
       } else if (module === 'listening') {
         let task: ListeningTask;
         let questions: ReadingListeningQuestion[];
+        let audioItems: AudioItemMetadata[] | null = null;
         
         if (moduleData.task && moduleData.questions) {
           task = moduleData.task as ListeningTask;
           questions = moduleData.questions;
+          // audioItems may be in moduleData (from API response)
+          audioItems = (moduleData as any).audioItems || null;
         } else {
           // Fetch task and questions separately
           const taskData = await getListeningTaskWithQuestions(
@@ -181,12 +186,16 @@ export function useMockExamModules({
           }
           task = taskData.task;
           questions = taskData.questions;
+          audioItems = taskData.audioItems || null;
         }
+        
+        // Store audioItems in state
+        onListeningAudioItemsSet(audioItems);
         
         onListeningTaskSet(task);
         onListeningQuestionsSet(questions);
         onPhaseSet('listening');
-        return { listening: { task, questions } };
+        return { listening: { task, questions, audioItems } };
       } else if (module === 'writtenExpression') {
         if (moduleData.tasks && moduleData.title) {
           onWrittenExpressionTasksSet(moduleData.tasks.taskA, moduleData.tasks.taskB);

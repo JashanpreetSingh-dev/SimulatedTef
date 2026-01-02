@@ -80,6 +80,7 @@ export const MockExamView: React.FC = () => {
     onReadingQuestionsSet: stateActions.setReadingQuestions,
     onListeningTaskSet: stateActions.setListeningTask,
     onListeningQuestionsSet: stateActions.setListeningQuestions,
+    onListeningAudioItemsSet: stateActions.setListeningAudioItems,
     onWrittenExpressionTasksSet: stateActions.setWrittenExpressionTasks,
     onClearModuleData: stateActions.clearModuleData,
     onErrorSet: setErrorState,
@@ -397,6 +398,7 @@ export const MockExamView: React.FC = () => {
         <ListeningComprehensionExam
           task={state.listeningTask}
           questions={state.listeningQuestions}
+          audioItems={state.listeningAudioItems}
           sessionId={state.sessionId!}
           mockExamId={state.mockExamId!}
           onComplete={handleListeningComplete}

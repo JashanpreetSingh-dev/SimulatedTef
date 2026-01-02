@@ -7,6 +7,7 @@ import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { taskSelectionLimiter } from '../middleware/rateLimiter';
 import { Request, Response } from 'express';
+import { connectDB } from '../db/connection';
 import { readingTaskService } from '../services/readingTaskService';
 import { listeningTaskService } from '../services/listeningTaskService';
 import { questionService } from '../services/questionService';
@@ -59,6 +60,7 @@ router.get('/questions/:taskId', requireAuth, taskSelectionLimiter, asyncHandler
 // Rate limit: 10 requests per minute (task selection)
 router.get('/:taskId/with-questions', requireAuth, taskSelectionLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { taskId } = req.params;
+  const db = await connectDB();
   
   // Try Reading tasks first
   let task = await readingTaskService.getTaskById(taskId);
@@ -81,10 +83,31 @@ router.get('/:taskId/with-questions', requireAuth, taskSelectionLimiter, asyncHa
     return res.status(404).json({ error: 'No questions found for this task' });
   }
   
+  // For listening tasks, also fetch AudioItems
+  let audioItems = null;
+  if (taskType === 'listening') {
+    const audioItemsCollection = db.collection('audioItems');
+    const items = await audioItemsCollection
+      .find({ taskId })
+      .sort({ sectionId: 1, audioId: 1 })
+      .toArray();
+    
+    // Return only metadata (not binary data) - client will fetch audio via /api/audio/:audioId
+    audioItems = items.map((item: any) => ({
+      audioId: item.audioId,
+      sectionId: item.sectionId,
+      repeatable: item.repeatable,
+      audioScript: item.audioScript,
+      mimeType: item.mimeType,
+      hasAudio: !!item.audioData, // Indicate if audio data exists
+    }));
+  }
+  
   res.json({
     task,
     questions,
     count: questions.length,
+    audioItems, // Only for listening tasks
   });
 }));
 

@@ -130,18 +130,29 @@ export async function getReadingTaskWithQuestions(
   }
 }
 
+// AudioItem interface (metadata only, no binary data)
+export interface AudioItemMetadata {
+  audioId: string;
+  sectionId: number;
+  repeatable: boolean;
+  audioScript: string;
+  mimeType: string;
+  hasAudio: boolean;
+}
+
 /**
- * Get a Listening task with all its questions from the API
+ * Get a Listening task with all its questions and AudioItems from the API
  */
 export async function getListeningTaskWithQuestions(
   taskId: string,
   getToken: () => Promise<string | null>
-): Promise<{ task: ListeningTask; questions: ReadingListeningQuestion[] } | null> {
+): Promise<{ task: ListeningTask; questions: ReadingListeningQuestion[]; audioItems: AudioItemMetadata[] | null } | null> {
   try {
     const data = await authenticatedFetchJSON<{
       task: ListeningTask;
       questions: ReadingListeningQuestion[];
       count: number;
+      audioItems?: AudioItemMetadata[] | null;
     }>(
       `${BACKEND_URL}/api/tasks/${taskId}/with-questions`,
       {
@@ -149,7 +160,7 @@ export async function getListeningTaskWithQuestions(
         getToken,
       }
     );
-    return { task: data.task, questions: data.questions };
+    return { task: data.task, questions: data.questions, audioItems: data.audioItems || null };
   } catch (error) {
     console.error('Failed to fetch Listening task with questions:', error);
     return null;

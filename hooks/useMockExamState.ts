@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { ReadingTask, ListeningTask, ReadingListeningQuestion, TEFTask, WrittenTask } from '../types';
+import { AudioItemMetadata } from '../services/tasks';
 
 export type MockExamPhase = 'selection' | 'module-selector' | 'oralExpression' | 'reading' | 'listening' | 'writtenExpression' | 'loading';
 
@@ -17,6 +18,7 @@ export interface MockExamState {
   readingQuestions: ReadingListeningQuestion[];
   listeningTask: ListeningTask | null;
   listeningQuestions: ReadingListeningQuestion[];
+  listeningAudioItems: AudioItemMetadata[] | null;
   writtenExpressionTaskA: WrittenTask | null;
   writtenExpressionTaskB: WrittenTask | null;
 }
@@ -35,6 +37,7 @@ export interface MockExamStateActions {
   setReadingQuestions: (questions: ReadingListeningQuestion[]) => void;
   setListeningTask: (task: ListeningTask | null) => void;
   setListeningQuestions: (questions: ReadingListeningQuestion[]) => void;
+  setListeningAudioItems: (audioItems: AudioItemMetadata[] | null) => void;
   setWrittenExpressionTasks: (taskA: WrittenTask | null, taskB: WrittenTask | null) => void;
   
   // Utility actions
@@ -56,6 +59,7 @@ export function useMockExamState() {
   const [readingQuestions, setReadingQuestions] = useState<ReadingListeningQuestion[]>([]);
   const [listeningTask, setListeningTask] = useState<ListeningTask | null>(null);
   const [listeningQuestions, setListeningQuestions] = useState<ReadingListeningQuestion[]>([]);
+  const [listeningAudioItems, setListeningAudioItems] = useState<AudioItemMetadata[] | null>(null);
   const [writtenExpressionTaskA, setWrittenExpressionTaskA] = useState<WrittenTask | null>(null);
   const [writtenExpressionTaskB, setWrittenExpressionTaskB] = useState<WrittenTask | null>(null);
   
@@ -71,6 +75,7 @@ export function useMockExamState() {
     setReadingQuestions([]);
     setListeningTask(null);
     setListeningQuestions([]);
+    setListeningAudioItems(null);
     setWrittenExpressionTaskA(null);
     setWrittenExpressionTaskB(null);
   }, []);
@@ -97,6 +102,7 @@ export function useMockExamState() {
     readingQuestions,
     listeningTask,
     listeningQuestions,
+    listeningAudioItems,
     writtenExpressionTaskA,
     writtenExpressionTaskB,
   };
@@ -113,6 +119,7 @@ export function useMockExamState() {
     setReadingQuestions,
     setListeningTask,
     setListeningQuestions,
+    setListeningAudioItems,
     setWrittenExpressionTasks,
     clearModuleData,
     resetState,

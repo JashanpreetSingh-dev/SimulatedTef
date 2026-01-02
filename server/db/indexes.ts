@@ -257,6 +257,24 @@ export async function createIndexes(): Promise<void> {
     );
     console.log(' Created index: mockExams.isActive_idx');
     
+    // AudioItems collection indexes
+    const audioItemsCollection = db.collection('audioItems');
+    
+    // Compound index for querying and sorting audioItems by taskId, sectionId, and audioId
+    // This index supports the query pattern: find({ taskId }).sort({ sectionId: 1, audioId: 1 })
+    await audioItemsCollection.createIndex(
+      { taskId: 1, sectionId: 1, audioId: 1 },
+      { name: 'taskId_sectionId_audioId_idx' }
+    );
+    console.log(' Created index: audioItems.taskId_sectionId_audioId_idx');
+    
+    // Unique index on audioId + taskId (ensures no duplicate audio items per task)
+    await audioItemsCollection.createIndex(
+      { taskId: 1, audioId: 1 },
+      { name: 'taskId_audioId_idx', unique: true }
+    );
+    console.log(' Created index: audioItems.taskId_audioId_idx');
+    
     console.log(' All database indexes created successfully');
   } catch (error: any) {
     console.error('Error creating indexes:', error.message);

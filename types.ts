@@ -21,6 +21,7 @@ export interface ReadingListeningQuestion {
   options: string[]; // Array of exactly 4 answer options
   correctAnswer: number; // Index 0-3 indicating correct option
   explanation: string; // Explanation of why the correct answer is right
+  audioId?: string; // Optional: Reference to AudioItem for listening questions
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

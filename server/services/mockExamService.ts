@@ -750,10 +750,31 @@ export const mockExamService = {
 
       const questions = await questionService.getQuestionsByTaskId(taskId);
 
+      // For listening tasks, also fetch AudioItems
+      let audioItems = null;
+      if (module === 'listening') {
+        const audioItemsCollection = db.collection('audioItems');
+        const items = await audioItemsCollection
+          .find({ taskId })
+          .sort({ sectionId: 1, audioId: 1 })
+          .toArray();
+        
+        // Return only metadata (not binary data) - client will fetch audio via /api/audio/:audioId
+        audioItems = items.map((item: any) => ({
+          audioId: item.audioId,
+          sectionId: item.sectionId,
+          repeatable: item.repeatable,
+          audioScript: item.audioScript,
+          mimeType: item.mimeType,
+          hasAudio: !!item.audioData, // Indicate if audio data exists
+        }));
+      }
+
       return {
         sessionId: examSession.sessionId,
         task,
         questions,
+        audioItems, // Only for listening tasks
       };
     }
 
