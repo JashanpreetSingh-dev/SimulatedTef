@@ -251,7 +251,7 @@ export function ExamView() {
             isOpen={showPaywall}
             onClose={() => {
               setShowPaywall(false);
-              navigate('/dashboard');
+              handleBack();
             }}
             reason={paywallReason}
           />
@@ -259,6 +259,17 @@ export function ExamView() {
       </DashboardLayout>
     );
   }
+
+  // Determine back navigation - go back one step in history
+  const handleBack = () => {
+    // Check if we have a referrer in location state
+    if (location.state?.from) {
+      navigate(location.state.from);
+    } else {
+      // Otherwise, go back one step in browser history
+      navigate(-1);
+    }
+  };
 
   const handleConfirmWarning = () => {
     setShowWarning(false);
@@ -269,7 +280,7 @@ export function ExamView() {
     setShowWarning(false);
     setHasSeenWarning(true);
     setScenario(null);
-    navigate('/dashboard');
+    handleBack();
   };
 
   return (
@@ -277,10 +288,10 @@ export function ExamView() {
       <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
         <div className="max-w-6xl mx-auto">
           <button 
-            onClick={() => navigate('/dashboard')}
+            onClick={handleBack}
             className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
           >
-            ← {t('back.dashboard')}
+            ← Back
           </button>
           {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} />}
           <ExamWarningModal

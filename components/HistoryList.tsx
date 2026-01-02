@@ -46,7 +46,7 @@ export const HistoryList: React.FC = () => {
     };
     
     // Navigate to exam with scenario in state (bypasses completed task filtering)
-    navigate(`/exam/${retakeMode}`, { state: { scenario } });
+    navigate(`/exam/${retakeMode}`, { state: { scenario, from: '/practice' } });
   };
 
   if (loading) {
