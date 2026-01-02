@@ -1,5 +1,5 @@
 /**
- * Task API routes - for Reading/Listening tasks
+ * Task API routes - for Reading/Listening tasks and normalized task storage
  */
 
 import { Router } from 'express';
@@ -11,6 +11,8 @@ import { connectDB } from '../db/connection';
 import { readingTaskService } from '../services/readingTaskService';
 import { listeningTaskService } from '../services/listeningTaskService';
 import { questionService } from '../services/questionService';
+import * as taskService from '../services/taskService';
+import { TaskType } from '../../types/task';
 
 const router = Router();
 
@@ -151,6 +153,67 @@ router.post('/setup-mock', requireAuth, asyncHandler(async (req: Request, res: R
       questions: listeningQuestions,
     },
   });
+}));
+
+// ============================================
+// Normalized Task Storage Endpoints
+// ============================================
+
+// POST /api/tasks/normalized - Create or update a normalized task
+router.post('/normalized', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const { type, taskData } = req.body;
+  
+  if (!type || !taskData) {
+    return res.status(400).json({ error: 'type and taskData are required' });
+  }
+  
+  const validTypes: TaskType[] = ['oralA', 'oralB', 'writtenA', 'writtenB', 'reading', 'listening'];
+  if (!validTypes.includes(type)) {
+    return res.status(400).json({ error: `Invalid type. Must be one of: ${validTypes.join(', ')}` });
+  }
+  
+  const task = await taskService.saveTask(type, taskData);
+  res.status(201).json(task);
+}));
+
+// GET /api/tasks/normalized/:taskId - Get normalized task by ID
+router.get('/normalized/:taskId', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const { taskId } = req.params;
+  const task = await taskService.getTask(taskId);
+  
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+  
+  res.json(task);
+}));
+
+// POST /api/tasks/normalized/batch - Get multiple tasks by IDs
+router.post('/normalized/batch', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const { taskIds } = req.body;
+  
+  if (!Array.isArray(taskIds)) {
+    return res.status(400).json({ error: 'taskIds must be an array' });
+  }
+  
+  const tasks = await taskService.getTasks(taskIds);
+  res.json({ tasks });
+}));
+
+// GET /api/tasks/normalized - List normalized tasks with optional filtering
+router.get('/normalized', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const { type, isActive } = req.query;
+  
+  const filters: any = {};
+  if (type) {
+    filters.type = type;
+  }
+  if (isActive !== undefined) {
+    filters.isActive = isActive === 'true';
+  }
+  
+  const tasks = await taskService.listTasks(filters);
+  res.json({ tasks });
 }));
 
 export default router;

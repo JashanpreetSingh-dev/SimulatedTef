@@ -30,6 +30,8 @@ export const evaluationController = {
       fluencyAnalysis,
       writtenSectionAText,
       writtenSectionBText,
+      mockExamId,
+      module,
     } = req.body;
 
     // Validate required fields (allow 0 as valid value for scenarioId and timeLimitSec)
@@ -59,6 +61,8 @@ export const evaluationController = {
         fluencyAnalysis,
         writtenSectionAText,
         writtenSectionBText,
+        mockExamId,
+        module,
       } as EvaluationJobData,
       {
         priority: 1, // Higher priority = processed first

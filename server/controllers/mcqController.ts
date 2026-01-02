@@ -7,8 +7,12 @@ import { connectDB } from '../db/connection';
 import { calculateMCQScore, validateAnswers } from '../services/mcqScoring';
 import { questionService } from '../services/questionService';
 import { resultsService } from '../services/resultsService';
-import { SavedResult } from '../../types';
+import * as taskService from '../services/taskService';
+import { generateTaskId, TaskType } from '../../types/task';
+import { SavedResult, MCQData } from '../../types';
 import { ObjectId } from 'mongodb';
+import { readingTaskService } from '../services/readingTaskService';
+import { listeningTaskService } from '../services/listeningTaskService';
 
 export const mcqController = {
   /**
@@ -50,31 +54,64 @@ export const mcqController = {
       answers,
     });
     
-    // Create result document
-    const result: Partial<SavedResult> = {
-      userId,
-      sessionId,
-      mockExamId,
-      module,
-      mode: 'mock',
-      title: `Mock Exam - ${module === 'reading' ? 'Reading' : 'Listening'}`,
-      timestamp: Date.now(),
+    // Get task to save to normalized storage
+    let task;
+    let taskType: TaskType;
+    if (module === 'reading') {
+      task = await readingTaskService.getTaskById(taskId);
+      taskType = 'reading';
+    } else {
+      task = await listeningTaskService.getTaskById(taskId);
+      taskType = 'listening';
+    }
+    
+    if (!task) {
+      throw new Error(`Task ${taskId} not found`);
+    }
+    
+    // Save task to normalized storage
+    const taskId_normalized = generateTaskId(taskType, task);
+    await taskService.saveTask(taskType, task);
+    
+    // Build MCQ moduleData
+    const moduleData: MCQData = {
+      type: 'mcq',
+      answers: answers,
+      questionResults: scoringResult.questionResults,
+      score: scoringResult.score,
+      totalQuestions: scoringResult.totalQuestions,
+    };
+    
+    // Build evaluation result (minimal for MCQ)
+    const evaluation = {
       score: scoringResult.score,
       clbLevel: '', // Not applicable for MCQ
       cecrLevel: '', // Not applicable for MCQ
       feedback: `Score: ${scoringResult.score}/${scoringResult.totalQuestions}`,
       strengths: [],
       weaknesses: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      grammarNotes: '',
+      vocabularyNotes: '',
     };
     
-    // Add module-specific result
-    if (module === 'reading') {
-      result.readingResult = scoringResult;
-    } else {
-      result.listeningResult = scoringResult;
-    }
+    // Create result document with new structure
+    const result: SavedResult = {
+      _id: undefined, // Will be set by MongoDB
+      userId,
+      resultType: 'mockExam',
+      mode: 'full', // MCQ modules are always full
+      module: module as 'reading' | 'listening',
+      mockExamId,
+      title: `Mock Exam - ${module === 'reading' ? 'Reading' : 'Listening'}`,
+      timestamp: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      taskReferences: {
+        taskA: { taskId: taskId_normalized, type: taskType },
+      },
+      evaluation,
+      moduleData,
+    };
     
     // Save result with upsert (prevent duplicates)
     const db = await connectDB();

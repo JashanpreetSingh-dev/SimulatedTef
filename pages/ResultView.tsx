@@ -6,6 +6,9 @@ import { DetailedResultView } from '../components/results';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { SavedResult } from '../types';
 import { persistenceService } from '../services/persistence';
+import { authenticatedFetchJSON } from '../services/authenticatedFetch';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export function ResultView() {
   const { id } = useParams<{ id: string }>();
@@ -26,27 +29,53 @@ export function ResultView() {
     // Fetch result by ID
     const fetchResult = async () => {
       try {
-        // First check localStorage for recently saved results (faster and more reliable for new results)
+        // Always fetch from backend with populated tasks to ensure task data is available
+        // This ensures the subject and other task details are displayed correctly
+        try {
+          const fetchedResult = await authenticatedFetchJSON<SavedResult>(
+            `${BACKEND_URL}/api/results/detail/${id}?populateTasks=true`,
+            {
+              method: 'GET',
+              getToken,
+            }
+          );
+          
+          setResult(fetchedResult);
+          
+          // Also update localStorage with the populated result for faster access next time
+          const localResults = persistenceService.getResultsSync();
+          const index = localResults.findIndex(r => r._id === id);
+          if (index !== -1) {
+            localResults[index] = fetchedResult;
+            localStorage.setItem('tef_results', JSON.stringify(localResults));
+          }
+          setLoading(false);
+        } catch (fetchError: any) {
+          // If backend fetch fails, fallback to localStorage
+          if (fetchError?.status === 404) {
+            setError('Result not found');
+          } else {
+            console.warn('Backend fetch failed, trying localStorage:', fetchError);
+            const localResults = persistenceService.getResultsSync();
+            const localFound = localResults.find(r => r._id === id);
+            if (localFound) {
+              setResult(localFound);
+            } else {
+              setError('Failed to load result');
+            }
+          }
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error('Failed to fetch result:', err);
+        // Final fallback to localStorage on error
         const localResults = persistenceService.getResultsSync();
         const localFound = localResults.find(r => r._id === id);
         if (localFound) {
           setResult(localFound);
-          setLoading(false);
-          return;
-        }
-
-        // If not in localStorage, try fetching from backend
-        const results = await persistenceService.getAllResults(user.id, getToken);
-        const found = results.find(r => r._id === id);
-        if (found) {
-          setResult(found);
         } else {
-          setError('Result not found');
+          setError('Failed to load result');
         }
-        setLoading(false);
-      } catch (err) {
-        console.error('Failed to fetch result:', err);
-        setError('Failed to load result');
         setLoading(false);
       }
     };
@@ -96,7 +125,18 @@ export function ResultView() {
         <div className="max-w-7xl mx-auto">
           <DetailedResultView 
             result={result} 
-            onBack={() => navigate(result.mockExamId ? `/mock-exam/${result.mockExamId}` : '/history')} 
+            onBack={() => {
+              if (result.mockExamId) {
+                navigate(`/mock-exam/${result.mockExamId}`);
+              } else if (result.module === 'writtenExpression' || result.module === 'oralExpression') {
+                // Navigate back to practice, preserving module selection
+                const module = result.module === 'writtenExpression' ? 'written' : 'oral';
+                sessionStorage.setItem('practice_selected_module', module);
+                navigate('/practice');
+              } else {
+                navigate('/history');
+              }
+            }} 
           />
         </div>
       </div>

@@ -203,11 +203,25 @@ export async function createIndexes(): Promise<void> {
     
     // Results collection - add indexes for mock exam results
     // Unique constraint for sessionId + module (prevents duplicate results per module)
+    // Only applies to documents with sessionId (mock exams), not practice exams
+    try {
+      // Drop the old index if it exists (to handle migration)
+      await resultsCollection.dropIndex('sessionId_module_idx').catch(() => {
+        // Index might not exist, ignore error
+      });
+    } catch (error) {
+      // Ignore errors when dropping index
+    }
+    
     await resultsCollection.createIndex(
       { sessionId: 1, module: 1 },
-      { name: 'sessionId_module_idx', unique: true, sparse: true }
+      { 
+        name: 'sessionId_module_idx', 
+        unique: true, 
+        partialFilterExpression: { sessionId: { $exists: true, $type: 'string' } }
+      }
     );
-    console.log('Created index: results.sessionId_module_idx');
+    console.log('Created index: results.sessionId_module_idx (partial, only for mock exams)');
     
     // Index for querying results by mockExamId
     await resultsCollection.createIndex(

@@ -168,37 +168,102 @@ export interface MongoDocument {
   updatedAt: string;
 }
 
-export interface SavedResult extends EvaluationResult, MongoDocument {
-  mode: string;
+// Task reference types (imported from types/task.ts)
+import type { TaskReference, TaskType, NormalizedTask } from './types/task';
+export type { TaskReference, TaskType, NormalizedTask };
+
+// Module-specific data structures
+export interface OralExpressionData {
+  type: 'oralExpression';
+  // For complete exams or mock exams: both sections
+  sectionA?: {
+    text: string;
+    result?: EvaluationResult;
+  };
+  sectionB?: {
+    text: string;
+    result?: EvaluationResult;
+  };
+  // For practice partA/partB: only relevant section
+}
+
+export interface WrittenExpressionData {
+  type: 'writtenExpression';
+  // For complete exams or mock exams: both sections
+  sectionA?: {
+    text: string;
+    result?: EvaluationResult;
+  };
+  sectionB?: {
+    text: string;
+    result?: EvaluationResult;
+  };
+  // For practice partA/partB: only relevant section
+}
+
+export interface MCQData {
+  type: 'mcq';
+  // Full answer array for quick access
+  answers: number[]; // 40 answers
+  // Normalized for querying/analysis
+  questionResults: Array<{
+    questionId: string;
+    userAnswer: number;
+    isCorrect: boolean;
+  }>;
+  score: number; // Out of 40
+  totalQuestions: number; // Always 40
+}
+
+export type ModuleData = OralExpressionData | WrittenExpressionData | MCQData;
+
+export interface SavedResult extends MongoDocument {
+  // Core identification
+  resultType: 'practice' | 'mockExam';
+  mode: 'partA' | 'partB' | 'full';
+  module: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
+  mockExamId?: string; // Only present for mockExam results
   title: string;
   timestamp: number;
-  recordingId?: string; 
+  
+  // Task references (normalized)
+  taskReferences: {
+    taskA?: TaskReference; // { taskId: string, type: 'oralA' | 'writtenA' | 'reading' }
+    taskB?: TaskReference; // { taskId: string, type: 'oralB' | 'writtenB' | 'listening' }
+  };
+  
+  // Evaluation results (unified)
+  evaluation: EvaluationResult;
+  
+  // Module-specific data (discriminated union)
+  moduleData: ModuleData;
+  
+  // Common optional fields
+  recordingId?: string;
   transcript?: string;
-  taskPartA?: TEFTask; // Task data for Section A
-  taskPartB?: TEFTask; // Task data for Section B
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
-  // Mock exam fields
-  mockExamId?: string; // Unique identifier for this mock exam (e.g., "oralA_1-oralB_2-reading_3-listening_4")
-  module?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression'; // Module this result belongs to
-  readingResult?: MCQResult; // Reading module result (score out of 40)
-  listeningResult?: MCQResult; // Listening module result (score out of 40)
+  
+  // Legacy fields (deprecated, kept for backward compatibility during transition)
+  taskPartA?: TEFTask;
+  taskPartB?: TEFTask;
+  readingResult?: MCQResult;
+  listeningResult?: MCQResult;
   oralExpressionResult?: {
     clbLevel: number;
     feedback: string;
     strengths: string[];
     weaknesses: string[];
-    // ... existing oral expression result structure
   };
   writtenExpressionResult?: {
     sectionA: {
       text: string;
       task: WrittenTask;
-      result?: EvaluationResult; // Optional: individual section result if evaluated separately
+      result?: EvaluationResult;
     };
     sectionB: {
       text: string;
       task: WrittenTask;
-      result?: EvaluationResult; // Optional: individual section result if evaluated separately
+      result?: EvaluationResult;
     };
   };
 }

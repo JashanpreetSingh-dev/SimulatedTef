@@ -27,10 +27,10 @@ export const WrittenExpressionSection: React.FC<WrittenExpressionSectionProps> =
       {/* Task Info */}
       <div className="bg-indigo-100/70 dark:bg-slate-700/50 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-200 dark:border-slate-600">
         <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-200 font-semibold mb-2">
-          {t('results.subjectLabel')} {sectionData.task?.subject || sectionData.task?.prompt || 'N/A'}
+          {t('results.subjectLabel')} {sectionData.task?.subject || 'N/A'}
         </p>
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed italic">
-          {sectionData.task?.instruction || sectionData.task?.prompt || ''}
+          {sectionData.task?.instruction || ''}
         </p>
       </div>
 

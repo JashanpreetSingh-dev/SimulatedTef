@@ -5,6 +5,7 @@ import { PracticeView } from '../pages/PracticeView';
 import { HistoryView } from '../pages/HistoryView';
 import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
+import { WrittenExamView } from '../pages/WrittenExamView';
 import { SubscriptionManagementView } from '../pages/SubscriptionManagementView';
 import { PricingView } from '../pages/PricingView';
 import { TermsOfService } from '../components/TermsOfService';
@@ -25,6 +26,7 @@ export function ProtectedRoutes() {
       <Route path="/history" element={<HistoryView />} />
       <Route path="/results/:id" element={<ResultView />} />
       <Route path="/exam/:mode" element={<ExamView />} />
+      <Route path="/exam/written/:mode" element={<WrittenExamView />} />
       <Route path="/mock-exam/:mockExamId" element={
         <DashboardLayout>
           <MockExamView />

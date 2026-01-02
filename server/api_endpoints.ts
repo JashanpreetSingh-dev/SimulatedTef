@@ -36,18 +36,37 @@ app.post('/api/results', async (req, res) => {
   }
 });
 
-// GET: Fetch all results for a user
+// GET: Fetch results for a user with pagination support
 app.get('/api/results/:userId', async (req, res) => {
   try {
     const db = await connectDB();
     const userId = req.params.userId;
     
+    // Parse pagination parameters
+    const limit = parseInt(req.query.limit as string) || 50; // Default 50 per page
+    const skip = parseInt(req.query.skip as string) || 0;
+    
+    // Get total count for pagination metadata
+    const totalCount = await db.collection('results').countDocuments({ userId });
+    
+    // Fetch paginated results
     const results = await db.collection('results')
       .find({ userId })
       .sort({ timestamp: -1 })
+      .skip(skip)
+      .limit(limit)
       .toArray();
-      
-    res.json(results);
+    
+    // Return results with pagination metadata
+    res.json({
+      results,
+      pagination: {
+        total: totalCount,
+        limit,
+        skip,
+        hasMore: skip + results.length < totalCount
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

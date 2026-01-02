@@ -84,7 +84,7 @@ export function ExamView() {
           // Session invalid - usage already consumed
           sessionStorage.removeItem(`exam_session_${mode}`);
           sessionStorage.removeItem(`exam_scenario_${mode}`);
-          alert('This exam session has expired. Usage was already consumed when the exam started.');
+          alert(t('errors.examSessionExpired'));
           navigate('/dashboard');
           return;
         }
@@ -120,7 +120,8 @@ export function ExamView() {
         // Generate new scenario, excluding completed tasks
         const loadCompletedTaskIds = async () => {
         try {
-          const results = await persistenceService.getAllResults(user?.id || 'guest', getToken);
+          const response = await persistenceService.getAllResults(user?.id || 'guest', getToken);
+          const results = response.results;
           const completedIds: number[] = [];
           results.forEach(result => {
             if (result.taskPartA?.id) completedIds.push(result.taskPartA.id);
@@ -129,7 +130,7 @@ export function ExamView() {
           
           const { partA, partB } = getRandomTasks(completedIds);
           const newScenario = {
-            title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
+            title: mode === 'full' ? t('practice.completeExam') : (mode === 'partA' ? t('practice.sectionA') : t('practice.sectionB')),
             mode: mode,
             officialTasks: {
               partA,
@@ -144,7 +145,7 @@ export function ExamView() {
           console.error('Error loading completed tasks:', error);
           const { partA, partB } = getRandomTasks();
           const newScenario = {
-            title: mode === 'full' ? "Entraînement Complet" : (mode === 'partA' ? "Section A" : "Section B"),
+            title: mode === 'full' ? t('practice.completeExam') : (mode === 'partA' ? t('practice.sectionA') : t('practice.sectionB')),
             mode: mode,
             officialTasks: {
               partA,
@@ -245,7 +246,7 @@ export function ExamView() {
       <DashboardLayout>
         <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-4 md:p-8 transition-colors">
           <div className="max-w-7xl mx-auto py-20 text-center animate-pulse text-slate-500">
-            {showPaywall ? 'Checking subscription...' : 'Loading exam...'}
+            {showPaywall ? t('status.checkingSubscription') : t('status.loadingExam')}
           </div>
           <PaywallModal
             isOpen={showPaywall}
@@ -263,7 +264,13 @@ export function ExamView() {
   // Determine back navigation - go back one step in history
   const handleBack = () => {
     // Check if we have a referrer in location state
-    if (location.state?.from) {
+    if (location.state?.from === '/practice') {
+      // Preserve module selection when going back to practice
+      if (location.state?.selectedModule) {
+        sessionStorage.setItem('practice_selected_module', location.state.selectedModule);
+      }
+      navigate('/practice');
+    } else if (location.state?.from) {
       navigate(location.state.from);
     } else {
       // Otherwise, go back one step in browser history
@@ -291,7 +298,7 @@ export function ExamView() {
             onClick={handleBack}
             className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
           >
-            ← Back
+            ← {location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
           </button>
           {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} />}
           <ExamWarningModal

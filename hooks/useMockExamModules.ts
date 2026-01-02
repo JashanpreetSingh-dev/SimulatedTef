@@ -309,8 +309,8 @@ export function useMockExamModules({
     try {
       // First try to fetch results for this specific mock exam and module
       console.log(`🔍 Fetching results for mockExamId=${mockExamId}, module=${module}`);
-      const filteredResults = await authenticatedFetchJSON<SavedResult[]>(
-        `${BACKEND_URL}/api/results/${userId}?mockExamId=${mockExamId}&module=${module}`,
+      const response = await authenticatedFetchJSON<{ results: SavedResult[]; pagination?: any }>(
+        `${BACKEND_URL}/api/results/${userId}?mockExamId=${mockExamId}&module=${module}&resultType=mockExam&populateTasks=true`,
         {
           method: 'GET',
           getToken,
@@ -320,6 +320,9 @@ export function useMockExamModules({
           },
         }
       );
+      
+      // Handle paginated response format
+      const filteredResults = Array.isArray(response) ? response : (response.results || []);
       
       console.log('📦 Filtered results:', filteredResults);
       
@@ -331,8 +334,8 @@ export function useMockExamModules({
         console.log('❌ No filtered results found, trying all results...');
         
         // If no filtered results, try fetching all results to debug
-        const allResults = await authenticatedFetchJSON<SavedResult[]>(
-          `${BACKEND_URL}/api/results/${userId}`,
+        const allResponse = await authenticatedFetchJSON<{ results: SavedResult[]; pagination?: any }>(
+          `${BACKEND_URL}/api/results/${userId}?resultType=mockExam&populateTasks=true`,
           {
             method: 'GET',
             getToken,
@@ -342,6 +345,9 @@ export function useMockExamModules({
             },
           }
         );
+        
+        // Handle paginated response format
+        const allResults = Array.isArray(allResponse) ? allResponse : (allResponse.results || []);
         
         console.log('📋 All user results:', allResults);
         

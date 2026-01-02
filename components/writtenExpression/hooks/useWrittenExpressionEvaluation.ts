@@ -7,18 +7,20 @@ interface UseWrittenExpressionEvaluationOptions {
   taskA: WrittenTask;
   taskB: WrittenTask;
   title: string;
-  mockExamId: string;
+  mockExamId?: string;
   onSuccess: (result: SavedResult) => void;
   onError?: (error: Error) => void;
+  mode?: 'partA' | 'partB' | 'full';
 }
 
 export function useWrittenExpressionEvaluation({
   taskA,
   taskB,
   title,
-  mockExamId,
+  mockExamId = '',
   onSuccess,
   onError,
+  mode = 'full',
 }: UseWrittenExpressionEvaluationOptions) {
   const { getToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,9 +34,20 @@ export function useWrittenExpressionEvaluation({
         throw new Error('Authentication required');
       }
 
-      // Combine both sections for evaluation
-      const combinedTranscript = `Section A (Fait divers):\n${sectionAText}\n\nSection B (Argumentation):\n${sectionBText}`;
-      const combinedPrompt = `Section A: ${taskA.subject}\n${taskA.instruction}\n\nSection B: ${taskB.subject}\n${taskB.instruction}`;
+      // Combine sections for evaluation based on mode
+      let combinedTranscript: string;
+      let combinedPrompt: string;
+      
+      if (mode === 'partA') {
+        combinedTranscript = `Section A (Fait divers):\n${sectionAText}`;
+        combinedPrompt = `Section A: ${taskA.subject}\n${taskA.instruction}`;
+      } else if (mode === 'partB') {
+        combinedTranscript = `Section B (Argumentation):\n${sectionBText}`;
+        combinedPrompt = `Section B: ${taskB.subject}\n${taskB.instruction}`;
+      } else {
+        combinedTranscript = `Section A (Fait divers):\n${sectionAText}\n\nSection B (Argumentation):\n${sectionBText}`;
+        combinedPrompt = `Section A: ${taskA.subject}\n${taskA.instruction}\n\nSection B: ${taskB.subject}\n${taskB.instruction}`;
+      }
 
       // Submit evaluation job with section texts for proper storage
       const { jobId } = await evaluationJobService.submitJob(
@@ -42,18 +55,20 @@ export function useWrittenExpressionEvaluation({
         combinedPrompt,
         combinedTranscript,
         0, // scenarioId - not used for written expression
-        (25 * 60) + (35 * 60), // total time limit (25 min + 35 min)
+        mode === 'partA' ? (25 * 60) : mode === 'partB' ? (35 * 60) : (25 * 60) + (35 * 60), // time limit based on mode
         undefined, // questionCount
         undefined, // recordingId
-        'full', // mode
+        mode, // mode
         title,
         taskA, // taskPartA
         taskB, // taskPartB
         undefined, // eo2RemainingSeconds
         undefined, // fluencyAnalysis
         getToken,
-        sectionAText, // writtenSectionAText
-        sectionBText // writtenSectionBText
+        sectionAText || undefined, // writtenSectionAText
+        sectionBText || undefined, // writtenSectionBText
+        mockExamId || undefined, // mockExamId
+        'writtenExpression' // module
       );
 
       setIsSubmitting(false);
@@ -72,10 +87,10 @@ export function useWrittenExpressionEvaluation({
       const savedResult: SavedResult = {
         ...result,
         userId: '', // Will be set by backend
-        mode: 'full',
+        mode: mode,
         title: title,
         timestamp: Date.now(),
-        mockExamId: mockExamId,
+        mockExamId: mockExamId || undefined,
         module: 'writtenExpression',
         isLoading: false,
         createdAt: new Date().toISOString(),

@@ -33,6 +33,8 @@ const translations: Record<Language, Record<string, string>> = {
     'back.dashboard': 'Retour au tableau de bord',
     'back.history': 'Retour à l\'historique',
     'back.toList': 'Retour à la liste',
+    'back.practice': 'Retour à la pratique',
+    'back.back': 'Retour',
     
     // Landing page
     'landing.startFree': 'Commencer gratuitement',
@@ -50,6 +52,9 @@ const translations: Record<Language, Record<string, string>> = {
     'common.commencer': 'Commencer',
     'common.start': 'Commencer',
     'common.startMockExam': 'Commencer l\'examen blanc',
+    'common.startPracticing': 'Commencer à pratiquer',
+    'common.practice': 'Pratique',
+    'common.history': 'Historique',
     
     // Actions
     'actions.start': 'Commencer',
@@ -66,6 +71,8 @@ const translations: Record<Language, Record<string, string>> = {
     'status.evaluating': 'Évaluation en cours...',
     'status.loading': 'Chargement...',
     'status.checking': 'Vérification...',
+    'status.loadingExam': 'Chargement de l\'examen...',
+    'status.checkingSubscription': 'Vérification de l\'abonnement...',
     
     // Mock Exam
     'mockExam.title': 'Examen Blanc',
@@ -83,9 +90,11 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Modules
     'modules.oralExpression': 'Expression Orale',
+    'modules.writtenExpression': 'Expression Écrite',
     'modules.reading': 'Compréhension Écrite',
     'modules.listening': 'Compréhension Orale',
     'modules.oralExpressionDescription': 'Examen complet avec Section A (EO1) et Section B (EO2), conversation IA en temps réel',
+    'modules.writtenExpressionDescription': 'Pratiquez l\'expression écrite avec Section A, Section B et Examens Complets.',
     'modules.readingDescription': '60 minutes, 40 questions à choix multiples (format question par question)',
     'modules.listeningDescription': 'Questions avec lecture automatique et lecture audio, 40 questions à choix multiples',
     'modules.oralExpressionDuration': '~30 minutes',
@@ -93,6 +102,8 @@ const translations: Record<Language, Record<string, string>> = {
     'modules.listeningDuration': '~40 minutes',
     
     // History
+    'history.title': 'Historique',
+    'history.subtitle': 'Consultez vos résultats de pratique précédents',
     'history.tabA': 'A',
     'history.tabB': 'B',
     'history.tabComplete': 'Complet',
@@ -100,6 +111,8 @@ const translations: Record<Language, Record<string, string>> = {
     'history.empty': 'Aucun historique',
     'history.emptyDescription': 'Passez votre premier examen blanc pour commencer à suivre vos progrès !',
     'history.noResults': 'Aucun résultat pour ce filtre.',
+    'history.endOfResults': 'Tous les résultats ont été chargés',
+    'history.loadingMore': 'Chargement...',
     
     // Results
     'results.sectionA': 'A',
@@ -155,10 +168,33 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Traitement de l\'enregistrement audio',
     'writtenExpression.transcribingAudio': 'Transcription de l\'audio',
     
+    // Practice
+    'practice.title': 'Pratique',
+    'practice.oralSubtitle': 'Prêt à pratiquer votre expression orale aujourd\'hui ?',
+    'practice.writtenSubtitle': 'Prêt à pratiquer votre expression écrite aujourd\'hui ?',
+    'practice.oralExpression': 'Expression Orale',
+    'practice.writtenExpression': 'Expression Écrite',
+    'practice.oralExpressionDescription': 'Pratiquez l\'expression orale avec Section A, Section B et Examens Complets.',
+    'practice.writtenExpressionDescription': 'Pratiquez l\'expression écrite avec Section A, Section B et Examens Complets.',
+    'practice.completeExam': 'Entraînement Complet',
+    'practice.sectionA': 'Section A',
+    'practice.sectionB': 'Section B',
+    'practice.writtenCompleteExam': 'Entraînement Complet - Expression Écrite',
+    'practice.writtenSectionA': 'Section A - Expression Écrite',
+    'practice.writtenSectionB': 'Section B - Expression Écrite',
+    'practice.cardDescription': 'Pratiquez l\'expression orale avec Section A, Section B et Examens Complets. Consultez votre historique de pratique.',
+    
     // Errors
     'errors.loadFailed': 'Échec du chargement. Veuillez réessayer.',
     'errors.startFailed': 'Échec du démarrage de l\'examen blanc. Veuillez réessayer.',
     'errors.creditsNeeded': 'Vous avez besoin de crédits pour commencer un examen blanc. Veuillez acheter un pack.',
+    'errors.loadingSubscription': 'Chargement du statut d\'abonnement...',
+    'errors.subscriptionExpired': 'L\'abonnement a expiré',
+    'errors.packExpired': 'Le pack a expiré',
+    'errors.fullTestLimitReached': 'Limite quotidienne d\'examens complets atteinte et aucun crédit de pack disponible',
+    'errors.sectionALimitReached': 'Limite quotidienne de Section A atteinte et aucun crédit de pack disponible',
+    'errors.sectionBLimitReached': 'Limite quotidienne de Section B atteinte et aucun crédit de pack disponible',
+    'errors.examSessionExpired': 'Cette session d\'examen a expiré. L\'utilisation a déjà été consommée lorsque l\'examen a commencé.',
   },
   en: {
     // Navigation
@@ -182,6 +218,8 @@ const translations: Record<Language, Record<string, string>> = {
     'back.dashboard': 'Back to Dashboard',
     'back.history': 'Back to History',
     'back.toList': 'Back to list',
+    'back.practice': 'Back to Practice',
+    'back.back': 'Back',
     
     // Landing page
     'landing.startFree': 'Start for free',
@@ -199,6 +237,9 @@ const translations: Record<Language, Record<string, string>> = {
     'common.commencer': 'Start',
     'common.start': 'Start',
     'common.startMockExam': 'Start Mock Exam',
+    'common.startPracticing': 'Start Practicing',
+    'common.practice': 'Practice',
+    'common.history': 'History',
     
     // Actions
     'actions.start': 'Start',
@@ -215,6 +256,8 @@ const translations: Record<Language, Record<string, string>> = {
     'status.evaluating': 'Evaluating...',
     'status.loading': 'Loading...',
     'status.checking': 'Checking...',
+    'status.loadingExam': 'Loading exam...',
+    'status.checkingSubscription': 'Checking subscription...',
     
     // Mock Exam
     'mockExam.title': 'Mock Exam',
@@ -232,9 +275,11 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Modules
     'modules.oralExpression': 'Oral Expression',
+    'modules.writtenExpression': 'Written Expression',
     'modules.reading': 'Reading Comprehension',
     'modules.listening': 'Listening Comprehension',
     'modules.oralExpressionDescription': 'Full exam with Section A (EO1) and Section B (EO2), real-time AI conversation',
+    'modules.writtenExpressionDescription': 'Practice written expression with Section A, Section B, and Complete Exams.',
     'modules.readingDescription': '60 minutes, 40 multiple-choice questions (question-by-question format)',
     'modules.listeningDescription': 'Auto-advancing questions with audio playback, 40 multiple-choice questions',
     'modules.oralExpressionDuration': '~30 minutes',
@@ -242,6 +287,8 @@ const translations: Record<Language, Record<string, string>> = {
     'modules.listeningDuration': '~40 minutes',
     
     // History
+    'history.title': 'History',
+    'history.subtitle': 'View your previous practice results',
     'history.tabA': 'A',
     'history.tabB': 'B',
     'history.tabComplete': 'Complete',
@@ -249,6 +296,8 @@ const translations: Record<Language, Record<string, string>> = {
     'history.empty': 'No history',
     'history.emptyDescription': 'Take your first mock exam to start tracking your progress!',
     'history.noResults': 'No results for this filter.',
+    'history.endOfResults': 'All results loaded',
+    'history.loadingMore': 'Loading...',
     
     // Results
     'results.sectionA': 'A',
@@ -304,10 +353,33 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Processing audio recording',
     'writtenExpression.transcribingAudio': 'Transcribing audio',
     
+    // Practice
+    'practice.title': 'Practice',
+    'practice.oralSubtitle': 'Ready to practice your oral expression today?',
+    'practice.writtenSubtitle': 'Ready to practice your written expression today?',
+    'practice.oralExpression': 'Oral Expression',
+    'practice.writtenExpression': 'Written Expression',
+    'practice.oralExpressionDescription': 'Practice oral expression with Section A, Section B, and Complete Exams.',
+    'practice.writtenExpressionDescription': 'Practice written expression with Section A, Section B, and Complete Exams.',
+    'practice.completeExam': 'Complete Exam',
+    'practice.sectionA': 'Section A',
+    'practice.sectionB': 'Section B',
+    'practice.writtenCompleteExam': 'Complete Exam - Written Expression',
+    'practice.writtenSectionA': 'Section A - Written Expression',
+    'practice.writtenSectionB': 'Section B - Written Expression',
+    'practice.cardDescription': 'Practice oral expression with Section A, Section B, and Complete Exams. View your practice history.',
+    
     // Errors
     'errors.loadFailed': 'Failed to load. Please try again.',
     'errors.startFailed': 'Failed to start mock exam. Please try again.',
     'errors.creditsNeeded': 'You need credits to start a mock exam. Please purchase a pack.',
+    'errors.loadingSubscription': 'Loading subscription status...',
+    'errors.subscriptionExpired': 'Subscription has expired',
+    'errors.packExpired': 'Pack has expired',
+    'errors.fullTestLimitReached': 'Daily full test limit reached and no pack credits available',
+    'errors.sectionALimitReached': 'Daily Section A limit reached and no pack credits available',
+    'errors.sectionBLimitReached': 'Daily Section B limit reached and no pack credits available',
+    'errors.examSessionExpired': 'This exam session has expired. Usage was already consumed when the exam started.',
   },
 };
 

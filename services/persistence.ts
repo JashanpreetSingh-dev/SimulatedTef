@@ -1,5 +1,7 @@
 
 import { EvaluationResult, SavedResult } from '../types';
+import { TaskReference, TaskType, generateTaskId, NormalizedTask } from '../types/task';
+import { TEFTask, WrittenTask, ReadingTask, ListeningTask } from '../types';
 import { mongoDBService } from './mongodb';
 import { authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
 
@@ -96,36 +98,166 @@ export const persistenceService = {
   },
 
   /**
+   * Saves a task to normalized storage
+   */
+  async saveTask(
+    type: TaskType,
+    taskData: TEFTask | WrittenTask | ReadingTask | ListeningTask,
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<NormalizedTask> {
+    const url = `${BACKEND_URL}/api/tasks/normalized`;
+    
+    try {
+      if (typeof authTokenOrGetter === 'function') {
+        const task = await authenticatedFetchJSON<NormalizedTask>(
+          url,
+          {
+            method: 'POST',
+            getToken: authTokenOrGetter,
+            body: JSON.stringify({ type, taskData }),
+          }
+        );
+        return task;
+      } else {
+        const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ type, taskData }),
+        });
+        
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error(`Failed to save task: ${response.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to save task:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get task by taskId
+   */
+  async getTask(
+    taskId: string,
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<NormalizedTask | null> {
+    const url = `${BACKEND_URL}/api/tasks/normalized/${taskId}`;
+    
+    try {
+      if (typeof authTokenOrGetter === 'function') {
+        return await authenticatedFetchJSON<NormalizedTask>(url, { getToken: authTokenOrGetter });
+      } else {
+        const headers: HeadersInit = {};
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(url, { headers });
+        if (response.ok) {
+          return await response.json();
+        } else if (response.status === 404) {
+          return null;
+        } else {
+          throw new Error(`Failed to get task: ${response.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get task:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get multiple tasks by taskIds
+   */
+  async getTasks(
+    taskIds: string[],
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<NormalizedTask[]> {
+    const url = `${BACKEND_URL}/api/tasks/normalized/batch`;
+    
+    try {
+      if (typeof authTokenOrGetter === 'function') {
+        const response = await authenticatedFetchJSON<{ tasks: NormalizedTask[] }>(
+          url,
+          {
+            method: 'POST',
+            getToken: authTokenOrGetter,
+            body: JSON.stringify({ taskIds }),
+          }
+        );
+        return response.tasks;
+      } else {
+        const headers: HeadersInit = { 'Content-Type': 'application/json' };
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ taskIds }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          return data.tasks || [];
+        } else {
+          throw new Error(`Failed to get tasks: ${response.status}`);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get tasks:', error);
+      return [];
+    }
+  },
+
+  /**
    * Saves an evaluation result with MongoDB via backend API.
+   * Now accepts task references instead of full task objects.
    * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
    */
   async saveResult(
     result: EvaluationResult, 
-    mode: string, 
-    title: string, 
+    mode: 'partA' | 'partB' | 'full',
+    title: string,
+    resultType: 'practice' | 'mockExam',
+    module: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening',
+    moduleData: SavedResult['moduleData'],
     userId: string = 'guest',
     recordingId?: string,
-    taskPartA?: any, // TEFTask for Section A
-    taskPartB?: any,  // TEFTask for Section B
-    transcript?: string,  // Transcript of the exam
-    authTokenOrGetter?: string | null | TokenGetter  // Clerk session token or getter function
+    taskReferences?: { taskA?: TaskReference; taskB?: TaskReference },
+    transcript?: string,
+    mockExamId?: string,
+    authTokenOrGetter?: string | null | TokenGetter
   ): Promise<SavedResult> {
     
     // 1. Prepare the document with a temporary ID (will be replaced by MongoDB _id if save succeeds)
     const tempId = `temp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const newEntry: SavedResult = {
-      ...result,
       _id: tempId,
       userId,
       timestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      resultType,
       mode,
+      module,
       title,
+      evaluation: result,
+      moduleData,
+      taskReferences: taskReferences || {},
       recordingId, // Add recordingId if provided
       transcript, // Add transcript if provided
-      taskPartA, // Add task data for Section A
-      taskPartB, // Add task data for Section B
+      ...(mockExamId && { mockExamId }), // Only add mockExamId if provided
     };
 
     // 2. Save to LocalStorage (Always do this for offline resilience)
@@ -220,22 +352,71 @@ export const persistenceService = {
    * Fetches results, prioritizing MongoDB via backend if available, otherwise LocalStorage.
    * @param userId - User ID to fetch results for
    * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
+   * @param limit - Optional limit for pagination (default: 50)
+   * @param skip - Optional skip/offset for pagination (default: 0)
+   * @param resultType - Optional filter by resultType ('practice' | 'mockExam')
+   * @param module - Optional filter by module
+   * @param mockExamId - Optional filter by mockExamId
+   * @param populateTasks - Optional flag to populate task data from references
    */
-  async getAllResults(userId: string = 'guest', authTokenOrGetter?: string | null | TokenGetter): Promise<SavedResult[]> {
+  async getAllResults(
+    userId: string = 'guest', 
+    authTokenOrGetter?: string | null | TokenGetter,
+    limit?: number,
+    skip?: number,
+    resultType?: 'practice' | 'mockExam',
+    module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening',
+    mockExamId?: string,
+    populateTasks: boolean = false
+  ): Promise<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
     try {
+      // Build query params for pagination and filtering
+      const params = new URLSearchParams();
+      if (limit !== undefined) params.append('limit', limit.toString());
+      if (skip !== undefined) params.append('skip', skip.toString());
+      if (resultType) params.append('resultType', resultType);
+      if (module) params.append('module', module);
+      if (mockExamId) params.append('mockExamId', mockExamId);
+      if (populateTasks) params.append('populateTasks', 'true');
+      const queryString = params.toString();
+      const url = `${BACKEND_URL}/api/results/${userId}${queryString ? `?${queryString}` : ''}`;
+      
       // Use authenticated fetch if getToken is provided, otherwise use regular fetch
       if (typeof authTokenOrGetter === 'function') {
         try {
-          const results = await authenticatedFetchJSON<SavedResult[]>(
-            `${BACKEND_URL}/api/results/${userId}`,
+          const response = await authenticatedFetchJSON<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }>(
+            url,
             {
               getToken: authTokenOrGetter,
             }
           );
-          // Update local storage with fresh data from MongoDB
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-          console.log(`✅ Loaded ${results.length} results from MongoDB`);
-          return results;
+          
+          // Handle response - check if it has the expected structure
+          if (response && typeof response === 'object') {
+            // Check if response is an error object
+            if ('error' in response) {
+              console.warn('⚠️ Backend returned error:', response.error);
+              // Fall through to localStorage
+            } else if ('results' in response) {
+              const { results, pagination } = response;
+              // Update local storage with fresh data from MongoDB (merge with existing)
+              if (skip === 0 || skip === undefined) {
+                // First page - replace all
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+              } else {
+                // Subsequent pages - merge with existing
+                const existing = this.getResultsSync();
+                const merged = [...existing, ...results];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+              }
+              console.log(`✅ Loaded ${results.length} results from MongoDB${pagination ? ` (${pagination.skip + results.length}/${pagination.total})` : ''}`);
+              return { results, pagination };
+            } else {
+              console.warn('⚠️ Unexpected response format from backend, falling back to localStorage');
+            }
+          } else {
+            console.warn('⚠️ Invalid response from backend, falling back to localStorage');
+          }
         } catch (error) {
           console.log('⚠️ Backend not available, using localStorage:', error);
         }
@@ -246,25 +427,65 @@ export const persistenceService = {
           headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
         }
         
-        const response = await fetch(`${BACKEND_URL}/api/results/${userId}`, {
-          headers,
-        });
-        if (response.ok) {
-          const results = await response.json();
-          // Update local storage with fresh data from MongoDB
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
-          console.log(`✅ Loaded ${results.length} results from MongoDB`);
-          return results;
+        try {
+          const response = await fetch(url, {
+            headers,
+          });
+          if (response.ok) {
+            const data = await response.json();
+            // Check if response is an error object
+            if (data && typeof data === 'object' && 'error' in data) {
+              console.warn('⚠️ Backend returned error:', data.error);
+              // Fall through to localStorage
+            } else if (data && typeof data === 'object' && 'results' in data) {
+              // Handle response - check if it has the expected structure
+              const { results, pagination } = data;
+              if (skip === 0 || skip === undefined) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(results));
+              } else {
+                const existing = this.getResultsSync();
+                const merged = [...existing, ...results];
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+              }
+              console.log(`✅ Loaded ${results.length} results from MongoDB${pagination ? ` (${pagination.skip + results.length}/${pagination.total})` : ''}`);
+              return { results, pagination };
+            } else {
+              console.warn('⚠️ Unexpected response format from backend, falling back to localStorage');
+            }
+          } else {
+            console.log(`⚠️ Backend returned ${response.status}, using localStorage`);
+          }
+        } catch (error) {
+          console.log('⚠️ Backend fetch failed, using localStorage:', error);
         }
       }
     } catch (error) {
       console.log('⚠️ Backend not available, using localStorage:', error);
     }
     
-    // Fallback to local storage
-    const localResults = this.getResultsSync().filter(r => r.userId === userId);
-    console.log(`📦 Loaded ${localResults.length} results from localStorage`);
-    return localResults;
+    // Always fall back to localStorage if backend fails
+    
+    // Fallback to local storage - implement pagination for localStorage too
+    const localResults = this.getResultsSync()
+      .filter(r => r.userId === userId)
+      .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    
+    const effectiveLimit = limit || 50;
+    const effectiveSkip = skip || 0;
+    const paginatedResults = localResults.slice(effectiveSkip, effectiveSkip + effectiveLimit);
+    const totalCount = localResults.length;
+    
+    console.log(`📦 Loaded ${paginatedResults.length} results from localStorage${limit !== undefined ? ` (${effectiveSkip + paginatedResults.length}/${totalCount})` : ''}`);
+    
+    return {
+      results: paginatedResults,
+      pagination: limit !== undefined ? {
+        total: totalCount,
+        limit: effectiveLimit,
+        skip: effectiveSkip,
+        hasMore: effectiveSkip + paginatedResults.length < totalCount
+      } : undefined
+    };
   },
 
   async clearHistory(userId: string = 'guest'): Promise<void> {

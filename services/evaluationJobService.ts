@@ -37,7 +37,9 @@ export const evaluationJobService = {
     fluencyAnalysis: any | undefined,
     authTokenOrGetter: string | null | TokenGetter,
     writtenSectionAText?: string,
-    writtenSectionBText?: string
+    writtenSectionBText?: string,
+    mockExamId?: string,
+    module?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression'
   ): Promise<{ jobId: string }> {
     // Use authenticated fetch if getToken is provided, otherwise use regular fetch
     if (typeof authTokenOrGetter === 'function') {
@@ -62,6 +64,8 @@ export const evaluationJobService = {
             fluencyAnalysis,
             writtenSectionAText,
             writtenSectionBText,
+            mockExamId,
+            module,
           }),
         }
       );

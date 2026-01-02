@@ -11,6 +11,25 @@ interface ResultHeaderProps {
 export const ResultHeader: React.FC<ResultHeaderProps> = ({ result, audioPlayer }) => {
   const { t } = useLanguage();
 
+  // Get evaluation result - for partA/partB, check moduleData first, then fallback to main evaluation
+  const evaluationResult = React.useMemo(() => {
+    if (result.moduleData) {
+      if (result.moduleData.type === 'oralExpression' || result.moduleData.type === 'writtenExpression') {
+        if (result.mode === 'partA' && result.moduleData.sectionA?.result) {
+          return result.moduleData.sectionA.result;
+        } else if (result.mode === 'partB' && result.moduleData.sectionB?.result) {
+          return result.moduleData.sectionB.result;
+        }
+      }
+    }
+    // Fallback to main evaluation or legacy structure
+    return result.evaluation || result;
+  }, [result]);
+
+  const clbLevel = evaluationResult.clbLevel || (result as any).clbLevel;
+  const score = evaluationResult.score || (result as any).score;
+  const cecrLevel = evaluationResult.cecrLevel || (result as any).cecrLevel;
+
   return (
     <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-3 sm:p-4 md:p-6 shadow-sm transition-colors">
       <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
@@ -22,17 +41,21 @@ export const ResultHeader: React.FC<ResultHeaderProps> = ({ result, audioPlayer 
           </div>
 
           {/* CLB Pill */}
-          <div className="bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2">
-            <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider opacity-80">CLB</span>
-            <span className="text-base sm:text-lg font-black">{result.clbLevel}</span>
-            <span className="text-[8px] sm:text-[9px] font-bold opacity-70 hidden sm:inline">({result.score}/699)</span>
-          </div>
+          {clbLevel && (
+            <div className="bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2">
+              <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider opacity-80">CLB</span>
+              <span className="text-base sm:text-lg font-black">{clbLevel}</span>
+              {score !== undefined && (
+                <span className="text-[8px] sm:text-[9px] font-bold opacity-70 hidden sm:inline">({score}/699)</span>
+              )}
+            </div>
+          )}
 
           {/* CECR Pill */}
-          {result.cecrLevel && (
-            <div className={`${getCECRColor(result.cecrLevel)} text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2`}>
+          {cecrLevel && (
+            <div className={`${getCECRColor(cecrLevel)} text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2`}>
               <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider opacity-80">CECR</span>
-              <span className="text-base sm:text-lg font-black">{result.cecrLevel}</span>
+              <span className="text-base sm:text-lg font-black">{cecrLevel}</span>
             </div>
           )}
         </div>
