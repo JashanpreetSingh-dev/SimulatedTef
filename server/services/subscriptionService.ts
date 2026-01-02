@@ -10,6 +10,7 @@ import { ExamSession, createExamSession, validateExamSession, ExamType } from '.
 export interface SubscriptionStatus {
   subscriptionType: SubscriptionType;
   isActive: boolean;
+  isSuperUser?: boolean; // Super user bypasses all limits
   trialDaysRemaining?: number;
   // Pack fields
   packType?: 'STARTER_PACK' | 'EXAM_READY_PACK';
@@ -139,6 +140,7 @@ export const subscriptionService = {
     return {
       subscriptionType,
       isActive,
+      isSuperUser: isSuperUser(userId),
       trialDaysRemaining,
       packType,
       packExpirationDate,

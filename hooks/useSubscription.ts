@@ -6,6 +6,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 export interface SubscriptionStatus {
   subscriptionType: 'TRIAL' | 'STARTER_PACK' | 'EXAM_READY_PACK' | 'EXPIRED';
   isActive: boolean;
+  isSuperUser?: boolean; // Super user bypasses all limits
   trialDaysRemaining?: number;
   // Pack fields
   packType?: 'STARTER_PACK' | 'EXAM_READY_PACK';

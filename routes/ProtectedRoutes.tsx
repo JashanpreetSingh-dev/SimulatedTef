@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from '../pages/Dashboard';
+import { PracticeView } from '../pages/PracticeView';
 import { HistoryView } from '../pages/HistoryView';
 import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
@@ -20,6 +21,7 @@ export function ProtectedRoutes() {
   return (
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/practice" element={<PracticeView />} />
       <Route path="/history" element={<HistoryView />} />
       <Route path="/results/:id" element={<ResultView />} />
       <Route path="/exam/:mode" element={<ExamView />} />
