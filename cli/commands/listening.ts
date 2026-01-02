@@ -10,7 +10,7 @@ import { createListeningTask } from '../../server/models/ListeningTask';
 import { createQuestion } from '../../server/models/Question';
 import { createAudioItem } from '../../server/models/AudioItem';
 import { generateListeningQuestions, validateGeneratedListeningQuestions } from '../services/listeningQuestionGenerator';
-import { generateAudioForTask } from '../services/ttsGenerator';
+import { generateAudioForTask, generateMissingAudio } from '../services/ttsGenerator';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -596,10 +596,53 @@ export async function generateAudioCommand(argv: any) {
 }
 
 /**
+ * Generate missing audio for audio items with null/missing audioData
+ */
+export async function fillMissingAudioCommand(argv: any) {
+  try {
+    const { taskId } = argv;
+    const db = await getDB();
+
+    // If taskId provided, validate task exists
+    if (taskId) {
+      const listeningTasksCollection = db.collection('listeningTasks');
+      const task = await listeningTasksCollection.findOne({ taskId });
+      if (!task) {
+        console.error(`❌ Task ${taskId} not found. Create it first using 'listening create'`);
+        process.exit(1);
+      }
+    }
+
+    await closeDatabase(); // Close before audio generation (it will open its own connection)
+
+    const stats = await generateMissingAudio(taskId);
+
+    if (stats.total === 0) {
+      console.log('\n✅ All audio items already have audio data');
+      process.exit(0);
+    }
+
+    if (stats.failed > 0) {
+      console.error(`\n⚠️  Warning: ${stats.failed} audio item(s) failed to generate`);
+      process.exit(1);
+    }
+
+    console.log(`\n✅ Successfully generated ${stats.generated} missing audio file(s)`);
+    process.exit(0);
+  } catch (error: any) {
+    console.error('❌ Error generating missing audio:', error.message);
+    await closeDatabase().catch(() => {});
+    process.exit(1);
+  }
+}
+
+/**
  * Register listening commands with yargs
  */
 export function registerListeningCommands(yargsInstance: ReturnType<typeof yargs>) {
   return yargsInstance
+    .strictCommands() // Require exact command matches
+    .strictOptions() // Require exact option matches
     .command('generate', 'Generate complete listening mock exam: create task, generate questions, and audio (one command)', (yargs) => {
       return yargs
         .option('task-id', { type: 'string', describe: 'Task ID (e.g., listening_2) - auto-generated if not provided' })
@@ -623,33 +666,55 @@ export function registerListeningCommands(yargsInstance: ReturnType<typeof yargs
       return yargs
         .positional('taskId', { type: 'string', demandOption: true, describe: 'Task ID to show' });
     }, showListeningTaskCommand)
-    .command('questions generate', 'Generate questions using AI', (yargs) => {
+    .command('questions', 'Manage questions for listening tasks', (yargs) => {
       return yargs
-        .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' });
-    }, generateQuestionsCommand)
-    .command('questions list', 'List questions for a task', (yargs) => {
-      return yargs
-        .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
-        .option('format', { type: 'string', choices: ['table', 'json'], default: 'table', describe: 'Output format' });
-    }, listQuestionsCommand)
-    .command('questions import', 'Import questions from JSON file (audio_items format)', (yargs) => {
-      return yargs
-        .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
-        .option('file', { type: 'string', demandOption: true, describe: 'Path to JSON file' });
-    }, importQuestionsCommand)
-    .command('questions add', 'Add a single question manually', (yargs) => {
-      return yargs
-        .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
-        .option('question-number', { type: 'number', demandOption: true, describe: 'Question number (1-40)' })
-        .option('question', { type: 'string', demandOption: true, describe: 'Question text' })
-        .option('options', { type: 'string', demandOption: true, describe: 'Comma-separated options (4 required)' })
-        .option('correct-answer', { type: 'number', demandOption: true, describe: 'Correct answer index (0-3)' })
-        .option('explanation', { type: 'string', demandOption: true, describe: 'Explanation for correct answer' })
-        .option('audio-id', { type: 'string', describe: 'Optional audio ID reference' });
-    }, addQuestionCommand)
-    .command('questions generate-audio', 'Generate audio files from scripts using TTS', (yargs) => {
-      return yargs
-        .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
-        .option('overwrite', { type: 'boolean', default: false, describe: 'Overwrite existing audio files' });
-    }, generateAudioCommand);
+        .command('generate', 'Generate questions using AI', (yargs) => {
+          return yargs
+            .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' });
+        }, generateQuestionsCommand)
+        .command('list', 'List questions for a task', (yargs) => {
+          return yargs
+            .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
+            .option('format', { type: 'string', choices: ['table', 'json'], default: 'table', describe: 'Output format' });
+        }, listQuestionsCommand)
+        .command('import', 'Import questions from JSON file (audio_items format)', (yargs) => {
+          return yargs
+            .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
+            .option('file', { type: 'string', demandOption: true, describe: 'Path to JSON file' });
+        }, importQuestionsCommand)
+        .command('add', 'Add a single question manually', (yargs) => {
+          return yargs
+            .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID' })
+            .option('question-number', { type: 'number', demandOption: true, describe: 'Question number (1-40)' })
+            .option('question', { type: 'string', demandOption: true, describe: 'Question text' })
+            .option('options', { type: 'string', demandOption: true, describe: 'Comma-separated options (4 required)' })
+            .option('correct-answer', { type: 'number', demandOption: true, describe: 'Correct answer index (0-3)' })
+            .option('explanation', { type: 'string', demandOption: true, describe: 'Explanation for correct answer' })
+            .option('audio-id', { type: 'string', describe: 'Optional audio ID reference' });
+        }, addQuestionCommand)
+        .command('generate-audio', 'Generate audio files from scripts using TTS', (yargs) => {
+          return yargs
+            .option('task-id', { 
+              type: 'string', 
+              demandOption: true, 
+              describe: 'Task ID',
+              alias: 't'
+            })
+            .option('overwrite', { 
+              type: 'boolean', 
+              default: false, 
+              describe: 'Overwrite existing audio files',
+              alias: 'o'
+            });
+        }, generateAudioCommand)
+        .command('fill-missing-audio', 'Generate audio for audio items with missing/null audioData', (yargs) => {
+          return yargs
+            .option('task-id', { 
+              type: 'string', 
+              describe: 'Optional: Task ID to filter by (if not provided, processes all tasks)',
+              alias: 't'
+            });
+        }, fillMissingAudioCommand)
+        .demandCommand(1, 'You need at least one command after questions');
+    });
 }

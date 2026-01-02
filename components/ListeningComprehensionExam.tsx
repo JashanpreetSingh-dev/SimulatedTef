@@ -58,6 +58,71 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
   const storageKey = useMemo(() => `${STORAGE_KEY_PREFIX}${task.taskId}_${sessionId}`, [task.taskId, sessionId]);
   const startTimeRef = useRef<number | null>(null);
 
+  // Validate that we have questions and audioItems
+  if (!questions || questions.length === 0) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2 style={{ color: theme === 'dark' ? '#fff' : '#000', marginBottom: '1rem' }}>
+          ⚠️ Aucune question disponible
+        </h2>
+        <p style={{ color: theme === 'dark' ? '#ccc' : '#666', marginBottom: '1rem' }}>
+          Cette tâche d'écoute n'a pas de questions générées.
+        </p>
+        <p style={{ color: theme === 'dark' ? '#999' : '#888', fontSize: '0.9rem' }}>
+          Task ID: {task.taskId}
+        </p>
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: theme === 'dark' ? '#444' : '#e0e0e0',
+              color: theme === 'dark' ? '#fff' : '#000',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Fermer
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  if (!audioItems || audioItems.length === 0) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <h2 style={{ color: theme === 'dark' ? '#fff' : '#000', marginBottom: '1rem' }}>
+          ⚠️ Aucun fichier audio disponible
+        </h2>
+        <p style={{ color: theme === 'dark' ? '#ccc' : '#666', marginBottom: '1rem' }}>
+          Cette tâche d'écoute n'a pas de fichiers audio générés.
+        </p>
+        <p style={{ color: theme === 'dark' ? '#999' : '#888', fontSize: '0.9rem' }}>
+          Task ID: {task.taskId}
+        </p>
+        {onClose && (
+          <button
+            onClick={onClose}
+            style={{
+              marginTop: '1rem',
+              padding: '0.5rem 1rem',
+              backgroundColor: theme === 'dark' ? '#444' : '#e0e0e0',
+              color: theme === 'dark' ? '#fff' : '#000',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer'
+            }}
+          >
+            Fermer
+          </button>
+        )}
+      </div>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
   

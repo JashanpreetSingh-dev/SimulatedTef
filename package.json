@@ -15,12 +15,14 @@
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",
     "clear-mock-data": "tsx server/scripts/clearMockData.ts",
-    "cli": "tsx cli/index.ts"
+    "cli": "tsx cli/index.ts",
+    "convert-service-account": "tsx scripts/convert-service-account-to-env.ts"
   },
   "dependencies": {
     "@clerk/backend": "^2.29.0",
     "@clerk/clerk-react": "5.22.0",
     "@clerk/themes": "2.2.0",
+    "@google-cloud/text-to-speech": "^5.8.1",
     "@google/genai": "1.34.0",
     "@types/multer": "^2.0.0",
     "bullmq": "^5.0.0",

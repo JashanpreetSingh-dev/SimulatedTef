@@ -1,166 +1,114 @@
 # Environment Variables Reference
 
-This document lists all environment variables required for the TEF Master application.
+## Backend Variables
 
-## Backend Environment Variables
+### Required
+- **`MONGODB_URI`** - MongoDB connection string
+- **`CLERK_SECRET_KEY`** - Clerk authentication key (required for production)
 
-### Required Variables
+### Optional
+- **`MONGODB_DB_NAME`** - Database name (default: `tef_master`)
+- **`REDIS_URL`** - Redis connection (required for job queue)
+- **`PORT`** - Server port (default: `3001`)
+- **`HOST`** - Server host (default: `0.0.0.0`)
+- **`NODE_ENV`** - Environment mode (`development` or `production`)
+- **`RUN_WORKER`** - Run worker in same process (default: `true` in dev, `false` in prod)
 
-#### Database
-- **`MONGODB_URI`** (Required)
-  - MongoDB connection string
-  - Example: `mongodb+srv://user:password@cluster.mongodb.net/`
-  - Used for: Database connection with connection pooling
+## Frontend Variables
 
-#### Authentication
-- **`CLERK_SECRET_KEY`** (Required for production)
-  - Clerk authentication secret key
-  - Get from: [Clerk Dashboard](https://dashboard.clerk.com)
-  - Used for: User authentication middleware
-  - Note: If not set, authentication is disabled (development only)
+- **`VITE_BACKEND_URL`** - Backend API URL (default: `http://localhost:3001`)
+- **`GEMINI_API_KEY`** - Gemini API key (for Gemini TTS or AI features)
 
-### Optional Variables
+## TTS Provider Configuration
 
-#### Database
-- **`MONGODB_DB_NAME`** (Optional, default: `tef_master`)
-  - MongoDB database name
-  - Example: `tef_master`
+### Google Cloud TTS (Recommended - Better Rate Limits)
 
-#### Redis (Required for Job Queue)
-- **`REDIS_URL`** (Required for job queue functionality)
-  - Redis connection string
-  - Local: `redis://localhost:6379`
-  - Railway: Automatically set when using Railway Redis plugin
-  - Example: `redis://default:password@host:port`
-  - Used for: BullMQ job queue (evaluation jobs)
+- **`TTS_PROVIDER`** - Set to `gcp` (optional, auto-detected)
+- **`GOOGLE_APPLICATION_CREDENTIALS`** - Service account JSON content or file path
 
-#### Server Configuration
-- **`PORT`** (Optional, default: `3001`)
-  - Server port number
-  - Example: `3001`
+**Format Options:**
+1. **JSON in .env** (recommended):
+   ```bash
+   GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account","project_id":"...",...}
+   ```
+   - Use helper script: `npm run convert-service-account`
+   - Must be single line, no quotes around JSON
 
-- **`HOST`** (Optional, default: `0.0.0.0`)
-  - Server host address
-  - Example: `0.0.0.0` (listen on all interfaces for Railway)
+2. **File path**:
+   ```bash
+   GOOGLE_APPLICATION_CREDENTIALS=service-account-key.json
+   ```
 
-- **`NODE_ENV`** (Optional, default: `development`)
-  - Environment mode: `development` or `production`
-  - Used for: Error handling, static file serving
+### Gemini TTS (Alternative - Lower Rate Limits)
 
-#### Worker Configuration
-- **`RUN_WORKER`** (Optional)
-  - Set to `true` to run the evaluation worker in the same process
-  - Set to `false` to disable worker (use separate worker process)
-  - Default: `true` in development, `false` in production
-  - Note: For production, recommended to run worker as separate process
+- **`TTS_PROVIDER`** - Set to `gemini`
+- **`GEMINI_API_KEY`** - Required
 
-## Frontend Environment Variables
-
-### Required Variables
-
-- **`VITE_BACKEND_URL`** (Optional, default: `http://localhost:3001`)
-  - Backend API URL
-  - Development: `http://localhost:3001`
-  - Production: Your deployed backend URL
-  - Example: `https://your-app.railway.app`
-
-### Gemini API (Frontend)
-
-- **`GEMINI_API_KEY`** (Required)
-  - Google Gemini API key
-  - Get from: [Google AI Studio](https://aistudio.google.com/apikey)
-  - Used for: AI evaluation and transcription
-  - Note: This is NOT prefixed with `VITE_` because it's processed server-side by Vite during build, not exposed to the browser
-
-## Environment Setup Examples
+## Quick Setup Examples
 
 ### Local Development (.env)
 
 ```bash
 # Database
 MONGODB_URI=mongodb://localhost:27017/tef_master
-MONGODB_DB_NAME=tef_master
-
-# Authentication
 CLERK_SECRET_KEY=sk_test_...
-
-# Redis (for job queue)
 REDIS_URL=redis://localhost:6379
 
-# Server
-PORT=3001
-HOST=0.0.0.0
-NODE_ENV=development
-RUN_WORKER=true
+# TTS - Google Cloud (recommended)
+TTS_PROVIDER=gcp
+GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account",...}
+
+# OR TTS - Gemini (alternative)
+# TTS_PROVIDER=gemini
+# GEMINI_API_KEY=your_key_here
 ```
 
-### Frontend (.env.local)
+### Production (Railway)
+
+Set in Railway dashboard (same format as .env):
 
 ```bash
-# Backend URL
-VITE_BACKEND_URL=http://localhost:3001
-
-# Gemini API
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-
-### Railway Production
-
-Set these in Railway dashboard:
-
-```bash
-# Database (Railway MongoDB plugin sets this automatically)
-MONGODB_URI=mongodb+srv://...
-
-# Authentication
+MONGODB_URI=mongodb+srv://...  # Auto-set by Railway plugin
+REDIS_URL=redis://...          # Auto-set by Railway plugin
 CLERK_SECRET_KEY=sk_live_...
-
-# Redis (Railway Redis plugin sets this automatically)
-REDIS_URL=redis://default:password@host:port
-
-# Server
-PORT=3001
-HOST=0.0.0.0
+TTS_PROVIDER=gcp
+GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account",...}
 NODE_ENV=production
-RUN_WORKER=false  # Run worker as separate service
-
-# Frontend
-VITE_BACKEND_URL=https://your-backend.railway.app
-GEMINI_API_KEY=your_gemini_api_key
+RUN_WORKER=false
 ```
 
-## Railway-Specific Setup
+## Service Account Key Setup
 
-### 1. MongoDB
-- Add Railway MongoDB plugin
-- `MONGODB_URI` is automatically set
+### Quick Method: Use Helper Script
 
-### 2. Redis
-- Add Railway Redis plugin
-- `REDIS_URL` is automatically set
+```bash
+npm run convert-service-account
+```
 
-### 3. Worker Process
-For production, run the worker as a separate Railway service:
-- Create a new service
-- Use the same codebase
-- Set environment variable: `RUN_WORKER=true`
-- Use command: `npm run worker`
+This outputs the correctly formatted line for your `.env` file.
 
-## Quick Start Checklist
+### Manual Method
 
-- [ ] Set `MONGODB_URI` (required)
-- [ ] Set `CLERK_SECRET_KEY` (required for production)
-- [ ] Set `REDIS_URL` (required for job queue)
-- [ ] Set `VITE_BACKEND_URL` (frontend)
-- [ ] Set `GEMINI_API_KEY` (frontend)
-- [ ] Set `RUN_WORKER=true` if running worker in same process
-- [ ] Set `NODE_ENV=production` for production
+1. Download service account JSON from [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)
+2. Convert to single-line JSON (minified)
+3. Paste in `.env`: `GOOGLE_APPLICATION_CREDENTIALS={...}`
 
-## Notes
+**Important:**
+- ✅ Single line, no quotes around JSON
+- ❌ Don't use quotes: `GOOGLE_APPLICATION_CREDENTIALS="{...}"`
+- ❌ Don't use multi-line JSON
 
-- All environment variables are loaded using `dotenv/config`
-- Backend variables are read from `process.env`
-- Frontend variables must be prefixed with `VITE_` to be accessible
-- Never commit `.env` files to version control
-- Use Railway's environment variable management for production
+### Security Notes
 
+- `.env` files are in `.gitignore` - never commit them
+- Use separate service accounts for staging/production
+- Rotate keys every 90 days
+- Service account needs "Cloud Text-to-Speech API User" role
+
+## Quick Checklist
+
+- [ ] `MONGODB_URI`
+- [ ] `CLERK_SECRET_KEY` (production)
+- [ ] `REDIS_URL` (for job queue)
+- [ ] `TTS_PROVIDER=gcp` + `GOOGLE_APPLICATION_CREDENTIALS` (recommended)
+- [ ] OR `TTS_PROVIDER=gemini` + `GEMINI_API_KEY` (alternative)
