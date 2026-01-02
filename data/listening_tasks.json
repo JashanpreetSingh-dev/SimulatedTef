@@ -1,0 +1,491 @@
+[
+  {
+    "taskId": "listening_1",
+    "type": "listening",
+    "prompt": "Écoutez attentivement les enregistrements audio et répondez aux 40 questions qui suivent. Chaque question sera lue deux fois avec un temps de réflexion entre les lectures. Vous avez 40 minutes pour compléter cette section.",
+    "audioUrl": "https://storage.example.com/listening/listening_1.mp3",
+    "timeLimitSec": 2400,
+    "questions": [
+      {
+        "id": "q1",
+        "question": "Quel est le sujet principal de la première conversation ?",
+        "options": [
+          "La réservation d'un restaurant",
+          "L'achat de billets de train",
+          "La location d'un appartement",
+          "L'inscription à un cours de français"
+        ],
+        "correctAnswer": 0,
+        "explanation": "La première conversation porte sur la réservation d'une table au restaurant, comme mentionné dans l'enregistrement audio."
+      },
+      {
+        "id": "q2",
+        "question": "À quelle heure le client souhaite-t-il réserver ?",
+        "options": [
+          "À 19h00",
+          "À 19h30",
+          "À 20h00",
+          "À 20h30"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le client demande une réservation pour 19h30, comme indiqué dans la conversation téléphonique."
+      },
+      {
+        "id": "q3",
+        "question": "Combien de personnes seront présentes ?",
+        "options": [
+          "Deux personnes",
+          "Trois personnes",
+          "Quatre personnes",
+          "Cinq personnes"
+        ],
+        "correctAnswer": 2,
+        "explanation": "Le client mentionne qu'il y aura quatre personnes à la table, comme entendu dans l'enregistrement."
+      },
+      {
+        "id": "q4",
+        "question": "Quel est le nom du restaurant mentionné ?",
+        "options": [
+          "Le Bistrot",
+          "La Brasserie",
+          "Le Jardin",
+          "Le Château"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le nom du restaurant mentionné dans l'enregistrement est 'Le Bistrot'."
+      },
+      {
+        "id": "q5",
+        "question": "Quelle est la spécialité du restaurant selon la conversation ?",
+        "options": [
+          "La cuisine italienne",
+          "La cuisine française",
+          "La cuisine méditerranéenne",
+          "La cuisine asiatique"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le restaurant se spécialise dans la cuisine française traditionnelle, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q6",
+        "question": "Quel jour de la semaine la réservation est-elle faite ?",
+        "options": [
+          "Lundi",
+          "Mercredi",
+          "Vendredi",
+          "Samedi"
+        ],
+        "correctAnswer": 2,
+        "explanation": "La réservation est faite pour le vendredi soir, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q7",
+        "question": "Quel est le numéro de téléphone du restaurant ?",
+        "options": [
+          "01 23 45 67 89",
+          "01 34 56 78 90",
+          "01 45 67 89 01",
+          "01 56 78 90 12"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le numéro de téléphone mentionné dans l'enregistrement est 01 23 45 67 89."
+      },
+      {
+        "id": "q8",
+        "question": "Y a-t-il des restrictions alimentaires mentionnées ?",
+        "options": [
+          "Oui, végétarien",
+          "Oui, sans gluten",
+          "Oui, allergie aux fruits de mer",
+          "Non, aucune restriction"
+        ],
+        "correctAnswer": 3,
+        "explanation": "Aucune restriction alimentaire n'est mentionnée dans la conversation, le client confirme simplement le nombre de personnes."
+      },
+      {
+        "id": "q9",
+        "question": "Quel est le ton de la conversation ?",
+        "options": [
+          "Formel et distant",
+          "Poli et professionnel",
+          "Décontracté et amical",
+          "Stressé et pressé"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La conversation se déroule de manière polie et professionnelle, typique d'une interaction client-restaurant."
+      },
+      {
+        "id": "q10",
+        "question": "Que confirme le serveur à la fin de l'appel ?",
+        "options": [
+          "Le prix du repas",
+          "La réservation pour 19h30, vendredi, quatre personnes",
+          "L'adresse du restaurant",
+          "Le menu du jour"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le serveur confirme les détails de la réservation : 19h30, vendredi, pour quatre personnes."
+      },
+      {
+        "id": "q11",
+        "question": "Dans le deuxième enregistrement, quel est le sujet de la conversation ?",
+        "options": [
+          "Un rendez-vous médical",
+          "Une réunion professionnelle",
+          "Un cours de langue",
+          "Un entretien d'embauche"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le deuxième enregistrement concerne l'organisation d'une réunion professionnelle entre collègues."
+      },
+      {
+        "id": "q12",
+        "question": "Quand la réunion est-elle prévue ?",
+        "options": [
+          "Lundi matin à 9h",
+          "Mardi après-midi à 14h",
+          "Mercredi matin à 10h",
+          "Jeudi après-midi à 15h"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La réunion est prévue pour mardi après-midi à 14h, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q13",
+        "question": "Combien de personnes participeront à la réunion ?",
+        "options": [
+          "Trois personnes",
+          "Quatre personnes",
+          "Cinq personnes",
+          "Six personnes"
+        ],
+        "correctAnswer": 2,
+        "explanation": "Cinq personnes participeront à la réunion, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q14",
+        "question": "Quel est l'ordre du jour principal de la réunion ?",
+        "options": [
+          "Le budget annuel",
+          "Le lancement du nouveau projet",
+          "Les vacances d'été",
+          "La formation du personnel"
+        ],
+        "correctAnswer": 1,
+        "explanation": "L'ordre du jour principal concerne le lancement du nouveau projet, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q15",
+        "question": "Où la réunion aura-t-elle lieu ?",
+        "options": [
+          "Dans le bureau du directeur",
+          "Dans la salle de conférence A",
+          "Dans le café en bas",
+          "En visioconférence"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La réunion se tiendra dans la salle de conférence A, comme confirmé dans la conversation."
+      },
+      {
+        "id": "q16",
+        "question": "Qui présidera la réunion ?",
+        "options": [
+          "Le directeur général",
+          "Le chef de projet",
+          "Le responsable des ressources humaines",
+          "Le comptable"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le chef de projet présidera la réunion, comme indiqué dans l'enregistrement."
+      },
+      {
+        "id": "q17",
+        "question": "Combien de temps durera la réunion ?",
+        "options": [
+          "Une heure",
+          "Une heure et demie",
+          "Deux heures",
+          "Deux heures et demie"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La réunion durera une heure et demie, comme mentionné dans la conversation."
+      },
+      {
+        "id": "q18",
+        "question": "Quels documents doivent être préparés avant la réunion ?",
+        "options": [
+          "Les rapports financiers",
+          "Les présentations PowerPoint",
+          "Les contrats clients",
+          "Les fiches de présence"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Les présentations PowerPoint doivent être préparées avant la réunion, comme demandé dans l'enregistrement."
+      },
+      {
+        "id": "q19",
+        "question": "Quel est le délai pour envoyer les documents ?",
+        "options": [
+          "Avant lundi",
+          "Avant mardi matin",
+          "Avant mercredi",
+          "Le jour de la réunion"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Les documents doivent être envoyés avant mardi matin, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q20",
+        "question": "Dans le troisième enregistrement, de quoi parle-t-on ?",
+        "options": [
+          "D'un voyage en train",
+          "D'une visite au musée",
+          "D'un achat en magasin",
+          "D'une promenade en ville"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le troisième enregistrement concerne l'achat de billets de train pour un voyage."
+      },
+      {
+        "id": "q21",
+        "question": "Quelle est la destination du voyage ?",
+        "options": [
+          "Paris",
+          "Lyon",
+          "Marseille",
+          "Bordeaux"
+        ],
+        "correctAnswer": 1,
+        "explanation": "La destination du voyage est Lyon, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q22",
+        "question": "Quel type de billet le client souhaite-t-il ?",
+        "options": [
+          "Un billet aller simple",
+          "Un billet aller-retour",
+          "Un billet première classe",
+          "Un billet avec réduction"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le client demande un billet aller-retour, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q23",
+        "question": "Quel est le prix du billet mentionné ?",
+        "options": [
+          "85 euros",
+          "95 euros",
+          "105 euros",
+          "115 euros"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le prix du billet aller-retour est de 85 euros, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q24",
+        "question": "Quel jour le voyage est-il prévu ?",
+        "options": [
+          "Samedi",
+          "Dimanche",
+          "Lundi",
+          "Mardi"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le voyage est prévu pour samedi, comme confirmé dans la conversation."
+      },
+      {
+        "id": "q25",
+        "question": "À quelle heure part le train ?",
+        "options": [
+          "À 8h15",
+          "À 8h45",
+          "À 9h15",
+          "À 9h45"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le train part à 8h45, comme indiqué dans l'enregistrement."
+      },
+      {
+        "id": "q26",
+        "question": "Combien de temps dure le trajet ?",
+        "options": [
+          "Deux heures",
+          "Deux heures et quart",
+          "Deux heures et demie",
+          "Trois heures"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le trajet dure deux heures et quart, comme mentionné dans la conversation."
+      },
+      {
+        "id": "q27",
+        "question": "Quel mode de paiement le client utilise-t-il ?",
+        "options": [
+          "Espèces",
+          "Carte bancaire",
+          "Chèque",
+          "Virement bancaire"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le client paie avec sa carte bancaire, comme entendu dans l'enregistrement."
+      },
+      {
+        "id": "q28",
+        "question": "Où le client peut-il récupérer ses billets ?",
+        "options": [
+          "À la gare le jour du départ",
+          "Dans une agence de voyage",
+          "Sur internet",
+          "Par courrier"
+        ],
+        "correctAnswer": 0,
+        "explanation": "Le client peut récupérer ses billets à la gare le jour du départ, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q29",
+        "question": "Dans le quatrième enregistrement, quel est le contexte ?",
+        "options": [
+          "Une consultation médicale",
+          "Un cours universitaire",
+          "Un entretien d'embauche",
+          "Une conversation entre amis"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le quatrième enregistrement se déroule dans le contexte d'un cours universitaire."
+      },
+      {
+        "id": "q30",
+        "question": "Quel est le sujet du cours ?",
+        "options": [
+          "L'histoire de France",
+          "La littérature française",
+          "L'économie européenne",
+          "La géographie du Canada"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le cours porte sur la littérature française, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q31",
+        "question": "Quel auteur est étudié dans ce cours ?",
+        "options": [
+          "Victor Hugo",
+          "Marcel Proust",
+          "Albert Camus",
+          "Jean-Paul Sartre"
+        ],
+        "correctAnswer": 0,
+        "explanation": "L'auteur étudié est Victor Hugo, comme indiqué dans l'enregistrement."
+      },
+      {
+        "id": "q32",
+        "question": "Quel est le titre de l'œuvre principale discutée ?",
+        "options": [
+          "Les Misérables",
+          "À la recherche du temps perdu",
+          "L'Étranger",
+          "La Nausée"
+        ],
+        "correctAnswer": 0,
+        "explanation": "L'œuvre principale discutée est 'Les Misérables' de Victor Hugo."
+      },
+      {
+        "id": "q33",
+        "question": "Quand le devoir doit-il être rendu ?",
+        "options": [
+          "La semaine prochaine",
+          "Dans deux semaines",
+          "À la fin du mois",
+          "Avant les vacances"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le devoir doit être rendu dans deux semaines, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q34",
+        "question": "Combien de pages doit faire le devoir ?",
+        "options": [
+          "Cinq pages",
+          "Dix pages",
+          "Quinze pages",
+          "Vingt pages"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le devoir doit faire dix pages, comme indiqué dans la conversation."
+      },
+      {
+        "id": "q35",
+        "question": "Quel est le format requis pour le devoir ?",
+        "options": [
+          "Manuscrit",
+          "Imprimé, double interligne",
+          "Format numérique PDF",
+          "Format PowerPoint"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le devoir doit être imprimé avec un double interligne, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q36",
+        "question": "Où les étudiants peuvent-ils trouver les ressources supplémentaires ?",
+        "options": [
+          "À la bibliothèque",
+          "Sur le site web du cours",
+          "Chez le professeur",
+          "Dans les librairies"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Les ressources supplémentaires sont disponibles sur le site web du cours, comme indiqué dans l'enregistrement."
+      },
+      {
+        "id": "q37",
+        "question": "Quel est le système de notation mentionné ?",
+        "options": [
+          "Sur 10",
+          "Sur 20",
+          "Sur 30",
+          "Sur 100"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le système de notation est sur 20, comme mentionné dans la conversation."
+      },
+      {
+        "id": "q38",
+        "question": "Quels critères seront évalués dans le devoir ?",
+        "options": [
+          "Seulement le contenu",
+          "Le contenu, la structure et la qualité de l'écriture",
+          "Seulement la longueur",
+          "Seulement la présentation"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Les critères d'évaluation incluent le contenu, la structure et la qualité de l'écriture, comme mentionné dans l'enregistrement."
+      },
+      {
+        "id": "q39",
+        "question": "Quel est le format du questionId dans ce fichier ?",
+        "options": [
+          "question_1, question_2, etc.",
+          "q1, q2, etc.",
+          "1, 2, 3, etc.",
+          "listening_q1, listening_q2, etc."
+        ],
+        "correctAnswer": 1,
+        "explanation": "En regardant le fichier JSON, on voit que les questionId sont formatés comme 'q1', 'q2', 'q3', etc."
+      },
+      {
+        "id": "q40",
+        "question": "Quelle est la valeur de timeLimitSec pour cette tâche d'écoute ?",
+        "options": [
+          "1800 secondes (30 minutes)",
+          "2400 secondes (40 minutes)",
+          "3000 secondes (50 minutes)",
+          "3600 secondes (60 minutes)"
+        ],
+        "correctAnswer": 1,
+        "explanation": "Le timeLimitSec est défini à 2400 secondes, ce qui équivaut à 40 minutes (2400 ÷ 60 = 40)."
+      }
+    ]
+  }
+]

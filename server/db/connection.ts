@@ -46,7 +46,7 @@ export async function connectDB(): Promise<Db> {
     if (!isConnected) {
       await mongoClient.connect();
       isConnected = true;
-      console.log('✅ Connected to MongoDB with connection pooling');
+      console.log('Connected to MongoDB with connection pooling');
     }
     
     const db = mongoClient.db(dbName);
@@ -54,13 +54,13 @@ export async function connectDB(): Promise<Db> {
     // Initialize GridFS bucket if not already initialized
     if (!gridFSBucket) {
       gridFSBucket = new GridFSBucket(db, { bucketName: 'recordings' });
-      console.log('✅ GridFS bucket initialized');
+      console.log('GridFS bucket initialized');
     }
     
     return db;
   } catch (error: any) {
     isConnected = false;
-    console.error('❌ MongoDB connection error:', error.message);
+    console.error('MongoDB connection error:', error.message);
     throw error;
   }
 }
@@ -82,12 +82,12 @@ export async function closeDB(): Promise<void> {
   if (client) {
     try {
       await client.close();
-      console.log('✅ MongoDB connection closed');
+      console.log('MongoDB connection closed');
       client = null;
       gridFSBucket = null;
       isConnected = false;
     } catch (error: any) {
-      console.error('❌ Error closing MongoDB connection:', error.message);
+      console.error('Error closing MongoDB connection:', error.message);
       throw error;
     }
   }

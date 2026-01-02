@@ -153,19 +153,19 @@ export const subscriptionController = {
    */
   handleWebhook: async (req: Request, res: Response) => {
     if (!stripe) {
-      console.error('❌ Webhook: Stripe not configured');
+      console.error('Webhook: Stripe not configured');
       return res.status(500).json({ error: 'Stripe not configured' });
     }
 
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) {
-      console.error('❌ Webhook: STRIPE_WEBHOOK_SECRET not set in environment');
+      console.error('Webhook: STRIPE_WEBHOOK_SECRET not set in environment');
       return res.status(500).json({ error: 'Webhook secret not configured' });
     }
 
       const sig = req.headers['stripe-signature'];
       if (!sig) {
-        console.error('❌ Webhook: Missing stripe-signature header');
+        console.error('Webhook: Missing stripe-signature header');
         return res.status(400).json({ error: 'No signature' });
       }
       
@@ -177,19 +177,19 @@ export const subscriptionController = {
       // req.body is a Buffer when using express.raw() middleware
       const body = req.body as Buffer;
       if (!body || !Buffer.isBuffer(body)) {
-        console.error('❌ Webhook: Body is not a Buffer. Type:', typeof body, 'IsBuffer:', Buffer.isBuffer(body));
+        console.error('Webhook: Body is not a Buffer. Type:', typeof body, 'IsBuffer:', Buffer.isBuffer(body));
         return res.status(400).json({ error: 'Invalid request body format' });
       }
       
-      console.log('✅ Webhook: Verifying signature...');
+      console.log('Webhook: Verifying signature...');
       console.log('   Body length:', body.length, 'bytes');
       console.log('   Signature:', signature.substring(0, 20) + '...');
       console.log('   Secret starts with:', webhookSecret.substring(0, 10) + '...');
       
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-      console.log(`✅ Webhook: Event received - ${event.type} [${event.id}]`);
+      console.log(`Webhook: Event received - ${event.type} [${event.id}]`);
     } catch (err: any) {
-      console.error('❌ Webhook signature verification failed:', err.message);
+      console.error('Webhook signature verification failed:', err.message);
       console.error('   Webhook secret starts with:', webhookSecret.substring(0, 10) + '...');
       console.error('   Signature header present:', !!sig);
       return res.status(400).json({ error: `Webhook Error: ${err.message}` });
@@ -201,7 +201,7 @@ export const subscriptionController = {
     const existingEvent = await db.collection('webhookEvents').findOne({ eventId: event.id }) as unknown as WebhookEvent | null;
     
     if (existingEvent?.processed) {
-      console.log(`✅ Webhook: Event ${event.id} already processed, skipping`);
+      console.log(`Webhook: Event ${event.id} already processed, skipping`);
       return res.json({ received: true, message: 'Event already processed' });
     }
 
@@ -266,7 +266,7 @@ export const subscriptionController = {
           
           if (hasActivePack) {
             // Upgrading - replace old pack with new one
-            console.warn(`⚠️ Webhook: User ${userId} is upgrading pack: ${existing.packType} -> ${packType}. Old credits will be lost.`);
+            console.warn(`Webhook: User ${userId} is upgrading pack: ${existing.packType} -> ${packType}. Old credits will be lost.`);
           }
           
           // Initialize or update pack within transaction
@@ -310,7 +310,7 @@ export const subscriptionController = {
             );
           }
           
-          console.log(`✅ Webhook: ${hasActivePack ? 'Upgraded' : 'Purchased'} ${packType} for user ${userId}`);
+          console.log(`Webhook: ${hasActivePack ? 'Upgraded' : 'Purchased'} ${packType} for user ${userId}`);
         }
         break;
       }
@@ -318,7 +318,7 @@ export const subscriptionController = {
           // Removed subscription webhook handlers (customer.subscription.*, invoice.payment_succeeded)
           // Packs are one-time payments, no subscription management needed
           default:
-            console.log(`ℹ️  Webhook: Unhandled event type: ${event.type}`);
+            console.log(`Webhook: Unhandled event type: ${event.type}`);
         }
       });
 
@@ -333,7 +333,7 @@ export const subscriptionController = {
         }
       );
 
-      console.log(`✅ Webhook: Successfully processed ${event.type}`);
+      console.log(`Webhook: Successfully processed ${event.type}`);
       res.json({ received: true });
     } catch (error: any) {
       // Mark webhook event as failed
@@ -349,10 +349,10 @@ export const subscriptionController = {
           }
         );
       } catch (updateError) {
-        console.error('❌ Failed to update webhook event status:', updateError);
+        console.error('Failed to update webhook event status:', updateError);
       }
 
-      console.error(`❌ Webhook: Failed to process ${event.type}:`, error);
+      console.error(`Webhook: Failed to process ${event.type}:`, error);
       console.error('   Error details:', {
         message: error.message,
         stack: error.stack,

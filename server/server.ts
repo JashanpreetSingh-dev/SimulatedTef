@@ -48,7 +48,8 @@ app.post(
   }
 );
 
-app.use(express.json());
+// Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
+app.use(express.json({ limit: '10mb' }));
 
 declare global {
   namespace Express {

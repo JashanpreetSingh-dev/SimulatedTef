@@ -63,7 +63,7 @@ export const recordingsController = {
     uploadStream.end(req.file.buffer);
 
     uploadStream.on('finish', () => {
-      console.log(`✅ Audio uploaded to GridFS: ${originalFilename} (${(req.file!.size / 1024).toFixed(2)} KB)`);
+      console.log(`Audio uploaded to GridFS: ${originalFilename} (${(req.file!.size / 1024).toFixed(2)} KB)`);
       res.status(201).json({
         recordingId: uploadStream.id.toString(),
         filename: originalFilename,
@@ -135,7 +135,7 @@ export const recordingsController = {
     });
 
     downloadStream.on('end', () => {
-      console.log(`✅ Audio downloaded: ${file.filename} (${(file.length / 1024).toFixed(2)} KB)`);
+      console.log(`Audio downloaded: ${file.filename} (${(file.length / 1024).toFixed(2)} KB)`);
     });
   }),
 };

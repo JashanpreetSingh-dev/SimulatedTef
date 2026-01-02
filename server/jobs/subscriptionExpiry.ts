@@ -14,7 +14,7 @@ let isRunning = false;
 export async function expireCancelledSubscriptions(): Promise<number> {
   // Prevent concurrent executions
   if (isRunning) {
-    console.log('⚠️ Pack expiry job already running, skipping...');
+    console.log('Pack expiry job already running, skipping...');
     return 0;
   }
 
@@ -34,7 +34,7 @@ export async function expireCancelledSubscriptions(): Promise<number> {
       .toArray() as unknown as Subscription[];
 
     if (expiredPacks.length === 0) {
-      console.log('✅ Pack expiry job: No expired packs found');
+      console.log('Pack expiry job: No expired packs found');
       return 0;
     }
 
@@ -53,11 +53,11 @@ export async function expireCancelledSubscriptions(): Promise<number> {
     );
 
     expiredCount = result.modifiedCount;
-    console.log(`✅ Pack expiry job: Expired ${expiredCount} pack(s)`);
+    console.log(`Pack expiry job: Expired ${expiredCount} pack(s)`);
 
     return expiredCount;
   } catch (error: any) {
-    console.error('❌ Pack expiry job error:', error);
+    console.error('Pack expiry job error:', error);
     console.error('   Error details:', {
       message: error.message,
       stack: error.stack,
@@ -79,16 +79,16 @@ export function startSubscriptionExpiryJob(): void {
 
   // Run immediately on startup (for testing/debugging)
   expireCancelledSubscriptions().catch(err => {
-    console.error('❌ Failed to run initial subscription expiry check:', err);
+    console.error('Failed to run initial subscription expiry check:', err);
   });
 
   // Then run every 24 hours
   setInterval(() => {
     expireCancelledSubscriptions().catch(err => {
-      console.error('❌ Failed to run scheduled subscription expiry:', err);
+      console.error('Failed to run scheduled subscription expiry:', err);
     });
   }, TWENTY_FOUR_HOURS);
 
-  console.log('✅ Pack expiry job started (runs every 24 hours)');
+  console.log('Pack expiry job started (runs every 24 hours)');
 }
 

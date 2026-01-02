@@ -28,10 +28,14 @@ export const evaluationController = {
       taskPartB,
       eo2RemainingSeconds,
       fluencyAnalysis,
+      writtenSectionAText,
+      writtenSectionBText,
+      mockExamId,
+      module,
     } = req.body;
 
-    // Validate required fields
-    if (!section || !prompt || !transcript || !scenarioId || !timeLimitSec) {
+    // Validate required fields (allow 0 as valid value for scenarioId and timeLimitSec)
+    if (!section || !prompt || !transcript || scenarioId === undefined || scenarioId === null || timeLimitSec === undefined || timeLimitSec === null) {
       return res.status(400).json({
         error: 'Missing required fields: section, prompt, transcript, scenarioId, timeLimitSec',
       });
@@ -55,13 +59,17 @@ export const evaluationController = {
         taskPartB,
         eo2RemainingSeconds,
         fluencyAnalysis,
+        writtenSectionAText,
+        writtenSectionBText,
+        mockExamId,
+        module,
       } as EvaluationJobData,
       {
         priority: 1, // Higher priority = processed first
       }
     );
 
-    console.log(`📋 Evaluation job ${job.id} submitted by user ${req.userId}`);
+    console.log(`Evaluation job ${job.id} submitted by user ${req.userId}`);
 
     // Return immediately with job ID
     res.status(202).json({

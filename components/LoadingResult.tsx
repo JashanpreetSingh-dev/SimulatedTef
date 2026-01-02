@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface LoadingStep {
   id: string;
@@ -8,18 +9,27 @@ interface LoadingStep {
 
 interface LoadingResultProps {
   steps?: LoadingStep[];
+  type?: 'oral' | 'written'; // Type of evaluation
 }
 
-export const LoadingResult: React.FC<LoadingResultProps> = ({ steps: externalSteps }) => {
+export const LoadingResult: React.FC<LoadingResultProps> = ({ steps: externalSteps, type = 'oral' }) => {
+  const { t } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
   
-  // Default steps if none provided
-  const defaultSteps: LoadingStep[] = [
-    { id: 'audio', label: 'Traitement de l\'enregistrement audio', completed: false },
-    { id: 'transcription', label: 'Transcription de l\'audio', completed: false },
-    { id: 'evaluation', label: 'Évaluation de la performance', completed: false },
-    { id: 'saving', label: 'Sauvegarde des résultats', completed: false },
-  ];
+  // Default steps based on type
+  const defaultSteps: LoadingStep[] = type === 'written'
+    ? [
+        { id: 'analysis', label: t('writtenExpression.analyzingWriting'), completed: false },
+        { id: 'evaluation', label: t('writtenExpression.evaluatingPerformance'), completed: false },
+        { id: 'corrections', label: t('writtenExpression.generatingCorrections'), completed: false },
+        { id: 'saving', label: t('writtenExpression.savingResults'), completed: false },
+      ]
+    : [
+        { id: 'audio', label: t('writtenExpression.processingAudio'), completed: false },
+        { id: 'transcription', label: t('writtenExpression.transcribingAudio'), completed: false },
+        { id: 'evaluation', label: t('writtenExpression.evaluatingPerformance'), completed: false },
+        { id: 'saving', label: t('writtenExpression.savingResults'), completed: false },
+      ];
 
   const steps = externalSteps || defaultSteps;
 
@@ -81,10 +91,10 @@ export const LoadingResult: React.FC<LoadingResultProps> = ({ steps: externalSte
             <div className="absolute inset-0 border-4 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
           <h2 className="text-3xl font-black text-slate-800 mb-3 tracking-tight">
-            Analyse en cours...
+            {type === 'written' ? t('writtenExpression.evaluating') : t('writtenExpression.analyzing')}
           </h2>
           <p className="text-slate-500 font-medium">
-            Évaluation de votre performance
+            {type === 'written' ? t('writtenExpression.analyzingWriting') : t('writtenExpression.evaluatingPerformance')}
           </p>
         </div>
         

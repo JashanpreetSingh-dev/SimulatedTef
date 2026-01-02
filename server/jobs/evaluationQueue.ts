@@ -30,11 +30,11 @@ export const evaluationQueue = new Queue<EvaluationJobData, EvaluationJobResult>
 
 // Queue event handlers for monitoring
 evaluationQueue.on('error', (error) => {
-  console.error('❌ Queue error:', error);
+  console.error('Queue error:', error);
 });
 
 evaluationQueue.on('waiting', (job) => {
-  console.log(`📋 Job ${job.id} waiting in queue`);
+  console.log(`Job ${job.id} waiting in queue`);
 });
 
 /**

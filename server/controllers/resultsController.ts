@@ -22,10 +22,22 @@ export const resultsController = {
 
     const limit = parseInt(req.query.limit as string) || 50;
     const skip = parseInt(req.query.skip as string) || 0;
+    const mockExamId = req.query.mockExamId as string;
+    const module = req.query.module as string;
+    const resultType = req.query.resultType as 'practice' | 'mockExam' | undefined;
+    const populateTasks = req.query.populateTasks === 'true';
 
-    const results = await resultsService.findByUserId(authenticatedUserId || '', limit, skip);
+    const response = await resultsService.findByUserId(
+      authenticatedUserId || '', 
+      limit, 
+      skip, 
+      mockExamId, 
+      module,
+      resultType,
+      populateTasks
+    );
 
-    res.json(results);
+    res.json(response);
   }),
 
   /**
@@ -49,8 +61,9 @@ export const resultsController = {
   getResultById: asyncHandler(async (req: Request, res: Response) => {
     const resultId = req.params.id;
     const userId = req.userId;
+    const populateTasks = req.query.populateTasks !== 'false'; // Default to true
 
-    const result = await resultsService.findById(resultId, userId || '');
+    const result = await resultsService.findById(resultId, userId || '', populateTasks);
 
     if (!result) {
       return res.status(404).json({ error: 'Result not found' });

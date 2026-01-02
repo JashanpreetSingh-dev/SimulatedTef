@@ -921,6 +921,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             ? timeLeft
             : undefined;
 
+        // Determine if this is a mock exam (check for mockExamId in scenario)
+        const mockExamId = (scenario as any).mockExamId;
+        const module = mockExamId ? 'oralExpression' : undefined;
+        
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
@@ -935,7 +939,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
           fluencyAnalysis ?? undefined,
-          getToken
+          getToken,
+          undefined, // writtenSectionAText
+          undefined, // writtenSectionBText
+          mockExamId, // mockExamId
+          module as 'oralExpression' | undefined // module
         );
         
         console.log('📋 Evaluation job submitted:', jobId);

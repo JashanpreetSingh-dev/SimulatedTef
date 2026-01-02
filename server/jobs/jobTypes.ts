@@ -25,6 +25,16 @@ export interface EvaluationJobData {
    * Passed through to the evaluation model as extra context for fluency/interaction scoring.
    */
   fluencyAnalysis?: any;
+  /**
+   * Mock exam metadata for tracking results within mock exams
+   */
+  mockExamId?: string;
+  module?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression';
+  /**
+   * Written expression specific: section texts (for proper result storage)
+   */
+  writtenSectionAText?: string;
+  writtenSectionBText?: string;
 }
 
 export interface EvaluationJobResult {
