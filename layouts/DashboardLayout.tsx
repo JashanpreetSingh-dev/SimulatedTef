@@ -78,11 +78,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               {t('nav.dashboard')}
             </button>
             <button 
-              onClick={() => navigate('/history')}
-              className={isActive('/history') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-              {t('nav.history')}
-            </button>
-            <button 
               onClick={() => navigate('/dashboard/subscription')}
               className={isActive('/dashboard/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               Subscription
@@ -178,16 +173,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 {t('nav.dashboard')}
-              </button>
-              <button 
-                onClick={() => handleNavigate('/history')}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                  isActive('/history') 
-                    ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                {t('nav.history')}
               </button>
               <button 
                 onClick={() => handleNavigate('/dashboard/subscription')}

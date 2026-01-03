@@ -28,7 +28,7 @@ export function PackExpirationWarning({ status }: PackExpirationWarningProps) {
               Your {status.packType === 'STARTER_PACK' ? 'Starter Pack' : 'Exam Ready Pack'} expires in {diffDays} {diffDays === 1 ? 'day' : 'days'}.
             </p>
             <button
-              onClick={() => navigate('/pricing')}
+              onClick={() => navigate('/dashboard/subscription')}
               className="text-xs md:text-sm text-amber-700 hover:text-amber-800 font-semibold underline"
             >
               Purchase New Pack →

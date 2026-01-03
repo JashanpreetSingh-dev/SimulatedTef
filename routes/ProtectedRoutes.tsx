@@ -7,7 +7,6 @@ import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
 import { WrittenExamView } from '../pages/WrittenExamView';
 import { SubscriptionManagementView } from '../pages/SubscriptionManagementView';
-import { PricingView } from '../pages/PricingView';
 import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { MockExamView } from '../components/MockExamView';
@@ -38,7 +37,6 @@ export function ProtectedRoutes() {
         </DashboardLayout>
       } />
       <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
-      <Route path="/pricing" element={<PricingView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

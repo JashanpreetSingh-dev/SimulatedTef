@@ -17,7 +17,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, rea
 
   const handleViewPricing = () => {
     onClose();
-    navigate('/pricing');
+    navigate('/dashboard/subscription');
   };
 
   return (

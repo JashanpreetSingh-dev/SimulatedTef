@@ -33,7 +33,7 @@ export const SubscriptionStatus: React.FC = () => {
   };
 
   const handleUpgrade = () => {
-    navigate('/pricing');
+    navigate('/dashboard/subscription');
   };
 
   const hasTrial = status.isActive && status.subscriptionType === 'TRIAL';

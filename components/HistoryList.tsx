@@ -237,7 +237,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
           </div>
         ) : (
           <>
-            <div className="grid gap-4 pb-4">
+            <div className="grid gap-2 pb-4">
               {filteredResults.map((item) => {
             // Get task numbers from task references or legacy fields
             const taskNumbers = [];
@@ -321,33 +321,33 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             };
             
             return (
-            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-3 sm:p-4 rounded-lg sm:rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
+            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-2 sm:p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
               {/* Desktop: Single row layout */}
-              <div className="hidden sm:flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-3">
                 {/* Left section: Mode badge, Score with /699 */}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <div className={`px-2 py-1 rounded border font-black text-[9px] uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className={`px-1.5 py-0.5 rounded border font-black text-[8px] uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
                     {getModeLabel(item.mode)}
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <div className="text-2xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
-                    <div className="text-sm font-bold text-slate-500 dark:text-slate-400">/699</div>
+                  <div className="flex items-baseline gap-1.5">
+                    <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">/699</div>
                   </div>
                 </div>
 
                 {/* Center section: CLB, CECR, Task, Date */}
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="flex items-center gap-2.5 flex-1 min-w-0">
                   {/* CLB Badge */}
                   {clbLevel && (
-                    <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2.5 py-1 rounded-lg flex items-center gap-1.5 flex-shrink-0">
-                      <span className="text-[8px] font-black uppercase tracking-wider opacity-80">CLB</span>
-                      <span className="text-sm font-black">{clbLevel}</span>
+                    <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-0.5 rounded flex items-center gap-1 flex-shrink-0">
+                      <span className="text-[7px] font-black uppercase tracking-wider opacity-80">CLB</span>
+                      <span className="text-xs font-black">{clbLevel}</span>
                     </div>
                   )}
 
                   {/* CECR Badge */}
                   {cecrLevel && (
-                    <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider flex-shrink-0 ${
+                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider flex-shrink-0 ${
                       cecrLevel.includes('C2') ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-400 dark:text-purple-300' :
                       cecrLevel.includes('C1') ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300' :
                       cecrLevel.includes('B2') ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400 dark:text-blue-300' :
@@ -361,28 +361,28 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
 
                   {/* Task number */}
                   {taskNumberText && (
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded flex-shrink-0">
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0">
                       {taskNumberText}
                     </span>
                   )}
 
                   {/* Date */}
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex-shrink-0">
+                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 flex-shrink-0">
                     {formatDateFrench(item.timestamp)}
                   </span>
                 </div>
 
                 {/* Right section: Action buttons */}
-                <div className="flex gap-2 flex-shrink-0">
+                <div className="flex gap-1.5 flex-shrink-0">
                   <button 
                     onClick={() => handleRetake(item)}
-                    className="px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
+                    className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
                   >
                     {t('actions.resume')}
                   </button>
                   <button 
                     onClick={() => navigate(`/results/${item._id}`)}
-                    className="px-4 py-1.5 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded-lg font-black text-[9px] uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
+                    className="px-2.5 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
                   >
                     {t('actions.details')} →
                   </button>

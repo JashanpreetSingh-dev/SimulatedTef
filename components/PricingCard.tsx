@@ -121,10 +121,10 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     >
       {badge && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <span className={`px-4 py-1.5 text-indigo-600 dark:text-indigo-200 text-xs font-black uppercase tracking-wider rounded-full backdrop-blur-sm ${
+          <span className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full backdrop-blur-sm ${
             highlighted 
-              ? 'bg-white/20 dark:bg-white/20 border-2 border-white/50 dark:border-white/50 shadow-lg shadow-white/20 dark:shadow-white/20' 
-              : 'bg-indigo-300/80 dark:bg-indigo-500/80 border-2 border-indigo-400/60 dark:border-indigo-600/60 shadow-lg shadow-indigo-400/30 dark:shadow-indigo-600/30'
+              ? 'bg-white/90 dark:bg-white/90 text-indigo-600 dark:text-indigo-700 border-2 border-white dark:border-white shadow-lg shadow-white/50 dark:shadow-white/50' 
+              : 'bg-indigo-200 dark:bg-indigo-600 text-indigo-700 dark:text-indigo-100 border-2 border-indigo-300 dark:border-indigo-500 shadow-lg shadow-indigo-400/30 dark:shadow-indigo-600/30'
           }`}>
             {badge}
           </span>
