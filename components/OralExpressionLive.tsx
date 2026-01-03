@@ -50,6 +50,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const [transcription, setTranscription] = useState('');
   const [isModelSpeaking, setIsModelSpeaking] = useState(false);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [isAiThinking, setIsAiThinking] = useState(false);
   const [showImageFull, setShowImageFull] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [doesContentOverflow, setDoesContentOverflow] = useState(false);
@@ -72,6 +73,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
+  const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -172,9 +174,15 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     sourcesRef.current.clear();
     // Reset timing ref for audio scheduling
     nextStartTimeRef.current = 0;
+    // Clear silence detection timeout
+    if (userSilenceTimeoutRef.current) {
+      clearTimeout(userSilenceTimeoutRef.current);
+      userSilenceTimeoutRef.current = null;
+    }
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
+      setIsAiThinking(false);
       // Reset timer when stopping
       setTimeLeft(0);
     }
@@ -481,8 +489,33 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               // Note: Microphone is already being recorded via MediaRecorder (connected to audioDestinationRef above)
               
               const volume = inputData.reduce((acc, val) => acc + Math.abs(val), 0) / inputData.length;
+              const wasUserSpeaking = isUserSpeaking;
               if (isMountedRef.current) {
                 setIsUserSpeaking(volume > 0.01);
+                
+                // Detect when user stops speaking
+                if (wasUserSpeaking && volume <= 0.01) {
+                  // Clear any existing timeout
+                  if (userSilenceTimeoutRef.current) {
+                    clearTimeout(userSilenceTimeoutRef.current);
+                  }
+                  
+                  // After brief silence, show "thinking" indicator
+                  userSilenceTimeoutRef.current = setTimeout(() => {
+                    if (!isModelSpeaking && !isUserSpeaking && isMountedRef.current) {
+                      setIsAiThinking(true);
+                    }
+                  }, 500); // Show thinking after 500ms of silence
+                }
+                
+                // Clear thinking state when user starts speaking again
+                if (volume > 0.01 && isAiThinking) {
+                  setIsAiThinking(false);
+                  if (userSilenceTimeoutRef.current) {
+                    clearTimeout(userSilenceTimeoutRef.current);
+                    userSilenceTimeoutRef.current = null;
+                  }
+                }
               }
 
               const pcmBlob = createPcmBlob(inputData, inputAudioCtxRef.current!.sampleRate);
@@ -524,7 +557,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           }
           
           if (message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data) {
+            setIsAiThinking(false); // No longer thinking, now speaking
             setIsModelSpeaking(true);
+            // Clear any silence detection timeouts
+            if (userSilenceTimeoutRef.current) {
+              clearTimeout(userSilenceTimeoutRef.current);
+              userSilenceTimeoutRef.current = null;
+            }
             const base64 = message.serverContent.modelTurn.parts[0].inlineData.data;
             const audioData = decodeAudio(base64);
             const buffer = await decodeAudioData(audioData, outputAudioCtxRef.current!, 24000, 1);
@@ -632,6 +671,12 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             nextStartTimeRef.current = 0;
             if (isMountedRef.current) {
               setIsModelSpeaking(false);
+              setIsAiThinking(false);
+            }
+            // Clear silence detection timeout
+            if (userSilenceTimeoutRef.current) {
+              clearTimeout(userSilenceTimeoutRef.current);
+              userSilenceTimeoutRef.current = null;
             }
           }
         },
@@ -742,6 +787,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setCurrentPart('B');
       setTranscription('');
       setStatus('idle');
+      setIsAiThinking(false); // Clear thinking state when transitioning
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
@@ -758,16 +804,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         timestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        resultType: 'practice',
         mode: scenario.mode,
+        module: 'oralExpression',
         title: scenario.title,
-        score: 0,
-        clbLevel: 'CLB 0',
-        cecrLevel: 'A1',
-        feedback: '',
-        strengths: [],
-        weaknesses: [],
-        grammarNotes: '',
-        vocabularyNotes: '',
+        evaluation: {
+          score: 0,
+          clbLevel: 'CLB 0',
+          cecrLevel: 'A1',
+          feedback: '',
+          strengths: [],
+          weaknesses: [],
+          grammarNotes: '',
+          vocabularyNotes: '',
+        },
+        moduleData: {
+          type: 'oralExpression',
+        },
+        taskReferences: {},
         isLoading: true,
         taskPartA: scenario.officialTasks.partA,
         taskPartB: scenario.officialTasks.partB,
@@ -959,17 +1013,26 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           timestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          resultType: mockExamId ? 'mockExam' : 'practice',
           mode: scenario.mode,
+          module: 'oralExpression',
           title: scenario.title,
-          score: 0,
-          clbLevel: 'CLB 0',
-          cecrLevel: 'A1',
-          feedback: '',
-          strengths: [],
-          weaknesses: [],
-          grammarNotes: '',
-          vocabularyNotes: '',
+          evaluation: {
+            score: 0,
+            clbLevel: 'CLB 0',
+            cecrLevel: 'A1',
+            feedback: '',
+            strengths: [],
+            weaknesses: [],
+            grammarNotes: '',
+            vocabularyNotes: '',
+          },
+          moduleData: {
+            type: 'oralExpression',
+          },
+          taskReferences: {},
           isLoading: true,
+          ...(mockExamId && { mockExamId }),
           taskPartA: scenario.officialTasks.partA,
           taskPartB: scenario.officialTasks.partB,
         };
@@ -997,7 +1060,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           const errorResult: SavedResult = {
             ...placeholderResult,
             isLoading: false,
-            feedback: `Erreur: ${pollError.message || 'Échec de l\'évaluation'}`,
+            evaluation: {
+              ...placeholderResult.evaluation,
+              feedback: `Erreur: ${pollError.message || 'Échec de l\'évaluation'}`,
+            },
           };
           onFinish(errorResult);
         }
@@ -1014,27 +1080,35 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           alert(`Erreur d'évaluation: ${errorMessage}`);
         }
         
-        // Update result with error state (still show result page but with error)
-        const errorResult: SavedResult = {
-          _id: `error-${Date.now()}`,
-          userId: user?.id || 'guest',
-          timestamp: Date.now(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          mode: scenario.mode,
-          title: scenario.title,
-          score: 0,
-          clbLevel: 'CLB 0',
-          cecrLevel: 'A1',
-          feedback: `Erreur: ${errorMessage}`,
-          strengths: [],
-          weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
-          grammarNotes: '',
-          vocabularyNotes: '',
-          isLoading: false,
-          taskPartA: scenario.officialTasks.partA,
-          taskPartB: scenario.officialTasks.partB,
-        };
+          // Update result with error state (still show result page but with error)
+          const errorResult: SavedResult = {
+            _id: `error-${Date.now()}`,
+            userId: user?.id || 'guest',
+            timestamp: Date.now(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            resultType: 'practice',
+            mode: scenario.mode,
+            module: 'oralExpression',
+            title: scenario.title,
+            evaluation: {
+              score: 0,
+              clbLevel: 'CLB 0',
+              cecrLevel: 'A1',
+              feedback: `Erreur: ${errorMessage}`,
+              strengths: [],
+              weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
+              grammarNotes: '',
+              vocabularyNotes: '',
+            },
+            moduleData: {
+              type: 'oralExpression',
+            },
+            taskReferences: {},
+            isLoading: false,
+            taskPartA: scenario.officialTasks.partA,
+            taskPartB: scenario.officialTasks.partB,
+          };
         onFinish(errorResult);
       }
     }
@@ -1245,7 +1319,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           ref={micSectionRef}
           className="bg-indigo-400 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
         >
-          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-300' : (isUserSpeaking ? 'bg-emerald-300' : 'bg-transparent')}`} />
+          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-300' : isAiThinking ? 'bg-amber-300 animate-pulse' : (isUserSpeaking ? 'bg-emerald-300' : 'bg-transparent')}`} />
           
           <div className="relative group flex-shrink-0">
             <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-300/40 scale-150' : (isUserSpeaking ? 'bg-emerald-300/40 scale-125' : 'bg-indigo-100/70/5 scale-100')}`} />
@@ -1277,7 +1351,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
 
           <div className="text-left md:text-center space-y-1.5 md:space-y-2 z-10 flex-1 md:flex-none">
             <h4 className="text-white font-black text-base md:text-xl tracking-tight">
-              {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
+              {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : isAiThinking ? 'L\'examinateur réfléchit...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
             <p className="text-indigo-100 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
