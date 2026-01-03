@@ -44,6 +44,8 @@ export async function generateAudioForItem(
   console.log(`   Generating audio for ${audioItemId}...`);
   
   // Generate audio from script
+  // Note: The script should already be normalized when stored, but generateAudioFromScript
+  // will normalize it again to ensure consistency (handles edge cases)
   const audioBuffer = await generateAudioFromScript(
     ttsProvider,
     audioItem.audioScript, 
@@ -51,12 +53,19 @@ export async function generateAudioForItem(
     audioItem.sectionId
   );
   
-  // Update the audio item with generated audio
+  // IMPORTANT: Update the stored script to match what was actually used for TTS
+  // This ensures the script in the database always matches the audio
+  const { normalizeScriptFormat } = await import('./scriptNormalizer');
+  const normalizedScript = normalizeScriptFormat(audioItem.audioScript, audioItem.sectionId);
+  
+  // Update the audio item with generated audio AND normalized script
+  // This ensures the stored script matches what was used for TTS generation
   await audioItemsCollection.updateOne(
     { audioId: audioItemId, taskId },
     {
       $set: {
         audioData: audioBuffer,
+        audioScript: normalizedScript, // Update script to match what was used for TTS
         mimeType: 'audio/wav',
         updatedAt: new Date().toISOString()
       }

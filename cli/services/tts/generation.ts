@@ -53,7 +53,35 @@ export async function generateDialogueAudio(
   for (let i = 0; i < dialogue.length; i++) {
     const segment = dialogue[i];
     const voice = speakerToVoiceMap.get(segment.speaker) || DIALOGUE_VOICES[0];
-    const cleanedText = cleanText(segment.text);
+    
+    // Clean the text - remove any speaker labels that might still be present
+    // The text should already be clean from parsing, but double-check
+    let cleanedText = segment.text.trim();
+    
+    // Remove any speaker labels at the start (e.g., "Speaker: text" -> "text")
+    cleanedText = cleanText(cleanedText);
+    
+    // Remove any embedded speaker labels (e.g., "textClient: more" -> "text more")
+    // This handles cases where speaker labels weren't properly removed during parsing
+    // Be more aggressive - remove any "Word: " pattern that looks like a speaker label
+    cleanedText = cleanedText.replace(/\s*([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s]{1,25}?):\s*/g, (match, label) => {
+      const trimmedLabel = label.trim();
+      // Remove if it looks like a speaker label:
+      // - Starts with capital letter
+      // - Reasonable length (2-25 chars)
+      // - Not a common French word that might have a colon (like "heure", "minute")
+      const commonWords = ['heure', 'minute', 'seconde', 'jour', 'mois', 'année', 'fois'];
+      if (trimmedLabel.length >= 2 && 
+          trimmedLabel.length <= 25 && 
+          trimmedLabel[0] === trimmedLabel[0].toUpperCase() &&
+          !commonWords.includes(trimmedLabel.toLowerCase())) {
+        return ' '; // Replace with space
+      }
+      return match; // Keep it (might be part of the text)
+    }).trim();
+    
+    // Final cleanup: remove any remaining "Speaker:" patterns
+    cleanedText = cleanedText.replace(/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s]*?:\s*/, '').trim();
 
     logSegmentGeneration(i + 1, dialogue.length, segment.speaker, voice, cleanedText);
 
@@ -75,6 +103,7 @@ export async function generateDialogueAudio(
 
 /**
  * Generate audio for a monologue (single speaker)
+ * Cleans speaker labels from script if present
  */
 export async function generateMonologueAudio(
   ttsProvider: TTSService,
@@ -82,14 +111,70 @@ export async function generateMonologueAudio(
   defaultVoiceName: string,
   sectionId?: number
 ): Promise<Buffer> {
-  if (sectionId === 4) {
-    logMonologueWarning(audioScript, defaultVoiceName);
+  // Clean speaker labels from script (e.g., "Agent:", "Voix feminin:") if present
+  // This handles cases where AI includes speaker labels but it's actually a single speaker
+  let cleanedScript = audioScript;
+  
+  // Remove speaker labels (pattern: "Speaker: text" -> "text")
+  const speakerPattern = /([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s]*?):\s*/g;
+  const hasSpeakerLabels = speakerPattern.test(audioScript);
+  
+  if (hasSpeakerLabels) {
+    // Reset regex
+    speakerPattern.lastIndex = 0;
+    
+    // Extract only the text parts, removing speaker labels
+    const parts: string[] = [];
+    let lastIndex = 0;
+    let match;
+    
+    while ((match = speakerPattern.exec(audioScript)) !== null) {
+      // Add text before this speaker label (if any)
+      if (match.index > lastIndex) {
+        const beforeText = audioScript.substring(lastIndex, match.index).trim();
+        if (beforeText) parts.push(beforeText);
+      }
+      
+      // Get text after this speaker label
+      const textStart = match.index + match[0].length;
+      const nextMatch = speakerPattern.exec(audioScript);
+      const textEnd = nextMatch ? nextMatch.index : audioScript.length;
+      speakerPattern.lastIndex = nextMatch ? nextMatch.index : audioScript.length;
+      
+      const text = audioScript.substring(textStart, textEnd).trim();
+      if (text) parts.push(text);
+      
+      lastIndex = textEnd;
+      
+      // If we found a match, reset to continue from where we left off
+      if (!nextMatch) break;
+    }
+    
+    // If we extracted parts, join them; otherwise use original
+    if (parts.length > 0) {
+      cleanedScript = parts.join(' ').trim();
+    } else {
+      // Fallback: remove all speaker labels using replace
+      cleanedScript = audioScript.replace(speakerPattern, '').trim();
+    }
   }
-  return generateSingleVoiceAudio(ttsProvider, audioScript, defaultVoiceName);
+  
+  if (sectionId === 4) {
+    logMonologueWarning(cleanedScript, defaultVoiceName);
+  }
+  return generateSingleVoiceAudio(ttsProvider, cleanedScript, defaultVoiceName);
 }
 
 /**
  * Generate audio from a script, automatically handling multi-voice dialogues
+ * This is used by both mock exams and practice assignments
+ */
+/**
+ * Generate audio from a script, automatically handling multi-voice dialogues
+ * This is used by both mock exams and practice assignments
+ * 
+ * IMPORTANT: This function normalizes the script internally. The caller should
+ * also normalize before storing to ensure the stored script matches the audio.
  */
 export async function generateAudioFromScript(
   ttsProvider: TTSService,
@@ -97,19 +182,26 @@ export async function generateAudioFromScript(
   defaultVoiceName: string = DEFAULT_VOICE,
   sectionId?: number
 ): Promise<Buffer> {
-  const dialogue = parseDialogueScript(audioScript);
+  // Normalize script format first to ensure consistency
+  // This handles any inconsistencies in the input script
+  const { normalizeScriptFormat } = await import('./scriptNormalizer');
+  const normalizedScript = normalizeScriptFormat(audioScript, sectionId);
+  
+  const dialogue = parseDialogueScript(normalizedScript);
   const isDialogue = dialogue !== null && dialogue.length > 0;
   const isDialogueSection = sectionId !== undefined && DIALOGUE_SECTIONS.includes(sectionId as any);
 
-  logScriptInfo(audioScript, isDialogue, dialogue, sectionId);
+  logScriptInfo(normalizedScript, isDialogue, dialogue, sectionId);
 
   // For dialogues in Sections 2, 3, 4, use multiple voices
+  // This applies to both mock exams and practice assignments
   if (isDialogue && isDialogueSection) {
     return generateDialogueAudio(ttsProvider, dialogue!, sectionId);
   }
 
-  // Single speaker (monologue)
-  return generateMonologueAudio(ttsProvider, audioScript, defaultVoiceName, sectionId);
+  // Single speaker (monologue) - also handles Section 1 even if it has dialogue markers
+  // (Section 1 typically doesn't use multi-voice dialogue in TEF format)
+  return generateMonologueAudio(ttsProvider, normalizedScript, defaultVoiceName, sectionId);
 }
 
 function shouldAddPause(currentIndex: number, dialogue: DialogueSegment[]): boolean {

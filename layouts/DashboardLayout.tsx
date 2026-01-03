@@ -30,7 +30,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     if (status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
       const packName = status.packType === 'STARTER_PACK' ? 'Starter Pack' : 'Exam Ready Pack';
       return (
-        <span className="px-2.5 py-1 rounded-md text-xs font-bold bg-indigo-300/20 text-indigo-400">
+        <span className="px-3 py-1 rounded-md text-xs font-bold bg-indigo-300/20 text-indigo-400">
           {packName}
         </span>
       );
@@ -45,7 +45,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     if (!badge) return null;
 
     return (
-      <span className={`px-2.5 py-1 rounded-md text-xs font-bold ${badge.color}`}>
+      <span className={`px-3 py-1 rounded-md text-xs font-bold ${badge.color}`}>
         {badge.text}
       </span>
     );
@@ -78,6 +78,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               {t('nav.dashboard')}
             </button>
             <button 
+              onClick={() => navigate('/dashboard/assignments')}
+              className={isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+              Create Assignment
+            </button>
+            <button 
               onClick={() => navigate('/dashboard/subscription')}
               className={isActive('/dashboard/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               Subscription
@@ -106,7 +111,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
             <button
               onClick={() => setLanguage('fr')}
-              className={`px-2.5 py-1 text-xs font-bold rounded transition-colors ${
+              className={`px-3 py-1 text-xs font-bold rounded transition-colors ${
                 language === 'fr'
                   ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300 shadow-sm'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-500'
@@ -117,7 +122,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </button>
             <button
               onClick={() => setLanguage('en')}
-              className={`px-2.5 py-1 text-xs font-bold rounded transition-colors ${
+              className={`px-3 py-1 text-xs font-bold rounded transition-colors ${
                 language === 'en'
                   ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300 shadow-sm'
                   : 'text-slate-500 dark:text-slate-400 hover:text-slate-500'
@@ -173,6 +178,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 {t('nav.dashboard')}
+              </button>
+              <button 
+                onClick={() => handleNavigate('/dashboard/assignments')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                  isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create')
+                    ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                Create Assignment
               </button>
               <button 
                 onClick={() => handleNavigate('/dashboard/subscription')}

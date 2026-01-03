@@ -149,11 +149,11 @@ export function ExamCard({ mode, status, onStart, variant = 'mobile', isWrittenE
   // Desktop variant
   return (
     <div 
-      className={`${cardConfig.bgColor} rounded-3xl p-6 ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
+      className={`${cardConfig.bgColor} rounded-2xl p-4 ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
       onClick={() => onStart(mode)}
     >
-      <div className="flex items-start justify-between mb-4">
-        <div className={`w-10 h-10 ${cardConfig.iconBg} rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition-transform`}>
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-8 h-8 ${cardConfig.iconBg} rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform`}>
           {cardConfig.icon}
         </div>
         {(isWrittenExpression || (status && (hasCredits || available > 0))) && (
@@ -163,7 +163,7 @@ export function ExamCard({ mode, status, onStart, variant = 'mobile', isWrittenE
                 <div className={`text-xs ${mode === 'full' ? 'text-indigo-200' : 'text-slate-500 dark:text-slate-400'} mb-0.5`}>
                   Available
                 </div>
-                <div className={`text-xl font-black ${cardConfig.textColor}`}>
+                <div className={`text-lg font-black ${cardConfig.textColor}`}>
                   {available > 0 ? available : '0'}
                 </div>
                 {hasCredits && (
@@ -182,11 +182,11 @@ export function ExamCard({ mode, status, onStart, variant = 'mobile', isWrittenE
           </div>
         )}
       </div>
-      <h3 className={`text-lg font-bold ${cardConfig.titleColor} mb-1.5`}>{cardConfig.title}</h3>
+      <h3 className={`text-base font-bold ${cardConfig.titleColor} mb-1`}>{cardConfig.title}</h3>
       <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed`}>
         {cardConfig.description}
       </p>
-      <div className={`mt-4 flex items-center ${cardConfig.textColor} font-bold text-xs`}>
+      <div className={`mt-3 flex items-center ${cardConfig.textColor} font-bold text-xs`}>
         {t('common.commencer')} <span className="ml-1.5">→</span>
       </div>
     </div>

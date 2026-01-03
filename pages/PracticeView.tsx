@@ -8,14 +8,16 @@ import { HistoryList } from '../components/HistoryList';
 import { PracticeTabNavigation } from '../components/practice/PracticeTabNavigation';
 import { ExpressionOraleTab } from '../components/practice/ExpressionOraleTab';
 import { ExpressionEcritTab } from '../components/practice/ExpressionEcritTab';
+import { ReadingTab } from '../components/practice/ReadingTab';
+import { ListeningTab } from '../components/practice/ListeningTab';
 import { PracticeModuleSelector } from '../components/practice/PracticeModuleSelector';
 
 export function PracticeView() {
   const navigate = useNavigate();
   // Restore module selection from sessionStorage or URL state
-  const [selectedModule, setSelectedModule] = useState<'oral' | 'written' | null>(() => {
+  const [selectedModule, setSelectedModule] = useState<'oral' | 'written' | 'reading' | 'listening' | null>(() => {
     const stored = sessionStorage.getItem('practice_selected_module');
-    return (stored === 'oral' || stored === 'written') ? stored : null;
+    return (stored === 'oral' || stored === 'written' || stored === 'reading' || stored === 'listening') ? stored : null;
   });
   const [practiceTab, setPracticeTab] = useState<'practice' | 'history'>('practice');
   const { t } = useLanguage();
@@ -143,12 +145,12 @@ export function PracticeView() {
           )}
           {!selectedModule ? (
             <>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100">{t('practice.title')}</h2>
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{t('practice.title')}</h2>
               <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
             </>
           ) : (
             <>
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100">
+              <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
                 {practiceTab === 'practice' 
                   ? t('practice.title')
                   : t('history.title')
@@ -158,7 +160,13 @@ export function PracticeView() {
                 {practiceTab === 'practice'
                   ? (selectedModule === 'oral' 
                       ? t('practice.oralSubtitle') 
-                      : t('practice.writtenSubtitle'))
+                      : selectedModule === 'written'
+                      ? t('practice.writtenSubtitle')
+                      : selectedModule === 'reading'
+                      ? t('practice.readingSubtitle')
+                      : selectedModule === 'listening'
+                      ? t('practice.listeningSubtitle')
+                      : '')
                   : t('history.subtitle')
                 }
               </p>
@@ -190,13 +198,22 @@ export function PracticeView() {
               {practiceTab === 'practice' ? (
                 selectedModule === 'oral' ? (
                   <ExpressionOraleTab status={status} onStartExam={(mode) => startExam(mode, false)} />
-                ) : (
+                ) : selectedModule === 'written' ? (
                   <ExpressionEcritTab onStartExam={(mode) => startExam(mode, true)} />
-                )
+                ) : selectedModule === 'reading' ? (
+                  <ReadingTab />
+                ) : selectedModule === 'listening' ? (
+                  <ListeningTab />
+                ) : null
               ) : (
                 /* History Tab Content */
                 <div className="flex-1 min-h-0 overflow-hidden">
-                  <HistoryList module={selectedModule === 'oral' ? 'oralExpression' : 'writtenExpression'} />
+                  <HistoryList module={
+                    selectedModule === 'oral' ? 'oralExpression' :
+                    selectedModule === 'written' ? 'writtenExpression' :
+                    selectedModule === 'reading' ? 'reading' :
+                    selectedModule === 'listening' ? 'listening' : 'oralExpression'
+                  } />
                 </div>
               )}
             </div>

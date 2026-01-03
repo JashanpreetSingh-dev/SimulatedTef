@@ -7,6 +7,9 @@ import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
 import { WrittenExamView } from '../pages/WrittenExamView';
 import { SubscriptionManagementView } from '../pages/SubscriptionManagementView';
+import { AssignmentsView } from '../pages/AssignmentsView';
+import { AssignmentCreationView } from '../pages/AssignmentCreationView';
+import { AssignmentExamView } from '../pages/AssignmentExamView';
 import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { MockExamView } from '../components/MockExamView';
@@ -25,6 +28,8 @@ export function ProtectedRoutes() {
       <Route path="/history" element={<HistoryView />} />
       <Route path="/results/:id" element={<ResultView />} />
       <Route path="/exam/:mode" element={<ExamView />} />
+      <Route path="/exam/reading" element={<AssignmentExamView />} />
+      <Route path="/exam/listening" element={<AssignmentExamView />} />
       <Route path="/exam/written/:mode" element={<WrittenExamView />} />
       <Route path="/mock-exam/:mockExamId" element={
         <DashboardLayout>
@@ -37,6 +42,9 @@ export function ProtectedRoutes() {
         </DashboardLayout>
       } />
       <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
+      <Route path="/dashboard/assignments" element={<AssignmentsView />} />
+      <Route path="/dashboard/assignments/create" element={<AssignmentCreationView />} />
+      <Route path="/dashboard/assignments/create/:assignmentId" element={<AssignmentCreationView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

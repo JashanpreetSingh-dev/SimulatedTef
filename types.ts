@@ -219,10 +219,11 @@ export type ModuleData = OralExpressionData | WrittenExpressionData | MCQData;
 
 export interface SavedResult extends MongoDocument {
   // Core identification
-  resultType: 'practice' | 'mockExam';
+  resultType: 'practice' | 'mockExam' | 'assignment';
   mode: 'partA' | 'partB' | 'full';
   module: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
   mockExamId?: string; // Only present for mockExam results
+  assignmentId?: string; // Only present for assignment results
   title: string;
   timestamp: number;
   
@@ -275,4 +276,29 @@ export interface UserProfile extends MongoDocument {
   totalSessions: number;
   streakDays: number;
   averageScore: string;
+}
+
+// Assignment Types
+export type AssignmentStatus = 'draft' | 'published';
+export type AssignmentType = 'reading' | 'listening';
+
+export interface AssignmentSettings {
+  numberOfQuestions: number; // Number of questions to generate (typically 40)
+  sections?: string[]; // Optional: Specific sections to include (e.g., ['A', 'B', 'C'] for reading)
+  timeLimitSec?: number; // Optional: Custom time limit (practice mode typically has no limit)
+  theme?: string; // Optional: Theme for question generation
+}
+
+export interface Assignment {
+  assignmentId: string; // Unique identifier
+  type: AssignmentType; // 'reading' | 'listening'
+  title: string; // Assignment title (can be AI-generated if not provided)
+  prompt: string; // Teacher's prompt for AI generation
+  settings: AssignmentSettings; // Assignment settings
+  status: AssignmentStatus; // 'draft' | 'published'
+  createdBy: string; // User ID of creator
+  taskId?: string; // Reference to ReadingTask or ListeningTask
+  questionIds?: string[]; // References to generated questions
+  createdAt: string;
+  updatedAt: string;
 }

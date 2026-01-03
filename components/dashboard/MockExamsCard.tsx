@@ -14,11 +14,11 @@ export function MockExamsCard() {
       onClick={() => navigate('/mock-exam')}
     >
       <div className="flex items-start justify-between mb-3 md:mb-4">
-        <div className="w-10 h-10 md:w-14 md:h-14 bg-white/20 rounded-xl md:rounded-2xl flex items-center justify-center text-xl md:text-3xl group-hover:rotate-12 transition-transform">📚</div>
+        <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl md:rounded-2xl flex items-center justify-center text-lg md:text-2xl group-hover:rotate-12 transition-transform">📚</div>
         {status && (
           <div className="text-right">
             <div className="text-xs md:text-sm text-purple-100 mb-0.5">{t('common.available')}</div>
-            <div className="text-lg md:text-2xl font-black text-white">
+            <div className="text-base md:text-xl font-black text-white">
               {(() => {
                 const dailyRemaining = status.limits.fullTests > 0 
                   ? Math.max(0, status.limits.fullTests - status.usage.fullTestsUsed)
@@ -31,7 +31,7 @@ export function MockExamsCard() {
           </div>
         )}
       </div>
-      <h3 className="text-lg md:text-2xl font-bold text-white mb-1.5 md:mb-2">{t('dashboard.mockExam')}</h3>
+      <h3 className="text-base md:text-xl font-bold text-white mb-1.5 md:mb-2">{t('dashboard.mockExam')}</h3>
       <p className="text-purple-100 text-xs md:text-sm leading-relaxed mb-3 md:mb-4">
         {t('dashboard.mockExamDescription')}
       </p>

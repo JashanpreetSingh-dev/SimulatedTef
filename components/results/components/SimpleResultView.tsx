@@ -32,18 +32,58 @@ export const SimpleResultView: React.FC<SimpleResultViewProps> = ({ result, onBa
       </div>
 
       {/* Question Results */}
-      {result.module === 'reading' && result.readingResult && (
-        <QuestionResultsView
-          result={result.readingResult}
-          moduleName="Reading"
-        />
+      {/* Check for moduleData (new structure) first, then fallback to legacy readingResult/listeningResult */}
+      {result.module === 'reading' && (
+        result.moduleData && result.moduleData.type === 'mcq' ? (
+          <QuestionResultsView
+            result={{
+              taskId: result.taskReferences?.taskA?.taskId || '',
+              answers: result.moduleData.answers,
+              score: result.moduleData.score,
+              totalQuestions: result.moduleData.totalQuestions,
+              questionResults: result.moduleData.questionResults,
+            }}
+            moduleName="Reading"
+          />
+        ) : result.readingResult ? (
+          <QuestionResultsView
+            result={result.readingResult}
+            moduleName="Reading"
+          />
+        ) : null
       )}
 
-      {result.module === 'listening' && result.listeningResult && (
-        <QuestionResultsView
-          result={result.listeningResult}
-          moduleName="Listening"
-        />
+      {result.module === 'listening' && (
+        result.moduleData && result.moduleData.type === 'mcq' ? (
+          <QuestionResultsView
+            result={{
+              taskId: result.taskReferences?.taskA?.taskId || '',
+              answers: result.moduleData.answers,
+              score: result.moduleData.score,
+              totalQuestions: result.moduleData.totalQuestions,
+              questionResults: result.moduleData.questionResults,
+            }}
+            moduleName="Listening"
+          />
+        ) : result.listeningResult ? (
+          <QuestionResultsView
+            result={result.listeningResult}
+            moduleName="Listening"
+          />
+        ) : null
+      )}
+      
+      {/* Show message if no results data is available */}
+      {result.module === 'reading' && !result.moduleData && !result.readingResult && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <p className="text-yellow-800 dark:text-yellow-200">No results data available for this assignment.</p>
+        </div>
+      )}
+      
+      {result.module === 'listening' && !result.moduleData && !result.listeningResult && (
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <p className="text-yellow-800 dark:text-yellow-200">No results data available for this assignment.</p>
+        </div>
       )}
     </div>
   );
