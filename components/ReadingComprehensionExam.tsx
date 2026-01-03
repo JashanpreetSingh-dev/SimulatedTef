@@ -12,6 +12,7 @@ interface ReadingComprehensionExamProps {
   questions: ReadingListeningQuestion[];
   sessionId: string;
   mockExamId: string;
+  assignmentId?: string; // Optional: for assignment-based exams
   onComplete: (result: MCQResult) => void;
   onClose?: () => void;
 }
@@ -25,14 +26,33 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
   questions,
   sessionId,
   mockExamId,
+  assignmentId,
   onComplete,
   onClose,
 }) => {
   const { getToken } = useAuth();
   const { theme } = useTheme();
-  const [answers, setAnswers] = useState<(number | null)[]>(new Array(40).fill(null));
+  // Initialize answers array based on actual number of questions
+  const [answers, setAnswers] = useState<(number | null)[]>(() => {
+    const length = questions.length || 0;
+    return new Array(length).fill(null);
+  });
+  
+  // Ensure answers array matches questions length when questions change
+  useEffect(() => {
+    if (questions.length > 0 && answers.length !== questions.length) {
+      setAnswers((prev) => {
+        const newAnswers = [...prev];
+        while (newAnswers.length < questions.length) {
+          newAnswers.push(null);
+        }
+        return newAnswers.slice(0, questions.length);
+      });
+    }
+  }, [questions.length, answers.length]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(TIME_LIMIT_SECONDS);
+  // For assignments, don't enforce time limit (set to Infinity to indicate no limit)
+  const [timeRemaining, setTimeRemaining] = useState(assignmentId ? Infinity : TIME_LIMIT_SECONDS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -41,32 +61,45 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
   const storageKey = useMemo(() => `${STORAGE_KEY_PREFIX}${task.taskId}_${sessionId}`, [task.taskId, sessionId]);
   const startTimeRef = useRef<number | null>(null);
 
-  // Load saved answers from localStorage on mount
+  // Load saved answers from localStorage on mount (only once)
+  const hasLoadedSavedAnswers = useRef(false);
   useEffect(() => {
+    if (hasLoadedSavedAnswers.current) return;
+    
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const savedData = JSON.parse(saved);
         if (savedData.answers && Array.isArray(savedData.answers)) {
-          setAnswers(savedData.answers);
+          // Ensure answers array matches current questions length
+          const paddedAnswers = [...savedData.answers];
+          while (paddedAnswers.length < questions.length) {
+            paddedAnswers.push(null);
+          }
+          setAnswers(paddedAnswers.slice(0, questions.length));
           if (savedData.currentQuestionIndex !== undefined) {
-            setCurrentQuestionIndex(savedData.currentQuestionIndex);
+            setCurrentQuestionIndex(Math.min(savedData.currentQuestionIndex, questions.length - 1));
           }
           if (savedData.startTime) {
-            const elapsed = Math.floor((Date.now() - savedData.startTime) / 1000);
-            const remaining = Math.max(0, TIME_LIMIT_SECONDS - elapsed);
-            setTimeRemaining(remaining);
             startTimeRef.current = savedData.startTime;
             setHasStarted(true);
+            // Only restore timer for mock exams, not assignments
+            if (!assignmentId) {
+              const elapsed = Math.floor((Date.now() - savedData.startTime) / 1000);
+              const remaining = Math.max(0, TIME_LIMIT_SECONDS - elapsed);
+              setTimeRemaining(remaining);
+            }
           }
         }
       }
+      hasLoadedSavedAnswers.current = true;
     } catch (error) {
       console.error('Failed to load saved answers:', error);
+      hasLoadedSavedAnswers.current = true;
     }
-  }, [storageKey]);
+  }, [storageKey, questions.length, assignmentId]);
 
-  // Start timer when component mounts or resumes
+  // Start timer when component mounts or resumes (only for mock exams, not assignments)
   useEffect(() => {
     if (!hasStarted) {
       startTimeRef.current = Date.now();
@@ -83,24 +116,26 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       }
     }
 
-    // Timer countdown
-    timerRef.current = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          // Time's up - auto-submit
-          handleSubmit(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    // Timer countdown - only for mock exams, not assignments
+    if (!assignmentId) {
+      timerRef.current = setInterval(() => {
+        setTimeRemaining((prev) => {
+          if (prev <= 1) {
+            // Time's up - auto-submit
+            handleSubmit(true);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
     };
-  }, [hasStarted, storageKey]);
+  }, [hasStarted, storageKey, assignmentId]);
 
   // Auto-save answers to localStorage (debounced)
   useEffect(() => {
@@ -159,8 +194,11 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
     }
   }, [currentQuestionIndex]);
 
-  // Format time as MM:SS
+  // Format time as MM:SS (or "Unlimited" for assignments)
   const formatTime = useCallback((seconds: number): string => {
+    if (seconds === Infinity || !isFinite(seconds)) {
+      return 'Unlimited';
+    }
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -185,20 +223,34 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       // Prepare answers array (fill nulls with -1 for incomplete answers)
       const submittedAnswers = answers.map(a => a !== null ? a : -1);
 
-      // Submit to backend
-      const response = await fetch(`${BACKEND_URL}/api/exam/submit-mcq`, {
+      // Submit to backend - use assignment endpoint if assignmentId is provided
+      const endpoint = assignmentId 
+        ? `${BACKEND_URL}/api/exam/submit-assignment-mcq`
+        : `${BACKEND_URL}/api/exam/submit-mcq`;
+      
+      const requestBody = assignmentId
+        ? {
+            taskId: task.taskId,
+            answers: submittedAnswers,
+            module: 'reading',
+            assignmentId,
+            sessionId,
+          }
+        : {
+            taskId: task.taskId,
+            answers: submittedAnswers,
+            module: 'reading',
+            mockExamId,
+            sessionId,
+          };
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${await getToken()}`,
         },
-        body: JSON.stringify({
-          taskId: task.taskId,
-          answers: submittedAnswers,
-          module: 'reading',
-          mockExamId,
-          sessionId,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -206,7 +258,25 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
         throw new Error(`Failed to submit: ${response.status} ${errorText}`);
       }
 
-      const result = await response.json() as MCQResult;
+      const responseData = await response.json();
+      
+      // Convert response to MCQResult format
+      const result: MCQResult = {
+        taskId: task.taskId,
+        answers: submittedAnswers,
+        score: responseData.score || 0,
+        totalQuestions: responseData.totalQuestions || questions.length,
+        questionResults: questions.map((q, index) => {
+          const userAnswer = submittedAnswers[index] ?? -1;
+          const isCorrect = userAnswer === q.correctAnswer;
+          return {
+            questionId: q.questionId,
+            userAnswer,
+            isCorrect,
+          };
+        }),
+        resultId: responseData.resultId, // Include resultId if available
+      };
 
       onComplete(result);
     } catch (error) {
@@ -214,13 +284,13 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       alert('Failed to submit answers. Please try again.');
       setIsSubmitting(false);
     }
-  }, [answers, task.taskId, mockExamId, sessionId, getToken, onComplete, storageKey, isSubmitting]);
+  }, [answers, task.taskId, mockExamId, assignmentId, sessionId, getToken, onComplete, storageKey, isSubmitting]);
 
   // Handle page unload - auto-submit for mock exams
   useEffect(() => {
     const handleBeforeUnload = async () => {
-      // Auto-submit if this is a mock exam and user has started
-      if (mockExamId && hasStarted && !isSubmitting) {
+      // Auto-submit if this is a mock exam or assignment and user has started
+      if ((mockExamId || assignmentId) && hasStarted && !isSubmitting) {
         try {
           // Prepare answers array (fill nulls with -1 for incomplete answers)
           const submittedAnswers = answers.map(a => a !== null ? a : -1);
@@ -232,13 +302,21 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${await getToken()}`,
             },
-            body: JSON.stringify({
-              taskId: task.taskId,
-              answers: submittedAnswers,
-              module: 'reading',
-              mockExamId,
-              sessionId,
-            }),
+            body: JSON.stringify(assignmentId
+              ? {
+                  taskId: task.taskId,
+                  answers: submittedAnswers,
+                  module: 'reading',
+                  assignmentId,
+                  sessionId,
+                }
+              : {
+                  taskId: task.taskId,
+                  answers: submittedAnswers,
+                  module: 'reading',
+                  mockExamId,
+                  sessionId,
+                }),
             // Don't wait for response since page is unloading
             keepalive: true,
           }).catch(error => {
@@ -265,7 +343,7 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
-  }, [answers, storageKey, mockExamId, hasStarted, isSubmitting, task.taskId, sessionId, getToken]);
+  }, [answers, storageKey, mockExamId, assignmentId, hasStarted, isSubmitting, task.taskId, sessionId, getToken]);
 
   // Convert questions to MCQQuestionData format
   const questionData: MCQQuestionData[] = useMemo(() => {
@@ -277,7 +355,11 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
     }));
   }, [questions]);
 
-  const answeredCount = answers.filter(a => a !== null).length;
+  // Calculate answered count - memoize to ensure it updates when answers change
+  const answeredCount = useMemo(() => {
+    return answers.filter(a => a !== null && a !== undefined).length;
+  }, [answers]);
+  
   const currentQuestion = questions[currentQuestionIndex];
   const isFirstQuestion = currentQuestionIndex === 0;
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
@@ -297,24 +379,27 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
           {/* Header with Timer/Progress on left, Close on right */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className={`
-                px-3 py-1 rounded font-mono text-sm font-semibold
-                ${timeRemaining < 300
-                  ? 'bg-red-500 text-white'
-                  : timeRemaining < 600
-                  ? 'bg-yellow-500 text-white'
-                  : theme === 'dark'
-                  ? 'bg-slate-700 text-slate-100'
-                  : 'bg-indigo-100 text-indigo-700'
-                }
-            `}>
-                {formatTime(timeRemaining)}
-              </div>
+              {/* Only show timer for mock exams, not assignments */}
+              {!assignmentId && (
+                <div className={`
+                  px-3 py-1 rounded font-mono text-sm font-semibold
+                  ${timeRemaining < 300
+                    ? 'bg-red-500 text-white'
+                    : timeRemaining < 600
+                    ? 'bg-yellow-500 text-white'
+                    : theme === 'dark'
+                    ? 'bg-slate-700 text-slate-100'
+                    : 'bg-indigo-100 text-indigo-700'
+                  }
+                `}>
+                  {formatTime(timeRemaining)}
+                </div>
+              )}
               <div className={`
                 px-3 py-1 rounded text-sm
                 ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700 border border-slate-300'}
               `}>
-                {answeredCount}/40
+                {answeredCount}/{questions.length}
               </div>
             </div>
             <button
@@ -444,7 +529,7 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
               </button>
             </div>
 
-            {answeredCount < 40 && (
+            {answeredCount < questions.length && (
               <p className={`
                 mt-3 text-sm text-center hidden sm:block
                 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}

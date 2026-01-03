@@ -266,7 +266,8 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
       }
       setAudioBlobUrl(null);
 
-      const audioUrl = `${BACKEND_URL}/api/audio/${audioItem.audioId}?taskId=${encodeURIComponent(result.taskId)}`;
+      // Add cache-busting to ensure fresh audio is fetched
+      const audioUrl = `${BACKEND_URL}/api/audio/${audioItem.audioId}?taskId=${encodeURIComponent(result.taskId)}&t=${Date.now()}`;
 
       try {
         const token = await getToken();
@@ -274,6 +275,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
           headers: {
             'Authorization': `Bearer ${token || ''}`,
           },
+          cache: 'no-store', // Explicitly disable fetch cache
         });
 
         if (!response.ok) {

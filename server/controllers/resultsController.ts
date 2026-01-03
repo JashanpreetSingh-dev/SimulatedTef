@@ -23,15 +23,17 @@ export const resultsController = {
     const limit = parseInt(req.query.limit as string) || 50;
     const skip = parseInt(req.query.skip as string) || 0;
     const mockExamId = req.query.mockExamId as string;
+    const assignmentId = req.query.assignmentId as string;
     const module = req.query.module as string;
-    const resultType = req.query.resultType as 'practice' | 'mockExam' | undefined;
+    const resultType = req.query.resultType as 'practice' | 'mockExam' | 'assignment' | undefined;
     const populateTasks = req.query.populateTasks === 'true';
 
     const response = await resultsService.findByUserId(
       authenticatedUserId || '', 
       limit, 
       skip, 
-      mockExamId, 
+      mockExamId,
+      assignmentId,
       module,
       resultType,
       populateTasks

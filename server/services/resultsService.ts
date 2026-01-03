@@ -19,8 +19,9 @@ export const resultsService = {
     limit: number = DEFAULT_LIMIT,
     skip: number = 0,
     mockExamId?: string,
+    assignmentId?: string,
     module?: string,
-    resultType?: 'practice' | 'mockExam',
+    resultType?: 'practice' | 'mockExam' | 'assignment',
     populateTasks: boolean = false
   ): Promise<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
     const db = await connectDB();
@@ -29,6 +30,9 @@ export const resultsService = {
     const filter: any = { userId };
     if (mockExamId) {
       filter.mockExamId = mockExamId;
+    }
+    if (assignmentId) {
+      filter.assignmentId = assignmentId;
     }
     if (module) {
       filter.module = module;

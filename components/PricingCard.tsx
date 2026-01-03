@@ -1,3 +1,14 @@
+/**
+ * PricingCard Component
+ * 
+ * Displays pricing information for subscription plans.
+ * Uses standardized spacing from utils/designTokens.ts:
+ * - Card padding: p-6 (24px)
+ * - Button padding: py-4 px-6 (standard buttons)
+ * - Border radius: rounded-3xl (24px) for featured cards
+ * - Typography: text-2xl for titles, text-4xl for prices
+ */
+
 import React from 'react';
 import { SignUpButton, SignedIn, SignedOut } from '@clerk/clerk-react';
 
@@ -89,7 +100,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
             {loading ? 'Loading...' : (hasActivePack ? 'Upgrade Pack' : ctaText)}
           </button>
           {hasActivePack && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 text-center">
+            <p className="text-xs text-amber-600 dark:text-amber-400 mt-4 text-center">
               ⚠️ Your current pack will be replaced
             </p>
           )}
@@ -113,7 +124,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
 
   return (
     <div
-      className={`relative p-6 sm:p-8 rounded-3xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
+      className={`relative p-6 rounded-3xl border-2 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
         highlighted 
           ? 'hover:shadow-indigo-400/30 dark:hover:shadow-indigo-500/30' 
           : 'hover:shadow-slate-200/50 dark:hover:shadow-slate-700/50'
@@ -121,7 +132,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
     >
       {badge && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <span className={`px-4 py-1.5 text-xs font-black uppercase tracking-wider rounded-full backdrop-blur-sm ${
+          <span className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-full backdrop-blur-sm ${
             highlighted 
               ? 'bg-white/90 dark:bg-white/90 text-indigo-600 dark:text-indigo-700 border-2 border-white dark:border-white shadow-lg shadow-white/50 dark:shadow-white/50' 
               : 'bg-indigo-200 dark:bg-indigo-600 text-indigo-700 dark:text-indigo-100 border-2 border-indigo-300 dark:border-indigo-500 shadow-lg shadow-indigo-400/30 dark:shadow-indigo-600/30'
@@ -133,7 +144,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
 
       <div className="space-y-4">
         <div>
-          <h3 className={`text-2xl font-black ${textClasses} mb-2`}>{name}</h3>
+          <h3 className={`text-2xl font-black ${textClasses} mb-4`}>{name}</h3>
           <div className="flex items-baseline gap-2">
             <span className={`text-4xl font-black ${textClasses}`}>{price}</span>
             {period && (
@@ -143,13 +154,13 @@ export const PricingCard: React.FC<PricingCardProps> = ({
             )}
           </div>
           {originalPrice && (
-            <p className={`text-sm ${subtitleClasses} mt-1 line-through`}>
+            <p className={`text-sm ${subtitleClasses} mt-2 line-through`}>
               {originalPrice}
             </p>
           )}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {limits.fullTests && (
             <div className={`text-sm ${subtitleClasses}`}>
               <span className="font-semibold">Full Tests: </span>
@@ -170,7 +181,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({
           )}
         </div>
 
-        <div className={`border-t ${highlighted ? 'border-white/20 dark:border-white/20' : 'border-slate-200 dark:border-slate-700'} pt-4 space-y-3`}>
+        <div className={`border-t ${highlighted ? 'border-white/20 dark:border-white/20' : 'border-slate-200 dark:border-slate-700'} pt-4 space-y-4`}>
           {features.map((feature, index) => (
             <div key={index} className="flex items-start gap-2">
               <span className={`text-lg mt-0.5 ${highlighted ? 'text-white dark:text-white' : 'text-emerald-400 dark:text-emerald-300'}`}>

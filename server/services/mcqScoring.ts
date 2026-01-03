@@ -23,13 +23,13 @@ export interface ScoringResult extends MCQResult {
 export function calculateMCQScore(input: ScoringInput): ScoringResult {
   const { taskId, questions, answers } = input;
   
-  // Validate inputs
-  if (questions.length !== 40) {
-    throw new Error(`Expected exactly 40 questions, got ${questions.length}`);
+  // Validate inputs - support variable number of questions (not just 40)
+  if (questions.length === 0) {
+    throw new Error(`Expected at least 1 question, got ${questions.length}`);
   }
   
-  if (answers.length > 40) {
-    throw new Error(`Expected at most 40 answers, got ${answers.length}`);
+  if (answers.length > questions.length) {
+    throw new Error(`Expected at most ${questions.length} answers, got ${answers.length}`);
   }
   
   // Sort questions by questionNumber to ensure correct order
@@ -51,11 +51,16 @@ export function calculateMCQScore(input: ScoringInput): ScoringResult {
   // Calculate score (only count answered questions)
   const answeredQuestions = questionResults.filter(q => q.userAnswer !== -1);
   const score = answeredQuestions.filter(q => q.isCorrect).length;
-  const totalQuestions = 40;
+  const totalQuestions = questions.length;
+  
+  // Pad answers array to match questions length if needed
+  const paddedAnswers = answers.length === totalQuestions 
+    ? answers 
+    : [...answers, ...Array(totalQuestions - answers.length).fill(-1)];
   
   return {
     taskId,
-    answers: answers.length === 40 ? answers : [...answers, ...Array(40 - answers.length).fill(-1)],
+    answers: paddedAnswers,
     score,
     totalQuestions,
     questionResults,

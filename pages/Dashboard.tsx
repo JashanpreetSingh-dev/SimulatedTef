@@ -50,9 +50,9 @@ export function Dashboard() {
 
   return (
     <DashboardLayout>
-      <main className="max-w-5xl mx-auto p-4 md:p-12 space-y-6 md:space-y-12">
-        <div className="space-y-1 md:space-y-2">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-slate-100">{t('dashboard.greeting')}, {user?.firstName}!</h2>
+      <main className="max-w-5xl mx-auto p-6 md:p-8 space-y-6 md:space-y-8">
+        <div className="space-y-2 md:space-y-4">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">{t('dashboard.greeting')}, {user?.firstName}!</h2>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
 
@@ -79,7 +79,7 @@ export function Dashboard() {
         />
 
         {/* Section Cards */}
-        <div className="grid md:grid-cols-2 gap-4 md:gap-8">
+        <div className="grid md:grid-cols-2 gap-6">
           <PracticeCard />
           <MockExamsCard />
         </div>

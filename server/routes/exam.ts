@@ -367,5 +367,32 @@ router.post('/submit-mcq', requireAuth, mcqSubmissionLimiter, asyncHandler(async
   res.json(result);
 }));
 
+// POST /api/exam/submit-assignment-mcq - Submit MCQ answers for Reading/Listening assignments
+router.post('/submit-assignment-mcq', requireAuth, mcqSubmissionLimiter, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { taskId, answers, module, assignmentId, sessionId } = req.body;
+  
+  if (!taskId || !answers || !module || !assignmentId || !sessionId) {
+    return res.status(400).json({ error: 'taskId, answers, module, assignmentId, and sessionId are required' });
+  }
+  
+  if (!Array.isArray(answers) || answers.length > 40) {
+    return res.status(400).json({ error: 'answers must be an array of at most 40 numbers (0-3)' });
+  }
+  
+  if (!['reading', 'listening'].includes(module)) {
+    return res.status(400).json({ error: 'module must be reading or listening' });
+  }
+
+  const { assignmentMCQController } = await import('../controllers/assignmentMCQController');
+  const result = await assignmentMCQController.submitAssignmentMCQ(userId, taskId, answers, module, assignmentId, sessionId);
+  
+  res.json(result);
+}));
+
 export default router;
 

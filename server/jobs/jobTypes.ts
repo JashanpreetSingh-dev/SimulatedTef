@@ -43,3 +43,22 @@ export interface EvaluationJobResult {
   error?: string;
 }
 
+export interface QuestionGenerationJobData {
+  assignmentId: string;
+  type: 'reading' | 'listening';
+  prompt: string;
+  settings: {
+    numberOfQuestions: number;
+    theme?: string;
+    sections?: string[];
+  };
+  userId: string;
+}
+
+export interface QuestionGenerationJobResult {
+  assignmentId: string;
+  taskId: string;
+  questionIds: string[];
+  success: boolean;
+  error?: string;
+}

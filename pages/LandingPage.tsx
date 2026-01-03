@@ -65,7 +65,7 @@ export function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-100/50 to-slate-50 dark:from-transparent dark:via-slate-800/50 dark:to-slate-900" />
         <div className="z-10 text-center space-y-8 sm:space-y-12 max-w-5xl mx-auto w-full">
           <div className="space-y-4 sm:space-y-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black tracking-[-0.02em] leading-[1.05] px-2 animate-fade-in-up">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 animate-fade-in-up">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
             </h1>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2 animate-fade-in-up delay-200">
@@ -79,15 +79,15 @@ export function LandingPage() {
             </p>
           </div>
           
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
             <SignUpButton mode="modal">
-              <button className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
+              <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
                 <span className="relative z-10">Start 3-Day Free Trial</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
               </button>
             </SignUpButton>
             <SignInButton mode="modal">
-              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.02] active:scale-[0.98] shadow-sm">
+              <button className="w-full sm:w-auto px-6 py-4 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.02] active:scale-[0.98] shadow-sm">
                 Sign in
               </button>
             </SignInButton>
@@ -133,41 +133,41 @@ export function LandingPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-300/20 dark:hover:shadow-indigo-500/20 border border-slate-200 dark:border-slate-700 ${
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-300/20 dark:hover:shadow-indigo-500/20 border border-slate-200 dark:border-slate-700 ${
               featuresVisible ? 'animate-slide-up delay-100' : 'opacity-0 translate-y-4'
             }`}>
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800 group-hover:rotate-3 transition-all duration-300">🎯</div>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-4 group-hover:scale-110 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800 group-hover:rotate-3 transition-all duration-300">🎯</div>
               <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Official Format</h3>
               <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real TEF Canada scenarios with exact time limits and official exam structure.
               </p>
             </div>
 
-            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-cyan-300/20 dark:hover:shadow-cyan-500/20 border border-slate-200 dark:border-slate-700 ${
+            <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-cyan-300/20 dark:hover:shadow-cyan-500/20 border border-slate-200 dark:border-slate-700 ${
               featuresVisible ? 'animate-slide-up delay-200' : 'opacity-0 translate-y-4'
             }`}>
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-cyan-200 dark:group-hover:bg-cyan-800 group-hover:rotate-3 transition-all duration-300">🤖</div>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-4 group-hover:scale-110 group-hover:bg-cyan-200 dark:group-hover:bg-cyan-800 group-hover:rotate-3 transition-all duration-300">🤖</div>
               <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">AI Evaluation</h3>
               <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 CCI Paris framework evaluation with accurate CLB and CECR assessments.
               </p>
             </div>
 
-            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/20 border border-slate-200 dark:border-slate-700 ${
+            <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/20 border border-slate-200 dark:border-slate-700 ${
               featuresVisible ? 'animate-slide-up delay-300' : 'opacity-0 translate-y-4'
             }`}>
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800 group-hover:rotate-3 transition-all duration-300">🎙️</div>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-4 group-hover:scale-110 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800 group-hover:rotate-3 transition-all duration-300">🎙️</div>
               <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Live Audio</h3>
               <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Real-time conversation practice with advanced speech recognition.
               </p>
             </div>
 
-            <div className={`group space-y-2 sm:space-y-4 p-4 sm:p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20 border border-slate-200 dark:border-slate-700 ${
+            <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20 border border-slate-200 dark:border-slate-700 ${
               featuresVisible ? 'animate-slide-up delay-400' : 'opacity-0 translate-y-4'
             }`}>
-              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-2 sm:mb-4 group-hover:scale-110 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 group-hover:rotate-3 transition-all duration-300">📊</div>
+              <div className="w-12 h-12 sm:w-12 sm:h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl sm:text-2xl mb-4 group-hover:scale-110 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 group-hover:rotate-3 transition-all duration-300">📊</div>
               <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">CLB Scoring</h3>
               <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                 Get TEF scores (0-699) and CLB levels for Canadian immigration.

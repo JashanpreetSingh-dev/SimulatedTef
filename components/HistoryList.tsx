@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { persistenceService } from '../services/persistence';
+import { assignmentService } from '../services/assignmentService';
 import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
 
@@ -21,6 +22,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   const userId = user?.id || 'guest';
   const [results, setResults] = useState<SavedResult[]>([]);
   const [tasks, setTasks] = useState<Map<string, NormalizedTask>>(new Map()); // Map of taskId -> task
+  const [assignmentCompletionCounts, setAssignmentCompletionCounts] = useState<Map<string, number>>(new Map()); // Map of assignmentId -> completion count
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -63,6 +65,35 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
           }
         });
         setTasks(taskMap);
+        
+        // Count assignment completions - fetch all assignment results for this user to get accurate counts
+        if (userId && userId !== 'guest') {
+          try {
+            const allResultsResponse = await persistenceService.getAllResults(
+              userId,
+              getToken,
+              1000, // Get a large number to count all completions
+              0,
+              'assignment', // Only get assignment results
+              undefined,
+              undefined,
+              false // Don't need to populate tasks for counting
+            );
+            
+            // Count completions per assignment
+            const completionCounts = new Map<string, number>();
+            allResultsResponse.results?.forEach((result: SavedResult) => {
+              if (result.assignmentId) {
+                const currentCount = completionCounts.get(result.assignmentId) || 0;
+                completionCounts.set(result.assignmentId, currentCount + 1);
+              }
+            });
+            setAssignmentCompletionCounts(completionCounts);
+          } catch (error) {
+            console.error('Failed to fetch assignment completion counts:', error);
+            // Continue without completion counts
+          }
+        }
       } catch (error) {
         console.error('Error loading results:', error);
         setResults([]);
@@ -128,14 +159,22 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
 
   // Filter results by module type and resultType (no mode filtering - show all)
   const filteredResults = results.filter(result => {
-    if (!module) return true;
+    if (!module) {
+      // When no module filter, show all results (practice, mockExam, and assignment)
+      return true;
+    }
     
     // Filter by module type and resultType
-    const expectedResultType = module === 'oralExpression' || module === 'writtenExpression' ? 'practice' : 'mockExam';
-    const moduleMatch = result.module === module;
-    const resultTypeMatch = result.resultType === expectedResultType;
-    
-    return moduleMatch && resultTypeMatch;
+    // For oral/written expression: show practice results
+    // For reading/listening: show both mockExam and assignment results (practice assignments)
+    if (module === 'oralExpression' || module === 'writtenExpression') {
+      return result.module === module && result.resultType === 'practice';
+    } else {
+      // For reading/listening, show both mockExam and assignment results
+      const moduleMatch = result.module === module;
+      const resultTypeMatch = result.resultType === 'mockExam' || result.resultType === 'assignment';
+      return moduleMatch && resultTypeMatch;
+    }
   });
 
   const handleRetake = async (result: SavedResult) => {
@@ -204,6 +243,26 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
           selectedModule: 'oral'
         } 
       });
+    } else if ((result.module === 'reading' || result.module === 'listening') && result.assignmentId) {
+      // For reading/listening assignments - fetch assignment to get taskId
+      try {
+        const assignment = await assignmentService.getAssignment(result.assignmentId, getToken);
+        if (assignment && assignment.taskId) {
+          navigate(`/exam/assignment/${result.module}?taskId=${assignment.taskId}&assignmentId=${result.assignmentId}`);
+        } else {
+          alert('Unable to retake this assignment. Assignment information is missing.');
+        }
+      } catch (error) {
+        console.error('Failed to fetch assignment:', error);
+        alert('Unable to retake this assignment. Please try again.');
+      }
+    } else if (result.module === 'reading' || result.module === 'listening') {
+      // For reading/listening mock exams - navigate to mock exam view
+      if (result.mockExamId) {
+        navigate(`/mock-exam/${result.mockExamId}?module=${result.module}`);
+      } else {
+        alert('Unable to retake this exam. Mock exam information is missing.');
+      }
     }
   };
 
@@ -213,7 +272,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
 
   if (results.length === 0) {
     return (
-      <div className="py-24 text-center bg-indigo-100/70 dark:bg-slate-800/70 rounded-[3rem] border border-slate-200 dark:border-slate-700 shadow-sm animate-in zoom-in duration-500 transition-colors">
+      <div className="py-24 text-center bg-indigo-100/70 dark:bg-slate-800/70 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm animate-in zoom-in duration-500 transition-colors">
         <div className="text-7xl mb-8">📅</div>
         <h2 className="text-4xl font-black text-slate-800 dark:text-slate-100 tracking-tight">{t('history.empty')}</h2>
         <p className="text-slate-500 dark:text-slate-400 mt-4 max-w-md mx-auto font-medium px-8 text-lg leading-relaxed">
@@ -232,12 +291,12 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         className="flex-1 min-h-0 overflow-y-auto pt-6"
       >
         {filteredResults.length === 0 && !loading ? (
-          <div className="py-12 text-center bg-indigo-100/70 dark:bg-slate-800/70 rounded-[2rem] border border-slate-200 dark:border-slate-700 transition-colors">
+          <div className="py-12 text-center bg-indigo-100/70 dark:bg-slate-800/70 rounded-2xl border border-slate-200 dark:border-slate-700 transition-colors">
             <p className="text-slate-500 dark:text-slate-400">{t('history.noResults')}</p>
           </div>
         ) : (
           <>
-            <div className="grid gap-2 pb-4">
+            <div className="grid gap-4 pb-4">
               {filteredResults.map((item) => {
             // Get task numbers from task references or legacy fields
             const taskNumbers = [];
@@ -303,9 +362,45 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             };
             
             const evaluationData = getEvaluationData(item);
-            const score = evaluationData.score ?? (item as any).score;
-            const clbLevel = evaluationData.clbLevel ?? (item as any).clbLevel;
-            const cecrLevel = evaluationData.cecrLevel ?? (item as any).cecrLevel;
+            
+            // For reading/listening (including assignments), get score from moduleData
+            let score: number | undefined;
+            let totalQuestions: number | undefined;
+            if (item.module === 'reading' || item.module === 'listening') {
+              if (item.moduleData && item.moduleData.type === 'mcq') {
+                score = item.moduleData.score;
+                totalQuestions = item.moduleData.totalQuestions;
+              } else if (item.module === 'reading' && (item as any).readingResult) {
+                score = (item as any).readingResult.score;
+                totalQuestions = (item as any).readingResult.totalQuestions;
+              } else if (item.module === 'listening' && (item as any).listeningResult) {
+                score = (item as any).listeningResult.score;
+                totalQuestions = (item as any).listeningResult.totalQuestions;
+              }
+            } else {
+              // For oral/written expression, use evaluation score
+              // evaluationData can be EvaluationResult or SavedResult
+              if ('score' in evaluationData) {
+                score = evaluationData.score;
+              } else {
+                // If evaluationData is SavedResult, use its evaluation property
+                score = (evaluationData as SavedResult).evaluation?.score;
+              }
+            }
+            
+            // Handle clbLevel and cecrLevel similarly
+            let clbLevel: string | undefined;
+            let cecrLevel: string | undefined;
+            if ('clbLevel' in evaluationData) {
+              clbLevel = evaluationData.clbLevel;
+            } else {
+              clbLevel = (evaluationData as SavedResult).evaluation?.clbLevel;
+            }
+            if ('cecrLevel' in evaluationData) {
+              cecrLevel = evaluationData.cecrLevel;
+            } else {
+              cecrLevel = (evaluationData as SavedResult).evaluation?.cecrLevel;
+            }
             
             // Get mode badge color and label
             const getModeBadgeColor = (mode: string) => {
@@ -321,33 +416,37 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             };
             
             return (
-            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-2 sm:p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
+            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
               {/* Desktop: Single row layout */}
-              <div className="hidden sm:flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-4">
                 {/* Left section: Mode badge, Score with /699 */}
                 <div className="flex items-center gap-2 flex-shrink-0">
-                  <div className={`px-1.5 py-0.5 rounded border font-black text-[8px] uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
+                  <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
                     {getModeLabel(item.mode)}
                   </div>
-                  <div className="flex items-baseline gap-1.5">
+                  <div className="flex items-baseline gap-2">
                     <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">/699</div>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                      {item.module === 'reading' || item.module === 'listening' 
+                        ? `/${totalQuestions ?? 40}` 
+                        : '/699'}
+                    </div>
                   </div>
                 </div>
 
                 {/* Center section: CLB, CECR, Task, Date */}
-                <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
                   {/* CLB Badge */}
                   {clbLevel && (
-                    <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-0.5 rounded flex items-center gap-1 flex-shrink-0">
-                      <span className="text-[7px] font-black uppercase tracking-wider opacity-80">CLB</span>
+                    <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-1 rounded flex items-center gap-1 flex-shrink-0">
+                      <span className="text-xs font-black uppercase tracking-wider opacity-80">CLB</span>
                       <span className="text-xs font-black">{clbLevel}</span>
                     </div>
                   )}
 
                   {/* CECR Badge */}
                   {cecrLevel && (
-                    <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider flex-shrink-0 ${
+                    <span className={`px-2 py-1 rounded-full text-xs font-black uppercase tracking-wider flex-shrink-0 ${
                       cecrLevel.includes('C2') ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-400 dark:text-purple-300' :
                       cecrLevel.includes('C1') ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300' :
                       cecrLevel.includes('B2') ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400 dark:text-blue-300' :
@@ -359,30 +458,45 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                     </span>
                   )}
 
-                  {/* Task number */}
-                  {taskNumberText && (
-                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0">
+                  {/* Title/Assignment name - show for all results */}
+                  {item.title && (
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">
+                        {item.title}
+                      </span>
+                      {/* Show completion count for assignments */}
+                      {item.assignmentId && assignmentCompletionCounts.has(item.assignmentId) && (
+                        <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-1 rounded flex-shrink-0">
+                          {assignmentCompletionCounts.get(item.assignmentId)}x
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Task number - only show for oral/written expression, not for reading/listening */}
+                  {taskNumberText && (item.module === 'oralExpression' || item.module === 'writtenExpression') && (
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded flex-shrink-0">
                       {taskNumberText}
                     </span>
                   )}
 
                   {/* Date */}
-                  <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 flex-shrink-0">
+                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex-shrink-0">
                     {formatDateFrench(item.timestamp)}
                   </span>
                 </div>
 
                 {/* Right section: Action buttons */}
-                <div className="flex gap-1.5 flex-shrink-0">
+                <div className="flex gap-2 flex-shrink-0">
                   <button 
                     onClick={() => handleRetake(item)}
-                    className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
+                    className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
                   >
                     {t('actions.resume')}
                   </button>
                   <button 
                     onClick={() => navigate(`/results/${item._id}`)}
-                    className="px-2.5 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
+                    className="px-3 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
                   >
                     {t('actions.details')} →
                   </button>
@@ -390,30 +504,34 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
               </div>
 
               {/* Mobile: Compact column layout */}
-              <div className="flex sm:hidden items-start gap-3">
+              <div className="flex sm:hidden items-start gap-4">
                 {/* Mode badge and Score with /699 */}
-                <div className="flex flex-col items-start gap-1.5 flex-shrink-0">
-                  <div className={`px-1.5 py-0.5 rounded border font-black text-[8px] uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
+                <div className="flex flex-col items-start gap-2 flex-shrink-0">
+                  <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
                     {getModeLabel(item.mode)}
                   </div>
-                  <div className="flex items-baseline gap-1">
+                  <div className="flex items-baseline gap-2">
                     <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">/699</div>
+                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                      {item.module === 'reading' || item.module === 'listening' 
+                        ? `/${totalQuestions ?? 40}` 
+                        : '/699'}
+                    </div>
                   </div>
                 </div>
                 
                 {/* Main content */}
                 <div className="flex-1 min-w-0">
                   {/* First row: Badges and task */}
-                  <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                  <div className="flex items-center gap-2 flex-wrap mb-2">
                     {clbLevel && (
-                      <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-0.5 rounded flex items-center gap-1 flex-shrink-0">
-                        <span className="text-[7px] font-black uppercase tracking-wider opacity-80">CLB</span>
+                      <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-1 rounded flex items-center gap-1 flex-shrink-0">
+                        <span className="text-xs font-black uppercase tracking-wider opacity-80">CLB</span>
                         <span className="text-xs font-black">{clbLevel}</span>
                       </div>
                     )}
                     {cecrLevel && (
-                      <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider flex-shrink-0 ${
+                      <span className={`px-2 py-1 rounded-full text-xs font-black uppercase tracking-wider flex-shrink-0 ${
                         cecrLevel.includes('C2') ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-400 dark:text-purple-300' :
                         cecrLevel.includes('C1') ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300' :
                         cecrLevel.includes('B2') ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-400 dark:text-blue-300' :
@@ -424,28 +542,44 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                         {cecrLevel}
                       </span>
                     )}
-                    {taskNumberText && (
-                      <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded flex-shrink-0">
+                    {/* Task number - only show for oral/written expression, not for reading/listening */}
+                    {taskNumberText && (item.module === 'oralExpression' || item.module === 'writtenExpression') && (
+                      <span className="text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded flex-shrink-0">
                         {taskNumberText}
                       </span>
                     )}
                   </div>
                   
+                  {/* Title/Assignment name row */}
+                  {item.title && (
+                    <div className="mb-2 flex items-center gap-2">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        {item.title}
+                      </span>
+                      {/* Show completion count for assignments */}
+                      {item.assignmentId && assignmentCompletionCounts.has(item.assignmentId) && (
+                        <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/50 px-2 py-1 rounded flex-shrink-0">
+                          {assignmentCompletionCounts.get(item.assignmentId)}x
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  
                   {/* Second row: Date and buttons */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-[9px] font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                       {formatDateFrench(item.timestamp)}
                     </span>
-                    <div className="flex gap-1.5 flex-shrink-0">
+                    <div className="flex gap-2 flex-shrink-0">
                       <button 
                         onClick={() => handleRetake(item)}
-                        className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
+                        className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
                       >
                         {t('actions.resume')}
                       </button>
                       <button 
                         onClick={() => navigate(`/results/${item._id}`)}
-                        className="px-2.5 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-[8px] uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
+                        className="px-3 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
                       >
                         {t('actions.details')}
                       </button>
@@ -471,7 +605,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             {/* End of results indicator */}
             {!hasMore && filteredResults.length > 0 && (
               <div className="py-4 text-center">
-                <p className="text-[10px] text-slate-400 dark:text-slate-600 font-medium opacity-60">
+                <p className="text-xs text-slate-400 dark:text-slate-600 font-medium opacity-60">
                   {t('history.endOfResults')}
                 </p>
               </div>

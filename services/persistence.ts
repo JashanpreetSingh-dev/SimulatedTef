@@ -354,7 +354,7 @@ export const persistenceService = {
    * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
    * @param limit - Optional limit for pagination (default: 50)
    * @param skip - Optional skip/offset for pagination (default: 0)
-   * @param resultType - Optional filter by resultType ('practice' | 'mockExam')
+   * @param resultType - Optional filter by resultType ('practice' | 'mockExam' | 'assignment')
    * @param module - Optional filter by module
    * @param mockExamId - Optional filter by mockExamId
    * @param populateTasks - Optional flag to populate task data from references
@@ -364,7 +364,7 @@ export const persistenceService = {
     authTokenOrGetter?: string | null | TokenGetter,
     limit?: number,
     skip?: number,
-    resultType?: 'practice' | 'mockExam',
+    resultType?: 'practice' | 'mockExam' | 'assignment',
     module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening',
     mockExamId?: string,
     populateTasks: boolean = false

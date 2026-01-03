@@ -86,7 +86,7 @@ export function ResultView() {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 flex items-center justify-center p-8">
+        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 flex items-center justify-center p-6">
           <div className="text-center">
             <div className="w-16 h-16 mx-auto mb-4 relative">
               <div className="absolute inset-0 border-4 border-indigo-200 dark:border-indigo-800 rounded-full"></div>
@@ -102,11 +102,11 @@ export function ResultView() {
   if (error || !result) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-4 md:p-8 transition-colors">
+        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-6 md:p-8 transition-colors">
           <div className="max-w-7xl mx-auto">
             <button 
               onClick={() => navigate('/history')}
-              className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
+              className="mb-4 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
             >
               ← {t('back.history')}
             </button>
@@ -128,6 +128,9 @@ export function ResultView() {
             onBack={() => {
               if (result.mockExamId) {
                 navigate(`/mock-exam/${result.mockExamId}`);
+              } else if (result.assignmentId) {
+                // Navigate back to practice for assignment results
+                navigate('/practice');
               } else if (result.module === 'writtenExpression' || result.module === 'oralExpression') {
                 // Navigate back to practice, preserving module selection
                 const module = result.module === 'writtenExpression' ? 'written' : 'oral';
