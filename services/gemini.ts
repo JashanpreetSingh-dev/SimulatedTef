@@ -35,7 +35,7 @@ export const LIVE_API_CONFIG = {
   
   // Turn detection timeout (how long of silence before considering user finished)
   // This is primarily handled by the Gemini API, but can be adjusted if needed
-  turnDetectionTimeout: 800, // 800ms of silence
+  turnDetectionTimeout: 600, // 600ms of silence
 } as const;
 
 export const encodeAudio = (bytes: Uint8Array) => {
