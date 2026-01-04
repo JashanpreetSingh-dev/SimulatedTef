@@ -15,37 +15,7 @@ export const useUsage = () => {
   const [loading, setLoading] = useState(false);
   const { getToken, isSignedIn } = useAuth();
 
-  const checkCanStart = async (examType: ExamType): Promise<CanStartExamResult> => {
-    if (!isSignedIn) {
-      return { canStart: false, reason: 'Please sign in to start an exam' };
-    }
-
-    setLoading(true);
-    try {
-      const token = await getToken();
-      const response = await fetch(`${BACKEND_URL}/api/usage/check`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ examType }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to check usage');
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (err: any) {
-      console.error('Error checking usage:', err);
-      return { canStart: false, reason: err.message || 'Failed to check usage' };
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Removed checkCanStart - no subscription checks needed
 
   const startExam = async (examType: ExamType): Promise<CanStartExamResult> => {
     if (!isSignedIn) {
@@ -130,6 +100,6 @@ export const useUsage = () => {
     }
   };
 
-  return { checkCanStart, startExam, validateSession, completeSession, loading };
+  return { startExam, validateSession, completeSession, loading };
 };
 

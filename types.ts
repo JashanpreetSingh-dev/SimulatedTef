@@ -297,6 +297,7 @@ export interface Assignment {
   settings: AssignmentSettings; // Assignment settings
   status: AssignmentStatus; // 'draft' | 'published'
   createdBy: string; // User ID of creator
+  organizationId?: string; // Organization ID for RBAC
   taskId?: string; // Reference to ReadingTask or ListeningTask
   questionIds?: string[]; // References to generated questions
   createdAt: string;

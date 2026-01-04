@@ -4,13 +4,50 @@
 
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
-import { subscriptionService } from '../services/subscriptionService';
 import { asyncHandler } from '../middleware/errorHandler';
 import { mcqSubmissionLimiter } from '../middleware/rateLimiter';
 import { Request, Response } from 'express';
 import { connectDB } from '../db/connection';
+import { createExamSession } from '../models/examSession';
 
 const router = Router();
+
+// Helper functions for mock exam tracking (simple, no subscription checks)
+async function getActiveMockExam(userId: string): Promise<any> {
+  const db = await connectDB();
+  
+  const usage = await db.collection('usage').findOne({ userId });
+  const activeMockExamId = usage?.activeMockExamId as string | undefined;
+  
+  if (!activeMockExamId) {
+    return null;
+  }
+  
+  const session = await db.collection('examSessions').findOne({
+    userId,
+    mockExamId: activeMockExamId,
+    examType: 'mock',
+  });
+  
+  if (!session) {
+    return null;
+  }
+  
+  // Check if all 4 modules are completed - if so, don't return as active
+  const completedModules = (session.completedModules as string[]) || [];
+  if (completedModules.length === 4) {
+    return null; // Fully completed, not active
+  }
+  
+  return session;
+}
+
+async function getCompletedMockExamIds(userId: string): Promise<string[]> {
+  const db = await connectDB();
+  const usage = await db.collection('usage').findOne({ userId });
+  const completedMockExamIds = (usage?.completedMockExamIds as string[]) || [];
+  return completedMockExamIds;
+}
 
 // POST /api/exam/start - Create exam session and record usage
 router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Response) => {
@@ -48,12 +85,12 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(400).json({ error: 'Invalid exam type' });
   }
 
-  const result = await subscriptionService.canStartExam(userId, examType);
-  if (!result.canStart) {
-    return res.status(403).json({ error: result.reason || 'Cannot start exam' });
-  }
+  // Create exam session directly (no subscription checks)
+  const session = createExamSession(userId, examType);
+  const db = await connectDB();
+  await db.collection('examSessions').insertOne(session);
 
-  res.json({ sessionId: result.sessionId, canStart: true });
+  res.json({ sessionId: session.sessionId, canStart: true });
 }));
 
 // POST /api/exam/validate-session - Validate exam session (e.g., on refresh)
@@ -68,7 +105,13 @@ router.post('/validate-session', requireAuth, asyncHandler(async (req: Request, 
     return res.status(400).json({ error: 'Session ID required' });
   }
 
-  const session = await subscriptionService.validateExamSession(userId, sessionId);
+  // Simple session validation (no subscription checks)
+  const db = await connectDB();
+  const session = await db.collection('examSessions').findOne({
+    sessionId,
+    userId,
+  });
+
   if (!session) {
     return res.status(404).json({ error: 'Session not found or invalid' });
   }
@@ -93,7 +136,19 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
     return res.status(400).json({ error: 'Session ID required' });
   }
 
-  await subscriptionService.completeExamSession(userId, sessionId, resultId, status);
+  // Simple session completion (no subscription checks)
+  const db = await connectDB();
+  await db.collection('examSessions').updateOne(
+    { sessionId, userId },
+    {
+      $set: {
+        completed: status === 'completed',
+        resultId: resultId || undefined,
+        updatedAt: new Date().toISOString(),
+      },
+    }
+  );
+
   res.json({ success: true });
 }));
 
@@ -120,7 +175,7 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
 
   try {
     // Check for active mock exam
-    const activeMockExam = await subscriptionService.getActiveMockExam(userId);
+    const activeMockExam = await getActiveMockExam(userId);
     if (activeMockExam) {
       return res.status(400).json({ 
         error: 'You have an incomplete mock exam. Complete it first or abandon it.',
@@ -240,8 +295,8 @@ router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: R
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const activeMockExam = await subscriptionService.getActiveMockExam(userId);
-  let completedMockExamIds = await subscriptionService.getCompletedMockExamIds(userId);
+  const activeMockExam = await getActiveMockExam(userId);
+  let completedMockExamIds = await getCompletedMockExamIds(userId);
   const originalCompletedIds = [...completedMockExamIds];
 
   // Filter out completed exam IDs that don't correspond to real exams or don't have results

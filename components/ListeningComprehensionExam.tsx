@@ -75,8 +75,12 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
     if (savedState.startTime) {
       examState.startTimeRef.current = savedState.startTime;
       examState.setHasStarted(true);
+    } else if (mockExamId && !assignmentId) {
+      // For mock exams with saved state but no startTime, auto-start the exam
+      examState.startTimeRef.current = Date.now();
+      examState.setHasStarted(true);
     }
-  }, [examState]);
+  }, [examState, mockExamId, assignmentId]);
 
   // Persistence
   const persistence = usePersistence({
@@ -89,6 +93,22 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
     startTime: examState.startTimeRef.current,
     onStateLoaded: handleStateLoaded,
   });
+
+  // Auto-start for mock exams (if no saved state was loaded)
+  // This runs after persistence hook has had a chance to load state
+  useEffect(() => {
+    // Small delay to ensure persistence hook's useEffect has run
+    const timeoutId = setTimeout(() => {
+      if (!examState.hasStarted && mockExamId && !assignmentId) {
+        // For mock exams without saved state, auto-start immediately
+        examState.startTimeRef.current = Date.now();
+        examState.setHasStarted(true);
+      }
+    }, 0); // Use setTimeout to run after current call stack (after persistence useEffect)
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount - check for auto-start after persistence loads
 
   // Submission
   const submission = useSubmission({

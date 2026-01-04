@@ -8,8 +8,13 @@ import { readingTaskService } from "./readingTaskService";
 import { listeningTaskService } from "./listeningTaskService";
 import { writtenTaskService } from "./writtenTaskService";
 import { questionService } from "./questionService";
-import { subscriptionService } from "./subscriptionService";
-import { createUsage, getTodayUTC } from "../models/usage";
+// Helper function for mock exam tracking (simple, no subscription checks)
+async function getCompletedMockExamIds(userId: string): Promise<string[]> {
+  const db = await connectDB();
+  const usage = await db.collection('usage').findOne({ userId });
+  const completedMockExamIds = (usage?.completedMockExamIds as string[]) || [];
+  return completedMockExamIds;
+}
 import { ObjectId } from "mongodb";
 import {
   getTaskById,
@@ -39,8 +44,7 @@ export const mockExamService = {
       .toArray();
 
     // Get completed mock exam IDs for this user
-    const completedMockExamIds =
-      await subscriptionService.getCompletedMockExamIds(userId);
+    const completedMockExamIds = await getCompletedMockExamIds(userId);
 
     // Filter out completed exams
     const availableMockExams = allMockExams.filter(
@@ -109,9 +113,7 @@ export const mockExamService = {
     }
 
     // Check if user has already completed this exam
-    const completedIds = await subscriptionService.getCompletedMockExamIds(
-      userId
-    );
+    const completedIds = await getCompletedMockExamIds(userId);
     if (completedIds.includes(mockExamId)) {
       return false;
     }
@@ -124,7 +126,8 @@ export const mockExamService = {
     });
 
     // If there's an active session, user can resume, but can also start if it's not fully completed
-    return !activeSession || activeSession.completedModules?.length !== 3;
+    // There are 4 modules total: oralExpression, reading, listening, writtenExpression
+    return !activeSession || (activeSession.completedModules?.length || 0) < 4;
   },
 
   async createMockExamSession(
@@ -151,8 +154,8 @@ export const mockExamService = {
       }
 
       // Get random tasks for the mock exam
-      const readingTask = await mockExamService.getRandomTask("reading");
-      const listeningTask = await mockExamService.getRandomTask("listening");
+      const readingTask = await this.getRandomTask("reading");
+      const listeningTask = await this.getRandomTask("listening");
 
       if (!readingTask || !listeningTask) {
         return { success: false, error: "Failed to get exam tasks" };
@@ -277,123 +280,15 @@ export const mockExamService = {
         );
       }
 
-      // Check if user is superuser (bypasses credit checks)
-      const superUserId = process.env.SUPER_USER_ID;
-      const isSuperUser = superUserId ? userId === superUserId : false;
-
-      if (!isSuperUser) {
-        // Check credits for non-superusers
-        const canStartCheck = await subscriptionService.checkCanStartExam(
-          userId,
-          "full"
-        );
-        if (!canStartCheck.canStart) {
-          throw new Error(
-            canStartCheck.reason || "No credits available for mock exam"
-          );
-        }
-      } else {
-        console.log(
-          `Superuser ${userId} starting mock exam - bypassing credit checks`
-        );
-      }
-
-      // For non-superusers, check credits before starting transaction (but don't consume yet)
-      const status = await subscriptionService.getSubscriptionStatus(userId);
-      const today = getTodayUTC();
-
-      // Get or create today's usage record (same logic as canStartExam)
-      let usage = await db.collection("usage").findOne({ userId, date: today });
-      if (!usage) {
-        const newUsage = createUsage(userId, today);
-        const { _id, ...usageToInsert } = newUsage;
-        await db.collection("usage").insertOne(usageToInsert as any);
-        // Re-fetch to get the document with ObjectId
-        usage = await db.collection("usage").findOne({ userId, date: today });
-      }
-
-      // Check if user can start (similar logic to canStartExam but without consuming)
-      if (status.subscriptionType === "EXPIRED") {
-        throw new Error("Subscription has expired");
-      }
-
-      const canStart =
-        (status.isActive &&
-          status.subscriptionType === "TRIAL" &&
-          usage.fullTestsUsed < status.limits.fullTests) ||
-        (status.packCredits && status.packCredits.fullTests.remaining > 0);
-
-      if (!canStart) {
-        throw new Error("No credits available for mock exam");
-      }
-
-      // Use transaction to create mock exam session and consume credit
+      // No subscription checks - allow all users to start mock exams
+      // Use transaction to create mock exam session
       const session = db.client.startSession();
 
       try {
         let sessionId: string;
 
         await session.withTransaction(async () => {
-          // Re-check credits within transaction to prevent race conditions
-          let currentUsage = await db
-            .collection("usage")
-            .findOne({ userId, date: today }, { session });
-
-          // Create usage record if it doesn't exist (within transaction)
-          if (!currentUsage) {
-            const newUsage = createUsage(userId, today);
-            const { _id, ...usageToInsert } = newUsage;
-            const insertResult = await db
-              .collection("usage")
-              .insertOne(usageToInsert as any, { session });
-            // Fetch the inserted document to get the ObjectId
-            currentUsage = await db
-              .collection("usage")
-              .findOne({ _id: insertResult.insertedId }, { session });
-          }
-
-          // Skip credit consumption for superusers
-          if (!isSuperUser) {
-            const currentSub = await db
-              .collection("subscriptions")
-              .findOne({ userId }, { session });
-
-            // Consume credit based on what's available (daily limit first, then pack)
-            if (
-              status.isActive &&
-              status.subscriptionType === "TRIAL" &&
-              currentUsage.fullTestsUsed < status.limits.fullTests
-            ) {
-              // Use daily limit
-              await db.collection("usage").updateOne(
-                { userId, date: today },
-                {
-                  $inc: { fullTestsUsed: 1 },
-                  $set: { updatedAt: new Date().toISOString() },
-                },
-                { session }
-              );
-            } else if (
-              currentSub &&
-              currentSub.packFullTestsTotal &&
-              (currentSub.packFullTestsUsed || 0) <
-                currentSub.packFullTestsTotal
-            ) {
-              // Use pack credits
-              await db.collection("subscriptions").updateOne(
-                { userId },
-                {
-                  $inc: { packFullTestsUsed: 1 },
-                  $set: { updatedAt: new Date().toISOString() },
-                },
-                { session }
-              );
-            } else {
-              throw new Error("No credits available");
-            }
-          } // End of non-superuser credit consumption
-
-          // Create mock exam session
+          // Create mock exam session (no credit checks or consumption)
           const examSession = createExamSession(userId, "mock", {
             mockExamId,
             taskIds: [

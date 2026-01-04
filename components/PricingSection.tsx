@@ -1,43 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PricingCard } from './PricingCard';
-import { useCheckout } from '../hooks/useCheckout';
 import { useUser, SignUpButton } from '@clerk/clerk-react';
-import { useSubscription } from '../hooks/useSubscription';
-import { UpgradeWarningModal } from './UpgradeWarningModal';
 
 export const PricingSection: React.FC = () => {
-  const { initiateCheckout, loading, isSignedIn } = useCheckout();
   const { user } = useUser();
-  const { status } = useSubscription();
-  const [showUpgradeWarning, setShowUpgradeWarning] = useState(false);
-  const [pendingPackType, setPendingPackType] = useState<'starter' | 'examReady' | null>(null);
-
-  const handleCheckout = async (planType: 'starter' | 'examReady') => {
-    if (!isSignedIn) {
-      // For signed-out users, show sign-up modal
-      // The SignUpButton will handle this
-      return;
-    }
-
-    // Check if user has active pack
-    if (status?.packType && status?.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
-      // Show upgrade warning
-      setPendingPackType(planType);
-      setShowUpgradeWarning(true);
-      return;
-    }
-
-    // No active pack, proceed with checkout
-    await initiateCheckout(planType);
-  };
-
-  const handleConfirmUpgrade = async () => {
-    if (pendingPackType) {
-      setShowUpgradeWarning(false);
-      await initiateCheckout(pendingPackType);
-      setPendingPackType(null);
-    }
-  };
+  const isSignedIn = !!user;
 
   const plans = [
     {
@@ -115,57 +82,19 @@ export const PricingSection: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {plans.map((planData) => {
-            // Determine if this is the user's current plan
-            const isCurrentPlan = status && status.isActive && (
-              (planData.plan === 'trial' && status.subscriptionType === 'TRIAL') ||
-              (planData.plan === 'starter' && status.packType === 'STARTER_PACK' && status.packExpirationDate && new Date(status.packExpirationDate) > new Date()) ||
-              (planData.plan === 'examReady' && status.packType === 'EXAM_READY_PACK' && status.packExpirationDate && new Date(status.packExpirationDate) > new Date())
-            );
-            
-            // Check if user has active pack (for upgrade warning)
-            const hasActivePack = status?.packType && status?.packExpirationDate && 
-              new Date(status.packExpirationDate) > new Date() &&
-              planData.plan !== 'trial';
-
             return (
               <PricingCard
                 key={planData.plan}
                 {...planData}
                 isSignedIn={isSignedIn}
-                loading={loading}
-                isCurrentPlan={isCurrentPlan}
-                hasActivePack={hasActivePack}
+                loading={false}
+                isCurrentPlan={false}
+                hasActivePack={false}
               />
             );
           })}
         </div>
       </div>
-
-      {/* Upgrade Warning Modal */}
-      {status?.packType && status?.packExpirationDate && status?.packCredits && (
-        <UpgradeWarningModal
-          isOpen={showUpgradeWarning}
-          onClose={() => {
-            setShowUpgradeWarning(false);
-            setPendingPackType(null);
-          }}
-          onConfirm={handleConfirmUpgrade}
-          currentPack={{
-            type: status.packType,
-            expiration: status.packExpirationDate,
-            credits: status.packCredits,
-          }}
-          newPack={{
-            type: pendingPackType === 'starter' ? 'STARTER_PACK' : 'EXAM_READY_PACK',
-            name: pendingPackType === 'starter' ? 'Starter Pack' : 'Exam Ready Pack',
-            credits: {
-              fullTests: pendingPackType === 'starter' ? 5 : 20,
-              sectionA: pendingPackType === 'starter' ? 10 : 20,
-              sectionB: pendingPackType === 'starter' ? 10 : 20,
-            },
-          }}
-        />
-      )}
     </section>
   );
 };

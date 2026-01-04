@@ -134,11 +134,14 @@ export function useMockExamModules({
       );
       
       if (module === 'oralExpression') {
+        console.log('[useMockExamModules] Starting oralExpression module, received data:', moduleData);
         if (moduleData.scenario) {
+          console.log('[useMockExamModules] Setting oralExpression scenario and phase');
           onOralExpressionScenarioSet(moduleData.scenario);
           onPhaseSet('oralExpression');
           return { oralExpression: { scenario: moduleData.scenario } };
         } else {
+          console.error('[useMockExamModules] Missing scenario in oralExpression response:', moduleData);
           throw new Error('Failed to fetch oral expression scenario');
         }
       } else if (module === 'reading') {

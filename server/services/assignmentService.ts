@@ -67,7 +67,8 @@ export const assignmentService = {
     title: string | undefined,
     prompt: string,
     settings: AssignmentSettings,
-    createdBy: string
+    createdBy: string,
+    organizationId?: string
   ): Promise<Assignment> {
     const db = await connectDB();
     
@@ -103,7 +104,8 @@ export const assignmentService = {
       prompt,
       settings,
       createdBy,
-      'draft'
+      'draft',
+      organizationId
     );
 
     // Save to database
@@ -408,14 +410,21 @@ export const assignmentService = {
   },
 
   /**
-   * Get all assignments created by a user
+   * Get all assignments created by a user (filtered by organization)
    */
-  async getAssignmentsByCreator(userId: string): Promise<Assignment[]> {
+  async getAssignmentsByCreator(userId: string, organizationId?: string): Promise<Assignment[]> {
     const db = await connectDB();
     const assignmentsCollection = db.collection('assignments');
     
+    const query: any = { createdBy: userId };
+    
+    // Filter by organization if provided
+    if (organizationId) {
+      query.organizationId = organizationId;
+    }
+    
     const assignments = await assignmentsCollection
-      .find({ createdBy: userId })
+      .find(query)
       .sort({ createdAt: -1 })
       .toArray();
     
@@ -424,14 +433,20 @@ export const assignmentService = {
 
   /**
    * Get all published assignments (for practice section)
+   * If organizationId is provided, only returns assignments from that organization
    */
-  async getPublishedAssignments(type?: AssignmentType): Promise<Assignment[]> {
+  async getPublishedAssignments(type?: AssignmentType, organizationId?: string): Promise<Assignment[]> {
     const db = await connectDB();
     const assignmentsCollection = db.collection('assignments');
     
     const query: any = { status: 'published' };
     if (type) {
       query.type = type;
+    }
+    
+    // Filter by organization if provided
+    if (organizationId) {
+      query.organizationId = organizationId;
     }
     
     const assignments = await assignmentsCollection

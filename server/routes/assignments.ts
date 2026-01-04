@@ -10,6 +10,7 @@ import { assignmentService } from '../services/assignmentService';
 import { AssignmentSettings, AssignmentType } from '../../types';
 import { questionGenerationQueue } from '../jobs/questionGenerationQueue';
 import { QuestionGenerationJobData } from '../jobs/jobTypes';
+import { requireAssignmentCreation, belongsToOrganization, isSuperUser } from '../utils/roleCheck';
 
 const router = Router();
 
@@ -17,9 +18,11 @@ const router = Router();
 router.use(requireAuth);
 
 // POST /api/assignments - Create new assignment (draft)
-router.post('/', asyncHandler(async (req: Request, res: Response) => {
+// Requires professor or superuser role
+router.post('/', requireAssignmentCreation, asyncHandler(async (req: Request, res: Response) => {
   const { type, title, prompt, settings } = req.body;
   const userId = req.userId!;
+  const orgId = req.orgId;
 
   // Validate required fields
   if (!type || (type !== 'reading' && type !== 'listening')) {
@@ -34,6 +37,11 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'settings.numberOfQuestions must be a positive number' });
   }
 
+  // Require organization membership (unless superuser)
+  if (!isSuperUser(userId, orgId, req.userRole, req.isSuperUser) && !orgId) {
+    return res.status(403).json({ error: 'You must be a member of an organization to create assignments' });
+  }
+
   const assignmentSettings: AssignmentSettings = {
     numberOfQuestions: settings.numberOfQuestions,
     sections: settings.sections,
@@ -46,7 +54,8 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
     title,
     prompt,
     assignmentSettings,
-    userId
+    userId,
+    orgId
   );
 
   res.status(201).json(assignment);
@@ -56,18 +65,27 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
 // MUST come before /:assignmentId route to avoid matching "my" as an assignmentId
 router.get('/my', asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId!;
+  const orgId = req.orgId;
 
-  const assignments = await assignmentService.getAssignmentsByCreator(userId);
+  const assignments = await assignmentService.getAssignmentsByCreator(userId, orgId);
   res.json(assignments);
 }));
 
 // GET /api/assignments/published - Get all published assignments (for practice section)
 // MUST come before /:assignmentId route
+// Students see only their org's assignments, professors see all org assignments
 router.get('/published', asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.query;
+  const orgId = req.orgId;
+  const userRole = req.userRole;
+
+  // Students see only their org's assignments
+  // Professors and superusers see all org assignments (orgId filter still applied for org scoping)
+  const organizationId = orgId || undefined;
 
   const assignments = await assignmentService.getPublishedAssignments(
-    type === 'reading' || type === 'listening' ? type as AssignmentType : undefined
+    type === 'reading' || type === 'listening' ? type as AssignmentType : undefined,
+    organizationId
   );
   res.json(assignments);
 }));
@@ -77,13 +95,21 @@ router.post('/:assignmentId/generate', asyncHandler(async (req: Request, res: Re
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
-  // Verify assignment exists and belongs to user
+  // Verify assignment exists and belongs to user's organization
   const assignment = await assignmentService.getAssignmentById(assignmentId);
   if (!assignment) {
     return res.status(404).json({ error: 'Assignment not found' });
   }
 
-  if (assignment.createdBy !== userId) {
+  // Check organization membership (unless superuser)
+  if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser)) {
+    if (!belongsToOrganization(req.orgId, assignment.organizationId)) {
+      return res.status(403).json({ error: 'You do not have permission to access this assignment' });
+    }
+  }
+
+  // For non-superusers, verify ownership or professor role in same org
+        if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser) && assignment.createdBy !== userId && req.userRole !== 'org:professor') {
     return res.status(403).json({ error: 'You do not have permission to modify this assignment' });
   }
 
@@ -164,10 +190,18 @@ router.get('/:assignmentId/generate/:jobId', asyncHandler(async (req: Request, r
 // GET /api/assignments/:assignmentId - Get assignment with questions
 router.get('/:assignmentId', asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
+  const userId = req.userId!;
 
   const assignment = await assignmentService.getAssignmentById(assignmentId);
   if (!assignment) {
     return res.status(404).json({ error: 'Assignment not found' });
+  }
+
+  // Check organization membership (unless superuser)
+  if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser)) {
+    if (!belongsToOrganization(req.orgId, assignment.organizationId)) {
+      return res.status(403).json({ error: 'You do not have permission to access this assignment' });
+    }
   }
 
   res.json(assignment);
@@ -179,13 +213,21 @@ router.put('/:assignmentId', asyncHandler(async (req: Request, res: Response) =>
   const userId = req.userId!;
   const { title, prompt, settings, status } = req.body;
 
-  // Verify assignment exists and belongs to user
+  // Verify assignment exists and belongs to user's organization
   const assignment = await assignmentService.getAssignmentById(assignmentId);
   if (!assignment) {
     return res.status(404).json({ error: 'Assignment not found' });
   }
 
-  if (assignment.createdBy !== userId) {
+  // Check organization membership (unless superuser)
+  if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser)) {
+    if (!belongsToOrganization(req.orgId, assignment.organizationId)) {
+      return res.status(403).json({ error: 'You do not have permission to access this assignment' });
+    }
+  }
+
+  // For non-superusers, verify ownership or professor role in same org
+        if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser) && assignment.createdBy !== userId && req.userRole !== 'org:professor') {
     return res.status(403).json({ error: 'You do not have permission to modify this assignment' });
   }
 
@@ -207,13 +249,21 @@ router.put('/:assignmentId/questions/:questionId', asyncHandler(async (req: Requ
   const userId = req.userId!;
   const { question, questionText, options, correctAnswer, explanation } = req.body;
 
-  // Verify assignment exists and belongs to user
+  // Verify assignment exists and belongs to user's organization
   const assignment = await assignmentService.getAssignmentById(assignmentId);
   if (!assignment) {
     return res.status(404).json({ error: 'Assignment not found' });
   }
 
-  if (assignment.createdBy !== userId) {
+  // Check organization membership (unless superuser)
+  if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser)) {
+    if (!belongsToOrganization(req.orgId, assignment.organizationId)) {
+      return res.status(403).json({ error: 'You do not have permission to access this assignment' });
+    }
+  }
+
+  // For non-superusers, verify ownership or professor role in same org
+        if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser) && assignment.createdBy !== userId && req.userRole !== 'org:professor') {
     return res.status(403).json({ error: 'You do not have permission to modify this assignment' });
   }
 
@@ -243,13 +293,21 @@ router.post('/:assignmentId/publish', asyncHandler(async (req: Request, res: Res
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
-  // Verify assignment exists and belongs to user
+  // Verify assignment exists and belongs to user's organization
   const assignment = await assignmentService.getAssignmentById(assignmentId);
   if (!assignment) {
     return res.status(404).json({ error: 'Assignment not found' });
   }
 
-  if (assignment.createdBy !== userId) {
+  // Check organization membership (unless superuser)
+  if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser)) {
+    if (!belongsToOrganization(req.orgId, assignment.organizationId)) {
+      return res.status(403).json({ error: 'You do not have permission to access this assignment' });
+    }
+  }
+
+  // For non-superusers, verify ownership or professor role in same org
+        if (!isSuperUser(userId, req.orgId, req.userRole, req.isSuperUser) && assignment.createdBy !== userId && req.userRole !== 'org:professor') {
     return res.status(403).json({ error: 'You do not have permission to modify this assignment' });
   }
 

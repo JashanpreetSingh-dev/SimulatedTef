@@ -4,10 +4,12 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useAssignments } from '../hooks/useAssignments';
 import { AssignmentList } from '../components/assignments/AssignmentList';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useRole } from '../hooks/useRole';
 
 export function AssignmentsView() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { canCreateAssignments, organizationName } = useRole();
   const { assignments, loading, fetchMyAssignments, deleteAssignment } = useAssignments();
 
   useEffect(() => {
@@ -34,19 +36,28 @@ export function AssignmentsView() {
             >
               ← {t('back.dashboard')}
             </button>
-            <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
-              {t('assignments.title')}
-            </h1>
-            <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
-              {t('assignments.subtitle')}
-            </p>
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
+                {t('assignments.title')}
+              </h1>
+              <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
+                {t('assignments.subtitle')}
+              </p>
+              {organizationName && (
+                <p className="text-xs md:text-sm text-slate-400 dark:text-slate-500 mt-1">
+                  Organization: <span className="font-semibold">{organizationName}</span>
+                </p>
+              )}
+            </div>
           </div>
-          <button
-            onClick={() => navigate('/dashboard/assignments/create')}
-            className="px-4 py-3 sm:px-6 sm:py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
-          >
-            + {t('assignments.createAssignment')}
-          </button>
+          {canCreateAssignments && (
+            <button
+              onClick={() => navigate('/dashboard/assignments/create')}
+              className="px-4 py-3 sm:px-6 sm:py-4 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
+            >
+              + {t('assignments.createAssignment')}
+            </button>
+          )}
         </div>
 
         <AssignmentList

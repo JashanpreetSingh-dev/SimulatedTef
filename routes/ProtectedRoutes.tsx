@@ -6,7 +6,6 @@ import { HistoryView } from '../pages/HistoryView';
 import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
 import { WrittenExamView } from '../pages/WrittenExamView';
-import { SubscriptionManagementView } from '../pages/SubscriptionManagementView';
 import { AssignmentsView } from '../pages/AssignmentsView';
 import { AssignmentCreationView } from '../pages/AssignmentCreationView';
 import { AssignmentExamView } from '../pages/AssignmentExamView';
@@ -41,7 +40,6 @@ export function ProtectedRoutes() {
           <MockExamView />
         </DashboardLayout>
       } />
-      <Route path="/dashboard/subscription" element={<SubscriptionManagementView />} />
       <Route path="/dashboard/assignments" element={<AssignmentsView />} />
       <Route path="/dashboard/assignments/create" element={<AssignmentCreationView />} />
       <Route path="/dashboard/assignments/create/:assignmentId" element={<AssignmentCreationView />} />

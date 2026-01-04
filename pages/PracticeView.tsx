@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useSubscription } from '../hooks/useSubscription';
-import { PaywallModal } from '../components/PaywallModal';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { HistoryList } from '../components/HistoryList';
 import { PracticeTabNavigation } from '../components/practice/PracticeTabNavigation';
@@ -21,9 +19,6 @@ export function PracticeView() {
   });
   const [practiceTab, setPracticeTab] = useState<'practice' | 'history'>('practice');
   const { t } = useLanguage();
-  const { status } = useSubscription();
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [paywallReason, setPaywallReason] = useState<string>();
 
   // Save module selection to sessionStorage when it changes
   useEffect(() => {
@@ -34,60 +29,9 @@ export function PracticeView() {
     }
   }, [selectedModule]);
 
-  const canStartExamLightweight = (examType: 'full' | 'partA' | 'partB'): { canStart: boolean; reason?: string } => {
-    if (!status) {
-      return { canStart: false, reason: t('errors.loadingSubscription') };
-    }
-
-    // Super user bypasses all checks
-    if (status.isSuperUser) {
-      return { canStart: true };
-    }
-
-    if (status.subscriptionType === 'EXPIRED') {
-      return { canStart: false, reason: t('errors.subscriptionExpired') };
-    }
-
-    if (status.packExpirationDate) {
-      const expirationDate = new Date(status.packExpirationDate);
-      const now = new Date();
-      if (now >= expirationDate) {
-        return { canStart: false, reason: t('errors.packExpired') };
-      }
-    }
-
-    if (examType === 'full') {
-      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
-        status.usage.fullTestsUsed < status.limits.fullTests;
-      const hasPackCredits = status.packCredits && status.packCredits.fullTests.remaining > 0;
-      
-      if (!hasTrialLimit && !hasPackCredits) {
-        return { canStart: false, reason: t('errors.fullTestLimitReached') };
-      }
-    } else if (examType === 'partA') {
-      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
-        status.usage.sectionAUsed < status.limits.sectionA;
-      const hasPackCredits = status.packCredits && status.packCredits.sectionA.remaining > 0;
-      
-      if (!hasTrialLimit && !hasPackCredits) {
-        return { canStart: false, reason: t('errors.sectionALimitReached') };
-      }
-    } else if (examType === 'partB') {
-      const hasTrialLimit = status.isActive && status.subscriptionType === 'TRIAL' && 
-        status.usage.sectionBUsed < status.limits.sectionB;
-      const hasPackCredits = status.packCredits && status.packCredits.sectionB.remaining > 0;
-      
-      if (!hasTrialLimit && !hasPackCredits) {
-        return { canStart: false, reason: t('errors.sectionBLimitReached') };
-      }
-    }
-
-    return { canStart: true };
-  };
-
   const startExam = (mode: 'partA' | 'partB' | 'full', isWrittenExpression: boolean = false) => {
     if (isWrittenExpression) {
-      // Written expression has no limits - navigate directly
+      // Written expression - navigate directly
       sessionStorage.removeItem(`exam_session_written_${mode}`);
       sessionStorage.removeItem(`exam_scenario_written_${mode}`);
       // Pass module context in state for proper back navigation
@@ -99,25 +43,17 @@ export function PracticeView() {
         } 
       });
     } else {
-      // Oral expression - check limits
-      const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-      const result = canStartExamLightweight(examType);
-      
-      if (result.canStart) {
-        sessionStorage.removeItem(`exam_session_${mode}`);
-        sessionStorage.removeItem(`exam_scenario_${mode}`);
-        // Pass module context in state for proper back navigation
-        navigate(`/exam/${mode}`, { 
-          state: { 
-            from: '/practice',
-            module: 'oral',
-            selectedModule: selectedModule 
-          } 
-        });
-      } else {
-        setPaywallReason(result.reason);
-        setShowPaywall(true);
-      }
+      // Oral expression - navigate directly (no limits)
+      sessionStorage.removeItem(`exam_session_${mode}`);
+      sessionStorage.removeItem(`exam_scenario_${mode}`);
+      // Pass module context in state for proper back navigation
+      navigate(`/exam/${mode}`, { 
+        state: { 
+          from: '/practice',
+          module: 'oral',
+          selectedModule: selectedModule 
+        } 
+      });
     }
   };
 
@@ -174,12 +110,6 @@ export function PracticeView() {
           )}
         </div>
 
-        <PaywallModal
-          isOpen={showPaywall}
-          onClose={() => setShowPaywall(false)}
-          reason={paywallReason}
-        />
-
         {/* Show module selector if no module selected */}
         {!selectedModule ? (
           <PracticeModuleSelector onSelectModule={setSelectedModule} />
@@ -197,7 +127,7 @@ export function PracticeView() {
             <div className="min-h-[400px]">
               {practiceTab === 'practice' ? (
                 selectedModule === 'oral' ? (
-                  <ExpressionOraleTab status={status} onStartExam={(mode) => startExam(mode, false)} />
+                  <ExpressionOraleTab onStartExam={(mode) => startExam(mode, false)} />
                 ) : selectedModule === 'written' ? (
                   <ExpressionEcritTab onStartExam={(mode) => startExam(mode, true)} />
                 ) : selectedModule === 'reading' ? (

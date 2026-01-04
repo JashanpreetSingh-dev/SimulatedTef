@@ -6,6 +6,7 @@ import { AssignmentForm } from '../components/assignments/AssignmentForm';
 import { QuestionReviewEditor } from '../components/assignments/QuestionReviewEditor';
 import { Assignment, AssignmentType } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useRole } from '../hooks/useRole';
 
 type Step = 'create' | 'generate' | 'review' | 'publish';
 
@@ -13,6 +14,7 @@ export function AssignmentCreationView() {
   const navigate = useNavigate();
   const { assignmentId } = useParams<{ assignmentId: string }>();
   const { t } = useLanguage();
+  const { canCreateAssignments, isSuperUser, isProfessor, organizationName } = useRole();
   const {
     createAssignment,
     generateQuestions,
@@ -166,6 +168,30 @@ export function AssignmentCreationView() {
     }
   };
 
+  // Check permissions
+  if (!canCreateAssignments) {
+    return (
+      <DashboardLayout>
+        <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 lg:space-y-12">
+          <div className="bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-6">
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-400 mb-2">
+              Access Denied
+            </h2>
+            <p className="text-red-600 dark:text-red-300">
+              Only professors and administrators can create assignments. Please contact your organization administrator if you need this permission.
+            </p>
+            <button
+              onClick={() => navigate('/dashboard/assignments')}
+              className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors"
+            >
+              Back to Assignments
+            </button>
+          </div>
+        </main>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 lg:space-y-12">
@@ -176,12 +202,21 @@ export function AssignmentCreationView() {
           >
             ← {t('assignments.backToAssignments')}
           </button>
-          <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
-            {assignmentId ? t('assignments.editAssignment') : t('assignments.createAssignment')}
-          </h1>
-          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
-            {t('assignments.createSubtitle')}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
+                {assignmentId ? t('assignments.editAssignment') : t('assignments.createAssignment')}
+              </h1>
+              <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
+                {t('assignments.createSubtitle')}
+              </p>
+            </div>
+            {organizationName && (
+              <div className="text-xs md:text-sm text-slate-500 dark:text-slate-400">
+                Organization: <span className="font-semibold">{organizationName}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Step Indicator */}

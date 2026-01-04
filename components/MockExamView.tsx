@@ -97,8 +97,9 @@ export const MockExamView: React.FC = () => {
   
   // Handle module selection
   const handleModuleSelect = async (module: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression') => {
-    console.log('Module selected:', module, { mockExamId: state.mockExamId, sessionId: state.sessionId });
-    await startModule(module);
+    console.log('[MockExamView] Module selected:', module, { mockExamId: state.mockExamId, sessionId: state.sessionId });
+    const result = await startModule(module);
+    console.log('[MockExamView] startModule result for', module, ':', result);
   };
   
   // Handle Oral Expression module completion
@@ -269,7 +270,7 @@ export const MockExamView: React.FC = () => {
   }
   
   // Render based on phase
-  console.log('MockExamView render - phase:', state.phase, 'mockExamId:', state.mockExamId);
+  console.log('[MockExamView] Render - phase:', state.phase, 'mockExamId:', state.mockExamId, 'hasOralScenario:', !!state.oralExpressionScenario);
   switch (state.phase) {
     case 'selection':
       console.log('Rendering MockExamSelectionView');
@@ -326,6 +327,10 @@ export const MockExamView: React.FC = () => {
       );
     
     case 'oralExpression':
+      console.log('[MockExamView] Rendering oralExpression phase, scenario exists:', !!state.oralExpressionScenario);
+      if (!state.oralExpressionScenario) {
+        console.error('[MockExamView] oralExpression phase but no scenario! Current state:', { phase: state.phase, hasScenario: !!state.oralExpressionScenario });
+      }
       return state.oralExpressionScenario ? (
         <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
           <div className="max-w-6xl mx-auto">
@@ -342,7 +347,19 @@ export const MockExamView: React.FC = () => {
             />
           </div>
         </div>
-      ) : null;
+      ) : (
+        <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-600 dark:text-red-400">Error: Oral expression scenario not loaded. Please try again.</p>
+            <button 
+              onClick={() => stateActions.setPhase('module-selector')}
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            >
+              Back to modules
+            </button>
+          </div>
+        </div>
+      );
     
     case 'reading':
       return state.readingTask && state.readingQuestions.length > 0 ? (
