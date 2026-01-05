@@ -41,22 +41,26 @@ export function usePhaseManagement({
   const currentQuestion = questions[currentQuestionIndex];
   const currentQuestionNumber = currentQuestion?.questionNumber || (currentQuestionIndex + 1);
 
-  // Initialize phase and timer on start
+  // Initialize phase on mount - runs once
+  const hasInitializedPhaseRef = useRef(false);
   useEffect(() => {
-    if (!hasStarted && questions.length > 0) {
-      const initialQuestion = questions[0];
-      const initialQuestionNumber = initialQuestion?.questionNumber || 1;
-      // For practice assignments, skip reading phase and go straight to answering (audio player visible)
-      if (isPracticeAssignment) {
-        setPhase('answering');
-        setTimeRemaining(0);
-      } else {
-        setPhase('reading');
-        const { readingTime: initialReadingTime } = getTimingForQuestion(initialQuestionNumber);
-        setTimeRemaining(initialReadingTime);
-      }
+    if (hasInitializedPhaseRef.current || questions.length === 0) return;
+    hasInitializedPhaseRef.current = true;
+    
+    const initialQuestion = questions[0];
+    const initialQuestionNumber = initialQuestion?.questionNumber || 1;
+    
+    // For practice assignments, skip reading phase and go straight to answering (audio player visible)
+    if (isPracticeAssignment) {
+      setPhase('answering');
+      setTimeRemaining(0);
+    } else {
+      // For mock exams, start in reading phase with timer
+      setPhase('reading');
+      const { readingTime: initialReadingTime } = getTimingForQuestion(initialQuestionNumber);
+      setTimeRemaining(initialReadingTime);
     }
-  }, [hasStarted, questions, isPracticeAssignment, setPhase, setTimeRemaining]);
+  }, [questions, isPracticeAssignment, setPhase, setTimeRemaining]);
 
   // Move to next question
   const handleNextQuestion = useCallback(() => {
@@ -88,42 +92,60 @@ export function usePhaseManagement({
     }
   }, [currentQuestionIndex, questions, isPracticeAssignment, setCurrentQuestionIndex, setPhase, setTimeRemaining, setAudioEnded, onAutoSubmit]);
 
+  // Track timer state - which phase/question the timer was started for
+  const timerStartedForRef = useRef<{ phase: Phase; questionIndex: number } | null>(null);
+
   // Phase management and auto-advance
   useEffect(() => {
-    if (!hasStarted || isSubmitting) return;
-
-    // Clear any existing timer
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-    }
-
     // For practice assignments, skip all timers - user controls everything manually
     if (isPracticeAssignment) {
-      if (phase === 'reading') {
-        // No timer - user can click to play audio when ready
-        setTimeRemaining(0);
-      } else if (phase === 'playing') {
-        // Audio playing phase - wait for audio to end
-        setTimeRemaining(0);
-        audioEndedRef.current = false;
-        // Audio will trigger onEnded callback
-      } else if (phase === 'answering') {
-        // No timer - user can take as long as needed
-        setTimeRemaining(0);
+      // Clear any existing timer
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+        timerStartedForRef.current = null;
       }
       return;
     }
 
-    // For mock exams, use timers as before
+    // For mock exams - don't start until exam has started
+    if (!hasStarted || isSubmitting) {
+      // Clear timer if we're not supposed to be running
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+        timerStartedForRef.current = null;
+      }
+      return;
+    }
+
+    // Check if we already have a timer for this exact phase and question
+    if (
+      timerRef.current &&
+      timerStartedForRef.current &&
+      timerStartedForRef.current.phase === phase &&
+      timerStartedForRef.current.questionIndex === currentQuestionIndex
+    ) {
+      // Timer is already running for this phase/question - don't restart
+      return;
+    }
+
+    // Clear any existing timer before setting a new one
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Mock exam timer logic
     if (phase === 'reading') {
       // Reading phase - countdown to audio play
       const { readingTime: currentReadingTime } = getTimingForQuestion(currentQuestionNumber);
       setTimeRemaining(currentReadingTime);
+      timerStartedForRef.current = { phase, questionIndex: currentQuestionIndex };
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
             setPhase('playing');
-            setTimeRemaining(0);
             return 0;
           }
           return prev - 1;
@@ -133,11 +155,13 @@ export function usePhaseManagement({
       // Audio playing phase - wait for audio to end
       setTimeRemaining(0);
       audioEndedRef.current = false;
-      // Audio will trigger onEnded callback
+      timerStartedForRef.current = { phase, questionIndex: currentQuestionIndex };
+      // Audio will trigger onEnded callback - no timer needed
     } else if (phase === 'answering') {
       // Answering phase - countdown to next question
       const { answerTime: currentAnswerTime } = getTimingForQuestion(currentQuestionNumber);
       setTimeRemaining(currentAnswerTime);
+      timerStartedForRef.current = { phase, questionIndex: currentQuestionIndex };
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
@@ -150,11 +174,8 @@ export function usePhaseManagement({
       }, 1000);
     }
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-      }
-    };
+    // Note: No cleanup function - we manage the timer ourselves to avoid issues with
+    // React's effect cleanup running before the next effect and clearing the timer prematurely
   }, [phase, hasStarted, isSubmitting, currentQuestionIndex, isPracticeAssignment, currentQuestionNumber, handleNextQuestion, setPhase, setTimeRemaining]);
 
   // Handle audio ended

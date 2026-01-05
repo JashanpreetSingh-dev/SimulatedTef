@@ -94,9 +94,9 @@ export const mcqController = {
       vocabularyNotes: '',
     };
     
-    // Create result document with new structure
-    const result: SavedResult = {
-      _id: undefined, // Will be set by MongoDB
+    // Create result document (don't include _id - let MongoDB generate it)
+    const result = {
+      sessionId,
       userId,
       resultType: 'mockExam',
       mode: 'full', // MCQ modules are always full
@@ -115,16 +115,21 @@ export const mcqController = {
     
     // Save result with upsert (prevent duplicates)
     const db = await connectDB();
+    
+    // Ensure sessionId and module are valid
+    if (!sessionId || !module) {
+      throw new Error(`Invalid parameters: sessionId=${sessionId}, module=${module}`);
+    }
+    
     const savedResult = await db.collection('results').findOneAndUpdate(
       { sessionId, module },
-      {
-        $set: result,
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      }
+      { $set: result },
+      { upsert: true, returnDocument: 'after' }
     );
+    
+    if (!savedResult || !savedResult._id) {
+      throw new Error('Failed to save result to database');
+    }
     
     return {
       success: true,

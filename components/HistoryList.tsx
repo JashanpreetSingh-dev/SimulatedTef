@@ -9,7 +9,7 @@ import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
 
 interface HistoryListProps {
-  module?: 'oralExpression' | 'writtenExpression';
+  module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
 }
 
 const RESULTS_PER_PAGE = 20;
@@ -40,7 +40,13 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       }
       try {
         // Determine resultType based on module
-        const resultType = module === 'oralExpression' || module === 'writtenExpression' ? 'practice' : undefined;
+        // For oral/written expression: show practice results
+        // For reading/listening: show assignment results (practice assignments, not mock exam results)
+        const resultType = (module === 'oralExpression' || module === 'writtenExpression') 
+          ? 'practice' 
+          : (module === 'reading' || module === 'listening') 
+            ? 'assignment' 
+            : undefined;
         const response = await persistenceService.getAllResults(
           userId, 
           getToken, 
@@ -110,7 +116,12 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
     if (loadingMore || !hasMore) return;
     
     setLoadingMore(true);
-    const resultType = module === 'oralExpression' || module === 'writtenExpression' ? 'practice' : undefined;
+    // Determine resultType based on module (same logic as initial fetch)
+    const resultType = (module === 'oralExpression' || module === 'writtenExpression') 
+      ? 'practice' 
+      : (module === 'reading' || module === 'listening') 
+        ? 'assignment' 
+        : undefined;
     const response = await persistenceService.getAllResults(
       userId, 
       getToken, 
@@ -166,14 +177,15 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
     
     // Filter by module type and resultType
     // For oral/written expression: show practice results
-    // For reading/listening: show both mockExam and assignment results (practice assignments)
+    // For reading/listening: show ONLY assignment results (not mock exam results - those belong to mock exams)
     if (module === 'oralExpression' || module === 'writtenExpression') {
       return result.module === module && result.resultType === 'practice';
+    } else if (module === 'reading' || module === 'listening') {
+      // For reading/listening practice, show only assignment results (not mock exam results)
+      return result.module === module && result.resultType === 'assignment';
     } else {
-      // For reading/listening, show both mockExam and assignment results
-      const moduleMatch = result.module === module;
-      const resultTypeMatch = result.resultType === 'mockExam' || result.resultType === 'assignment';
-      return moduleMatch && resultTypeMatch;
+      // Default case - shouldn't happen but filter by module
+      return result.module === module;
     }
   });
 

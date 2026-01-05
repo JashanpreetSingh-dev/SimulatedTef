@@ -10,7 +10,7 @@
  * - Border radius: rounded-lg, rounded-xl
  */
 
-import React, { useMemo, useCallback, useEffect } from 'react';
+import React, { useMemo, useCallback, useEffect, useRef } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { ListeningTask, ReadingListeningQuestion, MCQResult } from '../types';
@@ -33,7 +33,7 @@ import { ListeningExamAudioSection } from './listening/components/ListeningExamA
 import { ListeningExamNavigation } from './listening/components/ListeningExamNavigation';
 
 // Utils
-import { SavedExamState } from './listening/utils/listeningExamPersistence';
+import { SavedExamState, saveState } from './listening/utils/listeningExamPersistence';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -68,15 +68,22 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
   // Main state management - hooks must be called unconditionally
   const examState = useListeningExamState({ questions: questions || [], assignmentId });
 
+  // Destructure setters to ensure stable references for callbacks
+  const { setAnswers, setCurrentQuestionIndex, setHasStarted, startTimeRef } = examState;
+
+  // Track if we've initialized to prevent infinite loops
+  const hasInitializedRef = useRef(false);
+
   // Handle state loading from persistence
   const handleStateLoaded = useCallback((savedState: SavedExamState) => {
-    examState.setAnswers(savedState.answers);
-    examState.setCurrentQuestionIndex(savedState.currentQuestionIndex);
+    setAnswers(savedState.answers);
+    setCurrentQuestionIndex(savedState.currentQuestionIndex);
     if (savedState.startTime) {
-      examState.startTimeRef.current = savedState.startTime;
-      examState.setHasStarted(true);
+      startTimeRef.current = savedState.startTime;
+      setHasStarted(true);
     }
-  }, [examState]);
+    hasInitializedRef.current = true; // Mark as initialized whether or not there was a saved startTime
+  }, [setAnswers, setCurrentQuestionIndex, setHasStarted]);
 
   // Persistence
   const persistence = usePersistence({
@@ -108,6 +115,32 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
     examState.handleSubmitRef.current = submission.handleSubmit;
   }, [examState.handleSubmitRef, submission.handleSubmit]);
 
+  // Start exam when component mounts (only for mock exams, not practice assignments)
+  useEffect(() => {
+    // Only start for mock exams (not practice assignments)
+    // Run immediately - don't wait for persistence to load
+    if (!assignmentId && !examState.hasStarted && questions.length > 0) {
+      // Set startTime if not already set (from persistence)
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
+      setHasStarted(true);
+      hasInitializedRef.current = true;
+      // Save start time
+      saveState(
+        persistence.storageKey,
+        examState.answers,
+        examState.currentQuestionIndex,
+        startTimeRef.current
+      );
+    }
+  }, [assignmentId, examState.hasStarted, questions.length, persistence.storageKey, setHasStarted, examState.answers, examState.currentQuestionIndex]);
+
+  // Memoize onAutoSubmit to prevent timer effect from re-running
+  const onAutoSubmit = useCallback(() => {
+    submission.handleSubmit(true);
+  }, [submission.handleSubmit]);
+
   // Phase management
   const phaseManagement = usePhaseManagement({
     questions: questions || [],
@@ -120,7 +153,7 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
     hasStarted: examState.hasStarted,
     isSubmitting: examState.isSubmitting,
     isPracticeAssignment: examState.isPracticeAssignment,
-    onAutoSubmit: () => submission.handleSubmit(true),
+    onAutoSubmit,
   });
 
   // Audio management

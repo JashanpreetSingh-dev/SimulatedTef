@@ -103,10 +103,10 @@ export function useAudioManagement({
       }
     };
 
-    // Fetch audio when we have a current question and audioItems
-    // For practice assignments, always fetch (audio is always visible)
-    // For mock exams, fetch when phase is 'playing' or if we have audioItems (to preload)
-    if (currentQuestion && (isPracticeAssignment || phase === 'playing' || (audioItems && currentQuestion.audioId))) {
+    // Fetch audio when we have a current question
+    // For practice assignments: always fetch (audio is always visible)
+    // For mock exams: preload during 'reading' phase so audio is ready when timer ends
+    if (currentQuestion && (isPracticeAssignment || phase === 'reading' || phase === 'playing' || (audioItems && currentQuestion.audioId))) {
       fetchAudio();
     }
 
