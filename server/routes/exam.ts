@@ -1,16 +1,49 @@
 /**
- * Exam session API routes
+ * Exam session API routes - B2B mode (tracking only, no limits)
  */
 
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
-import { subscriptionService } from '../services/subscriptionService';
 import { asyncHandler } from '../middleware/errorHandler';
 import { mcqSubmissionLimiter } from '../middleware/rateLimiter';
 import { Request, Response } from 'express';
 import { connectDB } from '../db/connection';
+import { getTodayUTC } from '../models/usage';
+import { ObjectId } from 'mongodb';
 
 const router = Router();
+
+// Helper to create exam session
+async function createExamSession(userId: string, examType: string) {
+  const db = await connectDB();
+  const sessionId = new ObjectId().toString();
+  const today = getTodayUTC();
+
+  await db.collection('examSessions').insertOne({
+    sessionId,
+    userId,
+    examType,
+    createdAt: new Date().toISOString(),
+    status: 'active'
+  });
+
+  // Track usage for B2B analytics
+  await db.collection('usage').updateOne(
+    { userId, date: today },
+    {
+      $inc: {
+        fullTestsUsed: examType === 'full' ? 1 : 0,
+        sectionAUsed: examType === 'partA' ? 1 : 0,
+        sectionBUsed: examType === 'partB' ? 1 : 0,
+      },
+      $set: { updatedAt: new Date().toISOString() },
+      $setOnInsert: { createdAt: new Date().toISOString() }
+    },
+    { upsert: true }
+  );
+
+  return sessionId;
+}
 
 // POST /api/exam/start - Create exam session and record usage
 router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Response) => {
@@ -48,12 +81,9 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(400).json({ error: 'Invalid exam type' });
   }
 
-  const result = await subscriptionService.canStartExam(userId, examType);
-  if (!result.canStart) {
-    return res.status(403).json({ error: result.reason || 'Cannot start exam' });
-  }
-
-  res.json({ sessionId: result.sessionId, canStart: true });
+  // B2B mode: Always allow, just track usage
+  const sessionId = await createExamSession(userId, examType);
+  res.json({ sessionId, canStart: true });
 }));
 
 // POST /api/exam/validate-session - Validate exam session (e.g., on refresh)
@@ -68,7 +98,13 @@ router.post('/validate-session', requireAuth, asyncHandler(async (req: Request, 
     return res.status(400).json({ error: 'Session ID required' });
   }
 
-  const session = await subscriptionService.validateExamSession(userId, sessionId);
+  const db = await connectDB();
+  const session = await db.collection('examSessions').findOne({
+    sessionId,
+    userId,
+    status: 'active'
+  });
+
   if (!session) {
     return res.status(404).json({ error: 'Session not found or invalid' });
   }
@@ -88,12 +124,23 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const { sessionId, resultId, status } = req.body; // status can be 'completed' or 'failed'
+  const { sessionId, resultId, status } = req.body;
   if (!sessionId) {
     return res.status(400).json({ error: 'Session ID required' });
   }
 
-  await subscriptionService.completeExamSession(userId, sessionId, resultId, status);
+  const db = await connectDB();
+  await db.collection('examSessions').updateOne(
+    { sessionId, userId },
+    {
+      $set: {
+        status: status || 'completed',
+        resultId,
+        completedAt: new Date().toISOString()
+      }
+    }
+  );
+
   res.json({ success: true });
 }));
 
@@ -119,8 +166,15 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
   }
 
   try {
+    const db = await connectDB();
+    
     // Check for active mock exam
-    const activeMockExam = await subscriptionService.getActiveMockExam(userId);
+    const activeMockExam = await db.collection('examSessions').findOne({
+      userId,
+      examType: 'mock',
+      status: 'active'
+    });
+
     if (activeMockExam) {
       return res.status(400).json({ 
         error: 'You have an incomplete mock exam. Complete it first or abandon it.',
@@ -128,18 +182,15 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
       });
     }
 
-    const { predefinedMockExamId } = req.body; // Optional: predefined mock exam ID
+    const { predefinedMockExamId } = req.body;
     
-    // Note: We don't check credits here because canStartExam consumes credits
-    // The mock exam service will check and consume credits in its transaction
-    // Import mock exam service
     const { mockExamService } = await import('../services/mockExamService');
     const result = await mockExamService.selectMockExam(userId, predefinedMockExamId);
     
     res.json(result);
   } catch (error: any) {
     console.error('Error in /select-mock endpoint:', error);
-    throw error; // Let asyncHandler handle it
+    throw error;
   }
 }));
 
@@ -240,66 +291,34 @@ router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: R
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  const activeMockExam = await subscriptionService.getActiveMockExam(userId);
-  let completedMockExamIds = await subscriptionService.getCompletedMockExamIds(userId);
-  const originalCompletedIds = [...completedMockExamIds];
+  const db = await connectDB();
 
-  // Filter out completed exam IDs that don't correspond to real exams or don't have results
-  if (completedMockExamIds.length > 0) {
+  // Get active mock exam session
+  const activeSession = await db.collection('examSessions').findOne({
+    userId,
+    examType: 'mock',
+    status: 'active'
+  });
+
+  // Get completed mock exam IDs from results
+  const completedResults = await db
+    .collection('examResults')
+    .find({ userId, mockExamId: { $exists: true, $ne: null } })
+    .project({ mockExamId: 1 })
+    .toArray();
+  const completedMockExamIds = [...new Set(completedResults.map((r: any) => r.mockExamId))];
+
+  if (activeSession) {
     const { mockExamService } = await import('../services/mockExamService');
-    const allExams = await mockExamService.listAllMockExams();
-    const validExamIds = new Set(allExams.map(exam => exam.mockExamId));
+    const status = await mockExamService.getMockExamStatus(userId, activeSession.mockExamId);
 
-    // Filter to only valid exam IDs
-    const validCompletedIds = completedMockExamIds.filter(id => validExamIds.has(id));
-
-    if (validCompletedIds.length > 0) {
-      // Batch query: Check which exams have results (single query instead of N queries)
-      const db = await connectDB();
-      const resultsWithMockExamIds = await db.collection('results').distinct('mockExamId', {
-        userId,
-        mockExamId: { $in: validCompletedIds }
-      });
-
-      const examsWithResults = validCompletedIds.filter(id => resultsWithMockExamIds.includes(id));
-      completedMockExamIds = examsWithResults;
-
-      // Clean up invalid completed exam IDs from user's usage document
-      if (examsWithResults.length !== originalCompletedIds.length) {
-        await db.collection('usage').updateOne(
-          { userId },
-          { $set: { completedMockExamIds: examsWithResults } },
-          { upsert: true }
-        );
-      }
-    } else {
-      // No valid exam IDs, clear the list
-      completedMockExamIds = [];
-      const db = await connectDB();
-      await db.collection('usage').updateOne(
-        { userId },
-        { $set: { completedMockExamIds: [] } },
-        { upsert: true }
-      );
-    }
-  }
-
-  if (activeMockExam) {
-    const { mockExamService } = await import('../services/mockExamService');
-    const status = await mockExamService.getMockExamStatus(userId, activeMockExam.mockExamId);
-
-    // Check if this active exam is actually fully completed (all 4 modules)
-    const isFullyCompleted = status && status.completedModules.length === 4 &&
-                           status.completedModules.includes('oralExpression') &&
-                           status.completedModules.includes('reading') &&
-                           status.completedModules.includes('listening') &&
-                           status.completedModules.includes('writtenExpression');
+    // Check if this active exam is actually fully completed
+    const isFullyCompleted = status && status.completedModules.length === 4;
 
     if (isFullyCompleted) {
-      // If fully completed, don't return as active, just add to completed list
       const updatedCompletedIds = [...completedMockExamIds];
-      if (!updatedCompletedIds.includes(activeMockExam.mockExamId)) {
-        updatedCompletedIds.push(activeMockExam.mockExamId);
+      if (!updatedCompletedIds.includes(activeSession.mockExamId)) {
+        updatedCompletedIds.push(activeSession.mockExamId);
       }
 
       res.json({
@@ -307,7 +326,6 @@ router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: R
         completedMockExamIds: updatedCompletedIds
       });
     } else {
-      // Return as active only if not fully completed
       res.json({
         hasActiveMockExam: true,
         activeMockExam: status,
@@ -395,4 +413,3 @@ router.post('/submit-assignment-mcq', requireAuth, mcqSubmissionLimiter, asyncHa
 }));
 
 export default router;
-

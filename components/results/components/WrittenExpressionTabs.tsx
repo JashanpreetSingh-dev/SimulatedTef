@@ -6,6 +6,9 @@ import { WrittenExpressionSection } from './WrittenExpressionSection';
 import { OverallComment } from './OverallComment';
 import { CriteriaBreakdown } from './CriteriaBreakdown';
 import { TopImprovements } from './TopImprovements';
+import { StrengthsWeaknesses } from './StrengthsWeaknesses';
+import { GrammarVocabularyNotes } from './GrammarVocabularyNotes';
+import { WordCount } from './WordCount';
 
 interface WrittenExpressionTabsProps {
   result: SavedResult;
@@ -33,28 +36,50 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
   const overallComment = evaluationResult.overall_comment || result.overall_comment;
   const criteria = evaluationResult.criteria || {};
   const topImprovements = evaluationResult.top_improvements || [];
+  const strengths = evaluationResult.strengths || [];
+  const weaknesses = evaluationResult.weaknesses || [];
+  const grammarNotes = evaluationResult.grammarNotes || '';
+  const vocabularyNotes = evaluationResult.vocabularyNotes || '';
+  const wordCountSectionA = (evaluationResult as any).actual_word_count_sectionA;
+  const wordCountSectionB = (evaluationResult as any).actual_word_count_sectionB;
 
   // Helper to get corrections for a section
   const getCorrections = (section: 'A' | 'B'): any[] => {
     const sectionKey = section === 'A' ? 'sectionA' : 'sectionB';
     const correctionsKey = section === 'A' ? 'corrections_sectionA' : 'corrections_sectionB';
+    const isMatchingMode = (section === 'A' && result.mode === 'partA') || (section === 'B' && result.mode === 'partB');
     
     // Check in moduleData first (for partA/partB modes)
     if (result.moduleData?.type === 'writtenExpression') {
       const sectionData = result.moduleData[sectionKey];
-      if (sectionData?.result?.[correctionsKey]) {
+      // Check section-specific corrections
+      if (sectionData?.result?.[correctionsKey]?.length > 0) {
         return sectionData.result[correctionsKey];
+      }
+      // For single-section mode, fallback to generic upgraded_sentences
+      if (isMatchingMode && sectionData?.result?.upgraded_sentences?.length > 0) {
+        return sectionData.result.upgraded_sentences;
       }
     }
     
     // Check in evaluation result (already extracted based on mode)
-    if (evaluationResult[correctionsKey]) {
+    if (evaluationResult[correctionsKey]?.length > 0) {
       return evaluationResult[correctionsKey];
     }
     
+    // For single-section mode, fallback to generic upgraded_sentences from evaluation
+    if (isMatchingMode && evaluationResult.upgraded_sentences?.length > 0) {
+      return evaluationResult.upgraded_sentences;
+    }
+    
     // Check in top-level evaluation object
-    if (result.evaluation?.[correctionsKey]) {
+    if (result.evaluation?.[correctionsKey]?.length > 0) {
       return result.evaluation[correctionsKey];
+    }
+    
+    // For single-section mode, fallback to generic upgraded_sentences from top-level
+    if (isMatchingMode && result.evaluation?.upgraded_sentences?.length > 0) {
+      return result.evaluation.upgraded_sentences;
     }
     
     // Fallback to top-level result
@@ -65,33 +90,45 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
   const getModelAnswer = (section: 'A' | 'B'): string | null => {
     const sectionKey = section === 'A' ? 'sectionA' : 'sectionB';
     const modelAnswerKey = section === 'A' ? 'model_answer_sectionA' : 'model_answer_sectionB';
+    const isMatchingMode = (section === 'A' && result.mode === 'partA') || (section === 'B' && result.mode === 'partB');
+    
+    const isValidModelAnswer = (answer: string | undefined | null): boolean => {
+      return !!answer && 
+        !answer.toLowerCase().includes('not applicable') && 
+        !answer.toLowerCase().includes('refer to') &&
+        answer.trim().length > 0;
+    };
     
     // Check in moduleData first (for partA/partB modes)
     if (result.moduleData?.type === 'writtenExpression') {
       const sectionData = result.moduleData[sectionKey];
-      if (sectionData?.result?.[modelAnswerKey]) {
-        const modelAnswer = sectionData.result[modelAnswerKey];
-        if (modelAnswer && !modelAnswer.toLowerCase().includes('not applicable') && !modelAnswer.toLowerCase().includes('refer to')) {
-          return modelAnswer;
-        }
+      // Check section-specific model answer
+      if (isValidModelAnswer(sectionData?.result?.[modelAnswerKey])) {
+        return sectionData.result[modelAnswerKey];
+      }
+      // For single-section mode, fallback to generic model_answer
+      if (isMatchingMode && isValidModelAnswer(sectionData?.result?.model_answer)) {
+        return sectionData.result.model_answer;
       }
     }
     
-    // Check in evaluation result
-    if (evaluationResult[modelAnswerKey]) {
-      const modelAnswer = evaluationResult[modelAnswerKey];
-      if (modelAnswer && !modelAnswer.toLowerCase().includes('not applicable') && !modelAnswer.toLowerCase().includes('refer to')) {
-        return modelAnswer;
-      }
+    // Check in evaluation result (section-specific)
+    if (isValidModelAnswer(evaluationResult[modelAnswerKey])) {
+      return evaluationResult[modelAnswerKey];
     }
     
-    // Fallback to top-level result
-    if (result[modelAnswerKey]) {
+    // For single-section mode, fallback to generic model_answer from evaluation
+    if (isMatchingMode && isValidModelAnswer(evaluationResult.model_answer)) {
+      return evaluationResult.model_answer;
+    }
+    
+    // Fallback to top-level result (section-specific)
+    if (isValidModelAnswer(result[modelAnswerKey])) {
       return result[modelAnswerKey];
     }
     
-    // Try to extract from combined model_answer
-    if (result.model_answer && !result.model_answer.toLowerCase().includes('not applicable') && !result.model_answer.toLowerCase().includes('refer to')) {
+    // Try to extract from combined model_answer (for full mode)
+    if (isValidModelAnswer(result.model_answer)) {
       if (section === 'A') {
         return result.model_answer.split('\n\nSection B')[0].replace('Section A:', '').trim() || null;
       } else {
@@ -133,8 +170,17 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
             modelAnswer={modelAnswerA}
           />
         </div>
+        {typeof wordCountSectionA === 'number' && (
+          <WordCount section="A" actualCount={wordCountSectionA} targetMin={80} targetMax={120} />
+        )}
         {overallComment && (
           <OverallComment comment={overallComment} variant="blue" />
+        )}
+        {(strengths.length > 0 || weaknesses.length > 0) && (
+          <StrengthsWeaknesses strengths={strengths} weaknesses={weaknesses} />
+        )}
+        {(grammarNotes || vocabularyNotes) && (
+          <GrammarVocabularyNotes grammarNotes={grammarNotes} vocabularyNotes={vocabularyNotes} />
         )}
         {Object.keys(criteria).length > 0 && (
           <CriteriaBreakdown criteria={criteria} />
@@ -170,8 +216,17 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
             modelAnswer={modelAnswerB}
           />
         </div>
+        {typeof wordCountSectionB === 'number' && (
+          <WordCount section="B" actualCount={wordCountSectionB} targetMin={200} targetMax={250} />
+        )}
         {overallComment && (
           <OverallComment comment={overallComment} variant="blue" />
+        )}
+        {(strengths.length > 0 || weaknesses.length > 0) && (
+          <StrengthsWeaknesses strengths={strengths} weaknesses={weaknesses} />
+        )}
+        {(grammarNotes || vocabularyNotes) && (
+          <GrammarVocabularyNotes grammarNotes={grammarNotes} vocabularyNotes={vocabularyNotes} />
         )}
         {Object.keys(criteria).length > 0 && (
           <CriteriaBreakdown criteria={criteria} />
@@ -218,6 +273,13 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
   const currentOverallComment = currentEvaluation.overall_comment || result.overall_comment;
   const currentCriteria = currentEvaluation.criteria || {};
   const currentTopImprovements = currentEvaluation.top_improvements || [];
+  const currentStrengths = currentEvaluation.strengths || [];
+  const currentWeaknesses = currentEvaluation.weaknesses || [];
+  const currentGrammarNotes = currentEvaluation.grammarNotes || '';
+  const currentVocabularyNotes = currentEvaluation.vocabularyNotes || '';
+  const currentWordCount = activeTab === 'A' 
+    ? (currentEvaluation as any).actual_word_count_sectionA 
+    : (currentEvaluation as any).actual_word_count_sectionB;
 
   return (
     <div className="mb-6 sm:mb-12 space-y-6">
@@ -254,9 +316,25 @@ export const WrittenExpressionTabs: React.FC<WrittenExpressionTabsProps> = ({ re
         />
       </div>
 
+      {/* Word Count */}
+      {typeof currentWordCount === 'number' && (
+        <WordCount 
+          section={activeTab} 
+          actualCount={currentWordCount} 
+          targetMin={activeTab === 'A' ? 80 : 200} 
+          targetMax={activeTab === 'A' ? 120 : 250} 
+        />
+      )}
+
       {/* Evaluation Details - shown after section content */}
       {currentOverallComment && (
         <OverallComment comment={currentOverallComment} variant="blue" />
+      )}
+      {(currentStrengths.length > 0 || currentWeaknesses.length > 0) && (
+        <StrengthsWeaknesses strengths={currentStrengths} weaknesses={currentWeaknesses} />
+      )}
+      {(currentGrammarNotes || currentVocabularyNotes) && (
+        <GrammarVocabularyNotes grammarNotes={currentGrammarNotes} vocabularyNotes={currentVocabularyNotes} />
       )}
       {Object.keys(currentCriteria).length > 0 && (
         <CriteriaBreakdown criteria={currentCriteria} />

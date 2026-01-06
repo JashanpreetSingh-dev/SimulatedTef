@@ -7,7 +7,8 @@ export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean
   const sectionFocus = section === 'OralExpression'
     ? `- EO1 focus: interactional competence, asking relevant questions, clarity, register, turn-taking, reactivity.
 - EO2 focus: persuasion, argument structure, handling counter-arguments, coherence, examples, nuance.`
-    : `- Focus on written expression quality, structure, coherence, and language mastery.`;
+    : `- Section A (Fait divers) focus: journalistic news story format, factual reporting, past tenses (passé composé, imparfait), 80-120 words.
+- Section B (Argumentation) focus: persuasive essay structure, clear thesis, developed arguments with examples, counter-argument handling, formal connectors, 200-250 words.`;
 
   const fullExamGuidance = isFullExam ? `
 
@@ -36,11 +37,13 @@ CRITERIA EVALUATION FOR FULL EXAM:
 
 In your overall_comment, specifically address performance on BOTH tasks (e.g., "In Section A (EO1), the candidate asked only 2 questions, which was insufficient. However, in Section B (EO2), they demonstrated strong argumentation skills...").` : '';
 
-  return `You are an official TEF Canada Expression Orale evaluator trained using the CCI Paris – Le français des affaires evaluation framework.
+  const evaluatorType = section === 'OralExpression' ? 'Expression Orale' : 'Expression Écrite';
+  
+  return `You are an official TEF Canada ${evaluatorType} evaluator trained using the CCI Paris – Le français des affaires evaluation framework.
 Return ONLY valid JSON (no markdown).
-The candidate speaks French. Evaluate the candidate's performance only (ignore examiner content).
-If the transcript is diarized with lines prefixed by "User:" and "Examiner:", always treat "User:" lines as the candidate's speech and "Examiner:" lines as context only. Do not score the examiner.
-If transcript is too short or missing, say so and give safe general advice.
+The candidate writes/speaks French. Evaluate the candidate's performance only${section === 'OralExpression' ? ' (ignore examiner content)' : ''}.
+${section === 'OralExpression' ? `If the transcript is diarized with lines prefixed by "User:" and "Examiner:", always treat "User:" lines as the candidate's speech and "Examiner:" lines as context only. Do not score the examiner.` : ''}
+If the text is too short or missing, say so and give safe general advice.
 
 You must evaluate candidates objectively according to CECR levels (A1 to C2) and report Canadian Language Benchmark (CLB) equivalence.
 General guidance:
@@ -74,11 +77,46 @@ Use these criteria (adapt comments to the section):
 - Coherence & organization
 - Lexical range & appropriateness
 - Grammar control
-- Fluency & pronunciation (as inferred from transcript)
-- Interaction (turn-taking, reactivity, sociolinguistic appropriateness)
+- Fluency ${section === 'OralExpression' ? '& pronunciation (as inferred from transcript)' : '(writing flow, sentence variety, transitions)'}
+- ${section === 'OralExpression' ? 'Interaction (turn-taking, reactivity, sociolinguistic appropriateness)' : 'Argumentation quality (for Section B: thesis clarity, argument development, counter-argument handling, persuasion; for Section A: journalistic objectivity, factual reporting)'}
+
+${section === 'WrittenExpression' ? `WRITTEN EXPRESSION SPECIFIC GUIDANCE:
+
+FOR SECTION A (Fait divers - News Story):
+- Task: Write a factual news story (80-120 words) based on a given scenario
+- Format: Journalistic style, objective tone, third person
+- Structure: Who, What, When, Where, Why/How
+- Tenses: Primarily passé composé and imparfait for narration
+- Register: Formal, journalistic
+- Key criteria: Factual accuracy, appropriate news format, correct past tenses
+
+FOR SECTION B (Argumentation - Persuasive Essay):
+- Task: Write an argumentative essay (200-250 words) defending a position
+- Format: Formal letter or essay structure
+- Structure: Introduction (thesis) → Arguments with examples → Address counter-arguments → Conclusion
+- Connectors: Must use formal linking words (cependant, néanmoins, en effet, par conséquent, d'une part/d'autre part, en conclusion)
+- Register: Formal, polite (vous form if addressing someone)
+- Key criteria: Clear thesis, developed arguments, examples/evidence, counter-argument handling, logical flow
+
+WORD COUNT REQUIREMENTS AND PENALTIES:
+- Section A target: 80-120 words
+- Section B target: 200-250 words
+- Apply graduated penalties for word count violations:
+  * Within range: No penalty
+  * 10-20% below minimum: Minor penalty (-1 on taskFulfillment)
+  * 20-40% below minimum: Moderate penalty (-2 on taskFulfillment)
+  * >40% below minimum: Severe penalty (-3 to -4 on taskFulfillment)
+  * Significantly over maximum: Minor penalty if content becomes repetitive or loses focus` : ''}
 
 OUTPUT FORMAT:
 Required keys: score, clbLevel, cecrLevel, overall_comment, criteria, strengths, weaknesses, top_improvements, upgraded_sentences, model_answer
+
+For OralExpression (EO1/Section A), also include:
+- actual_questions_count: Integer count of relevant questions the candidate asked in Section A (target: 9-10). Count only questions that help gather information about the scenario.
+
+For WrittenExpression, also include:
+- actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)
+- actual_word_count_sectionB: Integer word count for Section B (target: 200-250 words)
 
 For WrittenExpression with two sections (Section A + Section B), also provide:
 - model_answer_sectionA: Model answer for Section A (fait divers, 80-120 words)
@@ -129,9 +167,15 @@ If evaluating WrittenExpression with both Section A (fait divers) and Section B 
 IMPORTANT: When providing model_answer_sectionA and model_answer_sectionB, DO NOT put messages like "Not applicable" or "Refer to..." in the model_answer field. Either omit model_answer entirely, or provide a brief combined example. The model_answer_sectionA and model_answer_sectionB fields MUST contain actual French text responses, not explanatory messages.
 
 IMPORTANT (UI requirement): upgraded_sentences must be an array of 3–5 objects, each with EXACT keys:
-- weak: a short quote from the candidate (French) that can be improved
+- weak: MUST BE AN EXACT COPY-PASTE from the candidate's transcript (French). Do NOT paraphrase or modify. The UI highlights this text in the original, so it MUST match exactly (including spacing, punctuation). Copy the exact words as written by the candidate.
 - better: your improved version (French), natural and TEF-appropriate
 - why: 1 short sentence in English explaining the improvement
+
+CRITICAL FOR HIGHLIGHTING TO WORK:
+- The "weak" field must be found verbatim in the candidate's text
+- Example: If candidate wrote "je suis allé a le magasin", use exactly "je suis allé a le magasin" (not "je suis allé au magasin" or "allé a le")
+- Keep quotes short (5-15 words) for cleaner highlighting
+
 If the transcript is too short to extract 3 examples, return as many as possible (>=1), otherwise [] if empty transcript.
 Do not rename keys. Do not nest objects. Do not return strings for upgraded_sentences.
 
@@ -155,9 +199,73 @@ export function buildEvaluationUserMessage(
   fluencyAnalysis?: any
 ): string {
   const eo1Metrics = section === 'OralExpression' && estimatedQuestionsCount !== undefined
-    ? `\nEO1 metric — estimated questions asked: ${estimatedQuestionsCount} (target 9–10).
-Metric method: heuristic.
-When scoring Task fulfillment / pertinence and Interaction, account for whether enough relevant questions were asked.`
+    ? `\nEO1 metric — estimated questions asked (heuristic): ${estimatedQuestionsCount} (target 9–10).
+IMPORTANT: You must independently count the actual relevant questions the candidate asked in Section A (EO1).
+Return this count in the "actual_questions_count" field.
+A relevant question is one that helps gather information about the scenario (not rhetorical, not clarification requests).
+
+GRADUATED SCORING BASED ON QUESTION COUNT:
+The number of questions asked significantly impacts "Task fulfillment" and "Interaction" scores:
+- 9-10 questions: Full marks possible (no penalty)
+- 7-8 questions: Moderate penalty (-1 to -2 points on taskFulfillment and interaction)
+- 5-6 questions: Significant penalty (-2 to -3 points)
+- 3-4 questions: Severe penalty (-3 to -4 points)
+- 1-2 questions: Very severe penalty (-4 to -5 points, max score ~5/10)
+- 0 questions: Task not fulfilled (taskFulfillment and interaction max 2-3/10)
+
+Apply this penalty proportionally. A candidate with 8 questions and excellent language should score higher than one with 4 questions and excellent language.
+The question count is a CORE requirement of EO1 - it cannot be overlooked even if other aspects are strong.`
+    : '';
+
+  // Calculate word count for written expression
+  const getWordCount = (text: string): number => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
+  const writtenMetrics = section === 'WrittenExpression' && candidateText
+    ? (() => {
+        const totalWords = getWordCount(candidateText);
+        // Try to split by section markers
+        const sectionAMatch = candidateText.match(/Section A[^:]*:\s*([\s\S]*?)(?=Section B|$)/i);
+        const sectionBMatch = candidateText.match(/Section B[^:]*:\s*([\s\S]*?)$/i);
+        const sectionAWords = sectionAMatch ? getWordCount(sectionAMatch[1]) : null;
+        const sectionBWords = sectionBMatch ? getWordCount(sectionBMatch[1]) : null;
+        
+        let metrics = `\n\nWRITTEN EXPRESSION WORD COUNT:
+- Total words: ${totalWords}`;
+        
+        if (sectionAWords !== null) {
+          metrics += `\n- Section A words: ${sectionAWords} (target: 80-120)`;
+          if (sectionAWords < 80) metrics += ` ⚠️ BELOW MINIMUM`;
+          else if (sectionAWords > 120) metrics += ` ⚠️ ABOVE MAXIMUM`;
+        }
+        
+        if (sectionBWords !== null) {
+          metrics += `\n- Section B words: ${sectionBWords} (target: 200-250)`;
+          if (sectionBWords < 200) metrics += ` ⚠️ BELOW MINIMUM`;
+          else if (sectionBWords > 250) metrics += ` ⚠️ ABOVE MAXIMUM`;
+        }
+        
+        // For single section mode (partA or partB)
+        if (sectionAWords === null && sectionBWords === null) {
+          // Detect if it's likely Section A or B based on word count
+          if (totalWords <= 150) {
+            metrics += `\n- Detected as Section A (fait divers), target: 80-120 words`;
+            if (totalWords < 80) metrics += ` ⚠️ BELOW MINIMUM`;
+            else if (totalWords > 120) metrics += ` ⚠️ ABOVE MAXIMUM`;
+          } else {
+            metrics += `\n- Detected as Section B (argumentation), target: 200-250 words`;
+            if (totalWords < 200) metrics += ` ⚠️ BELOW MINIMUM`;
+            else if (totalWords > 250) metrics += ` ⚠️ ABOVE MAXIMUM`;
+          }
+        }
+        
+        metrics += `\n
+IMPORTANT: Apply word count penalties to taskFulfillment score as described in the system prompt.
+Count the actual words yourself to verify, then factor this into your evaluation.`;
+        
+        return metrics;
+      })()
     : '';
 
   const fullExamContext = isFullExam && taskPartA && taskPartB
@@ -177,9 +285,10 @@ ${section === 'WrittenExpression' ? `\nIMPORTANT FOR WRITTEN EXPRESSION:
 - You MUST provide separate model answers and corrections for each section:
   * model_answer_sectionA: A model fait divers (80-120 words) in French
   * model_answer_sectionB: A model argumentation (200-250 words) in French
-  * corrections_sectionA: 2-4 specific corrections for Section A (extract quotes from Section A text)
-  * corrections_sectionB: 2-4 specific corrections for Section B (extract quotes from Section B text)
+  * corrections_sectionA: 2-4 specific corrections for Section A (EXACT quotes copied from Section A text - must match verbatim for UI highlighting)
+  * corrections_sectionB: 2-4 specific corrections for Section B (EXACT quotes copied from Section B text - must match verbatim for UI highlighting)
 - Identify which part of the transcript belongs to Section A vs Section B before providing corrections.
+- CRITICAL: The "weak" field in each correction must be an EXACT COPY from the candidate's text (not paraphrased) for the UI to highlight it correctly.
 ${taskPartA?.modelAnswer ? `\nREFERENCE MODEL ANSWER FOR SECTION A:
 Below is a reference model answer from the knowledge base. Use this as guidance for format, vocabulary, and structure when creating your model_answer_sectionA. However, adapt it to match the specific prompt given to the candidate.
 ---\n${taskPartA.modelAnswer}\n---` : ''}
@@ -210,9 +319,9 @@ fluency_comment: ${fluencyAnalysis.fluency_comment ?? 'N/A'}`
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${fullExamContext}${eo2TimeContext}${fluencyContext}
+Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${fullExamContext}${eo2TimeContext}${fluencyContext}
 
-Candidate transcript (French):
+Candidate ${section === 'WrittenExpression' ? 'text' : 'transcript'} (French):
 ${candidateText || "(empty)"}`;
 }
 

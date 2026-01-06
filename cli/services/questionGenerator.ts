@@ -226,21 +226,30 @@ No two questions should share the same document, passage, sentence, or subject m
 OUTPUT FORMAT
 ═══════════════════════════════════════════════════════════════════════════════
 
-Return ONLY valid JSON matching this exact schema:
+Return ONLY valid JSON with this structure:
 
 {
   "questions": [
     {
-      "section": "A" | "B" | "C" | "D" | "E" | "F" | "G",
-      "questionNumber": number (1-40, sequential, must be in order),
-      "question": "string (the question text in French)",
-      "questionText": "string (REQUIRED for sections A, C, D, E, F, G - contains the complete reference text/document/passage)",
-      "options": ["string", "string", "string", "string"] (exactly 4 options in French),
-      "correctAnswer": number (0-3, index of the correct option),
-      "explanation": "string (explanation in French of why the correct answer is right)"
+      "section": "A",
+      "questionNumber": 1,
+      "question": "Quel est l'objectif de ce document?",
+      "questionText": "Le texte de référence complet ici...",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": 0,
+      "explanation": "Explication de la bonne réponse..."
     }
   ]
 }
+
+FIELD DESCRIPTIONS:
+- section: One of "A", "B", "C", "D", "E", "F", or "G"
+- questionNumber: Sequential number from 1 to 40 (must be in order)
+- question: The question text in French
+- questionText: REQUIRED for sections A, C, D, E, F, G (the reference text/document/passage)
+- options: Array of exactly 4 answer choices in French
+- correctAnswer: Index of correct option (0, 1, 2, or 3)
+- explanation: French explanation of why the answer is correct
 
 FIELD REQUIREMENTS BY SECTION:
 
@@ -284,6 +293,78 @@ CRITICAL REMINDERS:
 }
 
 /**
+ * Get simplified prompt for practice assignments (fewer than 40 questions)
+ */
+function getPracticePrompt(numberOfQuestions: number, theme?: string): string {
+  const themeSection = theme 
+    ? `\nCONTENT THEME: "${theme}" - Use this theme to guide the topics of your questions and passages.`
+    : '';
+
+  return `Act as a Senior French Language Expert specialized in the TEF Canada (Test d'Évaluation de Français). 
+You are creating a PRACTICE reading comprehension exercise (NOT a full mock exam).
+
+═══════════════════════════════════════════════════════════════════════════════
+PRACTICE ASSIGNMENT REQUIREMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+Generate exactly ${numberOfQuestions} reading comprehension questions.
+${themeSection}
+
+SIMPLIFIED STRUCTURE (no sections required):
+- Each question should be standalone with its own reference text
+- Mix of question types: document identification, sentence completion, detail scanning, text interpretation (based on what the user asks for)
+- Consistent difficulty level as the user asks for
+
+CONTENT GUIDELINES:
+- Use DIVERSE topics across all ${numberOfQuestions} questions, based on what the user asks for
+- Focus on practical, everyday French situations
+- Each question needs its own UNIQUE reference text in "questionText"
+- Do NOT reuse the same document for multiple questions
+- Use Standard French (no slang, no regionalisms)
+- Authentic French as used in Canada
+
+DISTRACTORS (4 options per question):
+- One correct answer
+- One 'near-miss' (plausible but incorrect)
+- One opposite meaning
+- One irrelevant option
+
+═══════════════════════════════════════════════════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════════════════════════════════════════════════
+
+Return ONLY valid JSON with this structure:
+
+{
+  "questions": [
+    {
+      "section": "A",
+      "questionNumber": 1,
+      "question": "Quel est l'objectif de ce document?",
+      "questionText": "Le texte de référence complet ici...",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": 0,
+      "explanation": "Explication de la bonne réponse..."
+    }
+  ]
+}
+
+FIELD DESCRIPTIONS:
+- section: Always "A" for practice assignments
+- questionNumber: Sequential number from 1 to ${numberOfQuestions}
+- question: The question text in French
+- questionText: REQUIRED - the reference text/document/passage (each must be unique)
+- options: Array of exactly 4 answer choices in French
+- correctAnswer: Index of correct option (0, 1, 2, or 3)
+- explanation: French explanation of why the answer is correct
+
+CRITICAL: 
+- Generate EXACTLY ${numberOfQuestions} questions (not 40)
+- Each question must have unique questionText
+- Count your questions before returning`;
+}
+
+/**
  * Generate questions for a reading task using AI
  */
 export async function generateQuestions(
@@ -291,23 +372,33 @@ export async function generateQuestions(
   options: {
     theme?: string;
     sections?: string[]; // e.g., ['A', 'B', 'C']
+    numberOfQuestions?: number; // For practice assignments
   } = {}
 ): Promise<ReadingListeningQuestion[]> {
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is not set. Please set it in your environment variables.');
   }
 
-  const { theme, sections } = options;
+  const { theme, sections, numberOfQuestions } = options;
+  const isPracticeMode = numberOfQuestions !== undefined && numberOfQuestions < 40;
   const sectionsToGenerate = sections && sections.length > 0 ? sections : ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
   console.log(`\n🤖 Generating questions for task ${taskId}...`);
   if (theme) {
     console.log(`   Theme: ${theme}`);
   }
-  console.log(`   Sections: ${sectionsToGenerate.join(', ')}`);
+  if (isPracticeMode) {
+    console.log(`   Mode: Practice (${numberOfQuestions} questions)`);
+  } else {
+    console.log(`   Mode: Full mock exam (40 questions)`);
+    console.log(`   Sections: ${sectionsToGenerate.join(', ')}`);
+  }
 
   try {
-    const prompt = getMasterPrompt(theme);
+    // Use simplified prompt for practice mode
+    const prompt = isPracticeMode 
+      ? getPracticePrompt(numberOfQuestions!, theme)
+      : getMasterPrompt(theme);
     
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
@@ -402,7 +493,10 @@ export async function generateQuestions(
 /**
  * Validate generated questions structure
  */
-export function validateGeneratedQuestions(questions: ReadingListeningQuestion[]): {
+export function validateGeneratedQuestions(
+  questions: ReadingListeningQuestion[],
+  expectedCount: number = 40
+): {
   valid: boolean;
   errors: string[];
 } {
@@ -413,8 +507,8 @@ export function validateGeneratedQuestions(questions: ReadingListeningQuestion[]
     return { valid: false, errors };
   }
 
-  if (questions.length !== 40) {
-    errors.push(`Expected 40 questions, got ${questions.length}`);
+  if (questions.length !== expectedCount) {
+    errors.push(`Expected ${expectedCount} questions, got ${questions.length}`);
   }
 
   // Check for duplicate question numbers
