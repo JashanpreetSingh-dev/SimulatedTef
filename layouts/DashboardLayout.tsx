@@ -119,7 +119,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </button>
           <button 
             onClick={() => signOut()}
-            className="hidden md:block text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-rose-300 dark:hover:text-rose-400 transition-colors"
+            className="hidden md:block text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-rose-300 dark:hover:text-rose-400 transition-colors whitespace-nowrap"
           >
             {t('nav.signOut')}
           </button>
