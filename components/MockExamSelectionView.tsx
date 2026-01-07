@@ -252,21 +252,24 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                     {loadingExams ? t('mockExam.loading') : t('mockExam.checkingStatus')}
                   </p>
           </div>
-        ) : mockExams.length > 0 ? (
-          <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2">
+        ) : mockExams.filter((exam) => !completedMockExamIds.includes(exam.mockExamId)).length > 0 ? (
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-2 pr-2 pb-2">
             <h2 className={`
               text-base font-semibold mb-2 flex-shrink-0
               ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}
             `}>
                     Mock Exams
             </h2>
-                  {mockExams.map((exam) => {
+                  {mockExams
+                    // Filter out completed mock exams - they should only appear in the "Terminée" tab
+                    .filter((exam) => !completedMockExamIds.includes(exam.mockExamId))
+                    .map((exam) => {
                     const isActiveExam = activeMockExam && activeMockExam.mockExamId === exam.mockExamId;
                     const completedCount = isActiveExam ? activeMockExam.completedModules.length : 0;
                     // Only treat exam as "started" if at least one module has been completed
                     // (session may exist, but exam isn't really started until work is done)
-                    const isIncomplete = isActiveExam && completedCount > 0 && completedCount < 3;
-                    const isComplete = isActiveExam && completedCount === 3;
+                    const isIncomplete = isActiveExam && completedCount > 0 && completedCount < 4;
+                    const isComplete = isActiveExam && completedCount === 4;
                     // Only show as active/started if there's actually progress (completedCount > 0)
                     const hasStarted = isActiveExam && completedCount > 0;
                     const actionText = hasStarted ? t('actions.resume') : t('actions.start');
@@ -338,6 +341,15 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                                   </div>
                                   <div className={`
                                     px-1.5 py-0.5 rounded text-[10px] font-medium
+                                    ${activeMockExam.completedModules.includes('writtenExpression')
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                      : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                                    }
+                                  `}>
+                                    {t('modules.writtenExpression')}: {activeMockExam.completedModules.includes('writtenExpression') ? '✓' : '○'}
+                                  </div>
+                                  <div className={`
+                                    px-1.5 py-0.5 rounded text-[10px] font-medium
                                     ${activeMockExam.completedModules.includes('reading')
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
@@ -358,12 +370,15 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                               )}
                             </div>
                     {!hasStarted && (
-                      <div className="grid grid-cols-3 gap-1.5 text-[10px]">
+                      <div className="grid grid-cols-4 gap-1.5 text-[10px]">
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
                           {t('modules.oralExpression')}
                         </div>
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          {t('modules.reading')} (40 Q - sequential)
+                          {t('modules.writtenExpression')}
+                        </div>
+                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
+                          {t('modules.reading')} (40 Q)
                         </div>
                         <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
                           {t('modules.listening')} (40 Q)
@@ -403,8 +418,13 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
           ) : (
             <div className="flex-1 min-h-0 flex flex-col">
               {completedMockExamIds.length > 0 ? (
-                <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-2">
-                  {completedMockExamIds.map((mockExamId) => (
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden space-y-2 pr-2 pb-2">
+                  {completedMockExamIds.map((mockExamId) => {
+                    // Find the mock exam name from the loaded exams
+                    const mockExam = mockExams.find((exam) => exam.mockExamId === mockExamId);
+                    const examName = mockExam?.name || mockExamId;
+                    
+                    return (
                     <div
                       key={mockExamId}
                       className={`
@@ -430,7 +450,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                             text-base font-semibold mb-1
                             ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}
                           `}>
-                            {t('mockExam.completedTitle')}
+                            {examName}
                           </h3>
                           <p className={`
                             text-xs mb-2
@@ -438,21 +458,26 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                           `}>
                             {t('mockExam.allModulesCompleted')}
                           </p>
-                          <div className="flex gap-2 text-[10px]">
+                          <div className="flex gap-2 text-[10px] flex-wrap">
                             <div className={`
                               px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
                             `}>
-                              Oral: Complete
+                              {t('modules.oralExpression')}: ✓
                             </div>
                             <div className={`
                               px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
                             `}>
-                              {t('modules.reading')}: {t('status.completed')}
+                              {t('modules.writtenExpression')}: ✓
                             </div>
                             <div className={`
                               px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
                             `}>
-                              {t('modules.listening')}: {t('status.completed')}
+                              {t('modules.reading')}: ✓
+                            </div>
+                            <div className={`
+                              px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
+                            `}>
+                              {t('modules.listening')}: ✓
                             </div>
                           </div>
                         </div>
@@ -471,7 +496,8 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                   )}
                 </div>
               </div>
-            ))}
+                    );
+                  })}
           </div>
         ) : (
           <div className="text-center py-8 flex-shrink-0">

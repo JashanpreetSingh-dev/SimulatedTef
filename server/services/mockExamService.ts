@@ -37,13 +37,31 @@ export const mockExamService = {
       .sort({ createdAt: 1 })
       .toArray();
 
-    // Get completed mock exam IDs for this user (from exam results)
-    const completedResults = await db
-      .collection("examResults")
-      .find({ userId, mockExamId: { $exists: true, $ne: null } })
-      .project({ mockExamId: 1 })
+    // Get completed mock exam IDs for this user - only those with all 4 modules completed
+    const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
+    
+    const completedMockExamAggregation = await db
+      .collection("results")
+      .aggregate([
+        { $match: { userId, mockExamId: { $exists: true, $ne: null } } },
+        { 
+          $group: { 
+            _id: '$mockExamId', 
+            completedModules: { $addToSet: '$module' } 
+          } 
+        },
+        { 
+          $match: { 
+            // Only include mock exams where all 4 modules are completed
+            $expr: { 
+              $setEquals: ['$completedModules', ALL_MODULES] 
+            } 
+          } 
+        }
+      ])
       .toArray();
-    const completedMockExamIds = [...new Set(completedResults.map((r: any) => r.mockExamId))];
+    
+    const completedMockExamIds = completedMockExamAggregation.map((r: any) => r._id);
 
     // Filter out completed exams
     const availableMockExams = allMockExams.filter(
@@ -601,6 +619,7 @@ export const mockExamService = {
       officialTasks: { partA: any; partB: any };
       mode: "full";
       title: string;
+      mockExamId?: string;
     };
   } | null> {
     const db = await connectDB();
@@ -684,7 +703,7 @@ export const mockExamService = {
           repeatable: item.repeatable,
           audioScript: item.audioScript,
           mimeType: item.mimeType,
-          hasAudio: !!item.audioData, // Indicate if audio data exists
+          hasAudio: !!(item.s3Key || item.audioData), // Check both S3 and legacy MongoDB storage
         }));
       }
 
@@ -817,6 +836,7 @@ export const mockExamService = {
           },
           mode: "full" as const,
           title: `${examName} - Oral Expression`,
+          mockExamId, // Include mockExamId so the evaluation job includes it
         },
       };
     }

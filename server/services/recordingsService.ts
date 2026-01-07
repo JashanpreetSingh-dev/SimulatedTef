@@ -1,38 +1,46 @@
 /**
  * Service layer for recordings database operations
+ * Now uses MongoDB recordings collection instead of GridFS
  */
 
 import { ObjectId } from 'mongodb';
-import { connectDB, getGridFSBucket } from '../db/connection';
+import { connectDB } from '../db/connection';
+
+export interface RecordingDocument {
+  _id: ObjectId;
+  s3Key: string;
+  userId: string;
+  filename: string;
+  contentType: string;
+  size: number;
+  createdAt: Date;
+}
 
 export const recordingsService = {
   /**
    * Find recording metadata by ID
    */
-  async findById(recordingId: string, userId: string) {
+  async findById(recordingId: string, userId: string): Promise<RecordingDocument | null> {
     if (!ObjectId.isValid(recordingId)) {
       return null;
     }
     
-    await connectDB();
-    const gridFSBucket = getGridFSBucket();
+    const db = await connectDB();
     
-    const files = await gridFSBucket.find({ 
+    const recording = await db.collection('recordings').findOne({ 
       _id: new ObjectId(recordingId) 
-    }).toArray();
+    }) as RecordingDocument | null;
     
-    if (files.length === 0) {
+    if (!recording) {
       return null;
     }
-    
-    const file = files[0];
     
     // Verify ownership
-    if (file.metadata?.userId && file.metadata.userId !== userId) {
+    if (recording.userId && recording.userId !== userId) {
       return null;
     }
     
-    return file;
+    return recording;
   },
 
   /**
@@ -41,18 +49,33 @@ export const recordingsService = {
   async findByUserId(
     userId: string,
     limit: number = 50
-  ): Promise<any[]> {
-    await connectDB();
-    const gridFSBucket = getGridFSBucket();
+  ): Promise<RecordingDocument[]> {
+    const db = await connectDB();
     
-    const files = await gridFSBucket.find({ 
-      'metadata.userId': userId 
-    })
-      .sort({ uploadDate: -1 })
+    const recordings = await db.collection('recordings')
+      .find({ userId })
+      .sort({ createdAt: -1 })
       .limit(limit)
-      .toArray();
+      .toArray() as RecordingDocument[];
     
-    return files;
+    return recordings;
+  },
+
+  /**
+   * Delete recording metadata by ID
+   */
+  async deleteById(recordingId: string, userId: string): Promise<boolean> {
+    if (!ObjectId.isValid(recordingId)) {
+      return false;
+    }
+    
+    const db = await connectDB();
+    
+    const result = await db.collection('recordings').deleteOne({ 
+      _id: new ObjectId(recordingId),
+      userId 
+    });
+    
+    return result.deletedCount > 0;
   },
 };
-

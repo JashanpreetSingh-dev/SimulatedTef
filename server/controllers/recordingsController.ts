@@ -1,17 +1,19 @@
 /**
  * Recordings controller - handles recording-related business logic
+ * Now uses S3 for audio storage instead of GridFS
  */
 
 import { Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
-import { getGridFSBucket } from '../db/connection';
+import { connectDB } from '../db/connection';
 import { recordingsService } from '../services/recordingsService';
+import { s3Service } from '../services/s3Service';
 import { asyncHandler } from '../middleware/errorHandler';
 
 export const recordingsController = {
   /**
    * POST /api/recordings/upload
-   * Upload audio recording to GridFS
+   * Upload audio recording to S3
    */
   uploadRecording: asyncHandler(async (req: Request, res: Response) => {
     if (!req.file) {
@@ -27,7 +29,10 @@ export const recordingsController = {
       return res.status(400).json({ error: 'Audio file too small, likely invalid' });
     }
 
-    const gridFSBucket = getGridFSBucket();
+    // Check if S3 is configured
+    if (!s3Service.isS3Configured()) {
+      return res.status(500).json({ error: 'S3 storage is not configured' });
+    }
 
     // Use authenticated userId from middleware (not from request body)
     const userId = req.userId || 'guest';
@@ -50,37 +55,44 @@ export const recordingsController = {
       }
     }
 
-    // Upload to GridFS
-    const uploadStream = gridFSBucket.openUploadStream(originalFilename, {
-      contentType: contentType,
-      metadata: {
+    try {
+      // Generate S3 key
+      const s3Key = s3Service.generateRecordingKey(userId, originalFilename);
+
+      // Upload to S3
+      await s3Service.uploadAudio(req.file.buffer, s3Key, contentType);
+
+      // Store metadata in MongoDB recordings collection
+      const db = await connectDB();
+      const recordingDoc = {
+        s3Key,
         userId,
-        uploadedAt: new Date().toISOString(),
-        originalMimeType: req.file.mimetype,
-      },
-    });
-
-    uploadStream.end(req.file.buffer);
-
-    uploadStream.on('finish', () => {
-      console.log(`Audio uploaded to GridFS: ${originalFilename} (${(req.file!.size / 1024).toFixed(2)} KB)`);
-      res.status(201).json({
-        recordingId: uploadStream.id.toString(),
         filename: originalFilename,
-        size: req.file!.size,
-        contentType: contentType,
-      });
-    });
+        contentType,
+        size: req.file.size,
+        createdAt: new Date(),
+      };
 
-    uploadStream.on('error', (error) => {
-      console.error('GridFS upload error:', error);
+      const result = await db.collection('recordings').insertOne(recordingDoc);
+      const recordingId = result.insertedId.toString();
+
+      console.log(`✅ Audio uploaded to S3: ${originalFilename} (${(req.file.size / 1024).toFixed(2)} KB)`);
+      
+      res.status(201).json({
+        recordingId,
+        filename: originalFilename,
+        size: req.file.size,
+        contentType,
+      });
+    } catch (error: any) {
+      console.error('S3 upload error:', error);
       res.status(500).json({ error: 'Failed to upload recording' });
-    });
+    }
   }),
 
   /**
    * GET /api/recordings/:id
-   * Download audio recording from GridFS
+   * Get presigned URL for audio recording from S3
    */
   getRecording: asyncHandler(async (req: Request, res: Response) => {
     const recordingId = req.params.id;
@@ -92,51 +104,21 @@ export const recordingsController = {
     }
 
     // Check if file exists and verify ownership
-    const file = await recordingsService.findById(recordingId, userId || '');
+    const recording = await recordingsService.findById(recordingId, userId || '');
 
-    if (!file) {
+    if (!recording) {
       return res.status(404).json({ error: 'Recording not found' });
     }
 
-    // Determine content type from file metadata or filename
-    let contentType = file.contentType || 'audio/wav';
-    if (!contentType.startsWith('audio/')) {
-      // Fallback: determine from filename
-      if (file.filename.endsWith('.webm')) {
-        contentType = 'audio/webm';
-      } else if (file.filename.endsWith('.ogg')) {
-        contentType = 'audio/ogg';
-      } else if (file.filename.endsWith('.m4a')) {
-        contentType = 'audio/mp4';
-      } else {
-        contentType = 'audio/wav';
-      }
+    try {
+      // Generate presigned URL for S3 access
+      const presignedUrl = await s3Service.getPresignedUrl(recording.s3Key);
+
+      // Redirect to presigned URL
+      res.redirect(presignedUrl);
+    } catch (error: any) {
+      console.error('S3 presigned URL error:', error);
+      res.status(500).json({ error: 'Failed to get recording URL' });
     }
-
-    // Set headers for audio streaming with CORS support
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
-    res.setHeader('Content-Length', file.length.toString());
-    res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
-
-    // Stream file from GridFS
-    const gridFSBucket = getGridFSBucket();
-    const downloadStream = gridFSBucket.openDownloadStream(new ObjectId(recordingId));
-    downloadStream.pipe(res);
-
-    downloadStream.on('error', (error) => {
-      console.error('GridFS download error:', error);
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Failed to download recording' });
-      } else {
-        res.end();
-      }
-    });
-
-    downloadStream.on('end', () => {
-      console.log(`Audio downloaded: ${file.filename} (${(file.length / 1024).toFixed(2)} KB)`);
-    });
   }),
 };
-

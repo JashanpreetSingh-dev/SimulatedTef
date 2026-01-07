@@ -1,18 +1,18 @@
 /**
- * AudioItem model - stores audio files and scripts for Listening tasks
+ * AudioItem model - stores audio metadata and S3 references for Listening tasks
+ * Audio files are now stored in S3, with s3Key referencing the file location
  */
 
 import { z } from 'zod';
 
 // Zod schema for AudioItem validation
-// Note: audioData is stored as Buffer in MongoDB, but we use z.any() for flexibility
-// since MongoDB Binary/Buffer types don't play well with Zod validation
+// s3Key is used for new audio items, audioData is kept for backwards compatibility
 export const AudioItemSchema = z.object({
   audioId: z.string().min(1),
   taskId: z.string().min(1),
   sectionId: z.number().int().min(1).max(4),
   audioScript: z.string().min(1),
-  audioData: z.any().optional(), // Binary audio data (Buffer) - stored as WAV format
+  s3Key: z.string().optional(), // S3 object key for audio file
   mimeType: z.string().default('audio/wav'),
   repeatable: z.boolean().default(false),
   createdAt: z.string(),
@@ -21,7 +21,7 @@ export const AudioItemSchema = z.object({
 
 export type AudioItemDocument = z.infer<typeof AudioItemSchema> & {
   _id?: string;
-  audioData?: Buffer; // Buffer type - MongoDB stores this as Binary automatically
+  s3Key?: string; // S3 object key for audio file
 };
 
 /**
@@ -32,7 +32,7 @@ export function validateAudioItem(data: unknown): AudioItemDocument {
 }
 
 /**
- * Create a new AudioItem
+ * Create a new AudioItem with S3 storage
  */
 export function createAudioItem(
   audioId: string,
@@ -40,7 +40,7 @@ export function createAudioItem(
   sectionId: number,
   audioScript: string,
   repeatable: boolean = false,
-  audioData?: Buffer,
+  s3Key?: string,
   mimeType: string = 'audio/wav'
 ): Omit<AudioItemDocument, '_id'> {
   // Validate sectionId
@@ -54,7 +54,7 @@ export function createAudioItem(
     taskId,
     sectionId,
     audioScript,
-    audioData,
+    s3Key,
     mimeType,
     repeatable,
     createdAt: now,

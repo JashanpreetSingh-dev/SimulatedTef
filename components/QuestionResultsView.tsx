@@ -246,10 +246,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
       // Check cache first
       const cachedUrl = audioCacheRef.current.get(currentAudioId);
       if (cachedUrl) {
-        // Clean up previous blob URL (if different)
-        if (audioBlobUrlRef.current && audioBlobUrlRef.current !== cachedUrl) {
-          URL.revokeObjectURL(audioBlobUrlRef.current);
-        }
+        // Just use cached URL - don't revoke anything since all cached URLs are still valid
         audioBlobUrlRef.current = cachedUrl;
         setAudioBlobUrl(cachedUrl);
         setAudioLoading(false);
@@ -258,13 +255,9 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
 
       // Not in cache, fetch it
       setAudioLoading(true);
-      
-      // Clean up previous blob URL (if different from cached)
-      if (audioBlobUrlRef.current && !audioCacheRef.current.has(currentAudioId)) {
-        URL.revokeObjectURL(audioBlobUrlRef.current);
-        audioBlobUrlRef.current = null;
-      }
       setAudioBlobUrl(null);
+      
+      // Don't revoke previous URLs here - they're cached and may be needed when navigating back
 
       // Add cache-busting to ensure fresh audio is fetched
       const audioUrl = `${BACKEND_URL}/api/audio/${audioItem.audioId}?taskId=${encodeURIComponent(result.taskId)}&t=${Date.now()}`;

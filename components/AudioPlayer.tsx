@@ -25,6 +25,19 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Reset state when src changes (important for navigation between questions)
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsLoading(true);
+    
+    // Load the new audio source
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [src]);
+
   // Update current time
   useEffect(() => {
     const audio = audioRef.current;
@@ -45,17 +58,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       const error = new Error('Failed to load audio');
       onError?.(error);
     };
+    const handleCanPlay = () => {
+      setIsLoading(false);
+    };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
+    audio.addEventListener('canplay', handleCanPlay);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
+      audio.removeEventListener('canplay', handleCanPlay);
     };
   }, [onEnded, onError]);
 

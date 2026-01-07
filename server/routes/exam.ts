@@ -300,13 +300,31 @@ router.get('/mock/status', requireAuth, asyncHandler(async (req: Request, res: R
     status: 'active'
   });
 
-  // Get completed mock exam IDs from results
-  const completedResults = await db
-    .collection('examResults')
-    .find({ userId, mockExamId: { $exists: true, $ne: null } })
-    .project({ mockExamId: 1 })
+  // Get completed mock exam IDs from results - only those with all 4 modules completed
+  const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
+  
+  const completedMockExamAggregation = await db
+    .collection('results')
+    .aggregate([
+      { $match: { userId, mockExamId: { $exists: true, $ne: null } } },
+      { 
+        $group: { 
+          _id: '$mockExamId', 
+          completedModules: { $addToSet: '$module' } 
+        } 
+      },
+      { 
+        $match: { 
+          // Only include mock exams where all 4 modules are completed
+          $expr: { 
+            $setEquals: ['$completedModules', ALL_MODULES] 
+          } 
+        } 
+      }
+    ])
     .toArray();
-  const completedMockExamIds = [...new Set(completedResults.map((r: any) => r.mockExamId))];
+  
+  const completedMockExamIds = completedMockExamAggregation.map((r: any) => r._id);
 
   if (activeSession) {
     const { mockExamService } = await import('../services/mockExamService');

@@ -596,7 +596,7 @@ export async function generateAudioCommand(argv: any) {
 }
 
 /**
- * Generate missing audio for audio items with null/missing audioData
+ * Generate missing audio for audio items with missing S3 audio
  */
 export async function fillMissingAudioCommand(argv: any) {
   try {
@@ -707,7 +707,7 @@ export function registerListeningCommands(yargsInstance: ReturnType<typeof yargs
               alias: 'o'
             });
         }, generateAudioCommand)
-        .command('fill-missing-audio', 'Generate audio for audio items with missing/null audioData', (yargs) => {
+        .command('fill-missing-audio', 'Generate audio for audio items with missing S3 audio', (yargs) => {
           return yargs
             .option('task-id', { 
               type: 'string', 

@@ -68,7 +68,7 @@ export async function generateAudioForTask(
 }
 
 /**
- * Generate audio for all audio items with missing/null audioData
+ * Generate audio for all audio items with missing S3 audio
  */
 export async function generateMissingAudio(
   taskId?: string

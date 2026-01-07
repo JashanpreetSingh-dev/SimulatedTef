@@ -147,7 +147,13 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         };
 
         // Save result to database
-        const savedResult = await resultsService.create(resultToSave);
+        // For mock exams, use upsert to update any existing placeholder instead of creating duplicate
+        let savedResult: SavedResult;
+        if (job.data.mockExamId) {
+          savedResult = await resultsService.upsertMockExamResult(resultToSave);
+        } else {
+          savedResult = await resultsService.create(resultToSave);
+        }
 
         await job.updateProgress(100); // 100% - Complete
 
