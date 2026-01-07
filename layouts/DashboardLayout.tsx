@@ -13,6 +13,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  
+  // Check if user has professor role in any organization membership
+  const isProfessor = user?.organizationMemberships?.some(
+    (membership) => membership.role === 'org:professor'
+  ) ?? false;
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -44,11 +49,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               {t('nav.dashboard')}
             </button>
-            <button 
-              onClick={() => navigate('/dashboard/assignments')}
-              className={isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-              Create Assignment
-            </button>
+            {isProfessor && (
+              <button 
+                onClick={() => navigate('/dashboard/assignments')}
+                className={isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                {t('nav.createAssignment')}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -141,16 +148,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               >
                 {t('nav.dashboard')}
               </button>
-              <button 
-                onClick={() => handleNavigate('/dashboard/assignments')}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                  isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create')
-                    ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                Create Assignment
-              </button>
+              {isProfessor && (
+                <button 
+                  onClick={() => handleNavigate('/dashboard/assignments')}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create')
+                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {t('nav.createAssignment')}
+                </button>
+              )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
               <button 
                 onClick={() => {

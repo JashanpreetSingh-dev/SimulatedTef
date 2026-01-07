@@ -16,6 +16,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.dashboard': 'Tableau de bord',
     'nav.history': 'Historique',
     'nav.signOut': 'Déconnexion',
+    'nav.createAssignment': 'Créer un devoir',
     
     // Dashboard
     'dashboard.greeting': 'Bonjour',
@@ -352,6 +353,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.dashboard': 'Dashboard',
     'nav.history': 'History',
     'nav.signOut': 'Sign Out',
+    'nav.createAssignment': 'Create Assignment',
     
     // Dashboard
     'dashboard.greeting': 'Hello',
