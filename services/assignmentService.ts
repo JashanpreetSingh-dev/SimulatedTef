@@ -18,7 +18,8 @@ export const assignmentService = {
     title: string | undefined,
     prompt: string,
     settings: AssignmentSettings,
-    getToken: TokenGetter
+    getToken: TokenGetter,
+    creatorName?: string
   ): Promise<Assignment> {
     return authenticatedFetchJSON<Assignment>(`${API_BASE}/assignments`, {
       method: 'POST',
@@ -30,6 +31,7 @@ export const assignmentService = {
         title,
         prompt,
         settings,
+        creatorName,
       }),
       getToken,
     });

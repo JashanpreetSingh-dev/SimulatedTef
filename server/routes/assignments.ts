@@ -18,8 +18,9 @@ router.use(requireAuth);
 
 // POST /api/assignments - Create new assignment (draft) - Professor only
 router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
-  const { type, title, prompt, settings } = req.body;
+  const { type, title, prompt, settings, creatorName } = req.body;
   const userId = req.userId!;
+  const orgId = req.orgId;
 
   // Validate required fields
   if (!type || (type !== 'reading' && type !== 'listening')) {
@@ -46,28 +47,42 @@ router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request,
     title,
     prompt,
     assignmentSettings,
-    userId
+    userId,
+    creatorName,
+    orgId
   );
 
   res.status(201).json(assignment);
 }));
 
-// GET /api/assignments/my - Get all assignments created by current user - Professor only
+// GET /api/assignments/my - Get all assignments for the organization (or by creator if no org)
 // MUST come before /:assignmentId route to avoid matching "my" as an assignmentId
 router.get('/my', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId!;
+  const orgId = req.orgId;
 
-  const assignments = await assignmentService.getAssignmentsByCreator(userId);
-  res.json(assignments);
+  // If user has an org, get all org assignments with ownership info
+  if (orgId) {
+    const assignments = await assignmentService.getAssignmentsByOrg(orgId, userId);
+    res.json(assignments);
+  } else {
+    // Fallback to user-specific assignments if no org
+    const assignments = await assignmentService.getAssignmentsByCreator(userId);
+    // Add isOwner: true for all since they're the creator
+    res.json(assignments.map(a => ({ ...a, isOwner: true })));
+  }
 }));
 
 // GET /api/assignments/published - Get all published assignments (for practice section)
 // MUST come before /:assignmentId route
+// Students only see assignments from their organization
 router.get('/published', asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.query;
+  const orgId = req.orgId;
 
   const assignments = await assignmentService.getPublishedAssignments(
-    type === 'reading' || type === 'listening' ? type as AssignmentType : undefined
+    type === 'reading' || type === 'listening' ? type as AssignmentType : undefined,
+    orgId
   );
   res.json(assignments);
 }));

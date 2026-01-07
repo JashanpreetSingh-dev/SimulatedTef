@@ -68,8 +68,15 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         // Set userRole to professor if they have it in any org
         if (req.userRoles.includes('org:professor')) {
           req.userRole = 'org:professor';
+          // Also set orgId from the professor membership
+          const professorMembership = memberships.data.find(m => m.role === 'org:professor');
+          if (professorMembership) {
+            req.orgId = professorMembership.organization.id;
+          }
         } else if (req.userRoles.length > 0) {
           req.userRole = req.userRoles[0]; // Use first role
+          // Set orgId from first membership
+          req.orgId = memberships.data[0]?.organization.id || null;
         }
       } catch (err) {
         console.error('Failed to fetch user memberships:', err);

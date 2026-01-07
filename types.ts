@@ -302,6 +302,8 @@ export interface Assignment {
   settings: AssignmentSettings; // Assignment settings
   status: AssignmentStatus; // 'draft' | 'published'
   createdBy: string; // User ID of creator
+  creatorName?: string; // Name of creator (for display)
+  orgId?: string; // Organization ID for org-wide visibility
   taskId?: string; // Reference to ReadingTask or ListeningTask
   questionIds?: string[]; // References to generated questions
   createdAt: string;

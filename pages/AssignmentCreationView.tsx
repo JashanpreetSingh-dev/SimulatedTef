@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useUser } from '@clerk/clerk-react';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useAssignments } from '../hooks/useAssignments';
 import { AssignmentForm } from '../components/assignments/AssignmentForm';
@@ -13,6 +14,7 @@ export function AssignmentCreationView() {
   const navigate = useNavigate();
   const { assignmentId } = useParams<{ assignmentId: string }>();
   const { t } = useLanguage();
+  const { user } = useUser();
   const {
     createAssignment,
     generateQuestions,
@@ -60,11 +62,13 @@ export function AssignmentCreationView() {
     settings: any;
   }) => {
     try {
+      const creatorName = user?.fullName || user?.firstName || 'Unknown';
       const assignment = await createAssignment(
         data.type,
         data.title,
         data.prompt,
-        data.settings
+        data.settings,
+        creatorName
       );
       setCurrentAssignment(assignment);
       setStep('generate');

@@ -24,7 +24,8 @@ export function useAssignments() {
     type: AssignmentType,
     title: string | undefined,
     prompt: string,
-    settings: AssignmentSettings
+    settings: AssignmentSettings,
+    creatorName?: string
   ): Promise<Assignment> => {
     setLoading(true);
     setError(null);
@@ -34,7 +35,8 @@ export function useAssignments() {
         title,
         prompt,
         settings,
-        getTokenWrapper
+        getTokenWrapper,
+        creatorName
       );
       setAssignments(prev => [assignment, ...prev]);
       return assignment;

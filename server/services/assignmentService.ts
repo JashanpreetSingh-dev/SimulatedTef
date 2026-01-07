@@ -67,7 +67,9 @@ export const assignmentService = {
     title: string | undefined,
     prompt: string,
     settings: AssignmentSettings,
-    createdBy: string
+    createdBy: string,
+    creatorName?: string,
+    orgId?: string
   ): Promise<Assignment> {
     const db = await connectDB();
     
@@ -103,7 +105,11 @@ export const assignmentService = {
       prompt,
       settings,
       createdBy,
-      'draft'
+      'draft',
+      undefined, // taskId
+      undefined, // questionIds
+      creatorName,
+      orgId
     );
 
     // Save to database
@@ -420,15 +426,37 @@ export const assignmentService = {
   },
 
   /**
+   * Get all assignments for an organization (org-wide visibility)
+   */
+  async getAssignmentsByOrg(orgId: string, currentUserId: string): Promise<(Assignment & { isOwner: boolean })[]> {
+    const db = await connectDB();
+    const assignmentsCollection = db.collection('assignments');
+    
+    const assignments = await assignmentsCollection
+      .find({ orgId })
+      .sort({ createdAt: -1 })
+      .toArray();
+    
+    return (assignments as unknown as Assignment[]).map(assignment => ({
+      ...assignment,
+      isOwner: assignment.createdBy === currentUserId
+    }));
+  },
+
+  /**
    * Get all published assignments (for practice section)
    */
-  async getPublishedAssignments(type?: AssignmentType): Promise<Assignment[]> {
+  async getPublishedAssignments(type?: AssignmentType, orgId?: string): Promise<Assignment[]> {
     const db = await connectDB();
     const assignmentsCollection = db.collection('assignments');
     
     const query: any = { status: 'published' };
     if (type) {
       query.type = type;
+    }
+    // Only show assignments from the user's organization
+    if (orgId) {
+      query.orgId = orgId;
     }
     
     const assignments = await assignmentsCollection
@@ -451,8 +479,54 @@ export const assignmentService = {
       throw new Error(`Assignment ${assignmentId} not found`);
     }
 
-    // Note: We don't delete the associated task and questions
-    // They may be used by other assignments or regular practice
+    const assignmentData = assignment as unknown as Assignment;
+
+    // Delete associated questions
+    if (assignmentData.questionIds && assignmentData.questionIds.length > 0) {
+      await db.collection('questions').deleteMany({
+        questionId: { $in: assignmentData.questionIds }
+      });
+      console.log(`🗑️ Deleted ${assignmentData.questionIds.length} questions for assignment ${assignmentId}`);
+    }
+
+    // Delete associated task and audio items
+    if (assignmentData.taskId) {
+      const taskCollection = assignmentData.type === 'reading' ? 'readingTasks' : 'listeningTasks';
+      
+      // For listening tasks, also delete audio items and S3 files
+      if (assignmentData.type === 'listening') {
+        // Get audio items to delete S3 files
+        const audioItems = await db.collection('audioItems')
+          .find({ taskId: assignmentData.taskId })
+          .toArray();
+        
+        // Delete S3 audio files
+        if (audioItems.length > 0) {
+          const { s3Service } = await import('./s3Service');
+          for (const audioItem of audioItems) {
+            if (audioItem.s3Key) {
+              try {
+                await s3Service.deleteAudio(audioItem.s3Key);
+                console.log(`🗑️ Deleted S3 audio: ${audioItem.s3Key}`);
+              } catch (err) {
+                console.error(`Failed to delete S3 audio ${audioItem.s3Key}:`, err);
+              }
+            }
+          }
+        }
+        
+        // Delete audio items from database
+        const audioDeleteResult = await db.collection('audioItems').deleteMany({ taskId: assignmentData.taskId });
+        console.log(`🗑️ Deleted ${audioDeleteResult.deletedCount} audio items for task ${assignmentData.taskId}`);
+      }
+      
+      // Delete the task
+      await db.collection(taskCollection).deleteOne({ taskId: assignmentData.taskId });
+      console.log(`🗑️ Deleted ${assignmentData.type} task: ${assignmentData.taskId}`);
+    }
+
+    // Delete the assignment
     await assignmentsCollection.deleteOne({ assignmentId });
+    console.log(`🗑️ Deleted assignment: ${assignmentId}`);
   }
 };

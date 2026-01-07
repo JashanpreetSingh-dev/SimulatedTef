@@ -22,6 +22,8 @@ export const AssignmentSchema = z.object({
   settings: AssignmentSettingsSchema,
   status: z.enum(['draft', 'published']),
   createdBy: z.string().min(1),
+  creatorName: z.string().optional(),
+  orgId: z.string().optional(),
   taskId: z.string().optional(),
   questionIds: z.array(z.string()).optional(),
   createdAt: z.string(),
@@ -51,7 +53,9 @@ export function createAssignment(
   createdBy: string,
   status: AssignmentStatus = 'draft',
   taskId?: string,
-  questionIds?: string[]
+  questionIds?: string[],
+  creatorName?: string,
+  orgId?: string
 ): Assignment {
   const now = new Date().toISOString();
   return {
@@ -62,6 +66,8 @@ export function createAssignment(
     settings,
     status,
     createdBy,
+    creatorName,
+    orgId,
     taskId,
     questionIds,
     createdAt: now,

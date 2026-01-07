@@ -3,8 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Assignment, AssignmentType } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 
+interface AssignmentWithOwnership extends Assignment {
+  isOwner?: boolean;
+}
+
 interface AssignmentListProps {
-  assignments: Assignment[];
+  assignments: AssignmentWithOwnership[];
   loading?: boolean;
   onDelete?: (assignmentId: string) => void;
   showActions?: boolean;
@@ -80,9 +84,19 @@ export function AssignmentList({ assignments, loading, onDelete, showActions = t
                     {assignment.questionIds.length} {t('assignments.questionsGenerated')}
                   </span>
                 )}
+                {assignment.creatorName && !assignment.isOwner && (
+                  <span className="whitespace-nowrap text-indigo-500 dark:text-indigo-400">
+                    {t('assignments.createdBy')} {assignment.creatorName}
+                  </span>
+                )}
+                {assignment.isOwner && (
+                  <span className="whitespace-nowrap text-green-600 dark:text-green-400 font-medium">
+                    {t('assignments.yours')}
+                  </span>
+                )}
               </div>
             </div>
-            {showActions && (
+            {showActions && (assignment.isOwner !== false) && (
               <div className="flex gap-2 sm:ml-4 flex-shrink-0">
                 <button
                   onClick={() => navigate(`/dashboard/assignments/create/${assignment.assignmentId}`)}
