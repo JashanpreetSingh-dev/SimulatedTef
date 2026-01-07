@@ -1,10 +1,8 @@
 import React from 'react';
-import { SignInButton, SignUpButton } from '@clerk/clerk-react';
+import { SignInButton } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useScrollAnimation } from '../utils/animations';
-import { PricingSection } from '../components/PricingSection';
-import { FeatureComparison } from '../components/FeatureComparison';
 import { FAQSection } from '../components/FAQSection';
 import { ExamInterfaceShowcase } from '../components/ExamInterfaceShowcase';
 import { ResultsDashboardShowcase } from '../components/ResultsDashboardShowcase';
@@ -15,7 +13,6 @@ export function LandingPage() {
   const { theme, toggleTheme } = useTheme();
   const [featuresRef, featuresVisible] = useScrollAnimation();
   const [comparisonRef, comparisonVisible] = useScrollAnimation();
-  const [ctaRef, ctaVisible] = useScrollAnimation();
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-sky-50 via-indigo-100 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-300">
@@ -74,21 +71,13 @@ export function LandingPage() {
             <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
               The exam simulator trusted by candidates preparing for Canadian immigration. Practice with real scenarios and get evaluated by AI trained on the official CCI Paris framework.
             </p>
-            <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base max-w-2xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-350">
-              Starting at $19 for 5 full tests • No credit card required for trial
-            </p>
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
-            <SignUpButton mode="modal">
-              <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
-                <span className="relative z-10">Start 3-Day Free Trial</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
-              </button>
-            </SignUpButton>
             <SignInButton mode="modal">
-              <button className="w-full sm:w-auto px-6 py-4 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.02] active:scale-[0.98] shadow-sm">
-                Sign in
+              <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
+                <span className="relative z-10">Sign in</span>
+                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
               </button>
             </SignInButton>
             <a 
@@ -292,57 +281,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <PricingSection />
-
-      {/* Feature Comparison Section */}
-      <FeatureComparison />
-
       {/* FAQ Section */}
       <FAQSection />
-
-      {/* Final CTA Section */}
-      <section 
-        ref={ctaRef as React.RefObject<HTMLElement>}
-        className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 transition-all duration-1000 ${
-          ctaVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 dark:text-slate-100 mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
-            Ready to <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">succeed</span>?
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl mb-4 sm:mb-6 leading-[1.6] max-w-2xl mx-auto px-4">
-            Join candidates preparing for Canadian immigration with the most accurate TEF exam simulator available.
-          </p>
-          <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base mb-8 sm:mb-12 leading-[1.6] max-w-2xl mx-auto px-4">
-            Start with a free 3-day trial, or choose a plan that fits your needs.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full px-4">
-            <SignUpButton mode="modal">
-              <button className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
-                <span className="relative z-10">Start Free Trial</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
-              </button>
-            </SignUpButton>
-            <a
-              href="#pricing"
-              className="group relative w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-400/20 dark:hover:shadow-indigo-500/20 active:scale-[0.98] text-center"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              <span className="relative z-10">View Pricing</span>
-            </a>
-            <SignInButton mode="modal">
-              <button className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:scale-[1.05] hover:shadow-xl hover:shadow-slate-600/20 dark:hover:shadow-slate-500/20 active:scale-[0.98]">
-                Sign in
-              </button>
-            </SignInButton>
-          </div>
-        </div>
-      </section>
 
       <Footer variant="light" />
     </div>
