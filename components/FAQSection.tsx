@@ -10,32 +10,32 @@ export const FAQSection: React.FC = () => {
 
   const faqs: FAQItem[] = [
     {
-      question: 'What happens after my free trial?',
-      answer: 'After your 3-day free trial ends, you can purchase a Starter Pack ($19) or Exam Ready Pack ($35) to continue practicing. Your trial usage and progress are saved, so you can pick up right where you left off.',
+      question: 'What are the 4 modules in TEF Canada?',
+      answer: 'TEF Canada consists of 4 modules: Compréhension Écrite (Reading - 40 MCQ), Compréhension Orale (Listening - 40 MCQ), Expression Écrite (Writing - 2 tasks), and Expression Orale (Speaking - 2 sections). Akseli covers all 4 modules with AI-powered evaluation.',
     },
     {
-      question: 'What\'s the difference between Starter Pack and Exam Ready Pack?',
-      answer: 'The Starter Pack includes 5 Full Tests, 3 Section A, and 3 Section B (11 tests total) valid for 30 days. The Exam Ready Pack includes 15 Full Tests, 10 Section A, and 10 Section B (35 tests total) valid for 30 days. Both packs are one-time purchases with no recurring charges.',
+      question: 'How does the AI evaluate my speaking?',
+      answer: 'Our AI examiner conducts real-time conversations using advanced speech recognition. It evaluates your pronunciation, fluency, grammar, vocabulary, and coherence based on the official CCI Paris framework used by actual TEF examiners.',
     },
     {
-      question: 'Do I need a credit card for the trial?',
-      answer: 'No credit card required! Start your free trial and explore all features. You only need to provide payment information if you decide to purchase a pack after your trial ends.',
+      question: 'How does the AI evaluate my writing?',
+      answer: 'When you submit your written responses, our AI analyzes grammar, vocabulary range, text coherence, and structure according to the official CCI Paris evaluation criteria. You receive detailed feedback with specific areas for improvement.',
     },
     {
-      question: 'How do test credits work?',
-      answer: 'Each pack gives you a set number of test credits that you can use anytime within the 30-day validity period. Full Tests, Section A, and Section B are separate credits - they don\'t count against each other. Once you use a credit, it\'s consumed and cannot be reused.',
+      question: 'What\'s the difference between Practice and Mock Exam modes?',
+      answer: 'Practice mode lets you learn at your own pace with no time pressure - great for building skills. Mock Exam mode simulates the real test conditions with official time limits, helping you prepare for actual exam day stress.',
     },
     {
-      question: 'What happens when my pack expires?',
-      answer: 'When your 30-day validity period ends, any unused test credits expire. You can purchase a new pack at any time to continue practicing. Your exam history and progress are always saved regardless of pack status.',
+      question: 'How accurate is the CLB scoring?',
+      answer: 'Our AI is trained on the official CCI Paris evaluation framework. While no simulation can guarantee exact scores, our CLB predictions closely align with actual TEF results and help you understand your current level.',
     },
     {
-      question: 'Can I purchase multiple packs?',
-      answer: 'Yes! You can purchase a new pack even if you have an active pack. The new pack will replace your current one, and any unused credits from the previous pack will be lost. We recommend using all your credits before purchasing a new pack.',
+      question: 'Can teachers create custom assessments?',
+      answer: 'Yes! Teachers can use our AI Assessment Creator to generate custom Reading and Listening comprehension tests. Simply describe the topic, and our AI creates questions, passages, and audio. Teachers can review, edit, and publish assessments to their students.',
     },
     {
-      question: 'Do all plans include the same features?',
-      answer: 'Yes! All plans (Free Trial, Starter Pack, and Exam Ready Pack) include AI evaluation, CLB scoring, CECR levels, detailed feedback, progress tracking, and exam history. The only difference is the number of test credits included.',
+      question: 'How do organizations work?',
+      answer: 'Teachers can create organizations and invite students. Once students join, they automatically see assessments published by their teachers. This makes it easy to manage classes and track student progress.',
     },
   ];
 
@@ -51,7 +51,7 @@ export const FAQSection: React.FC = () => {
             Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Questions</span>
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4">
-            Everything you need to know about our plans and pricing.
+            Everything you need to know about TEF Canada preparation with Akseli.
           </p>
         </div>
 

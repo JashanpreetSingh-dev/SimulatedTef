@@ -1,56 +1,43 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useScrollAnimation } from '../utils/animations';
 
 export const ResultsDashboardShowcase: React.FC = () => {
   const [ref, isVisible] = useScrollAnimation();
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
+  // Color functions matching actual components
   const getCECRColor = (level: string) => {
-    if (level.includes('C2')) return 'bg-purple-400';
-    if (level.includes('C1')) return 'bg-indigo-400';
-    if (level.includes('B2')) return 'bg-blue-400';
-    if (level.includes('B1')) return 'bg-emerald-400';
-    if (level.includes('A2')) return 'bg-amber-600';
+    const cecr = level.toUpperCase();
+    if (cecr.includes('C2')) return 'bg-purple-400';
+    if (cecr.includes('C1')) return 'bg-indigo-400';
+    if (cecr.includes('B2')) return 'bg-blue-400';
+    if (cecr.includes('B1')) return 'bg-emerald-400';
+    if (cecr.includes('A2')) return 'bg-amber-600';
     return 'bg-rose-600';
   };
 
-  const getSectionBadgeColor = (mode: string) => {
-    if (mode === 'partA') return 'bg-blue-100 text-blue-400 border-blue-200';
-    if (mode === 'partB') return 'bg-emerald-100 text-emerald-400 border-emerald-200';
-    return 'bg-indigo-100 text-indigo-400 border-indigo-200';
+  // Sample written text with "errors" to highlight
+  const sampleWrittenText = {
+    original: `Madame, Monsieur,
+
+Je vous écris pour exprimer mon intérêt pour le poste de responsable marketing. J'ai travaillé pendant cinq années dans le domaine du marketing digital et je pense que mes compétences correspondent aux exigences du poste.
+
+Dans mon travail actuel, je suis responsable de développer des stratégies et de augmenter la visibilité en ligne. J'ai réussi à améliorer le trafic de 40%.`,
+    corrections: [
+      { weak: "J'ai travaillé pendant cinq années", better: "J'ai travaillé pendant cinq ans", why: "On utilise 'ans' et non 'années' avec un nombre précis" },
+      { weak: "de développer des stratégies et de augmenter", better: "de développer des stratégies et d'augmenter", why: "Élision obligatoire devant une voyelle" },
+    ]
   };
 
-  const getSectionLabel = (mode: string) => {
-    if (mode === 'partA') return 'A';
-    if (mode === 'partB') return 'B';
-    return 'Complet';
-  };
-
-  // Sample result data
-  const sampleResult = {
-    mode: 'full',
-    score: 542,
-    clbLevel: 'CLB 7',
-    cecrLevel: 'B2',
-    strengths: [
-      'Fluidité excellente dans la conversation',
-      'Vocabulaire riche et varié',
-      'Prononciation claire et naturelle',
-    ],
-    weaknesses: [
-      'Quelques erreurs grammaticales mineures',
-      'Peut enrichir les structures complexes',
-      'Améliorer la précision lexicale',
-    ],
-    feedback: 'Votre performance démontre une bonne maîtrise du français avec une communication fluide et naturelle. Continuez à pratiquer pour atteindre un niveau encore plus élevé.',
-    criteria: {
-      'Remplissage de la tâche': { score: 8, comment: 'Excellent' },
-      'Cohérence': { score: 7, comment: 'Très bon' },
-      'Richesse lexicale': { score: 8, comment: 'Excellent' },
-      'Maîtrise grammaticale': { score: 6, comment: 'Bon' },
-      'Fluidité': { score: 8, comment: 'Excellent' },
-      'Interaction': { score: 7, comment: 'Très bon' },
-    },
+  // Function to highlight errors in text
+  const highlightErrors = (text: string, corrections: typeof sampleWrittenText.corrections) => {
+    let result = text;
+    corrections.forEach((correction, index) => {
+      result = result.replace(
+        correction.weak,
+        `<span class="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border-b-2 border-rose-400 dark:border-rose-500 cursor-help" title="${correction.better}">${correction.weak}</span>`
+      );
+    });
+    return result;
   };
 
   return (
@@ -60,108 +47,202 @@ export const ResultsDashboardShowcase: React.FC = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8 sm:mb-10">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-700 dark:text-slate-100 mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em]">
-            Track Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Progress</span>
+            Detailed AI <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Feedback</span>
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] mb-3">
-            Get detailed feedback with CLB scores, CECR levels, and actionable insights to improve your French.
+          <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-3xl mx-auto leading-[1.6]">
+            Get CLB scores, CECR levels, and actionable insights. Written expression includes error highlighting and corrections.
           </p>
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-2.5 inline-flex items-center gap-2 max-w-2xl mx-auto">
+        </div>
+
+        {/* Two Column Grid: Oral Results + Written Results */}
+        <div className="grid lg:grid-cols-2 gap-6 md:gap-8">
+          
+          {/* Oral Expression Results Card */}
+          <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+            {/* Header */}
+            <div className="bg-emerald-500 dark:bg-emerald-600 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🎙️</span>
+                <span className="text-white font-black text-sm md:text-base">Expression Orale - Résultats</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  CLB 7
+                </div>
+                <div className={`${getCECRColor('B2')} text-white px-3 py-1 rounded-full text-sm font-bold`}>
+                  B2
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 md:p-6 space-y-4">
+              {/* Audio Player */}
+              <div className="bg-slate-100 dark:bg-slate-700/50 rounded-xl p-4 border border-slate-200 dark:border-slate-600">
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">🎙️</span>
+                  <button className="p-2 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </button>
+                  <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-600 rounded-full overflow-hidden">
+                    <div className="w-2/5 h-full bg-emerald-400 dark:bg-emerald-500 rounded-full" />
+                  </div>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">1:42 / 4:12</span>
+                </div>
+              </div>
+
+              {/* Score Breakdown */}
+              <div className="bg-gradient-to-br from-emerald-50 to-cyan-50 dark:from-emerald-900/20 dark:to-cyan-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+                <h4 className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 mb-3 tracking-widest">
+                  Score: 542/699
+                </h4>
+                <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+                  Excellente fluidité et vocabulaire riche. Continuez à pratiquer les structures grammaticales complexes.
+                </p>
+              </div>
+
+              {/* Mini Criteria */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Fluidité</span>
+                    <span className="text-sm font-black text-emerald-500 dark:text-emerald-400">8/10</span>
+                  </div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Grammaire</span>
+                    <span className="text-sm font-black text-emerald-500 dark:text-emerald-400">6/10</span>
+                  </div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Vocabulaire</span>
+                    <span className="text-sm font-black text-emerald-500 dark:text-emerald-400">8/10</span>
+                  </div>
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700/50 rounded-lg p-3 border border-slate-200 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase">Cohérence</span>
+                    <span className="text-sm font-black text-emerald-500 dark:text-emerald-400">7/10</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Strengths Preview */}
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
+                <h5 className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 mb-2 tracking-wider flex items-center gap-1">
+                  <span>✓</span> Points Forts
+                </h5>
+                <ul className="space-y-1">
+                  <li className="text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                    <span className="text-emerald-500">•</span> Fluidité excellente
+                  </li>
+                  <li className="text-[11px] text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
+                    <span className="text-emerald-500">•</span> Vocabulaire varié
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Written Expression Results Card */}
+          <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+            {/* Header */}
+            <div className="bg-amber-500 dark:bg-amber-600 px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">✍️</span>
+                <span className="text-white font-black text-sm md:text-base">Expression Écrite - Résultats</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-bold">
+                  CLB 8
+                </div>
+                <div className={`${getCECRColor('B2')} text-white px-3 py-1 rounded-full text-sm font-bold`}>
+                  B2
+                </div>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 md:p-6 space-y-4">
+              {/* Your Writing with Highlighted Errors - matching WrittenExpressionSection */}
+              <div>
+                <h5 className="text-[9px] font-black uppercase text-indigo-400 dark:text-indigo-300 mb-2 tracking-widest">
+                  Votre Texte (erreurs surlignées)
+                </h5>
+                <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border-2 border-slate-300 dark:border-slate-600 max-h-[140px] overflow-y-auto">
+                  <p 
+                    className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap"
+                    dangerouslySetInnerHTML={{ __html: highlightErrors(sampleWrittenText.original, sampleWrittenText.corrections) }}
+                  />
+                </div>
+              </div>
+
+              {/* Corrections - matching WrittenExpressionSection */}
+              <div>
+                <h5 className="text-[9px] font-black uppercase text-amber-600 dark:text-amber-400 mb-2 tracking-widest">
+                  Corrections
+                </h5>
+                <div className="space-y-2">
+                  {sampleWrittenText.corrections.map((correction, i) => (
+                    <div key={i} className="bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200 dark:border-amber-800">
+                      <div className="grid grid-cols-2 gap-2 mb-2">
+                        <div>
+                          <div className="text-[8px] font-black uppercase text-rose-600 dark:text-rose-400 mb-1 tracking-wider">
+                            Original
+                          </div>
+                          <p className="text-[10px] text-slate-600 dark:text-slate-300 italic line-through">
+                            "{correction.weak}"
+                          </p>
+                        </div>
+                        <div>
+                          <div className="text-[8px] font-black uppercase text-emerald-500 dark:text-emerald-400 mb-1 tracking-wider">
+                            Corrigé
+                          </div>
+                          <p className="text-[10px] text-slate-800 dark:text-slate-100 font-medium">
+                            "{correction.better}"
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-[9px] text-slate-500 dark:text-slate-400 pt-2 border-t border-amber-200 dark:border-amber-700">
+                        💡 {correction.why}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Model Answer Preview */}
+              <div>
+                <h5 className="text-[9px] font-black uppercase text-emerald-500 dark:text-emerald-400 mb-2 tracking-widest">
+                  Réponse Modèle
+                </h5>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-3 border border-emerald-200 dark:border-emerald-800">
+                  <p className="text-[10px] text-slate-700 dark:text-slate-200 leading-relaxed line-clamp-3">
+                    Madame, Monsieur, Je me permets de vous adresser ma candidature pour le poste de responsable marketing. Fort d'une expérience de cinq ans dans le marketing digital...
+                  </p>
+                  <p className="text-[9px] text-emerald-600 dark:text-emerald-400 mt-2 font-medium">
+                    ↓ Voir le modèle complet
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom notice */}
+        <div className="mt-8 text-center">
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 rounded-xl px-4 py-3 inline-flex items-center gap-2">
             <span className="text-amber-600 dark:text-amber-400 text-sm">ℹ️</span>
             <p className="text-amber-800 dark:text-amber-300 text-xs sm:text-sm font-medium">
-              This is a sample results preview. Sign up to see your actual exam results and progress tracking.
+              This is a sample preview. Sign up to access full AI evaluation with detailed feedback.
             </p>
-          </div>
-        </div>
-
-        {/* Compact Top Section: Section Badge, CLB, CECR - Matching DetailedResultView */}
-        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 p-3 sm:p-4 md:p-6 shadow-sm mb-4 sm:mb-6 transition-colors">
-          <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-            {/* Pills Section */}
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4">
-              {/* Section Badge */}
-              <div className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg border font-black text-xs sm:text-sm uppercase tracking-wider ${getSectionBadgeColor(sampleResult.mode)} dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600`}>
-                Section {getSectionLabel(sampleResult.mode)}
-              </div>
-
-              {/* CLB Pill */}
-              <div className="bg-indigo-400 dark:bg-indigo-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2">
-                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider opacity-80">CLB</span>
-                <span className="text-base sm:text-lg font-black">{sampleResult.clbLevel}</span>
-                <span className="text-[8px] sm:text-[9px] font-bold opacity-70 hidden sm:inline">({sampleResult.score}/699)</span>
-              </div>
-
-              {/* CECR Pill */}
-              <div className={`${getCECRColor(sampleResult.cecrLevel)} dark:opacity-90 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center gap-1.5 sm:gap-2`}>
-                <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-wider opacity-80">CECR</span>
-                <span className="text-base sm:text-lg font-black">{sampleResult.cecrLevel}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Result Card - Matching DetailedResultView */}
-        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl sm:rounded-[3rem] border border-slate-200 dark:border-slate-700 p-4 sm:p-6 md:p-8 shadow-sm transition-colors">
-          {/* Title Section */}
-          <div className="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-200 dark:border-slate-700">
-            <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-700 dark:text-slate-100 tracking-tight">Examen Complet</h3>
-          </div>
-
-          {/* Overall Comment */}
-          <div className="mb-4 sm:mb-6 p-3 sm:p-6 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-slate-800 dark:to-slate-800 rounded-xl sm:rounded-[2rem] border border-indigo-200 dark:border-slate-700">
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-indigo-400 dark:text-indigo-300 mb-2 sm:mb-3 tracking-widest">Évaluation Globale</h4>
-            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
-              {sampleResult.feedback}
-            </p>
-          </div>
-
-          {/* Strengths and Weaknesses */}
-          <div className="grid md:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-            {/* Strengths */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl sm:rounded-[2rem] p-3 sm:p-4 border border-emerald-100 dark:border-emerald-500/20">
-              <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-emerald-400 dark:text-emerald-300 mb-2 sm:mb-3 tracking-widest flex items-center gap-2">
-                <span>✅</span> Points Forts
-              </h4>
-              <ul className="space-y-1.5 sm:space-y-2">
-                {sampleResult.strengths.map((strength, i) => (
-                  <li key={i} className="text-slate-600 dark:text-slate-300 text-xs font-medium flex gap-2 leading-relaxed">
-                    <span className="text-emerald-500 dark:text-emerald-400">•</span> {strength}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Weaknesses */}
-            <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl sm:rounded-[2rem] p-3 sm:p-4 border border-rose-100 dark:border-rose-500/20">
-              <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-rose-600 dark:text-rose-400 mb-2 sm:mb-3 tracking-widest flex items-center gap-2">
-                <span>⚠️</span> Axes de Progression
-              </h4>
-              <ul className="space-y-1.5 sm:space-y-2">
-                {sampleResult.weaknesses.map((weakness, i) => (
-                  <li key={i} className="text-slate-600 dark:text-slate-300 text-xs font-medium flex gap-2 leading-relaxed">
-                    <span className="text-rose-300 dark:text-rose-400">•</span> {weakness}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Criteria Breakdown */}
-          <div>
-            <h4 className="text-[9px] sm:text-[10px] font-black uppercase text-slate-500 dark:text-slate-400 mb-3 sm:mb-4 tracking-widest">Détail des Critères</h4>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-              {Object.entries(sampleResult.criteria).map(([key, value]) => (
-                <div key={key} className="bg-indigo-100/70 dark:bg-slate-700/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-slate-200 dark:border-slate-600">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">{key}</span>
-                    <span className="text-base sm:text-lg font-black text-indigo-400 dark:text-indigo-300">{value.score}/10</span>
-                  </div>
-                  <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">{value.comment}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
