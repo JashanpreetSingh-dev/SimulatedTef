@@ -331,58 +331,58 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                               {hasStarted && (
                                 <div className="flex gap-1.5 flex-wrap">
                                   <div className={`
-                                    px-1.5 py-0.5 rounded text-[10px] font-medium
+                                    px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-1
                                     ${activeMockExam.completedModules.includes('oralExpression')
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
-                                  `}>
-                                    {t('modules.oralExpression')}: {activeMockExam.completedModules.includes('oralExpression') ? '✓' : '○'}
+                                  `} title={t('modules.oralExpression')}>
+                                    🎤 {activeMockExam.completedModules.includes('oralExpression') ? '✓' : '○'}
                                   </div>
                                   <div className={`
-                                    px-1.5 py-0.5 rounded text-[10px] font-medium
+                                    px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-1
                                     ${activeMockExam.completedModules.includes('writtenExpression')
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
-                                  `}>
-                                    {t('modules.writtenExpression')}: {activeMockExam.completedModules.includes('writtenExpression') ? '✓' : '○'}
+                                  `} title={t('modules.writtenExpression')}>
+                                    ✍️ {activeMockExam.completedModules.includes('writtenExpression') ? '✓' : '○'}
                                   </div>
                                   <div className={`
-                                    px-1.5 py-0.5 rounded text-[10px] font-medium
+                                    px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-1
                                     ${activeMockExam.completedModules.includes('reading')
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
-                                  `}>
-                                    {t('modules.reading')}: {activeMockExam.completedModules.includes('reading') ? '✓' : '○'}
+                                  `} title={t('modules.reading')}>
+                                    📖 {activeMockExam.completedModules.includes('reading') ? '✓' : '○'}
                                   </div>
                                   <div className={`
-                                    px-1.5 py-0.5 rounded text-[10px] font-medium
+                                    px-1.5 py-0.5 rounded text-[10px] font-medium flex items-center gap-1
                                     ${activeMockExam.completedModules.includes('listening')
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
                                     }
-                                  `}>
-                                    {t('modules.listening')}: {activeMockExam.completedModules.includes('listening') ? '✓' : '○'}
+                                  `} title={t('modules.listening')}>
+                                    🎧 {activeMockExam.completedModules.includes('listening') ? '✓' : '○'}
                                   </div>
                                 </div>
                               )}
                             </div>
                     {!hasStarted && (
-                      <div className="grid grid-cols-4 gap-1.5 text-[10px]">
-                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          {t('modules.oralExpression')}
-                        </div>
-                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          {t('modules.writtenExpression')}
-                        </div>
-                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          {t('modules.reading')} (40 Q)
-                        </div>
-                        <div className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>
-                          {t('modules.listening')} (40 Q)
-                        </div>
+                      <div className="flex gap-2 text-[10px]">
+                        <span className={`${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`} title={t('modules.oralExpression')}>
+                          🎤
+                        </span>
+                        <span className={`${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`} title={t('modules.writtenExpression')}>
+                          ✍️
+                        </span>
+                        <span className={`${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`} title={t('modules.reading')}>
+                          📖
+                        </span>
+                        <span className={`${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`} title={t('modules.listening')}>
+                          🎧
+                        </span>
                       </div>
                     )}
                   </div>
@@ -459,25 +459,17 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
                             {t('mockExam.allModulesCompleted')}
                           </p>
                           <div className="flex gap-2 text-[10px] flex-wrap">
-                            <div className={`
-                              px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
-                            `}>
-                              {t('modules.oralExpression')}: ✓
+                            <div className="px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800 flex items-center gap-1" title={t('modules.oralExpression')}>
+                              🎤 ✓
                             </div>
-                            <div className={`
-                              px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
-                            `}>
-                              {t('modules.writtenExpression')}: ✓
+                            <div className="px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800 flex items-center gap-1" title={t('modules.writtenExpression')}>
+                              ✍️ ✓
                             </div>
-                            <div className={`
-                              px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
-                            `}>
-                              {t('modules.reading')}: ✓
+                            <div className="px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800 flex items-center gap-1" title={t('modules.reading')}>
+                              📖 ✓
                             </div>
-                            <div className={`
-                              px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800
-                            `}>
-                              {t('modules.listening')}: ✓
+                            <div className="px-1.5 py-0.5 rounded font-medium bg-green-100 text-green-800 flex items-center gap-1" title={t('modules.listening')}>
+                              🎧 ✓
                             </div>
                           </div>
                         </div>

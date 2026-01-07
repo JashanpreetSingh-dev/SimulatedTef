@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { useAudioPlayer } from '../hooks/useAudioPlayer';
+import { AudioPlayer as SharedAudioPlayer } from '../../AudioPlayer';
 
 interface AudioPlayerProps {
   recordingId: string | undefined;
@@ -8,7 +9,7 @@ interface AudioPlayerProps {
 
 export const AudioPlayer: React.FC<AudioPlayerProps> = ({ recordingId }) => {
   const { t } = useLanguage();
-  const { audioUrl, audioLoading, audioError, setAudioError } = useAudioPlayer(recordingId);
+  const { audioUrl, audioLoading, audioError } = useAudioPlayer(recordingId);
 
   if (audioLoading) {
     return (
@@ -31,50 +32,5 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ recordingId }) => {
     return null;
   }
 
-  return (
-    <audio 
-      controls 
-      className="flex-1 h-7 sm:h-8"
-      src={audioUrl}
-      preload="auto"
-      onLoadedMetadata={(e) => {
-        const target = e.target as HTMLAudioElement;
-        const duration = target.duration;
-        if (duration && !isNaN(duration) && isFinite(duration) && duration > 0) {
-          console.log('✅ Audio duration:', duration.toFixed(2), 'seconds');
-        } else if (duration === Infinity) {
-          console.log('ℹ️ Duration not in header (WebM/OGG), will be available after playback starts');
-        }
-      }}
-      onDurationChange={(e) => {
-        const target = e.target as HTMLAudioElement;
-        if (target.duration && isFinite(target.duration) && target.duration > 0) {
-          console.log('✅ Duration updated:', target.duration.toFixed(2), 'seconds');
-        }
-      }}
-      onError={(e) => {
-        console.error('Audio playback error:', e);
-        const target = e.target as HTMLAudioElement;
-        if (target.error) {
-          console.error('Audio error details:', {
-            code: target.error.code,
-            message: target.error.message,
-            networkState: target.networkState,
-          });
-          setAudioError(`Playback error: ${target.error.message}`);
-        }
-      }}
-      onLoadStart={() => {
-        console.log('🎵 Audio loading started');
-      }}
-      onCanPlay={() => {
-        console.log('✅ Audio ready to play');
-      }}
-      onPlay={(e) => e.stopPropagation()}
-      onPause={(e) => e.stopPropagation()}
-      onTimeUpdate={(e) => e.stopPropagation()}
-    >
-      {t('results.audioNotSupported')}
-    </audio>
-  );
+  return <SharedAudioPlayer src={audioUrl} className="flex-1" />;
 };
