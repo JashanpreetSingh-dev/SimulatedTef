@@ -2,6 +2,7 @@
  * Assignment Service - manages practice assignments created by examiners
  */
 
+import { randomUUID } from 'crypto';
 import { connectDB } from '../db/connection';
 import { Assignment, AssignmentSettings, AssignmentType, ReadingListeningQuestion } from '../../types';
 import { createAssignment } from '../models/Assignment';
@@ -133,19 +134,11 @@ export const assignmentService = {
 
     const assignmentData = assignment as unknown as Assignment;
 
-    // Generate task ID based on assignment type
+    // Generate task ID based on assignment type (using UUID to avoid ID reuse on deletion)
     let taskId: string;
     if (assignmentData.type === 'reading') {
-      // Get next reading task number
-      const readingTasks = await db.collection('readingTasks').find({}).toArray();
-      const taskNumbers = readingTasks
-        .map((t: any) => {
-          const match = t.taskId?.match(/^reading_(\d+)$/);
-          return match ? parseInt(match[1]) : 0;
-        })
-        .filter((n: number) => n > 0);
-      const nextNumber = taskNumbers.length > 0 ? Math.max(...taskNumbers) + 1 : 1;
-      taskId = `reading_${nextNumber}`;
+      // Generate unique reading task ID
+      taskId = `reading_${randomUUID()}`;
 
       // Create reading task
       const readingTask = createReadingTask(
@@ -189,16 +182,8 @@ export const assignmentService = {
 
       return { taskId, questionIds };
     } else {
-      // Listening assignment
-      const listeningTasks = await db.collection('listeningTasks').find({}).toArray();
-      const taskNumbers = listeningTasks
-        .map((t: any) => {
-          const match = t.taskId?.match(/^listening_(\d+)$/);
-          return match ? parseInt(match[1]) : 0;
-        })
-        .filter((n: number) => n > 0);
-      const nextNumber = taskNumbers.length > 0 ? Math.max(...taskNumbers) + 1 : 1;
-      taskId = `listening_${nextNumber}`;
+      // Listening assignment - generate unique listening task ID
+      taskId = `listening_${randomUUID()}`;
 
       // Create listening task
       const listeningTask = createListeningTask(
