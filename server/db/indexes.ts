@@ -44,29 +44,36 @@ export async function createIndexes(): Promise<void> {
     );
     console.log('Verified index: results._id_idx');
     
-    // GridFS recordings collection indexes
-    const recordingsCollection = db.collection('recordings.files');
+    // Recordings collection indexes (S3 metadata storage)
+    const recordingsCollection = db.collection('recordings');
     
     // Index for user audio queries
     await recordingsCollection.createIndex(
-      { 'metadata.userId': 1 },
-      { name: 'metadata_userId_idx' }
+      { userId: 1 },
+      { name: 'userId_idx' }
     );
-    console.log('Created index: recordings.metadata.userId_idx');
+    console.log('Created index: recordings.userId_idx');
     
     // Index for recent uploads
     await recordingsCollection.createIndex(
-      { uploadDate: -1 },
-      { name: 'uploadDate_idx' }
+      { createdAt: -1 },
+      { name: 'createdAt_idx' }
     );
-    console.log('Created index: recordings.uploadDate_idx');
+    console.log('Created index: recordings.createdAt_idx');
     
     // Compound index for user's recent recordings
     await recordingsCollection.createIndex(
-      { 'metadata.userId': 1, uploadDate: -1 },
-      { name: 'metadata_userId_uploadDate_idx' }
+      { userId: 1, createdAt: -1 },
+      { name: 'userId_createdAt_idx' }
     );
-    console.log('Created index: recordings.metadata.userId_uploadDate_idx');
+    console.log('Created index: recordings.userId_createdAt_idx');
+    
+    // Index for S3 key lookups
+    await recordingsCollection.createIndex(
+      { s3Key: 1 },
+      { name: 's3Key_idx', unique: true }
+    );
+    console.log('Created index: recordings.s3Key_idx');
     
     // Subscriptions collection indexes
     const subscriptionsCollection = db.collection('subscriptions');
@@ -288,6 +295,13 @@ export async function createIndexes(): Promise<void> {
       { name: 'taskId_audioId_idx', unique: true }
     );
     console.log(' Created index: audioItems.taskId_audioId_idx');
+    
+    // Index for S3 key lookups in audioItems
+    await audioItemsCollection.createIndex(
+      { s3Key: 1 },
+      { name: 's3Key_idx', sparse: true }
+    );
+    console.log(' Created index: audioItems.s3Key_idx');
     
     console.log(' All database indexes created successfully');
   } catch (error: any) {

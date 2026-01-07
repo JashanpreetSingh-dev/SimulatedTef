@@ -16,6 +16,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.dashboard': 'Tableau de bord',
     'nav.history': 'Historique',
     'nav.signOut': 'Déconnexion',
+    'nav.createAssignment': 'Créer un devoir',
     
     // Dashboard
     'dashboard.greeting': 'Bonjour',
@@ -151,6 +152,20 @@ const translations: Record<Language, Record<string, string>> = {
     'results.audioLoading': 'Chargement de l\'audio...',
     'results.audioError': 'Erreur:',
     'results.audioNotSupported': 'Votre navigateur ne supporte pas la lecture audio.',
+    'results.strengths': 'Points Forts',
+    'results.weaknesses': 'Points à Améliorer',
+    'results.questionsAsked': 'Questions Posées (Section A)',
+    'results.target': 'Objectif',
+    'results.questionCountGood': 'Bon nombre de questions',
+    'results.questionCountLow': 'Nombre de questions insuffisant',
+    'results.questionCountHigh': 'Beaucoup de questions posées',
+    'results.grammarNotes': 'Notes de Grammaire',
+    'results.vocabularyNotes': 'Notes de Vocabulaire',
+    'results.wordCount': 'Nombre de Mots',
+    'results.wordCountGood': 'Nombre de mots conforme',
+    'results.wordCountLow': 'Nombre de mots insuffisant',
+    'results.wordCountVeryLow': 'Nombre de mots très insuffisant',
+    'results.wordCountHigh': 'Nombre de mots élevé',
     
     // Listening Exam
     'listeningExam.close': 'Fermer',
@@ -338,6 +353,7 @@ const translations: Record<Language, Record<string, string>> = {
     'nav.dashboard': 'Dashboard',
     'nav.history': 'History',
     'nav.signOut': 'Sign Out',
+    'nav.createAssignment': 'Create Assignment',
     
     // Dashboard
     'dashboard.greeting': 'Hello',
@@ -473,6 +489,20 @@ const translations: Record<Language, Record<string, string>> = {
     'results.audioLoading': 'Loading audio...',
     'results.audioError': 'Error:',
     'results.audioNotSupported': 'Your browser does not support audio playback.',
+    'results.strengths': 'Strengths',
+    'results.weaknesses': 'Areas to Improve',
+    'results.questionsAsked': 'Questions Asked (Section A)',
+    'results.target': 'Target',
+    'results.questionCountGood': 'Good number of questions',
+    'results.questionCountLow': 'Insufficient questions asked',
+    'results.questionCountHigh': 'Many questions asked',
+    'results.grammarNotes': 'Grammar Notes',
+    'results.vocabularyNotes': 'Vocabulary Notes',
+    'results.wordCount': 'Word Count',
+    'results.wordCountGood': 'Word count within range',
+    'results.wordCountLow': 'Word count below minimum',
+    'results.wordCountVeryLow': 'Word count significantly below minimum',
+    'results.wordCountHigh': 'Word count above maximum',
     
     // Written Expression
     'writtenExpression.step': 'Step',

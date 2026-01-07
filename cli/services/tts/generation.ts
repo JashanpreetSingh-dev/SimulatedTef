@@ -190,17 +190,21 @@ export async function generateAudioFromScript(
   const dialogue = parseDialogueScript(normalizedScript);
   const isDialogue = dialogue !== null && dialogue.length > 0;
   const isDialogueSection = sectionId !== undefined && DIALOGUE_SECTIONS.includes(sectionId as any);
+  
+  // Check if dialogue has multiple unique speakers (for practice mode)
+  const hasMultipleSpeakers = isDialogue && new Set(dialogue!.map(d => d.speaker)).size > 1;
 
   logScriptInfo(normalizedScript, isDialogue, dialogue, sectionId);
 
-  // For dialogues in Sections 2, 3, 4, use multiple voices
-  // This applies to both mock exams and practice assignments
-  if (isDialogue && isDialogueSection) {
+  // Use multiple voices if:
+  // 1. Mock exam: dialogue in Sections 2, 3, 4 (standard TEF format)
+  // 2. Practice mode: dialogue with multiple speakers (regardless of section_id)
+  //    This handles practice assignments where all sections are set to 1
+  if (isDialogue && (isDialogueSection || hasMultipleSpeakers)) {
     return generateDialogueAudio(ttsProvider, dialogue!, sectionId);
   }
 
-  // Single speaker (monologue) - also handles Section 1 even if it has dialogue markers
-  // (Section 1 typically doesn't use multi-voice dialogue in TEF format)
+  // Single speaker (monologue)
   return generateMonologueAudio(ttsProvider, normalizedScript, defaultVoiceName, sectionId);
 }
 

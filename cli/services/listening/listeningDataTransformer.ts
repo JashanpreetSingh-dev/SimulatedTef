@@ -1,6 +1,7 @@
 /**
  * Data transformation for listening question generation
  * Converts AI response to database format and handles audio generation
+ * Audio files are now uploaded to S3 instead of stored in MongoDB
  */
 
 import { ReadingListeningQuestion } from "../../../types";
@@ -9,6 +10,7 @@ import { createAudioItem } from "../../../server/models/AudioItem";
 import { generateAudioFromScript } from "../tts/generation";
 import { normalizeScriptFormat } from "../tts/scriptNormalizer";
 import { getTTSProvider } from "../ttsProviders";
+import { s3Service } from "../../../server/services/s3Service";
 
 /**
  * Filter audio items to only those needed for the target question count
@@ -36,6 +38,7 @@ export function filterAudioItemsForTarget(
 
 /**
  * Transform AI response to database format
+ * Audio files are uploaded to S3 and s3Key is stored in the document
  */
 export async function transformToDatabaseFormat(
   audioItemsToGenerate: any[],
@@ -62,18 +65,25 @@ export async function transformToDatabaseFormat(
     ttsProvider = null;
   }
 
+  // Check if S3 is configured
+  const s3Configured = s3Service.isS3Configured();
+  if (!s3Configured) {
+    console.warn(`\n⚠️  S3 is not configured. Audio files will not be stored.`);
+    console.warn(`   Please set AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY environment variables.`);
+  }
+
   for (const audioItem of audioItemsToGenerate) {
     // Normalize script format first (used for both audio generation and storage)
     let normalizedScript = normalizeScriptFormat(audioItem.audio_script, audioItem.section_id);
     
     // Generate audio from script using TTS service
-    let audioData: Buffer | undefined = undefined;
+    let s3Key: string | undefined = undefined;
     if (ttsProvider) {
       try {
         console.log(`🎤 Generating audio for ${audioItem.audio_id}...`);
         
         const defaultVoice = 'Kore';
-        audioData = await generateAudioFromScript(
+        const audioData = await generateAudioFromScript(
           ttsProvider,
           normalizedScript,
           defaultVoice,
@@ -84,20 +94,32 @@ export async function transformToDatabaseFormat(
         normalizedScript = normalizeScriptFormat(normalizedScript, audioItem.section_id);
         
         console.log(`✅ Audio generated for ${audioItem.audio_id} (${audioData.length} bytes)`);
+
+        // Upload to S3 if configured
+        if (s3Configured && audioData) {
+          try {
+            s3Key = s3Service.generateAudioItemKey(taskId, audioItem.audio_id, 'wav');
+            await s3Service.uploadAudio(audioData, s3Key, 'audio/wav');
+            console.log(`☁️  Uploaded to S3: ${s3Key}`);
+          } catch (s3Error: any) {
+            console.error(`⚠️  Failed to upload to S3 for ${audioItem.audio_id}:`, s3Error.message);
+            s3Key = undefined;
+          }
+        }
       } catch (error: any) {
         console.error(`⚠️  Failed to generate audio for ${audioItem.audio_id}:`, error.message);
         // Continue without audio data - script is still saved
       }
     }
     
-    // Create AudioItem (with or without audioData)
+    // Create AudioItem with s3Key (instead of audioData buffer)
     const audioItemDoc = createAudioItem(
       audioItem.audio_id,
       taskId,
       audioItem.section_id,
       normalizedScript,
       audioItem.repeatable || false,
-      audioData
+      s3Key // Pass s3Key instead of audioData buffer
     );
     audioItems.push(audioItemDoc);
 

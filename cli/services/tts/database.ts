@@ -1,5 +1,6 @@
 /**
  * Database Operations for TTS Generation
+ * Audio files are uploaded to S3, with s3Key stored in MongoDB
  */
 
 import { getDB } from "../../utils/db";
@@ -12,9 +13,10 @@ import {
   logMissingAudioStart,
   logMissingAudioComplete
 } from './logger';
+import { s3Service } from '../../../server/services/s3Service';
 
 /**
- * Generate audio for a single AudioItem and update it in the database
+ * Generate audio for a single AudioItem and upload to S3
  */
 export async function generateAudioForItem(
   ttsProvider: TTSService,
@@ -31,8 +33,8 @@ export async function generateAudioForItem(
     throw new Error(`AudioItem ${audioItemId} not found for task ${taskId}`);
   }
 
-  // Check if audio already exists
-  if (audioItem.audioData && !overwrite) {
+  // Check if audio already exists (S3 or legacy MongoDB)
+  if ((audioItem.s3Key || audioItem.audioData) && !overwrite) {
     console.log(`   Skipping ${audioItemId} (audio already exists, use --overwrite to regenerate)`);
     return null;
   }
@@ -41,11 +43,14 @@ export async function generateAudioForItem(
     throw new Error(`AudioItem ${audioItemId} has no audioScript to generate from`);
   }
 
+  // Check if S3 is configured
+  if (!s3Service.isS3Configured()) {
+    throw new Error('S3 is not configured. Please set AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY environment variables.');
+  }
+
   console.log(`   Generating audio for ${audioItemId}...`);
   
   // Generate audio from script
-  // Note: The script should already be normalized when stored, but generateAudioFromScript
-  // will normalize it again to ensure consistency (handles edge cases)
   const audioBuffer = await generateAudioFromScript(
     ttsProvider,
     audioItem.audioScript, 
@@ -53,27 +58,33 @@ export async function generateAudioForItem(
     audioItem.sectionId
   );
   
-  // IMPORTANT: Update the stored script to match what was actually used for TTS
-  // This ensures the script in the database always matches the audio
+  // Normalize the script to match what was used for TTS
   const { normalizeScriptFormat } = await import('./scriptNormalizer');
   const normalizedScript = normalizeScriptFormat(audioItem.audioScript, audioItem.sectionId);
   
-  // Update the audio item with generated audio AND normalized script
-  // This ensures the stored script matches what was used for TTS generation
+  // Upload to S3
+  const s3Key = s3Service.generateAudioItemKey(taskId, audioItemId, 'wav');
+  await s3Service.uploadAudio(audioBuffer, s3Key, 'audio/wav');
+  
+  // Update the audio item with S3 key (not binary data)
   await audioItemsCollection.updateOne(
     { audioId: audioItemId, taskId },
     {
       $set: {
-        audioData: audioBuffer,
-        audioScript: normalizedScript, // Update script to match what was used for TTS
+        s3Key: s3Key,
+        audioScript: normalizedScript,
         mimeType: 'audio/wav',
         updatedAt: new Date().toISOString()
+      },
+      // Remove legacy audioData if it exists
+      $unset: {
+        audioData: ""
       }
     }
   );
 
   const sizeKB = (audioBuffer.length / 1024).toFixed(2);
-  console.log(`   Generated audio for ${audioItemId} (${sizeKB} KB)`);
+  console.log(`   ☁️  Uploaded to S3: ${s3Key} (${sizeKB} KB)`);
   
   return audioBuffer;
 }
@@ -108,7 +119,7 @@ export async function generateAudioForTask(
 }
 
 /**
- * Generate audio for all audio items with missing/null audioData
+ * Generate audio for all audio items with missing/null s3Key (and no legacy audioData)
  */
 export async function generateMissingAudio(
   ttsProvider: TTSService,
@@ -144,10 +155,11 @@ export async function generateMissingAudio(
 // ============================================================================
 
 function buildMissingAudioQuery(taskId?: string): any {
+  // Find items that have neither s3Key nor audioData
   const query: any = {
-    $or: [
-      { audioData: null },
-      { audioData: { $exists: false } }
+    $and: [
+      { $or: [{ s3Key: null }, { s3Key: { $exists: false } }] },
+      { $or: [{ audioData: null }, { audioData: { $exists: false } }] }
     ]
   };
 

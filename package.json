@@ -19,6 +19,8 @@
     "convert-service-account": "tsx scripts/convert-service-account-to-env.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.962.0",
+    "@aws-sdk/s3-request-presigner": "^3.962.0",
     "@clerk/backend": "^2.29.0",
     "@clerk/clerk-react": "5.22.0",
     "@clerk/themes": "2.2.0",

@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { useAssignments } from '../hooks/useAssignments';
 import { AssignmentList } from '../components/assignments/AssignmentList';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
+
+type AssignmentTab = 'reading' | 'listening';
 
 export function AssignmentsView() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { theme } = useTheme();
   const { assignments, loading, fetchMyAssignments, deleteAssignment } = useAssignments();
+  const [activeTab, setActiveTab] = useState<AssignmentTab>('reading');
 
   useEffect(() => {
     fetchMyAssignments();
@@ -22,6 +27,14 @@ export function AssignmentsView() {
       alert(t('assignments.deleteFailed'));
     }
   };
+
+  // Filter assignments by type
+  const readingAssignments = useMemo(() => 
+    assignments.filter(a => a.type === 'reading'), [assignments]);
+  const listeningAssignments = useMemo(() => 
+    assignments.filter(a => a.type === 'listening'), [assignments]);
+  
+  const filteredAssignments = activeTab === 'reading' ? readingAssignments : listeningAssignments;
 
   return (
     <DashboardLayout>
@@ -49,8 +62,71 @@ export function AssignmentsView() {
           </button>
         </div>
 
+        {/* Tabs for Reading / Listening */}
+        <div className={`
+          flex gap-2 p-1 rounded-xl
+          ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}
+        `}>
+          <button
+            onClick={() => setActiveTab('reading')}
+            className={`
+              flex-1 py-2.5 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2
+              ${activeTab === 'reading'
+                ? theme === 'dark'
+                  ? 'bg-blue-900/50 text-blue-400 shadow-sm'
+                  : 'bg-blue-100 text-blue-600 shadow-sm'
+                : theme === 'dark'
+                  ? 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-500 hover:text-slate-800'
+              }
+            `}
+          >
+            <span>📖</span>
+            {t('assignments.reading')}
+            {readingAssignments.length > 0 && (
+              <span className={`
+                px-2 py-0.5 rounded-full text-xs font-bold
+                ${activeTab === 'reading'
+                  ? 'bg-blue-500 text-white'
+                  : theme === 'dark' ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'
+                }
+              `}>
+                {readingAssignments.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('listening')}
+            className={`
+              flex-1 py-2.5 px-4 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2
+              ${activeTab === 'listening'
+                ? theme === 'dark'
+                  ? 'bg-green-900/50 text-green-400 shadow-sm'
+                  : 'bg-green-100 text-green-600 shadow-sm'
+                : theme === 'dark'
+                  ? 'text-slate-400 hover:text-slate-200'
+                  : 'text-slate-500 hover:text-slate-800'
+              }
+            `}
+          >
+            <span>🎧</span>
+            {t('assignments.listening')}
+            {listeningAssignments.length > 0 && (
+              <span className={`
+                px-2 py-0.5 rounded-full text-xs font-bold
+                ${activeTab === 'listening'
+                  ? 'bg-green-500 text-white'
+                  : theme === 'dark' ? 'bg-slate-700 text-slate-300' : 'bg-slate-200 text-slate-600'
+                }
+              `}>
+                {listeningAssignments.length}
+              </span>
+            )}
+          </button>
+        </div>
+
         <AssignmentList
-          assignments={assignments}
+          assignments={filteredAssignments}
           loading={loading}
           onDelete={handleDelete}
         />

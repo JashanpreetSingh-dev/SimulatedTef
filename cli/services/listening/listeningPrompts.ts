@@ -163,24 +163,28 @@ FIELD REQUIREMENTS:
   - options: Object with keys "A", "B", "C", "D" and French option text values
   - correct_answer: "A", "B", "C", or "D"
 
-CRITICAL - DIALOGUE FORMATTING RULES (MUST FOLLOW EXACTLY):
-For Sections 2, 3, and 4 that contain conversations or dialogues:
-- Format MUST be: "SpeakerName: dialogue text" with each speaker on a NEW LINE
-- Use consistent, simple speaker names (e.g., "Employé", "Client", "Réceptionniste", "Marc", "Sophie")
-- DO NOT use generic labels like "Agent:", "Voix feminin:", "Personne A:", "Speaker 1:"
-- Each speaker's dialogue MUST be on a separate line
-- Format example (CORRECT):
-  "Employé: Bonjour, je voudrais réserver une table pour deux personnes.
-  Client: Bien sûr, pour quelle date ?
-  Employé: Pour ce samedi soir, vers 19 heures."
-- Format example (WRONG - DO NOT USE):
-  "Agent: Bonjour...
-  Voix feminin: Bien sûr..."
-  "Personne A: Bonjour...
-  Personne B: Bien sûr..."
+⚠️⚠️⚠️ CRITICAL - DIALOGUE FORMATTING RULES (MUST FOLLOW EXACTLY) ⚠️⚠️⚠️
 
-For Section 1 (single speaker descriptions):
-- Use plain text WITHOUT any speaker indicators or labels
+For Sections 2, 3, and 4 that contain conversations between 2+ people:
+- YOU MUST USE "SpeakerName:" LABELS at the START of EACH speaker's turn
+- Each speaker's line MUST be on a SEPARATE LINE (use actual newlines in the string)
+- Use consistent names (e.g., "Marc", "Sophie", "Client", "Employé", "Réceptionniste")
+- WITHOUT LABELS, THE AUDIO WILL USE ONLY ONE VOICE FOR ALL SPEAKERS!
+
+✅ CORRECT FORMAT (different voices for each speaker):
+"Marc: Bonjour Sophie. Comment vas-tu?
+Sophie: Bien, merci Marc. Je suis un peu fatiguée.
+Marc: Moi aussi. Je prends le bus à huit heures.
+Sophie: Ah, moi je conduis ma voiture."
+
+❌ WRONG FORMAT (will use ONLY ONE VOICE - DO NOT DO THIS):
+"Bonjour Sophie. Comment vas-tu? Bien, merci Marc. Je suis un peu fatiguée. Moi aussi. Je prends le bus à huit heures."
+
+❌ ALSO WRONG (no newlines between speakers):
+"Marc: Bonjour Sophie. Sophie: Bien, merci."
+
+For Section 1 (single speaker - announcements, descriptions):
+- Use plain text WITHOUT any speaker labels
 - Just the spoken text directly
 
 CRITICAL CONSTRAINTS (MUST FOLLOW):
@@ -225,13 +229,53 @@ All audio scripts, questions, and options should be relevant to this theme when 
   
   // Add question count instruction
   if (targetQuestionCount < 40) {
-    // For practice assignments with fewer questions, use a simplified instruction
+    // For practice assignments with fewer questions, use simplified structure (no sections required)
     enhancedPrompt = enhancedPrompt + `\n\n⚠️ CRITICAL FOR PRACTICE ASSIGNMENT:
-- You MUST generate exactly ${targetQuestionCount} questions total (NOT 40)
-- Distribute questions across sections proportionally if possible, but prioritize quality over strict section distribution
-- You can use fewer sections if needed (e.g., just Sections 1-2 for 5-10 questions)
-- Count your questions before returning - you must have exactly ${targetQuestionCount} questions
-- The validation will reject your response if you don't have exactly ${targetQuestionCount} questions`;
+IGNORE the section structure above. This is a PRACTICE assignment, not a full mock exam.
+
+SIMPLIFIED REQUIREMENTS:
+- Generate exactly ${targetQuestionCount} questions total
+- Each audio should have 1-2 questions maximum
+- All audio items should be short to medium length (15-45 seconds when spoken)
+- All audio can be repeatable (set repeatable: true)
+- Use section_id: 2 for dialogues (conversations between 2+ people)
+- Use section_id: 1 for single-speaker announcements/descriptions
+- Question IDs should be sequential from 1 to ${targetQuestionCount}
+
+CONTENT GUIDELINES:
+- Mix of question types: main idea, specific details, speaker intention
+- Progressive difficulty is NOT required - keep difficulty consistent
+- Focus on practical, everyday French situations
+- Distractors should still be plausible and use vocabulary from the audio
+
+⚠️⚠️⚠️ CRITICAL - AUDIO SCRIPT FORMAT (OVERRIDES SECTION RULES ABOVE) ⚠️⚠️⚠️
+
+For SINGLE speaker (announcements, descriptions) - use section_id: 1:
+- Just write plain text: "Bienvenue à tous. Le magasin ferme dans dix minutes."
+
+For MULTI-SPEAKER dialogues (conversations between 2+ people) - use section_id: 2:
+- YOU MUST USE "SpeakerName:" LABELS at the start of EACH speaker's turn
+- Each speaker's line MUST be on a SEPARATE LINE (use actual newlines)
+- WITHOUT labels, the audio will use only ONE voice for everyone!
+
+✅ CORRECT FORMAT for dialogue (section_id: 2):
+"Marc: Bonjour Sophie. Comment vas-tu?
+Sophie: Bien, merci Marc. Je suis un peu fatiguée.
+Marc: Moi aussi. Je prends le bus à huit heures.
+Sophie: Ah, moi je conduis ma voiture."
+
+❌ WRONG FORMAT (will use only ONE voice):
+"Bonjour Sophie. Comment vas-tu? Bien, merci Marc. Je suis un peu fatiguée..."
+
+Speaker label examples: "Client:", "Agent:", "Marc:", "Sophie:", "Homme:", "Femme:", "Employé:", "Réceptionniste:"
+
+OUTPUT FORMAT remains the same JSON structure, but simplified:
+- section_id: 1 for single-speaker, 2 for multi-speaker dialogues
+- All repeatable values should be true
+- Generate enough audio items to cover ${targetQuestionCount} questions (1-2 questions per audio)
+
+COUNT YOUR QUESTIONS: You must have exactly ${targetQuestionCount} questions total.
+The validation will REJECT your response if you don't have exactly ${targetQuestionCount} questions.`;
   } else {
     // For full mock exams, use the standard 40-question structure
     enhancedPrompt = enhancedPrompt + `\n\n⚠️ CRITICAL: You MUST generate exactly ${targetQuestionCount} questions total. Count them before returning. The validation will reject your response if you don't have exactly ${targetQuestionCount} questions.`;

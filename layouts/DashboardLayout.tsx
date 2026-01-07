@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useClerk, UserButton } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useSubscription } from '../hooks/useSubscription';
 import { Footer } from '../components/Footer';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -14,41 +13,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const { status } = useSubscription();
+  
+  // Check if user has professor role in any organization membership
+  const isProfessor = user?.organizationMemberships?.some(
+    (membership) => membership.role === 'org:professor'
+  ) ?? false;
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleNavigate = (path: string) => {
     navigate(path);
     setIsMobileMenuOpen(false);
-  };
-
-  const getSubscriptionBadge = () => {
-    if (!status) return null;
-    
-    // Show pack badge if active, otherwise show subscription type
-    if (status.packType && status.packExpirationDate && new Date(status.packExpirationDate) > new Date()) {
-      const packName = status.packType === 'STARTER_PACK' ? 'Starter Pack' : 'Exam Ready Pack';
-      return (
-        <span className="px-3 py-1 rounded-md text-xs font-bold bg-indigo-300/20 text-indigo-400">
-          {packName}
-        </span>
-      );
-    }
-
-    const badges: Record<string, { text: string; color: string }> = {
-      'TRIAL': { text: 'Trial', color: 'bg-blue-500/20 text-blue-400' },
-      'EXPIRED': { text: 'Expired', color: 'bg-red-500/20 text-red-400' },
-    };
-
-    const badge = badges[status.subscriptionType];
-    if (!badge) return null;
-
-    return (
-      <span className={`px-3 py-1 rounded-md text-xs font-bold ${badge.color}`}>
-        {badge.text}
-      </span>
-    );
   };
 
   return (
@@ -68,25 +43,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               Akseli
             </span>
           </div>
-          <div className="h-6 flex items-center">
-            {getSubscriptionBadge()}
-          </div>
           <div className="hidden md:flex gap-4 text-sm font-bold">
             <button 
               onClick={() => navigate('/dashboard')}
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               {t('nav.dashboard')}
             </button>
-            <button 
-              onClick={() => navigate('/dashboard/assignments')}
-              className={isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-              Create Assignment
-            </button>
-            <button 
-              onClick={() => navigate('/dashboard/subscription')}
-              className={isActive('/dashboard/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-              Subscription
-            </button>
+            {isProfessor && (
+              <button 
+                onClick={() => navigate('/dashboard/assignments')}
+                className={isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                {t('nav.createAssignment')}
+              </button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
@@ -150,7 +119,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </button>
           <button 
             onClick={() => signOut()}
-            className="hidden md:block text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-rose-300 dark:hover:text-rose-400 transition-colors"
+            className="hidden md:block text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-rose-300 dark:hover:text-rose-400 transition-colors whitespace-nowrap"
           >
             {t('nav.signOut')}
           </button>
@@ -179,26 +148,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               >
                 {t('nav.dashboard')}
               </button>
-              <button 
-                onClick={() => handleNavigate('/dashboard/assignments')}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                  isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create')
-                    ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                Create Assignment
-              </button>
-              <button 
-                onClick={() => handleNavigate('/dashboard/subscription')}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                  isActive('/dashboard/subscription') 
-                    ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                }`}
-              >
-                Subscription
-              </button>
+              {isProfessor && (
+                <button 
+                  onClick={() => handleNavigate('/dashboard/assignments')}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive('/dashboard/assignments') || isActive('/dashboard/assignments/create')
+                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {t('nav.createAssignment')}
+                </button>
+              )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
               <button 
                 onClick={() => {

@@ -17,3 +17,7 @@ export { TopImprovements } from './components/TopImprovements';
 export { UpgradedSentences } from './components/UpgradedSentences';
 export { WrittenExpressionTabs } from './components/WrittenExpressionTabs';
 export { WrittenExpressionSection } from './components/WrittenExpressionSection';
+export { StrengthsWeaknesses } from './components/StrengthsWeaknesses';
+export { QuestionCount } from './components/QuestionCount';
+export { GrammarVocabularyNotes } from './components/GrammarVocabularyNotes';
+export { WordCount } from './components/WordCount';

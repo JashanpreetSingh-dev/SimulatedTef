@@ -9,7 +9,7 @@ import { MockExamPhase } from './useMockExamState';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export interface ModuleStartData {
-  oralExpression?: { scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } };
+  oralExpression?: { scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string } };
   reading?: { task: ReadingTask; questions: ReadingListeningQuestion[] };
   listening?: { task: ListeningTask; questions: ReadingListeningQuestion[]; audioItems?: AudioItemMetadata[] | null };
   writtenExpression?: { tasks: { taskA: WrittenTask; taskB: WrittenTask }; title: string };
@@ -21,7 +21,7 @@ export interface UseMockExamModulesOptions {
   onPhaseSet: (phase: MockExamPhase) => void;
   onCompletedModulesSet: (modules: string[]) => void;
   onJustCompletedModuleSet: (module: string | null) => void;
-  onOralExpressionScenarioSet: (scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } | null) => void;
+  onOralExpressionScenarioSet: (scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string } | null) => void;
   onReadingTaskSet: (task: ReadingTask | null) => void;
   onReadingQuestionsSet: (questions: ReadingListeningQuestion[]) => void;
   onListeningTaskSet: (task: ListeningTask | null) => void;
@@ -115,7 +115,7 @@ export function useMockExamModules({
         sessionId: string;
         task?: ReadingTask | ListeningTask;
         questions?: ReadingListeningQuestion[];
-        scenario?: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string };
+        scenario?: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string };
         tasks?: { taskA: WrittenTask; taskB: WrittenTask };
         title?: string;
       }>(

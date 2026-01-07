@@ -150,6 +150,11 @@ export interface EvaluationResult {
   model_answer_sectionB?: string;   // Model answer for Section B (argumentation)
   corrections_sectionA?: UpgradedSentence[];  // Corrections for Section A
   corrections_sectionB?: UpgradedSentence[];  // Corrections for Section B
+  // EO1 (Section A) specific - AI-counted questions
+  actual_questions_count?: number;  // Number of relevant questions counted by Gemini in EO1
+  // WrittenExpression specific - AI-counted words
+  actual_word_count_sectionA?: number;  // Word count for Section A (fait divers)
+  actual_word_count_sectionB?: number;  // Word count for Section B (argumentation)
 }
 
 export interface UserResponse {

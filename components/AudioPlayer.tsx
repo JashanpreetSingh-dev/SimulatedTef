@@ -25,15 +25,30 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   const [playbackRate, setPlaybackRate] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Update current time
+  // Reset state when src changes (important for navigation between questions)
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsLoading(true);
+    
+    // Load the new audio source
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [src]);
+
+  // Update current time and handle audio events
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => {
-      setDuration(audio.duration);
-      setIsLoading(false);
+      if (audio.duration && isFinite(audio.duration)) {
+        setDuration(audio.duration);
+        setIsLoading(false);
+      }
     };
     const handleEnded = () => {
       setIsPlaying(false);
@@ -45,19 +60,68 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
       const error = new Error('Failed to load audio');
       onError?.(error);
     };
+    const handleCanPlay = () => {
+      setIsLoading(false);
+      // Also check duration on canplay in case loadedmetadata was missed
+      if (audio.duration && isFinite(audio.duration)) {
+        setDuration(audio.duration);
+      }
+    };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('durationchange', updateDuration);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('error', handleError);
+    audio.addEventListener('canplay', handleCanPlay);
+
+    // Check if metadata is already loaded (in case events fired before listeners attached)
+    if (audio.readyState >= 1 && audio.duration && isFinite(audio.duration)) {
+      setDuration(audio.duration);
+      setIsLoading(false);
+    }
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('durationchange', updateDuration);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('error', handleError);
+      audio.removeEventListener('canplay', handleCanPlay);
     };
-  }, [onEnded, onError]);
+  }, [src, onEnded, onError]);
+
+  // Workaround for webm/blob URLs that don't report duration properly
+  // Force browser to calculate duration by briefly seeking to end
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !src) return;
+
+    const fixDuration = () => {
+      // If duration is Infinity or not set, try to force calculation
+      if (!isFinite(audio.duration) || audio.duration === 0) {
+        const originalTime = audio.currentTime;
+        
+        const handleSeeked = () => {
+          if (isFinite(audio.duration) && audio.duration > 0) {
+            setDuration(audio.duration);
+          }
+          // Seek back to original position
+          audio.currentTime = originalTime;
+          audio.removeEventListener('seeked', handleSeeked);
+        };
+        
+        audio.addEventListener('seeked', handleSeeked);
+        // Seek to a very large number - browser will clamp to actual end
+        audio.currentTime = 1e101;
+      }
+    };
+
+    // Try to fix duration after a short delay to let the audio load
+    const timer = setTimeout(fixDuration, 500);
+    
+    return () => clearTimeout(timer);
+  }, [src]);
 
   // Set volume and playback rate
   useEffect(() => {
@@ -109,7 +173,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
   };
 
   const formatTime = (seconds: number): string => {
-    if (isNaN(seconds)) return '0:00';
+    if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;

@@ -10,6 +10,7 @@ import { ListeningComprehensionExam } from './ListeningComprehensionExam';
 import { OralExpressionLive } from './OralExpressionLive';
 import { WrittenExpressionExam } from './writtenExpression';
 import { ModuleLoadingScreen } from './ModuleLoadingScreen';
+import { LoadingResult } from './LoadingResult';
 import { MCQResult, SavedResult } from '../types';
 import { useMockExamState } from '../hooks/useMockExamState';
 import { useMockExamLoading } from '../hooks/useMockExamLoading';
@@ -109,7 +110,23 @@ export const MockExamView: React.FC = () => {
       mockExamId: state.mockExamId!,
       module: 'oralExpression',
     };
-    await completeOralExpressionModule(resultWithMockExamFields);
+    
+    // If evaluation is still loading, show the loading screen with steps
+    if (result.isLoading) {
+      // Save the placeholder result
+      await completeOralExpressionModule(resultWithMockExamFields);
+      // Show the evaluating screen
+      stateActions.setEvaluationType('oral');
+      stateActions.setPhase('evaluating');
+      return;
+    }
+    
+    // Evaluation complete - save and navigate to results
+    const resultId = await completeOralExpressionModule(resultWithMockExamFields);
+    stateActions.setEvaluationType(null);
+    if (resultId) {
+      navigate(`/results/${resultId}`);
+    }
   };
   
   // Handle Reading module completion
@@ -130,7 +147,22 @@ export const MockExamView: React.FC = () => {
       mockExamId: state.mockExamId!,
       module: 'writtenExpression',
     };
-    await completeWrittenExpressionModule(resultWithMockExamFields);
+    
+    // If evaluation is still loading, show the loading screen with steps
+    if (result.isLoading) {
+      await completeWrittenExpressionModule(resultWithMockExamFields);
+      // Show the evaluating screen
+      stateActions.setEvaluationType('written');
+      stateActions.setPhase('evaluating');
+      return;
+    }
+    
+    // Evaluation complete - save and navigate to results
+    const resultId = await completeWrittenExpressionModule(resultWithMockExamFields);
+    stateActions.setEvaluationType(null);
+    if (resultId) {
+      navigate(`/results/${resultId}`);
+    }
   };
   
   // Fetch module status and results
@@ -453,6 +485,9 @@ export const MockExamView: React.FC = () => {
           onFinish={handleWrittenExpressionComplete}
         />
       ) : null;
+    
+    case 'evaluating':
+      return <LoadingResult type={state.evaluationType || 'oral'} />;
     
     default:
       return null;

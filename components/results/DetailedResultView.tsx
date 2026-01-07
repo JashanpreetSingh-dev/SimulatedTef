@@ -12,6 +12,8 @@ import { CriteriaBreakdown } from './components/CriteriaBreakdown';
 import { TopImprovements } from './components/TopImprovements';
 import { UpgradedSentences } from './components/UpgradedSentences';
 import { WrittenExpressionTabs } from './components/WrittenExpressionTabs';
+import { StrengthsWeaknesses } from './components/StrengthsWeaknesses';
+import { QuestionCount } from './components/QuestionCount';
 
 interface DetailedResultViewProps {
   result: SavedResult;
@@ -42,6 +44,9 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
   const topImprovements = useMemo(() => evaluationResult.top_improvements || [], [evaluationResult.top_improvements]);
   const overallComment = useMemo(() => evaluationResult.overall_comment, [evaluationResult.overall_comment]);
   const modelAnswer = useMemo(() => evaluationResult.model_answer, [evaluationResult.model_answer]);
+  const strengths = useMemo(() => evaluationResult.strengths || [], [evaluationResult.strengths]);
+  const weaknesses = useMemo(() => evaluationResult.weaknesses || [], [evaluationResult.weaknesses]);
+  const actualQuestionsCount = useMemo(() => (evaluationResult as any).actual_questions_count, [evaluationResult]);
   
   // Memoize tasks to display - use task references or fallback to legacy fields
   const tasksToDisplay = useMemo(() => {
@@ -111,6 +116,16 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
       {/* Overall Comment (for non-written expression) */}
       {result.module !== 'writtenExpression' && overallComment && (
         <OverallComment comment={overallComment} variant="indigo" />
+      )}
+
+      {/* Question Count (for oral expression Section A only) */}
+      {result.module === 'oralExpression' && (result.mode === 'partA' || result.mode === 'full') && typeof actualQuestionsCount === 'number' && (
+        <QuestionCount actualCount={actualQuestionsCount} />
+      )}
+
+      {/* Strengths & Weaknesses (for non-written expression) */}
+      {result.module !== 'writtenExpression' && (strengths.length > 0 || weaknesses.length > 0) && (
+        <StrengthsWeaknesses strengths={strengths} weaknesses={weaknesses} />
       )}
 
       {/* Criteria Breakdown (for non-written expression) */}

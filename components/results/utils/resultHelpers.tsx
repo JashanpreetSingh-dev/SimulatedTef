@@ -44,49 +44,84 @@ export function getImagePath(imagePath: string): string {
 
 /**
  * Highlight mistakes in text using corrections
+ * Finds ALL matches first, then builds the highlighted text in order
  */
 export function highlightMistakes(text: string, corrections: UpgradedSentence[] | undefined): React.ReactNode {
   if (!corrections || corrections.length === 0) {
     return <span>{text}</span>;
   }
 
-  let highlightedText: React.ReactNode[] = [];
-  let remainingText = text;
-  let key = 0;
-
-  // Sort corrections by length (longest first) to avoid partial matches
-  const sortedCorrections = [...corrections].sort((a, b) => b.weak.length - a.weak.length);
-
-  for (const correction of sortedCorrections) {
-    const weakText = correction.weak.trim();
-    const index = remainingText.toLowerCase().indexOf(weakText.toLowerCase());
+  // Find all matches with their positions first
+  interface Match {
+    start: number;
+    end: number;
+    correction: UpgradedSentence;
+  }
+  
+  const matches: Match[] = [];
+  const textLower = text.toLowerCase();
+  
+  for (const correction of corrections) {
+    const weakText = correction.weak.trim().toLowerCase();
+    const index = textLower.indexOf(weakText);
     
     if (index !== -1) {
-      // Add text before the mistake
-      if (index > 0) {
-        highlightedText.push(<span key={key++}>{remainingText.substring(0, index)}</span>);
-      }
-      
-      // Add highlighted mistake
-      highlightedText.push(
-        <span 
-          key={key++} 
-          className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border-b-2 border-rose-400 dark:border-rose-500 cursor-help"
-          title={`Suggestion: "${correction.better}" - ${correction.why}`}
-        >
-          {remainingText.substring(index, index + weakText.length)}
-        </span>
-      );
-      
-      // Continue with remaining text
-      remainingText = remainingText.substring(index + weakText.length);
+      matches.push({
+        start: index,
+        end: index + correction.weak.trim().length,
+        correction
+      });
     }
   }
-
-  // Add remaining text
-  if (remainingText) {
-    highlightedText.push(<span key={key++}>{remainingText}</span>);
+  
+  // If no matches found, return plain text
+  if (matches.length === 0) {
+    return <span>{text}</span>;
+  }
+  
+  // Sort matches by position (start index)
+  matches.sort((a, b) => a.start - b.start);
+  
+  // Remove overlapping matches (keep the first one in each overlap)
+  const nonOverlapping: Match[] = [];
+  for (const match of matches) {
+    const lastMatch = nonOverlapping[nonOverlapping.length - 1];
+    if (!lastMatch || match.start >= lastMatch.end) {
+      nonOverlapping.push(match);
+    }
+  }
+  
+  // Build the highlighted text
+  const highlightedText: React.ReactNode[] = [];
+  let currentPos = 0;
+  let key = 0;
+  
+  for (const match of nonOverlapping) {
+    // Add text before this match
+    if (match.start > currentPos) {
+      highlightedText.push(
+        <span key={key++}>{text.substring(currentPos, match.start)}</span>
+      );
+    }
+    
+    // Add highlighted mistake
+    highlightedText.push(
+      <span 
+        key={key++} 
+        className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border-b-2 border-rose-400 dark:border-rose-500 cursor-help"
+        title={`Suggestion: "${match.correction.better}" - ${match.correction.why}`}
+      >
+        {text.substring(match.start, match.end)}
+      </span>
+    );
+    
+    currentPos = match.end;
+  }
+  
+  // Add remaining text after last match
+  if (currentPos < text.length) {
+    highlightedText.push(<span key={key++}>{text.substring(currentPos)}</span>);
   }
 
-  return highlightedText.length > 0 ? <>{highlightedText}</> : <span>{text}</span>;
+  return <>{highlightedText}</>;
 }

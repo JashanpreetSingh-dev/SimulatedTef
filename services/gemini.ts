@@ -4,6 +4,89 @@ import { TEFSection, EvaluationResult, TEFTask } from "../types";
 import { makeExamInstructions } from "./prompts/examiner";
 import { buildRubricSystemPrompt, buildEvaluationUserMessage } from "./prompts/evaluation";
 
+/**
+ * Normalize and validate evaluation result to ensure all fields are present
+ * This prevents missing fields from causing UI issues
+ */
+function normalizeEvaluationResult(result: any, section: TEFSection): EvaluationResult {
+  // Ensure base required fields have valid values
+  const normalized: EvaluationResult = {
+    score: typeof result.score === 'number' ? result.score : 0,
+    clbLevel: result.clbLevel || 'CLB 0',
+    cecrLevel: result.cecrLevel || 'A1',
+    feedback: result.feedback || '',
+    strengths: Array.isArray(result.strengths) ? result.strengths : [],
+    weaknesses: Array.isArray(result.weaknesses) ? result.weaknesses : [],
+    grammarNotes: result.grammarNotes || '',
+    vocabularyNotes: result.vocabularyNotes || '',
+    
+    // Enhanced fields - use what's provided, empty defaults if missing
+    overall_comment: result.overall_comment || result.feedback || '',
+    top_improvements: Array.isArray(result.top_improvements) ? result.top_improvements : [],
+    upgraded_sentences: Array.isArray(result.upgraded_sentences) ? result.upgraded_sentences : [],
+    model_answer: result.model_answer || '',
+    
+    // Criteria - only include if actually provided by AI, don't fake scores
+    criteria: normalizeCriteria(result.criteria),
+  };
+
+  // Written Expression specific fields
+  if (section === 'WrittenExpression') {
+    normalized.model_answer_sectionA = result.model_answer_sectionA || '';
+    normalized.model_answer_sectionB = result.model_answer_sectionB || '';
+    normalized.corrections_sectionA = Array.isArray(result.corrections_sectionA) ? result.corrections_sectionA : [];
+    normalized.corrections_sectionB = Array.isArray(result.corrections_sectionB) ? result.corrections_sectionB : [];
+  }
+
+  // OralExpression EO1 specific - AI-counted questions
+  if (section === 'OralExpression' && typeof result.actual_questions_count === 'number') {
+    normalized.actual_questions_count = result.actual_questions_count;
+  }
+
+  // WrittenExpression specific - AI-counted words
+  if (section === 'WrittenExpression') {
+    if (typeof result.actual_word_count_sectionA === 'number') {
+      normalized.actual_word_count_sectionA = result.actual_word_count_sectionA;
+    }
+    if (typeof result.actual_word_count_sectionB === 'number') {
+      normalized.actual_word_count_sectionB = result.actual_word_count_sectionB;
+    }
+  }
+
+  return normalized;
+}
+
+/**
+ * Normalize criteria - only include criteria that were actually evaluated
+ * If criteria is missing entirely, return undefined (UI should handle "not available")
+ */
+function normalizeCriteria(criteria: any): Record<string, any> | undefined {
+  // If no criteria provided at all, return undefined (not fake data)
+  if (!criteria || typeof criteria !== 'object') {
+    return undefined;
+  }
+
+  // Only include criteria that have actual scores
+  const validCriteria: Record<string, any> = {};
+  const possibleCriteria = ['taskFulfillment', 'coherence', 'lexicalRange', 'grammarControl', 'fluency', 'interaction'];
+  
+  for (const key of possibleCriteria) {
+    if (criteria[key] && typeof criteria[key] === 'object' && typeof criteria[key].score === 'number') {
+      validCriteria[key] = {
+        score: criteria[key].score,
+        comment: criteria[key].comment || '',
+      };
+    }
+  }
+  
+  // If no valid criteria found, return undefined
+  if (Object.keys(validCriteria).length === 0) {
+    return undefined;
+  }
+  
+  return validCriteria;
+}
+
 // Get API key and validate
 const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
 
@@ -33,9 +116,10 @@ export const LIVE_API_CONFIG = {
   // The Gemini API has built-in turn detection, but this controls client-side timeout handling
   responseWaitTime: 30000, // 30 seconds - adjust if responses are taking too long
   
-  // Turn detection timeout (how long of silence before considering user finished)
-  // This is primarily handled by the Gemini API, but can be adjusted if needed
-  turnDetectionTimeout: 600, // 600ms of silence
+  // Turn detection timeout - set to undefined to use Gemini's native defaults
+  // Gemini's native audio model has built-in voice activity detection (VAD)
+  // Only set a value here if you need to override the default behavior
+  turnDetectionTimeout: undefined as number | undefined, // Use Gemini's native turn detection
 } as const;
 
 export const encodeAudio = (bytes: Uint8Array) => {
@@ -441,7 +525,8 @@ export const geminiService = {
                   },
                   required: ["score", "comment"]
                 }
-              }
+              },
+              required: ["taskFulfillment", "coherence", "lexicalRange", "grammarControl", "fluency", "interaction"]
             },
             top_improvements: { type: Type.ARRAY, items: { type: Type.STRING } },
             upgraded_sentences: {
@@ -457,6 +542,11 @@ export const geminiService = {
               }
             },
             model_answer: { type: Type.STRING },
+            // OralExpression EO1 specific - AI-counted questions
+            actual_questions_count: { type: Type.NUMBER },
+            // WrittenExpression specific - AI-counted words
+            actual_word_count_sectionA: { type: Type.NUMBER },
+            actual_word_count_sectionB: { type: Type.NUMBER },
             // Written Expression specific fields (optional)
             model_answer_sectionA: { type: Type.STRING },
             model_answer_sectionB: { type: Type.STRING },
@@ -494,12 +584,19 @@ export const geminiService = {
             "strengths", 
             "weaknesses", 
             "grammarNotes", 
-            "vocabularyNotes"
+            "vocabularyNotes",
+            "overall_comment",
+            "criteria",
+            "top_improvements",
+            "upgraded_sentences",
+            "model_answer"
           ]
         }
       }
     });
-    return JSON.parse(response.text);
+    // Parse and normalize the result to ensure all fields are present
+    const rawResult = JSON.parse(response.text);
+    return normalizeEvaluationResult(rawResult, section);
       } catch (error: any) {
         lastError = error;
         // Check if it's a rate limit error (429)

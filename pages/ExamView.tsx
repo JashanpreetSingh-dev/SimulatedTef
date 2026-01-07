@@ -5,7 +5,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { OralExpressionLive } from '../components/OralExpressionLive';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
-import { PaywallModal } from '../components/PaywallModal';
 import { ExamWarningModal } from '../components/ExamWarningModal';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { getRandomTasks } from '../services/tasks';
@@ -22,11 +21,9 @@ export function ExamView() {
   const { t } = useLanguage();
   const [scenario, setScenario] = useState<any>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [paywallReason, setPaywallReason] = useState<string>();
   const [showWarning, setShowWarning] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
-  const { startExam, checkCanStart, validateSession, loading: usageLoading } = useUsage();
+  const { startExam, validateSession } = useUsage();
   
   // Use the custom hook for result management
   const { result, isLoading, handleResult } = useExamResult({
@@ -172,49 +169,17 @@ export function ExamView() {
     }
   }, [mode]);
 
-  // Check if user can start exam (without counting usage)
-  // Only check once when scenario is first set - don't block rendering
-  const [hasCheckedPermissions, setHasCheckedPermissions] = useState(false);
-  
+  // Reset warning when mode changes
   useEffect(() => {
-    if (scenario && !sessionId && user && !hasCheckedPermissions) {
-      // Don't await - let it run in background
-      const checkExam = async () => {
-        try {
-          const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-          const result = await checkCanStart(examType);
-          
-          setHasCheckedPermissions(true);
-          
-          if (!result.canStart) {
-            setPaywallReason(result.reason);
-            setShowPaywall(true);
-            // Don't clear scenario - let user see what they can't access
-          }
-          // If canStart is true, we just continue - scenario is already set
-        } catch (error) {
-          console.error('Error checking exam permissions:', error);
-          setHasCheckedPermissions(true);
-          // Don't block the exam if check fails - let it proceed
-        }
-      };
-
-      checkExam();
-    }
-  }, [scenario, sessionId, user, mode, checkCanStart, hasCheckedPermissions]);
-  
-  // Reset permission check and warning when mode changes
-  useEffect(() => {
-    setHasCheckedPermissions(false);
     setHasSeenWarning(false);
   }, [mode]);
 
   // Show warning modal first when scenario is ready (only once, and only if user hasn't seen it)
   useEffect(() => {
-    if (scenario && !showWarning && !showPaywall && hasInitialized && !hasSeenWarning) {
+    if (scenario && !showWarning && hasInitialized && !hasSeenWarning) {
       setShowWarning(true);
     }
-  }, [scenario, showWarning, showPaywall, hasInitialized, hasSeenWarning]);
+  }, [scenario, showWarning, hasInitialized, hasSeenWarning]);
 
   // Show loading state if result is loading
   if (isLoading) {
@@ -246,16 +211,8 @@ export function ExamView() {
       <DashboardLayout>
         <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-4 md:p-8 transition-colors">
           <div className="max-w-7xl mx-auto py-20 text-center animate-pulse text-slate-500">
-            {showPaywall ? t('status.checkingSubscription') : t('status.loadingExam')}
+            {t('status.loadingExam')}
           </div>
-          <PaywallModal
-            isOpen={showPaywall}
-            onClose={() => {
-              setShowPaywall(false);
-              handleBack();
-            }}
-            reason={paywallReason}
-          />
         </div>
       </DashboardLayout>
     );

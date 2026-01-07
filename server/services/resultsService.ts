@@ -219,5 +219,76 @@ export const resultsService = {
     
     return db.collection('results').countDocuments({ userId });
   },
+
+  /**
+   * Upsert a result for mock exams
+   * Uses mockExamId + module + userId as unique key
+   * This prevents duplicate results when worker and completeModule both try to save
+   */
+  async upsertMockExamResult(result: SavedResult): Promise<SavedResult> {
+    const db = await connectDB();
+    
+    if (!result.mockExamId || !result.module) {
+      throw new Error('mockExamId and module are required for upsert');
+    }
+    
+    // Validate task references if present
+    if (result.taskReferences) {
+      if (result.taskReferences.taskA) {
+        const isValid = await taskService.validateTaskReference(
+          result.taskReferences.taskA.taskId,
+          result.taskReferences.taskA.type
+        );
+        if (!isValid) {
+          throw new Error(`Invalid task reference: ${result.taskReferences.taskA.taskId} (type: ${result.taskReferences.taskA.type})`);
+        }
+      }
+      if (result.taskReferences.taskB) {
+        const isValid = await taskService.validateTaskReference(
+          result.taskReferences.taskB.taskId,
+          result.taskReferences.taskB.type
+        );
+        if (!isValid) {
+          throw new Error(`Invalid task reference: ${result.taskReferences.taskB.taskId} (type: ${result.taskReferences.taskB.type})`);
+        }
+      }
+    }
+    
+    const now = new Date().toISOString();
+    result.updatedAt = now;
+    
+    // Remove _id and createdAt for the update operation
+    // createdAt should only be set on insert, not on update
+    const { _id, createdAt, ...resultWithoutIdAndCreatedAt } = result;
+    
+    // Upsert: update if exists, insert if not
+    // This will update an existing placeholder (isLoading: true) or create new if none exists
+    const doc = await db.collection('results').findOneAndUpdate(
+      {
+        userId: result.userId,
+        mockExamId: result.mockExamId,
+        module: result.module,
+      },
+      {
+        $set: {
+          ...resultWithoutIdAndCreatedAt,
+          isLoading: false, // Worker result is complete
+        },
+        $setOnInsert: {
+          createdAt: now,
+        },
+      },
+      {
+        upsert: true,
+        returnDocument: 'after',
+      }
+    );
+    
+    return {
+      ...result,
+      _id: doc?._id?.toString(),
+      isLoading: false,
+    } as SavedResult;
+  },
 };
 

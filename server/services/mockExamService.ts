@@ -8,7 +8,6 @@ import { readingTaskService } from "./readingTaskService";
 import { listeningTaskService } from "./listeningTaskService";
 import { writtenTaskService } from "./writtenTaskService";
 import { questionService } from "./questionService";
-import { subscriptionService } from "./subscriptionService";
 import { createUsage, getTodayUTC } from "../models/usage";
 import { ObjectId } from "mongodb";
 import {
@@ -38,9 +37,31 @@ export const mockExamService = {
       .sort({ createdAt: 1 })
       .toArray();
 
-    // Get completed mock exam IDs for this user
-    const completedMockExamIds =
-      await subscriptionService.getCompletedMockExamIds(userId);
+    // Get completed mock exam IDs for this user - only those with all 4 modules completed
+    const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
+    
+    const completedMockExamAggregation = await db
+      .collection("results")
+      .aggregate([
+        { $match: { userId, mockExamId: { $exists: true, $ne: null } } },
+        { 
+          $group: { 
+            _id: '$mockExamId', 
+            completedModules: { $addToSet: '$module' } 
+          } 
+        },
+        { 
+          $match: { 
+            // Only include mock exams where all 4 modules are completed
+            $expr: { 
+              $setEquals: ['$completedModules', ALL_MODULES] 
+            } 
+          } 
+        }
+      ])
+      .toArray();
+    
+    const completedMockExamIds = completedMockExamAggregation.map((r: any) => r._id);
 
     // Filter out completed exams
     const availableMockExams = allMockExams.filter(
@@ -109,10 +130,10 @@ export const mockExamService = {
     }
 
     // Check if user has already completed this exam
-    const completedIds = await subscriptionService.getCompletedMockExamIds(
-      userId
-    );
-    if (completedIds.includes(mockExamId)) {
+    const completedResult = await db
+      .collection("examResults")
+      .findOne({ userId, mockExamId });
+    if (completedResult) {
       return false;
     }
 
@@ -277,121 +298,33 @@ export const mockExamService = {
         );
       }
 
-      // Check if user is superuser (bypasses credit checks)
-      const superUserId = process.env.SUPER_USER_ID;
-      const isSuperUser = superUserId ? userId === superUserId : false;
-
-      if (!isSuperUser) {
-        // Check credits for non-superusers
-        const canStartCheck = await subscriptionService.checkCanStartExam(
-          userId,
-          "full"
-        );
-        if (!canStartCheck.canStart) {
-          throw new Error(
-            canStartCheck.reason || "No credits available for mock exam"
-          );
-        }
-      } else {
-        console.log(
-          `Superuser ${userId} starting mock exam - bypassing credit checks`
-        );
-      }
-
-      // For non-superusers, check credits before starting transaction (but don't consume yet)
-      const status = await subscriptionService.getSubscriptionStatus(userId);
+      // B2B mode - track usage without limits
       const today = getTodayUTC();
 
-      // Get or create today's usage record (same logic as canStartExam)
+      // Get or create today's usage record for tracking
       let usage = await db.collection("usage").findOne({ userId, date: today });
       if (!usage) {
         const newUsage = createUsage(userId, today);
         const { _id, ...usageToInsert } = newUsage;
         await db.collection("usage").insertOne(usageToInsert as any);
-        // Re-fetch to get the document with ObjectId
-        usage = await db.collection("usage").findOne({ userId, date: today });
       }
 
-      // Check if user can start (similar logic to canStartExam but without consuming)
-      if (status.subscriptionType === "EXPIRED") {
-        throw new Error("Subscription has expired");
-      }
-
-      const canStart =
-        (status.isActive &&
-          status.subscriptionType === "TRIAL" &&
-          usage.fullTestsUsed < status.limits.fullTests) ||
-        (status.packCredits && status.packCredits.fullTests.remaining > 0);
-
-      if (!canStart) {
-        throw new Error("No credits available for mock exam");
-      }
-
-      // Use transaction to create mock exam session and consume credit
+      // Use transaction to create mock exam session and track usage
       const session = db.client.startSession();
 
       try {
         let sessionId: string;
 
         await session.withTransaction(async () => {
-          // Re-check credits within transaction to prevent race conditions
-          let currentUsage = await db
-            .collection("usage")
-            .findOne({ userId, date: today }, { session });
-
-          // Create usage record if it doesn't exist (within transaction)
-          if (!currentUsage) {
-            const newUsage = createUsage(userId, today);
-            const { _id, ...usageToInsert } = newUsage;
-            const insertResult = await db
-              .collection("usage")
-              .insertOne(usageToInsert as any, { session });
-            // Fetch the inserted document to get the ObjectId
-            currentUsage = await db
-              .collection("usage")
-              .findOne({ _id: insertResult.insertedId }, { session });
-          }
-
-          // Skip credit consumption for superusers
-          if (!isSuperUser) {
-            const currentSub = await db
-              .collection("subscriptions")
-              .findOne({ userId }, { session });
-
-            // Consume credit based on what's available (daily limit first, then pack)
-            if (
-              status.isActive &&
-              status.subscriptionType === "TRIAL" &&
-              currentUsage.fullTestsUsed < status.limits.fullTests
-            ) {
-              // Use daily limit
-              await db.collection("usage").updateOne(
-                { userId, date: today },
-                {
-                  $inc: { fullTestsUsed: 1 },
-                  $set: { updatedAt: new Date().toISOString() },
-                },
-                { session }
-              );
-            } else if (
-              currentSub &&
-              currentSub.packFullTestsTotal &&
-              (currentSub.packFullTestsUsed || 0) <
-                currentSub.packFullTestsTotal
-            ) {
-              // Use pack credits
-              await db.collection("subscriptions").updateOne(
-                { userId },
-                {
-                  $inc: { packFullTestsUsed: 1 },
-                  $set: { updatedAt: new Date().toISOString() },
-                },
-                { session }
-              );
-            } else {
-              throw new Error("No credits available");
-            }
-          } // End of non-superuser credit consumption
+          // Track usage for B2B analytics (no limits enforced)
+          await db.collection("usage").updateOne(
+            { userId, date: today },
+            {
+              $inc: { fullTestsUsed: 1 },
+              $set: { updatedAt: new Date().toISOString() },
+            },
+            { session, upsert: true }
+          );
 
           // Create mock exam session
           const examSession = createExamSession(userId, "mock", {
@@ -674,15 +607,19 @@ export const mockExamService = {
   async startModule(
     userId: string,
     mockExamId: string,
-    module: "oralExpression" | "reading" | "listening"
+    module: "oralExpression" | "reading" | "listening" | "writtenExpression"
   ): Promise<{
     sessionId: string;
     task?: any;
+    tasks?: { taskA: any; taskB: any };
     questions?: any[];
+    audioItems?: any[];
+    title?: string;
     scenario?: {
       officialTasks: { partA: any; partB: any };
       mode: "full";
       title: string;
+      mockExamId?: string;
     };
   } | null> {
     const db = await connectDB();
@@ -766,7 +703,7 @@ export const mockExamService = {
           repeatable: item.repeatable,
           audioScript: item.audioScript,
           mimeType: item.mimeType,
-          hasAudio: !!item.audioData, // Indicate if audio data exists
+          hasAudio: !!(item.s3Key || item.audioData), // Check both S3 and legacy MongoDB storage
         }));
       }
 
@@ -899,6 +836,7 @@ export const mockExamService = {
           },
           mode: "full" as const,
           title: `${examName} - Oral Expression`,
+          mockExamId, // Include mockExamId so the evaluation job includes it
         },
       };
     }

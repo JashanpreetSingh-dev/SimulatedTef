@@ -431,19 +431,18 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
               {/* Desktop: Single row layout */}
               <div className="hidden sm:flex items-center gap-4">
-                {/* Left section: Mode badge, Score with /699 */}
+                {/* Left section: Mode badge, Score (only for reading/listening MCQ) */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
                     {getModeLabel(item.mode)}
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      {item.module === 'reading' || item.module === 'listening' 
-                        ? `/${totalQuestions ?? 40}` 
-                        : '/699'}
+                  {/* Only show raw score for reading/listening (MCQ) results */}
+                  {(item.module === 'reading' || item.module === 'listening') && (
+                    <div className="flex items-baseline gap-1">
+                      <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
+                      <div className="text-xs font-bold text-slate-500 dark:text-slate-400">/{totalQuestions ?? 40}</div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Center section: CLB, CECR, Task, Date */}
@@ -517,19 +516,18 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
 
               {/* Mobile: Compact column layout */}
               <div className="flex sm:hidden items-start gap-4">
-                {/* Mode badge and Score with /699 */}
+                {/* Mode badge and Score (only for reading/listening MCQ) */}
                 <div className="flex flex-col items-start gap-2 flex-shrink-0">
                   <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
                     {getModeLabel(item.mode)}
                   </div>
-                  <div className="flex items-baseline gap-2">
-                    <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
-                    <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                      {item.module === 'reading' || item.module === 'listening' 
-                        ? `/${totalQuestions ?? 40}` 
-                        : '/699'}
+                  {/* Only show raw score for reading/listening (MCQ) results */}
+                  {(item.module === 'reading' || item.module === 'listening') && (
+                    <div className="flex items-baseline gap-1">
+                      <div className="text-xl font-black text-slate-800 dark:text-slate-100">{score ?? '—'}</div>
+                      <div className="text-xs font-bold text-slate-500 dark:text-slate-400">/{totalQuestions ?? 40}</div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 
                 {/* Main content */}

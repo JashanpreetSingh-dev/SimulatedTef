@@ -151,16 +151,13 @@ export const assignmentService = {
       );
       await db.collection('readingTasks').insertOne(readingTask);
 
-      // Generate questions - limit to numberOfQuestions from settings
-      const allQuestions = await generateReadingQuestions(taskId, {
-        theme: assignmentData.settings.theme,
-        sections: assignmentData.settings.sections
+      // Generate questions - pass numberOfQuestions for practice mode
+      const questions = await generateReadingQuestions(taskId, {
+        theme: assignmentData.settings.theme || assignmentData.prompt,
+        numberOfQuestions: assignmentData.settings.numberOfQuestions
       });
-
-      // Limit to the requested number of questions
-      const questions = allQuestions.slice(0, assignmentData.settings.numberOfQuestions);
       
-      // Renumber questions sequentially
+      // Renumber questions sequentially (in case AI didn't number correctly)
       const renumberedQuestions = questions.map((q, index) => ({
         ...q,
         questionNumber: index + 1,

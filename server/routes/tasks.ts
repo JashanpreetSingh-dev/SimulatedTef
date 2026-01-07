@@ -101,7 +101,7 @@ router.get('/:taskId/with-questions', requireAuth, taskSelectionLimiter, asyncHa
       repeatable: item.repeatable,
       audioScript: item.audioScript,
       mimeType: item.mimeType,
-      hasAudio: !!item.audioData, // Indicate if audio data exists
+      hasAudio: !!(item.s3Key || item.audioData), // Check both S3 and legacy storage
     }));
   }
   

@@ -19,34 +19,12 @@ import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
-import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
-
-app.post(
-  '/api/subscription/webhook',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    try {
-      if (!Buffer.isBuffer(req.body)) {
-        console.error('Webhook: Body is not a Buffer. Type:', typeof req.body, 'Value:', req.body);
-        return res.status(400).json({ error: 'Invalid request body format' });
-      }
-      
-      const { subscriptionController } = await import('./controllers/subscriptionController');
-      await subscriptionController.handleWebhook(req, res);
-    } catch (error: any) {
-      console.error('Webhook route error:', error);
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    }
-  }
-);
 
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
 app.use(express.json({ limit: '10mb' }));
@@ -100,8 +78,6 @@ if (!clerkSecretKey) {
   try {
     await connectDB();
     await createIndexes();
-    
-    startSubscriptionExpiryJob();
     
     if (process.env.RUN_WORKER === 'true') {
       const { startWorker } = await import('./workers/evaluationWorker');

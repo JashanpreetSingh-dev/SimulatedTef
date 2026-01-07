@@ -2,7 +2,9 @@ import { useState, useCallback } from 'react';
 import { ReadingTask, ListeningTask, ReadingListeningQuestion, TEFTask, WrittenTask } from '../types';
 import { AudioItemMetadata } from '../services/tasks';
 
-export type MockExamPhase = 'selection' | 'module-selector' | 'oralExpression' | 'reading' | 'listening' | 'writtenExpression' | 'loading';
+export type MockExamPhase = 'selection' | 'module-selector' | 'oralExpression' | 'reading' | 'listening' | 'writtenExpression' | 'loading' | 'evaluating';
+
+export type EvaluationType = 'oral' | 'written' | null;
 
 export interface MockExamState {
   phase: MockExamPhase;
@@ -11,9 +13,10 @@ export interface MockExamState {
   completedModules: string[];
   error: string | null;
   justCompletedModule: string | null;
+  evaluationType: EvaluationType; // Track which type of evaluation is in progress
   
   // Module data
-  oralExpressionScenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } | null;
+  oralExpressionScenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string } | null;
   readingTask: ReadingTask | null;
   readingQuestions: ReadingListeningQuestion[];
   listeningTask: ListeningTask | null;
@@ -30,9 +33,10 @@ export interface MockExamStateActions {
   setCompletedModules: (modules: string[]) => void;
   setError: (error: string | null) => void;
   setJustCompletedModule: (module: string | null) => void;
+  setEvaluationType: (type: EvaluationType) => void;
   
   // Module data setters
-  setOralExpressionScenario: (scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } | null) => void;
+  setOralExpressionScenario: (scenario: { officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string } | null) => void;
   setReadingTask: (task: ReadingTask | null) => void;
   setReadingQuestions: (questions: ReadingListeningQuestion[]) => void;
   setListeningTask: (task: ListeningTask | null) => void;
@@ -52,9 +56,10 @@ export function useMockExamState() {
   const [completedModules, setCompletedModules] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [justCompletedModule, setJustCompletedModule] = useState<string | null>(null);
+  const [evaluationType, setEvaluationType] = useState<EvaluationType>(null);
   
   // Module data
-  const [oralExpressionScenario, setOralExpressionScenario] = useState<{ officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string } | null>(null);
+  const [oralExpressionScenario, setOralExpressionScenario] = useState<{ officialTasks: { partA: TEFTask; partB: TEFTask }; mode: 'full'; title: string; mockExamId?: string } | null>(null);
   const [readingTask, setReadingTask] = useState<ReadingTask | null>(null);
   const [readingQuestions, setReadingQuestions] = useState<ReadingListeningQuestion[]>([]);
   const [listeningTask, setListeningTask] = useState<ListeningTask | null>(null);
@@ -87,6 +92,7 @@ export function useMockExamState() {
     setCompletedModules([]);
     setError(null);
     setJustCompletedModule(null);
+    setEvaluationType(null);
     clearModuleData();
   }, [clearModuleData]);
   
@@ -97,6 +103,7 @@ export function useMockExamState() {
     completedModules,
     error,
     justCompletedModule,
+    evaluationType,
     oralExpressionScenario,
     readingTask,
     readingQuestions,
@@ -114,6 +121,7 @@ export function useMockExamState() {
     setCompletedModules,
     setError,
     setJustCompletedModule,
+    setEvaluationType,
     setOralExpressionScenario,
     setReadingTask,
     setReadingQuestions,

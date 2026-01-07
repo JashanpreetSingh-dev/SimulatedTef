@@ -6,7 +6,6 @@ import { getRandomTasks } from '../services/tasks';
 import { useUser } from '@clerk/clerk-react';
 import { useExamResult } from '../hooks/useExamResult';
 import { useUsage } from '../hooks/useUsage';
-import { PaywallModal } from './PaywallModal';
 
 type SimulationMode = 'partA' | 'partB' | 'full';
 
@@ -15,8 +14,6 @@ export const ExamSimulator: React.FC = () => {
   const [simulationMode, setSimulationMode] = useState<SimulationMode | null>(null);
   const [loading, setLoading] = useState(false);
   const [scenario, setScenario] = useState<any>(null);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [paywallReason, setPaywallReason] = useState<string>();
   
   const { startExam, loading: usageLoading } = useUsage();
   
@@ -34,18 +31,11 @@ export const ExamSimulator: React.FC = () => {
   });
 
   const startSimulation = async (mode: SimulationMode) => {
-    // Check subscription before starting
     setLoading(true);
     
+    // Track usage (B2B mode - no limits)
     const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-    const result = await startExam(examType);
-    
-    if (!result.canStart) {
-      setLoading(false);
-      setPaywallReason(result.reason || 'Cannot start exam. Please check your subscription.');
-      setShowPaywall(true);
-      return;
-    }
+    await startExam(examType);
     
     setSimulationMode(mode);
     clearResult();
@@ -191,11 +181,6 @@ export const ExamSimulator: React.FC = () => {
         </div>
       </div>
 
-      <PaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        reason={paywallReason}
-      />
     </div>
   );
 };

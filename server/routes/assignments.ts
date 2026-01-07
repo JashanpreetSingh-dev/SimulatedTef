@@ -3,7 +3,7 @@
  */
 
 import { Router } from 'express';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { Request, Response } from 'express';
 import { assignmentService } from '../services/assignmentService';
@@ -16,8 +16,8 @@ const router = Router();
 // All routes require authentication
 router.use(requireAuth);
 
-// POST /api/assignments - Create new assignment (draft)
-router.post('/', asyncHandler(async (req: Request, res: Response) => {
+// POST /api/assignments - Create new assignment (draft) - Professor only
+router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { type, title, prompt, settings } = req.body;
   const userId = req.userId!;
 
@@ -52,9 +52,9 @@ router.post('/', asyncHandler(async (req: Request, res: Response) => {
   res.status(201).json(assignment);
 }));
 
-// GET /api/assignments/my - Get all assignments created by current user
+// GET /api/assignments/my - Get all assignments created by current user - Professor only
 // MUST come before /:assignmentId route to avoid matching "my" as an assignmentId
-router.get('/my', asyncHandler(async (req: Request, res: Response) => {
+router.get('/my', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId!;
 
   const assignments = await assignmentService.getAssignmentsByCreator(userId);
@@ -72,8 +72,8 @@ router.get('/published', asyncHandler(async (req: Request, res: Response) => {
   res.json(assignments);
 }));
 
-// POST /api/assignments/:assignmentId/generate - Trigger AI question generation (async job)
-router.post('/:assignmentId/generate', asyncHandler(async (req: Request, res: Response) => {
+// POST /api/assignments/:assignmentId/generate - Trigger AI question generation (async job) - Professor only
+router.post('/:assignmentId/generate', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
@@ -118,8 +118,8 @@ router.post('/:assignmentId/generate', asyncHandler(async (req: Request, res: Re
   });
 }));
 
-// GET /api/assignments/:assignmentId/generate/:jobId - Get question generation job status
-router.get('/:assignmentId/generate/:jobId', asyncHandler(async (req: Request, res: Response) => {
+// GET /api/assignments/:assignmentId/generate/:jobId - Get question generation job status - Professor only
+router.get('/:assignmentId/generate/:jobId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId, jobId } = req.params;
   const userId = req.userId!;
 
@@ -173,8 +173,8 @@ router.get('/:assignmentId', asyncHandler(async (req: Request, res: Response) =>
   res.json(assignment);
 }));
 
-// PUT /api/assignments/:assignmentId - Update assignment
-router.put('/:assignmentId', asyncHandler(async (req: Request, res: Response) => {
+// PUT /api/assignments/:assignmentId - Update assignment - Professor only
+router.put('/:assignmentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
   const { title, prompt, settings, status } = req.body;
@@ -201,8 +201,8 @@ router.put('/:assignmentId', asyncHandler(async (req: Request, res: Response) =>
   res.json(updated);
 }));
 
-// PUT /api/assignments/:assignmentId/questions/:questionId - Update a question
-router.put('/:assignmentId/questions/:questionId', asyncHandler(async (req: Request, res: Response) => {
+// PUT /api/assignments/:assignmentId/questions/:questionId - Update a question - Professor only
+router.put('/:assignmentId/questions/:questionId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId, questionId } = req.params;
   const userId = req.userId!;
   const { question, questionText, options, correctAnswer, explanation } = req.body;
@@ -238,8 +238,8 @@ router.put('/:assignmentId/questions/:questionId', asyncHandler(async (req: Requ
   res.json({ success: true, message: 'Question updated successfully' });
 }));
 
-// POST /api/assignments/:assignmentId/publish - Publish assignment
-router.post('/:assignmentId/publish', asyncHandler(async (req: Request, res: Response) => {
+// POST /api/assignments/:assignmentId/publish - Publish assignment - Professor only
+router.post('/:assignmentId/publish', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
@@ -262,8 +262,8 @@ router.post('/:assignmentId/publish', asyncHandler(async (req: Request, res: Res
   res.json(published);
 }));
 
-// DELETE /api/assignments/:assignmentId - Delete assignment
-router.delete('/:assignmentId', asyncHandler(async (req: Request, res: Response) => {
+// DELETE /api/assignments/:assignmentId - Delete assignment - Professor only
+router.delete('/:assignmentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
