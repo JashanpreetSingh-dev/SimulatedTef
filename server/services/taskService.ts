@@ -6,13 +6,22 @@ import { MongoClient, ObjectId } from 'mongodb';
 import { NormalizedTask, TaskType, generateTaskId } from '../../types/task';
 import { TEFTask, WrittenTask, ReadingTask, ListeningTask } from '../../types';
 
-const uri = process.env.MONGODB_URI || '';
-const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
-
 let client: MongoClient | null = null;
+
+function getUri(): string {
+  return process.env.MONGODB_URI || '';
+}
+
+function getDbName(): string {
+  return process.env.MONGODB_DB_NAME || 'tef_master';
+}
 
 async function getClient(): Promise<MongoClient> {
   if (!client) {
+    const uri = getUri();
+    if (!uri) {
+      throw new Error('MONGODB_URI is not set');
+    }
     client = new MongoClient(uri);
     await client.connect();
   }
@@ -21,7 +30,7 @@ async function getClient(): Promise<MongoClient> {
 
 async function getDB() {
   const client = await getClient();
-  return client.db(dbName);
+  return client.db(getDbName());
 }
 
 /**

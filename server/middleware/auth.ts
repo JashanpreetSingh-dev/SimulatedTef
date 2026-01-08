@@ -5,10 +5,17 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken, createClerkClient } from '@clerk/backend';
 
-const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
+// Use a function to get the secret key so it can be read dynamically in tests
+function getClerkSecretKey(): string {
+  return process.env.CLERK_SECRET_KEY || "";
+}
+const clerkSecretKey = getClerkSecretKey();
 
-// Create Clerk client for API calls
-const clerkClient = createClerkClient({ secretKey: clerkSecretKey });
+// Create Clerk client for API calls (will be recreated if secret key changes)
+function getClerkClient() {
+  return createClerkClient({ secretKey: getClerkSecretKey() });
+}
+const clerkClient = getClerkClient();
 
 // Extend Express Request type to include user role
 declare global {
@@ -27,7 +34,8 @@ declare global {
  */
 export async function requireAuth(req: Request, res: Response, next: NextFunction) {
   // Skip auth if CLERK_SECRET_KEY is not set (for development)
-  if (!clerkSecretKey) {
+  const secretKey = getClerkSecretKey();
+  if (!secretKey) {
     // In development, allow requests but warn
     req.userId = req.body.userId || req.params.userId || 'guest';
     req.userRole = 'org:professor'; // Default to professor in dev mode
@@ -45,7 +53,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
     // Verify token with Clerk
-    const sessionClaims = await verifyToken(token, { secretKey: clerkSecretKey });
+    const sessionClaims = await verifyToken(token, { secretKey });
     
     // Extract userId from session claims
     const userId = sessionClaims.sub; // 'sub' is the user ID in Clerk tokens
@@ -58,7 +66,8 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     // If no active org role, fetch user's organization memberships from Clerk API
     if (!req.userRole && userId) {
       try {
-        const memberships = await clerkClient.users.getOrganizationMembershipList({
+        const client = getClerkClient();
+        const memberships = await client.users.getOrganizationMembershipList({
           userId,
         });
         

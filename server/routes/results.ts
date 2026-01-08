@@ -11,16 +11,16 @@ import { resultsService } from '../services/resultsService';
 
 const router = Router();
 
-// GET /api/results/:userId - Get all results for a user
-// Rate limit: 20 requests per minute
-router.get('/:userId', requireAuth, resultRetrievalLimiter, resultsController.getUserResults);
-
 // POST /api/results - Create a new result
 router.post('/', requireAuth, resultsController.createResult);
 
-// GET /api/results/detail/:id - Get specific result by ID
+// GET /api/results/detail/:id - Get specific result by ID (must come before /:userId)
 // Rate limit: 20 requests per minute
 router.get('/detail/:id', requireAuth, resultRetrievalLimiter, resultsController.getResultById);
+
+// GET /api/results/:userId - Get all results for a user
+// Rate limit: 20 requests per minute
+router.get('/:userId', requireAuth, resultRetrievalLimiter, resultsController.getUserResults);
 
 // POST /api/results/update-metadata - Update result metadata (for mock exams)
 router.post('/update-metadata', requireAuth, asyncHandler(async (req: Request, res: Response) => {
