@@ -9,6 +9,9 @@ import { WrittenExamView } from '../pages/WrittenExamView';
 import { AssignmentsView } from '../pages/AssignmentsView';
 import { AssignmentCreationView } from '../pages/AssignmentCreationView';
 import { AssignmentExamView } from '../pages/AssignmentExamView';
+import { BatchesView } from '../pages/BatchesView';
+import { BatchDetailView } from '../pages/BatchDetailView';
+import { StudentBatchView } from '../pages/StudentBatchView';
 import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { MockExamView } from '../components/MockExamView';
@@ -41,6 +44,8 @@ export function ProtectedRoutes() {
       <Route path="/dashboard/assignments" element={<AssignmentsView />} />
       <Route path="/dashboard/assignments/create" element={<AssignmentCreationView />} />
       <Route path="/dashboard/assignments/create/:assignmentId" element={<AssignmentCreationView />} />
+      <Route path="/dashboard/batches" element={<BatchesView />} />
+      <Route path="/dashboard/batches/:batchId" element={<BatchDetailView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

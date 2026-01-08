@@ -101,6 +101,19 @@ export const resultsService = {
   },
 
   /**
+   * Check if user has completed an assignment (for access control)
+   */
+  async hasUserCompletedAssignment(userId: string, assignmentId: string): Promise<boolean> {
+    const db = await connectDB();
+    const count = await db.collection('results').countDocuments({
+      userId,
+      assignmentId,
+      resultType: 'assignment'
+    });
+    return count > 0;
+  },
+
+  /**
    * Update result metadata (for adding mock exam fields)
    */
   async updateResultMetadata(resultId: string, metadata: { mockExamId: string; module: string }): Promise<void> {

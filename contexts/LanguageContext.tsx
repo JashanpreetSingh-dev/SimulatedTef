@@ -220,7 +220,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.writtenCompleteExam': 'Entraînement Complet - Expression Écrite',
     'practice.writtenSectionA': 'Section A - Expression Écrite',
     'practice.writtenSectionB': 'Section B - Expression Écrite',
-    'practice.cardDescription': 'Pratiquez l\'expression orale avec Section A, Section B et Examens Complets. Consultez votre historique de pratique.',
+    'practice.cardDescription': 'Pratiquez l\'expression orale, l\'expression écrite, la compréhension écrite et la compréhension orale. Consultez votre historique de pratique.',
     'practice.readingSubtitle': 'Pratiquez la compréhension écrite avec des devoirs créés par les enseignants',
     'practice.listeningSubtitle': 'Pratiquez la compréhension orale avec des devoirs créés par les enseignants',
     'practice.loadingAssignments': 'Chargement des devoirs...',
@@ -349,6 +349,56 @@ const translations: Record<Language, Record<string, string>> = {
     'assignments.completedCheckHistory': 'Devoir terminé. Consultez votre historique pour voir les résultats.',
     'assignments.submittingResults': 'Soumission des résultats...',
     'assignments.loadingAssignmentData': 'Chargement du devoir...',
+    
+    // Batches
+    'batches.title': 'Mes Groupes',
+    'batches.subtitle': 'Créez et gérez des groupes d\'étudiants',
+    'batches.createBatch': 'Créer un Groupe',
+    'batches.myBatches': 'Mes Groupes',
+    'batches.batchName': 'Nom du groupe',
+    'batches.enterBatchName': 'Entrez le nom du groupe',
+    'batches.students': 'Étudiants',
+    'batches.assignments': 'Devoirs',
+    'batches.assignedAssessments': 'Devoirs Assignés',
+    'batches.addStudent': 'Ajouter un Étudiant',
+    'batches.removeStudent': 'Retirer l\'Étudiant',
+    'batches.assignAssessment': 'Assigner un Devoir',
+    'batches.unassign': 'Retirer',
+    'batches.deleteBatch': 'Supprimer le Groupe',
+    'batches.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action ne peut pas être annulée.',
+    'batches.removeStudentConfirm': 'Êtes-vous sûr de vouloir retirer cet étudiant du groupe ?',
+    'batches.noBatches': 'Aucun groupe pour le moment. Créez votre premier groupe.',
+    'batches.noStudents': 'Aucun étudiant dans ce groupe pour le moment.',
+    'batches.noAssignments': 'Aucun devoir dans ce groupe pour le moment.',
+    'batches.noAvailableStudents': 'Aucun étudiant disponible. Tous les étudiants de votre organisation sont déjà assignés à des groupes.',
+    'batches.selectStudent': 'Sélectionnez un étudiant...',
+    'batches.assessmentBank': 'Banque de Devoirs',
+    'batches.selectAssessments': 'Sélectionnez des devoirs de votre banque de devoirs pour les assigner à ce groupe',
+    'batches.noAvailableAssessments': 'Aucun devoir {type} disponible.',
+    'batches.reading': 'Compréhension Écrite',
+    'batches.listening': 'Compréhension Orale',
+    'batches.view': 'Voir',
+    'batches.delete': 'Supprimer',
+    'batches.cancel': 'Annuler',
+    'batches.add': 'Ajouter',
+    'batches.remove': 'Retirer',
+    'batches.assign': 'Assigner',
+    'batches.confirm': 'Confirmer',
+    'batches.created': 'Créé',
+    'batches.student': 'Étudiant',
+    'batches.studentsPlural': 'Étudiants',
+    'batches.assignment': 'Devoir',
+    'batches.assignmentsPlural': 'Devoirs',
+    'batches.myBatch': 'Mon Groupe',
+    'batches.noBatchAssigned': 'Aucun Groupe Assigné',
+    'batches.noBatchAssignedDescription': 'Vous n\'êtes assigné à aucun groupe pour le moment. Votre professeur vous assignera à un groupe.',
+    'batches.assignedAssessmentsTitle': 'Devoirs Assignés',
+    'batches.noAssignmentsYet': 'Aucun devoir pour le moment. Votre professeur assignera des devoirs à votre groupe.',
+    'batches.start': 'Commencer',
+    'batches.notReady': 'Pas Prêt',
+    'batches.loadingBatches': 'Chargement des groupes...',
+    'batches.loadingBatch': 'Chargement du groupe...',
+    'batches.loading': 'Chargement...',
   },
   en: {
     // Navigation
@@ -367,7 +417,7 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionADescription': 'Ask questions to get information. (4 min)',
     'dashboard.sectionBDescription': 'Argue to convince a friend. (8 min)',
     'dashboard.oralExpressionDescription': 'Chain both sections for a real simulation. (12 min)',
-    'dashboard.mockExamDescription': 'Complete 3-module exam: Oral Expression, Reading, and Listening',
+    'dashboard.mockExamDescription': 'Complete 4-module exam: Oral Expression, Written Expression, Reading, and Listening',
     
     // Back buttons
     'back.dashboard': 'Back to Dashboard',
@@ -536,7 +586,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.writtenCompleteExam': 'Complete Exam - Written Expression',
     'practice.writtenSectionA': 'Section A - Written Expression',
     'practice.writtenSectionB': 'Section B - Written Expression',
-    'practice.cardDescription': 'Practice oral expression with Section A, Section B, and Complete Exams. View your practice history.',
+    'practice.cardDescription': 'Practice oral expression, written expression, reading comprehension, and listening comprehension. View your practice history.',
     'practice.readingSubtitle': 'Practice reading comprehension with teacher-created assignments',
     'practice.listeningSubtitle': 'Practice listening comprehension with teacher-created assignments',
     'practice.loadingAssignments': 'Loading assignments...',
@@ -665,6 +715,56 @@ const translations: Record<Language, Record<string, string>> = {
     'assignments.completedCheckHistory': 'Assignment completed. Check your history for results.',
     'assignments.submittingResults': 'Submitting results...',
     'assignments.loadingAssignmentData': 'Loading assignment...',
+    
+    // Batches
+    'batches.title': 'My Batches',
+    'batches.subtitle': 'Create and manage student batches',
+    'batches.createBatch': 'Create Batch',
+    'batches.myBatches': 'My Batches',
+    'batches.batchName': 'Batch Name',
+    'batches.enterBatchName': 'Enter batch name',
+    'batches.students': 'Students',
+    'batches.assignments': 'Assignments',
+    'batches.assignedAssessments': 'Assigned Assessments',
+    'batches.addStudent': 'Add Student',
+    'batches.removeStudent': 'Remove Student',
+    'batches.assignAssessment': 'Assign Assessment',
+    'batches.unassign': 'Unassign',
+    'batches.deleteBatch': 'Delete Batch',
+    'batches.deleteConfirm': 'Are you sure you want to delete this batch? This action cannot be undone.',
+    'batches.removeStudentConfirm': 'Are you sure you want to remove this student from the batch?',
+    'batches.noBatches': 'No batches yet. Create your first batch.',
+    'batches.noStudents': 'No students in this batch yet.',
+    'batches.noAssignments': 'No assignments in this batch yet.',
+    'batches.noAvailableStudents': 'No available students. All students in your organization are already assigned to batches.',
+    'batches.selectStudent': 'Select a student...',
+    'batches.assessmentBank': 'Assessment Bank',
+    'batches.selectAssessments': 'Select assessments from your assessment bank to assign to this batch',
+    'batches.noAvailableAssessments': 'No available {type} assessments.',
+    'batches.reading': 'Reading',
+    'batches.listening': 'Listening',
+    'batches.view': 'View',
+    'batches.delete': 'Delete',
+    'batches.cancel': 'Cancel',
+    'batches.add': 'Add',
+    'batches.remove': 'Remove',
+    'batches.assign': 'Assign',
+    'batches.confirm': 'Confirm',
+    'batches.created': 'Created',
+    'batches.student': 'Student',
+    'batches.studentsPlural': 'Students',
+    'batches.assignment': 'Assignment',
+    'batches.assignmentsPlural': 'Assignments',
+    'batches.myBatch': 'My Batch',
+    'batches.noBatchAssigned': 'No Batch Assigned',
+    'batches.noBatchAssignedDescription': 'You are not assigned to any batch yet. Your professor will assign you to a batch.',
+    'batches.assignedAssessmentsTitle': 'Assigned Assessments',
+    'batches.noAssignmentsYet': 'No assignments yet. Your professor will assign assessments to your batch.',
+    'batches.start': 'Start',
+    'batches.notReady': 'Not Ready',
+    'batches.loadingBatches': 'Loading batches...',
+    'batches.loadingBatch': 'Loading batch...',
+    'batches.loading': 'Loading...',
   },
 };
 
@@ -680,8 +780,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     localStorage.setItem('language', lang);
   };
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
+  const t = (key: string, params?: Record<string, string>): string => {
+    let text = translations[language][key] || key;
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        text = text.replace(`{${param}}`, value);
+      });
+    }
+    return text;
   };
 
   return (

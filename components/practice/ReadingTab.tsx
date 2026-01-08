@@ -1,25 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAssignments } from '../../hooks/useAssignments';
+import { batchAssignmentService } from '../../services/batchAssignmentService';
+import { batchService } from '../../services/batchService';
 import { Assignment } from '../../types';
 
 export function ReadingTab() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { user } = useUser();
+  const { getToken } = useAuth();
   const { fetchPublishedAssignments, loading } = useAssignments();
   const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [batchName, setBatchName] = useState<string | null>(null);
+
+  // Check if user is a professor
+  const isProfessor = user?.organizationMemberships?.some(
+    (membership) => membership.role === 'org:professor'
+  ) ?? false;
 
   useEffect(() => {
     loadAssignments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isProfessor]);
 
   const loadAssignments = async () => {
     try {
-      const published = await fetchPublishedAssignments('reading');
-      if (published) {
-        setAssignments(published);
+      const getTokenWrapper = async () => getToken();
+      
+      if (isProfessor) {
+        // Professors see all published assignments
+        const published = await fetchPublishedAssignments('reading');
+        if (published) {
+          setAssignments(published);
+        }
+      } else {
+        // Students see only their batch-assigned assessments
+        const batchData = await batchService.getMyBatch(getTokenWrapper);
+        if (batchData) {
+          setBatchName(batchData.name);
+          const assigned = await batchAssignmentService.getAssignedAssignments(getTokenWrapper);
+          const readingAssignments = assigned
+            .map((ba: any) => ba.assignment)
+            .filter((a: any) => a && a.type === 'reading');
+          setAssignments(readingAssignments);
+        } else {
+          setAssignments([]);
+        }
       }
     } catch (err) {
       console.error('Failed to load assignments:', err);
@@ -48,7 +77,12 @@ export function ReadingTab() {
     return (
       <div className="text-center py-12">
         <p className="text-slate-500 dark:text-slate-400">
-          {t('practice.noReadingAssignments')}
+          {isProfessor 
+            ? t('practice.noReadingAssignments')
+            : batchName
+              ? t('batches.noAssignmentsYet')
+              : t('batches.noBatchAssignedDescription')
+          }
         </p>
       </div>
     );
