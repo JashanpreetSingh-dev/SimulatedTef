@@ -6,6 +6,7 @@ import { useScrollAnimation } from '../utils/animations';
 import { FAQSection } from '../components/FAQSection';
 import { ExamInterfaceShowcase } from '../components/ExamInterfaceShowcase';
 import { ResultsDashboardShowcase } from '../components/ResultsDashboardShowcase';
+import { EnterpriseCTA } from '../components/EnterpriseCTA';
 import { Footer } from '../components/Footer';
 
 export function LandingPage() {
@@ -312,6 +313,9 @@ export function LandingPage() {
 
       {/* Results Dashboard Showcase */}
       <ResultsDashboardShowcase />
+
+      {/* Enterprise CTA Section */}
+      <EnterpriseCTA />
 
       {/* FAQ Section */}
       <FAQSection />
