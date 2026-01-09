@@ -2,7 +2,7 @@
  * Results API routes
  */
 
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { resultRetrievalLimiter } from '../middleware/rateLimiter';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -45,6 +45,31 @@ router.post('/update-metadata', requireAuth, asyncHandler(async (req: Request, r
   await resultsService.updateResultMetadata(resultId, { mockExamId, module });
 
   res.json({ success: true });
+}));
+
+// PUT /api/results/:id/evaluation - Update evaluation data for an existing result (for re-evaluation)
+router.put('/:id/evaluation', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const resultId = req.params.id;
+  const { evaluation, moduleData } = req.body;
+
+  if (!evaluation) {
+    return res.status(400).json({ error: 'evaluation is required' });
+  }
+
+  try {
+    const updatedResult = await resultsService.updateEvaluation(resultId, userId, evaluation, moduleData);
+    res.json({ success: true, result: updatedResult });
+  } catch (error: any) {
+    if (error.message === 'Result not found or access denied') {
+      return res.status(404).json({ error: error.message });
+    }
+    throw error;
+  }
 }));
 
 export default router;

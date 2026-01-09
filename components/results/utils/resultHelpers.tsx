@@ -1,5 +1,6 @@
 import React from 'react';
 import { UpgradedSentence } from '../../../types';
+import { CorrectionTooltip } from '../components/CorrectionTooltip';
 
 /**
  * Get CECR level background color class
@@ -104,15 +105,13 @@ export function highlightMistakes(text: string, corrections: UpgradedSentence[] 
       );
     }
     
-    // Add highlighted mistake
+    // Add highlighted mistake with custom tooltip
     highlightedText.push(
-      <span 
-        key={key++} 
-        className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border-b-2 border-rose-400 dark:border-rose-500 cursor-help"
-        title={`Suggestion: "${match.correction.better}" - ${match.correction.why}`}
-      >
-        {text.substring(match.start, match.end)}
-      </span>
+      <CorrectionTooltip key={key++} correction={match.correction}>
+        <span className="bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-300 border-b-2 border-rose-400 dark:border-rose-500 cursor-help hover:bg-rose-200 dark:hover:bg-rose-900/50 transition-colors">
+          {text.substring(match.start, match.end)}
+        </span>
+      </CorrectionTooltip>
     );
     
     currentPos = match.end;

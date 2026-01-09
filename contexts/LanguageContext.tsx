@@ -60,6 +60,7 @@ const translations: Record<Language, Record<string, string>> = {
     // Actions
     'actions.start': 'Commencer',
     'actions.resume': 'Reprendre',
+    'actions.recheck': 'Réévaluer',
     'actions.retake': 'Refaire',
     'actions.viewResults': 'Voir les résultats',
     'actions.seeResults': 'Voir les résultats',
@@ -403,6 +404,7 @@ const translations: Record<Language, Record<string, string>> = {
     'actions.viewResults': 'View Results',
     'actions.seeResults': 'See Results',
     'actions.details': 'Details',
+    'actions.recheck': 'Recheck',
     
     // Status
     'status.completed': 'Completed',
