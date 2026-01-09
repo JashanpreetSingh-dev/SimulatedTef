@@ -1,0 +1,209 @@
+@import "tailwindcss";
+
+/* Tell Tailwind v4 where to find classes */
+@source "../components/**/*.{js,ts,jsx,tsx}";
+@source "../pages/**/*.{js,ts,jsx,tsx}";
+@source "../.storybook/**/*.{js,ts,jsx,tsx}";
+@source "../**/*.{js,ts,jsx,tsx}";
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Scale down UI by reducing base font size (default 16px → 12.8px = 80%) */
+    font-size: 12.8px;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    transition: background-color 0.3s ease;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Clerk overrides for consistency */
+@layer components {
+  .cl-modalContent {
+    background: transparent !important;
+  }
+  
+  .cl-modalBackdrop {
+    background: rgba(248, 250, 252, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+  
+  .dark .cl-modalBackdrop {
+    background: rgba(15, 23, 42, 0.8) !important;
+  }
+  
+  /* Force text colors in Clerk components for dark mode */
+  .dark .cl-button,
+  .dark .cl-buttonText,
+  .dark .cl-formButtonPrimary,
+  .dark .cl-formButtonSecondary,
+  .dark .cl-socialButtonsBlockButton,
+  .dark .cl-socialButtonsBlockButtonText,
+  .dark .cl-formFieldInput,
+  .dark .cl-formFieldLabel,
+  .dark .cl-footerActionLink,
+  .dark .cl-headerTitle,
+  .dark .cl-headerSubtitle,
+  .dark .cl-alertText,
+  .dark .cl-identityPreviewText {
+    color: #f1f5f9 !important;
+  }
+  
+  /* Primary button text always white */
+  .cl-formButtonPrimary,
+  .cl-buttonPrimary {
+    color: #ffffff !important;
+  }
+}
+
+/* Animation utilities */
+@layer utilities {
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.8s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-scale-in {
+    animation: scaleIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-slide-in-left {
+    animation: slideInLeft 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  
+  .animate-pulse-custom {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+  
+  .animate-on-scroll {
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  
+  /* Animation delays */
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+  .delay-600 { animation-delay: 0.6s; }
+  
+  /* Respect reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up,
+    .animate-fade-in,
+    .animate-scale-in,
+    .animate-slide-in-left,
+    .animate-slide-in-right,
+    .animate-slide-up,
+    .animate-pulse-custom,
+    .animate-glow {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+/* Keyframe definitions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.8), 0 0 30px rgba(99, 102, 241, 0.4);
+  }
+}
