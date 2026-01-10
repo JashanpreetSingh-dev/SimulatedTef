@@ -7,10 +7,10 @@ export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean
   const sectionFocus = section === 'OralExpression'
     ? `- EO1 focus: interactional competence, asking relevant questions, clarity, register, turn-taking, reactivity.
 - EO2 focus: persuasion, argument structure, handling counter-arguments, coherence, examples, nuance.`
-    : `- Section A (Fait divers) focus: journalistic news story format, factual reporting, past tenses (passé composé, imparfait), 80-120 words.
-- Section B (Argumentation) focus: persuasive essay structure, clear thesis, developed arguments with examples, counter-argument handling, formal connectors, 200-250 words.`;
+    : `- Section A (Fait divers) focus: complete/continue a news article (rubrique faits-divers), continuation not starting from scratch, multiple paragraphs required, journalistic style, factual reporting, past tenses (passé composé, imparfait), 80 mots minimum.
+- Section B (Argumentation) focus: letter to the journal format, express and justify a point of view, at least 3 arguments required to defend the position, development/nuance/clarification of arguments, formal register, 200 mots minimum.`;
 
-  const fullExamGuidance = isFullExam ? `
+  const fullExamGuidance = isFullExam ? (section === 'OralExpression' ? `
 
 IMPORTANT - FULL EXAM EVALUATION (EO1 + EO2):
 You are evaluating a COMPLETE exam that includes BOTH Section A (EO1) and Section B (EO2). The transcript contains both tasks.
@@ -35,7 +35,32 @@ CRITERIA EVALUATION FOR FULL EXAM:
 - fluency: Assess fluency across the entire performance.
 - interaction: Evaluate interaction quality in EO1 AND argumentative skills in EO2.
 
-In your overall_comment, specifically address performance on BOTH tasks (e.g., "In Section A (EO1), the candidate asked only 2 questions, which was insufficient. However, in Section B (EO2), they demonstrated strong argumentation skills...").` : '';
+In your overall_comment, specifically address performance on BOTH tasks (e.g., "In Section A (EO1), the candidate asked only 2 questions, which was insufficient. However, in Section B (EO2), they demonstrated strong argumentation skills...").` : section === 'WrittenExpression' ? `
+
+IMPORTANT - FULL EXAM EVALUATION (Section A + Section B):
+You are evaluating a COMPLETE exam that includes BOTH Section A (Fait divers) and Section B (Argumentation). The text contains both tasks.
+
+EVALUATION APPROACH FOR FULL EXAM:
+1. Analyze the candidate's performance SEPARATELY for Section A and Section B within the combined text.
+2. Identify which parts of the text correspond to Section A (fait divers continuation) and which correspond to Section B (letter to journal).
+3. Score each task individually, then synthesize an OVERALL score that reflects performance across BOTH tasks.
+
+SCORING GUIDELINES FOR FULL EXAM:
+- If performance is STRONGLY UNEVEN (e.g., strong Section B but weak Section A with insufficient words or missing multiple paragraphs), the overall CLB level should reflect this imbalance.
+  * Example: Strong Section B (CLB 8) but weak Section A (CLB 5-6 due to insufficient words or poor continuation) should result in overall CLB 6-7, NOT CLB 8.
+- If both tasks are performed at similar levels, the overall score should align with that consistent level.
+- The overall CLB level should be a balanced assessment that accounts for weaknesses in EITHER task, as the exam requires competency in BOTH factual reporting (Section A) AND argumentation (Section B).
+- Task fulfillment scores should reflect performance on BOTH tasks, not just the stronger one.
+
+CRITERIA EVALUATION FOR FULL EXAM:
+- taskFulfillment: Evaluate fulfillment for BOTH Section A (did they properly continue the article with sufficient detail and multiple paragraphs?) AND Section B (did they write a proper letter with at least 3 arguments?).
+- coherence: Assess coherence across both tasks, but also note any differences between the two sections (factual reporting vs argumentation).
+- lexicalRange: Consider vocabulary used across both tasks (journalistic vs argumentative vocabulary).
+- grammarControl: Evaluate grammar, syntax, and spelling consistently across both tasks. Pay particular attention to spelling mastery in formal writing.
+- clarityDevelopment: Assess clarity separately for Section A (news clarity) vs Section B (argumentation clarity), and evaluate development/nuance separately for each section.
+- argumentationQuality: For Section B, evaluate argumentation quality. For Section A, evaluate factual reporting quality. Then synthesize an overall assessment.
+
+In your overall_comment, specifically address performance on BOTH tasks (e.g., "In Section A, the candidate wrote only 60 words and did not use multiple paragraphs, which was insufficient. However, in Section B, they demonstrated strong argumentation skills with 3 well-developed arguments...").` : '') : '';
 
   const evaluatorType = section === 'OralExpression' ? 'Expression Orale' : 'Expression Écrite';
   
@@ -45,12 +70,31 @@ The candidate writes/speaks French. Evaluate the candidate's performance only${s
 ${section === 'OralExpression' ? `If the transcript is diarized with lines prefixed by "User:" and "Examiner:", always treat "User:" lines as the candidate's speech and "Examiner:" lines as context only. Do not score the examiner.` : ''}
 If the text is too short or missing, say so and give safe general advice.
 
+${section === 'WrittenExpression' ? `CRITICAL: EVALUATION CONSISTENCY REQUIREMENT (Written Expression Only)
+Your evaluation MUST be consistent and reproducible. When evaluating the same text multiple times, you MUST produce the same or nearly identical CLB level (within ±1 level maximum). Use objective measures (word counts, argument counts, error counts) as primary anchors. Do NOT introduce random variations in scoring.` : ''}
+
 You must evaluate candidates objectively according to CECR levels (A1 to C2) and report Canadian Language Benchmark (CLB) equivalence.
 General guidance:
 - Evaluate based on communication effectiveness, interaction quality, and language mastery.
 - Minor grammatical errors are acceptable from B2 and above.
 - Do not penalize accent unless comprehension is affected.
 - Judge effectiveness and clarity, not perfection.
+${section === 'WrittenExpression' ? '- USE OBJECTIVE MEASURES FIRST (word counts, error counts, argument counts) before applying subjective judgments.' : ''}
+
+${section === 'WrittenExpression' ? `EVALUATION QUESTIONS TO GUIDE YOUR ASSESSMENT (based on official TEF framework):
+When evaluating written expression, consider these questions to inform your scoring and feedback:
+
+For text quality and effectiveness:
+- Is the text clear, limpid, confused, or incoherent? (Le texte est-il clair, limpide, confus, incohérent ?)
+- Are the information summary, vague, precise, or detailed? (Les informations sont-elles sommaires, vagues, précises, détaillées ?)
+
+For language mastery:
+- Are sentences simple, complex, or mastered? (Les phrases sont-elles simples, complexes, maîtrisées ?)
+- Are tenses and modes correctly used? (Les temps et modes sont-ils correctement utilisés ?)
+- Is usual spelling mastered? (L'orthographe usuelle est-elle maîtrisée ?)
+- Is the vocabulary used correct, precise, adequate? (Le lexique employé est-il juste, précis, adéquat ?)
+
+Use these questions to inform your evaluation across all criteria, ensuring your feedback addresses clarity, precision, detail level, sentence complexity, tense/mode accuracy, spelling mastery, and vocabulary adequacy.` : ''}
 
 OPTIONAL FLUENCY ANALYSIS (if provided):
 - You may receive an additional section labelled "FLUENCY ANALYSIS (from audio)" that contains objective metrics derived from the candidate's audio (hesitation_rate, filler_words_per_min, average_pause_seconds, self_corrections, fluency_comment).
@@ -64,43 +108,79 @@ SCORING SYSTEM:
   * taskFulfillment: { score: 0-10, comment: "English sentence explaining performance" }
   * coherence: { score: 0-10, comment: "English sentence explaining performance" }
   * lexicalRange: { score: 0-10, comment: "English sentence explaining performance" }
-  * grammarControl: { score: 0-10, comment: "English sentence explaining performance" }
-  * fluency: { score: 0-10, comment: "English sentence explaining performance" }
-  * interaction: { score: 0-10, comment: "English sentence explaining performance" }
+  * ${section === 'WrittenExpression' ? 'grammarControl' : 'grammarControl'}: { score: 0-10, comment: "English sentence explaining performance" }
+  * ${section === 'WrittenExpression' ? 'clarityDevelopment' : section === 'OralExpression' ? 'fluency' : 'fluency'}: { score: 0-10, comment: "English sentence explaining performance" }
+  * ${section === 'WrittenExpression' ? 'argumentationQuality' : section === 'OralExpression' ? 'interaction' : 'interaction'}: { score: 0-10, comment: "English sentence explaining performance" }
 
 Provide concise, actionable feedback.
 
 ${sectionFocus}
 
 Use these criteria (adapt comments to the section):
-- Task fulfillment / pertinence
-- Coherence & organization
-- Lexical range & appropriateness
-- Grammar control
-- Fluency ${section === 'OralExpression' ? '& pronunciation (as inferred from transcript)' : '(writing flow, sentence variety, transitions)'}
-- ${section === 'OralExpression' ? 'Interaction (turn-taking, reactivity, sociolinguistic appropriateness)' : 'Argumentation quality (for Section B: thesis clarity, argument development, counter-argument handling, persuasion; for Section A: journalistic objectivity, factual reporting)'}
+- Task fulfillment / pertinence - Respect for the situation and task completion
+- Coherence & organization - General organization of the text, clarity, structure
+- Lexical range & appropriateness - Vocabulary (lexique): correctness, precision, adequacy
+- ${section === 'WrittenExpression' ? 'Grammar, syntax & spelling control' : 'Grammar control'} - ${section === 'WrittenExpression' ? 'Syntax mastery (simple/complex sentences), tenses/modes correctness, spelling mastery (orthographe)' : 'Grammar accuracy and control'}
+- ${section === 'OralExpression' ? 'Fluency & pronunciation (as inferred from transcript)' : 'Clarity & development'} ${section === 'WrittenExpression' ? '- Clarity of information/argumentation, ability to develop, nuance, and clarify one\'s statements' : ''}
+- ${section === 'OralExpression' ? 'Interaction (turn-taking, reactivity, sociolinguistic appropriateness)' : section === 'WrittenExpression' ? 'Argumentation quality (Section B) / Factual reporting quality (Section A) - Section-specific effectiveness' : 'Argumentation quality'}
 
 ${section === 'WrittenExpression' ? `WRITTEN EXPRESSION SPECIFIC GUIDANCE:
 
-FOR SECTION A (Fait divers - News Story):
-- Task: Write a factual news story (80-120 words) based on a given scenario
-- Format: Journalistic style, objective tone, third person
-- Structure: Who, What, When, Where, Why/How
-- Tenses: Primarily passé composé and imparfait for narration
-- Register: Formal, journalistic
-- Key criteria: Factual accuracy, appropriate news format, correct past tenses
+FOR SECTION A (Fait divers - News Article Continuation):
+- Task: Complete/continue a news article (rubrique faits-divers) - continuation, NOT starting from scratch. The candidate is given the beginning of an article and must continue it.
+- Objective: Write the continuation of the article (80 mots minimum)
+- Duration: 25 minutes
+- Format requirements:
+  * Minimum 80 words (80 mots minimum - no maximum specified, but 80-120 words is reasonable for quality)
+  * Multiple paragraphs required (en faisant plusieurs paragraphes)
+  * Journalistic style, objective tone, third person
+  * Past tenses primarily (passé composé and imparfait) for narration
+- Content focus:
+  * Factual reporting (fait divers)
+  * Who, What, When, Where, Why/How structure
+  * Objective, journalistic tone
+- Evaluation points:
+  * Respect for news article format: Is it a proper continuation of the given beginning in journalistic style?
+  * Clarity: Is the information clear, precise, detailed, or vague/summary?
+  * Organization: Proper journalistic structure with multiple paragraphs
+  * Development: Ability to develop the news story with sufficient detail
+  * Syntax: Are sentences simple, complex, or mastered?
+  * Tenses/modes: Correct use of passé composé and imparfait
+  * Spelling: Is usual spelling mastered?
 
-FOR SECTION B (Argumentation - Persuasive Essay):
-- Task: Write an argumentative essay (200-250 words) defending a position
-- Format: Formal letter or essay structure
-- Structure: Introduction (thesis) → Arguments with examples → Address counter-arguments → Conclusion
-- Connectors: Must use formal linking words (cependant, néanmoins, en effet, par conséquent, d'une part/d'autre part, en conclusion)
+FOR SECTION B (Argumentation - Letter to the Journal):
+- Task: Write a letter to the journal (une phrase extraite d'un journal) expressing and justifying a point of view
+- Objective: Express and justify a point of view (exprimer son point de vue et le justifier)
+- Duration: 35 minutes
+- Format requirements:
+  * Minimum 200 words (200 mots minimum - no maximum specified, but 200-250 words is reasonable)
+  * Letter format to the journal (Écrivez une lettre au journal)
+  * Response to a statement/affirmation extracted from a journal article
+- Content requirements:
+  * At least 3 arguments required to defend the point of view (Développez au moins 3 arguments pour défendre votre point de vue)
+  * Clear expression of opinion on the given statement
+  * Development, nuance, and clarification of arguments (la capacité à développer, nuancer, préciser ses propos)
+- Structure:
+  * Formal letter structure (addressing the journal)
+  * Introduction: Reference to the statement and clear position
+  * Development: At least 3 arguments with examples/evidence
+  * Conclusion: Restatement of position
+  * Formal connectors appropriate for argumentative writing (cependant, néanmoins, en effet, par conséquent, d'une part/d'autre part, en conclusion)
 - Register: Formal, polite (vous form if addressing someone)
-- Key criteria: Clear thesis, developed arguments, examples/evidence, counter-argument handling, logical flow
+- Evaluation points:
+  * Respect for letter format and formal register: Is it a proper letter addressing the journal?
+  * Clarity: Is the argumentation clear, limpid, or confused/incoherent?
+  * Development: Are the arguments developed, nuanced, and clarified? Are at least 3 arguments present?
+  * Precision: Are the information vague or precise/detailed?
+  * Organization: Clear structure with introduction, development (at least 3 arguments), conclusion
+  * Syntax: Are sentences simple, complex, or mastered? (Complex sentences expected for argumentation)
+  * Tenses/modes: Correct use of appropriate tenses and modes
+  * Spelling: Is usual spelling mastered? (Critical for formal writing)
+  * Vocabulary: Is the vocabulary used correct, precise, adequate for formal argumentation?
 
 WORD COUNT REQUIREMENTS AND PENALTIES:
-- Section A target: 80-120 words
-- Section B target: 200-250 words
+- Section A target: 80-120 words (minimum 80 as per PDF)
+- Section B target: 200-250 words (minimum 200 as per PDF)
 - Apply graduated penalties for word count violations:
   * Within range: No penalty
   * 10-20% below minimum: Minor penalty (-1 on taskFulfillment)
@@ -130,6 +210,51 @@ Level requirements:
 - cecrLevel: CECR level (one of exactly: A1, A2, B1, B2, C1, C2)
   IMPORTANT: Use a single CECR level, NOT a range. Choose the level that best represents the candidate's performance.
 
+${section === 'WrittenExpression' ? `DETERMINISTIC CLB SCORING GUIDELINES (for consistent evaluation - Written Expression only):
+To ensure consistency across multiple evaluations of the same text, use these objective guidelines when determining CLB levels:
+
+For Written Expression, base CLB assignment on objective measures:
+
+CLB 4 (A2): 
+- Task fulfillment: 40-60% (e.g., Section A: 50-70 words, Section B: 150-180 words; Section A: 1 paragraph, Section B: fewer than 3 arguments)
+- Average criteria score: 4-5/10
+- Many basic errors in grammar, spelling, vocabulary
+- Limited coherence, minimal development
+
+CLB 5 (B1):
+- Task fulfillment: 60-75% (e.g., Section A: 70-90 words, Section B: 180-210 words; Section A: 2 paragraphs, Section B: 2-3 arguments but underdeveloped)
+- Average criteria score: 5-6/10
+- Frequent but not systematic errors
+- Some coherence, basic development
+
+CLB 6 (B2):
+- Task fulfillment: 75-85% (e.g., Section A: 90-110 words, Section B: 210-240 words; Section A: 2+ paragraphs, Section B: 3+ arguments with some development)
+- Average criteria score: 6-7/10
+- Occasional errors, generally accurate
+- Good coherence, adequate development
+
+CLB 7 (B2-C1):
+- Task fulfillment: 85-95% (e.g., Section A: 100-120 words with multiple paragraphs, Section B: 230-250 words with 3+ well-developed arguments)
+- Average criteria score: 7-8/10
+- Few errors, good accuracy
+- Strong coherence, good development and nuance
+
+CLB 8+ (C1-C2):
+- Task fulfillment: 95-100% (all requirements met excellently)
+- Average criteria score: 8-9/10
+- Very few or no significant errors
+- Excellent coherence, sophisticated development
+
+IMPORTANT FOR CONSISTENCY:
+- Calculate the average of all 6 criteria scores first
+- Then map to CLB based on the average score ranges above
+- If task fulfillment is significantly below thresholds (e.g., <80 words for Section A, <200 words for Section B, <3 arguments for Section B), cap CLB at 5-6 even if other criteria are strong
+- Word count and argument count are OBJECTIVE measures - use them as anchors for taskFulfillment scoring
+- Spelling errors should be counted objectively: 0-2 errors = 8-10, 3-5 errors = 6-7, 6-10 errors = 4-5, 10+ errors = 2-3` : ''}
+
+${section === 'WrittenExpression' ? `CONSISTENCY REQUIREMENT (Written Expression Only):
+When evaluating the same text multiple times, you MUST produce the same or very similar CLB level (within ±1 level). Use the objective measures above (word count, argument count, error counts) as anchors to ensure consistency.` : ''}
+
 IMPORTANT: Do NOT use overall_band_estimate, cecr_level, clb_equivalence, or approximate_tef_band. 
 Only use clbLevel and cecrLevel. Both must be single specific values, not ranges.
 
@@ -153,9 +278,10 @@ French (examples only):
 - upgraded_sentences.why: English (explanation of why the improvement was made)
 
 model_answer: Provide a model answer (in French) that demonstrates how a strong candidate (B2-C1 level) would approach this task.
-For EO1: Show a natural conversation flow with 8-10 relevant questions, appropriate register, and clear communication.
+${section === 'OralExpression' ? `For EO1: Show a natural conversation flow with 8-10 relevant questions, appropriate register, and clear communication.
 For EO2: Show a persuasive argument with clear structure, effective counter-argument handling, and strong examples.
-Keep it realistic and appropriate for the TEF Canada context (2-3 paragraphs or a structured dialogue example).
+Keep it realistic and appropriate for the TEF Canada context (2-3 paragraphs or a structured dialogue example).` : section === 'WrittenExpression' ? `For Section A (fait divers): Show a proper continuation of the news article with multiple paragraphs, factual reporting style, correct use of past tenses (passé composé, imparfait), and sufficient detail (80-120 words). Demonstrate journalistic objectivity and clarity.
+For Section B (argumentation): Show a proper letter to the journal with formal register, clear position statement, at least 3 well-developed arguments with examples, and effective use of formal connectors. Demonstrate ability to develop, nuance, and clarify arguments (200-250 words).` : ''}
 
 FOR WRITTEN EXPRESSION WITH TWO SECTIONS (Section A + Section B):
 If evaluating WrittenExpression with both Section A (fait divers) and Section B (argumentation), you MUST provide:
@@ -271,31 +397,35 @@ Count the actual words yourself to verify, then factor this into your evaluation
   const fullExamContext = isFullExam && taskPartA && taskPartB
     ? `\n\n=== FULL EXAM CONTEXT ===
 This is a COMPLETE exam evaluation (mode: full) that includes BOTH tasks:
-- Section A (EO1): Task ID ${taskPartA.id || 'N/A'} - ${taskPartA.prompt || taskPartA.subject || 'See combined prompt above'}
-- Section B (EO2): Task ID ${taskPartB.id || 'N/A'} - ${taskPartB.prompt || taskPartB.subject || 'See combined prompt above'}
+- Section A${section === 'WrittenExpression' ? ' (Fait divers - news article continuation)' : ' (EO1)'}: Task ID ${taskPartA.id || 'N/A'} - ${taskPartA.prompt || taskPartA.subject || 'See combined prompt above'}
+- Section B${section === 'WrittenExpression' ? ' (Argumentation - letter to journal)' : ' (EO2)'}: Task ID ${taskPartB.id || 'N/A'} - ${taskPartB.prompt || taskPartB.subject || 'See combined prompt above'}
 
-The candidate transcript contains BOTH Section A and Section B responses combined.
+The candidate ${section === 'WrittenExpression' ? 'text' : 'transcript'} contains BOTH Section A and Section B responses combined.
 Please analyze performance separately for each section, then provide an overall score that fairly reflects competency across BOTH tasks.
 Remember: Weak performance in EITHER task should lower the overall CLB level.
 
 ${section === 'WrittenExpression' ? `\nIMPORTANT FOR WRITTEN EXPRESSION:
-- Section A is a "fait divers" (news story) - 80-120 words
-- Section B is an "argumentation" (argumentative essay) - 200-250 words
-- The transcript is formatted as: "Section A (Fait divers):\n[text]\n\nSection B (Argumentation):\n[text]"
+- Section A is a "fait divers" (news article continuation) - minimum 80 words, multiple paragraphs required
+- Section B is an "argumentation" (letter to journal) - minimum 200 words, at least 3 arguments required
+- The text is formatted as: "Section A (Fait divers):\n[text]\n\nSection B (Argumentation):\n[text]"
 - You MUST provide separate model answers and corrections for each section:
-  * model_answer_sectionA: A model fait divers (80-120 words) in French
-  * model_answer_sectionB: A model argumentation (200-250 words) in French
+  * model_answer_sectionA: A model fait divers continuation (80-120 words, multiple paragraphs) in French
+  * model_answer_sectionB: A model letter to journal (200-250 words, at least 3 arguments) in French
   * corrections_sectionA: 2-4 specific corrections for Section A (EXACT quotes copied from Section A text - must match verbatim for UI highlighting)
   * corrections_sectionB: 2-4 specific corrections for Section B (EXACT quotes copied from Section B text - must match verbatim for UI highlighting)
-- Identify which part of the transcript belongs to Section A vs Section B before providing corrections.
+- Identify which part of the text belongs to Section A vs Section B before providing corrections.
 - CRITICAL: The "weak" field in each correction must be an EXACT COPY from the candidate's text (not paraphrased) for the UI to highlight it correctly.
+- Evaluate Section A for: proper continuation format, multiple paragraphs, factual reporting, clarity, detail level
+- Evaluate Section B for: letter format, at least 3 arguments, development/nuance/clarification, formal register, clarity of argumentation
 ${taskPartA?.modelAnswer ? `\nREFERENCE MODEL ANSWER FOR SECTION A:
 Below is a reference model answer from the knowledge base. Use this as guidance for format, vocabulary, and structure when creating your model_answer_sectionA. However, adapt it to match the specific prompt given to the candidate.
 ---\n${taskPartA.modelAnswer}\n---` : ''}
 ${taskPartB?.modelAnswer ? `\nREFERENCE MODEL ANSWER FOR SECTION B:
 Below is a reference model answer from the knowledge base. Use this as guidance for format, vocabulary, and structure when creating your model_answer_sectionB. However, adapt it to match the specific prompt given to the candidate.
 ---\n${taskPartB.modelAnswer}\n---` : ''}
-When creating your model answers, use the reference examples above to understand the expected format, level of vocabulary, and structure. Your model answers should be similar in quality and style, but tailored to the specific prompts the candidate received.` : ''}`
+When creating your model answers, use the reference examples above to understand the expected format, level of vocabulary, and structure. Your model answers should be similar in quality and style, but tailored to the specific prompts the candidate received.` : section === 'OralExpression' ? `\nIMPORTANT FOR ORAL EXPRESSION:
+- Section A (EO1) is an interactive telephone call - target 9-10 relevant questions
+- Section B (EO2) is a persuasion task - handling counter-arguments and developing arguments` : ''}`
     : '';
 
   const eo2TimeContext =

@@ -7,8 +7,20 @@ import { buildRubricSystemPrompt, buildEvaluationUserMessage } from "./prompts/e
 /**
  * Normalize and validate evaluation result to ensure all fields are present
  * This prevents missing fields from causing UI issues
+ * 
+ * @param result - Raw evaluation result from AI
+ * @param section - TEF section being evaluated
+ * @param mode - Exam mode: 'partA', 'partB', or 'full'
+ * @param taskPartA - Task A with modelAnswer from knowledge base (if available)
+ * @param taskPartB - Task B with modelAnswer from knowledge base (if available)
  */
-function normalizeEvaluationResult(result: any, section: TEFSection): EvaluationResult {
+function normalizeEvaluationResult(
+  result: any, 
+  section: TEFSection,
+  mode?: string,
+  taskPartA?: any,
+  taskPartB?: any
+): EvaluationResult {
   // Ensure base required fields have valid values
   const normalized: EvaluationResult = {
     score: typeof result.score === 'number' ? result.score : 0,
@@ -27,13 +39,35 @@ function normalizeEvaluationResult(result: any, section: TEFSection): Evaluation
     model_answer: result.model_answer || '',
     
     // Criteria - only include if actually provided by AI, don't fake scores
-    criteria: normalizeCriteria(result.criteria),
+    criteria: normalizeCriteria(result.criteria, section),
   };
 
   // Written Expression specific fields
   if (section === 'WrittenExpression') {
-    normalized.model_answer_sectionA = result.model_answer_sectionA || '';
-    normalized.model_answer_sectionB = result.model_answer_sectionB || '';
+    // Use exact model answers from knowledge base when available
+    // Override AI-generated model answers with exact ones from knowledge base
+    // All written tasks come from the knowledge base, so always prefer knowledge base answers
+    
+    // Section A: Use knowledge base model answer if available (for partA or full mode)
+    if (mode === 'partA' || mode === 'full') {
+      // Prefer exact model answer from knowledge base over AI-generated
+      const kbModelAnswerA = taskPartA?.modelAnswer && typeof taskPartA.modelAnswer === 'string' && taskPartA.modelAnswer.trim();
+      normalized.model_answer_sectionA = kbModelAnswerA || (result.model_answer_sectionA || '');
+    } else {
+      // For partB mode or undefined mode, Section A is not evaluated
+      normalized.model_answer_sectionA = result.model_answer_sectionA || '';
+    }
+    
+    // Section B: Use knowledge base model answer if available (for partB or full mode)
+    if (mode === 'partB' || mode === 'full') {
+      // Prefer exact model answer from knowledge base over AI-generated
+      const kbModelAnswerB = taskPartB?.modelAnswer && typeof taskPartB.modelAnswer === 'string' && taskPartB.modelAnswer.trim();
+      normalized.model_answer_sectionB = kbModelAnswerB || (result.model_answer_sectionB || '');
+    } else {
+      // For partA mode or undefined mode, Section B is not evaluated
+      normalized.model_answer_sectionB = result.model_answer_sectionB || '';
+    }
+    
     normalized.corrections_sectionA = Array.isArray(result.corrections_sectionA) ? result.corrections_sectionA : [];
     normalized.corrections_sectionB = Array.isArray(result.corrections_sectionB) ? result.corrections_sectionB : [];
   }
@@ -60,7 +94,7 @@ function normalizeEvaluationResult(result: any, section: TEFSection): Evaluation
  * Normalize criteria - only include criteria that were actually evaluated
  * If criteria is missing entirely, return undefined (UI should handle "not available")
  */
-function normalizeCriteria(criteria: any): Record<string, any> | undefined {
+function normalizeCriteria(criteria: any, section?: TEFSection): Record<string, any> | undefined {
   // If no criteria provided at all, return undefined (not fake data)
   if (!criteria || typeof criteria !== 'object') {
     return undefined;
@@ -68,7 +102,16 @@ function normalizeCriteria(criteria: any): Record<string, any> | undefined {
 
   // Only include criteria that have actual scores
   const validCriteria: Record<string, any> = {};
-  const possibleCriteria = ['taskFulfillment', 'coherence', 'lexicalRange', 'grammarControl', 'fluency', 'interaction'];
+  // Section-specific criteria lists
+  const baseCriteria = ['taskFulfillment', 'coherence', 'lexicalRange', 'grammarControl'];
+  const oralCriteria = ['fluency', 'interaction'];
+  const writtenCriteria = ['clarityDevelopment', 'argumentationQuality'];
+  
+  const possibleCriteria = section === 'OralExpression' 
+    ? [...baseCriteria, ...oralCriteria]
+    : section === 'WrittenExpression'
+    ? [...baseCriteria, ...writtenCriteria]
+    : [...baseCriteria, ...oralCriteria, ...writtenCriteria]; // Fallback: include all
   
   for (const key of possibleCriteria) {
     if (criteria[key] && typeof criteria[key] === 'object' && typeof criteria[key].score === 'number') {
@@ -454,15 +497,87 @@ export const geminiService = {
     
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
-          contents: [
-            { parts: [{ text: systemPrompt }] },
-            { parts: [{ text: userMessage }] }
-          ],
-          config: {
-            responseMimeType: "application/json",
-            responseSchema: {
+        // Build dynamic criteria schema based on section type
+        const criteriaProperties: any = {
+          taskFulfillment: { 
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          },
+          coherence: { 
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          },
+          lexicalRange: { 
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          },
+          grammarControl: { 
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          }
+        };
+
+        // Add section-specific criteria
+        const criteriaRequired = ["taskFulfillment", "coherence", "lexicalRange", "grammarControl"];
+        if (section === 'OralExpression') {
+          criteriaProperties.fluency = {
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          };
+          criteriaProperties.interaction = {
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          };
+          criteriaRequired.push("fluency", "interaction");
+        } else if (section === 'WrittenExpression') {
+          criteriaProperties.clarityDevelopment = {
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          };
+          criteriaProperties.argumentationQuality = {
+            type: Type.OBJECT,
+            properties: {
+              score: { type: Type.NUMBER },
+              comment: { type: Type.STRING }
+            },
+            required: ["score", "comment"]
+          };
+          criteriaRequired.push("clarityDevelopment", "argumentationQuality");
+        }
+
+        // Use low temperature only for WrittenExpression to ensure consistent evaluations
+        // OralExpression keeps default temperature for more natural variation
+        const config: any = {
+          responseMimeType: "application/json",
+          responseSchema: {
           type: Type.OBJECT,
           properties: {
             score: { type: Type.NUMBER },        // Overall TEF score (0-699)
@@ -476,57 +591,8 @@ export const geminiService = {
             overall_comment: { type: Type.STRING },
             criteria: { 
               type: Type.OBJECT,
-              properties: {
-                taskFulfillment: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                },
-                coherence: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                },
-                lexicalRange: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                },
-                grammarControl: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                },
-                fluency: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                },
-                interaction: { 
-                  type: Type.OBJECT,
-                  properties: {
-                    score: { type: Type.NUMBER },
-                    comment: { type: Type.STRING }
-                  },
-                  required: ["score", "comment"]
-                }
-              },
-              required: ["taskFulfillment", "coherence", "lexicalRange", "grammarControl", "fluency", "interaction"]
+              properties: criteriaProperties,
+              required: criteriaRequired
             },
             top_improvements: { type: Type.ARRAY, items: { type: Type.STRING } },
             upgraded_sentences: {
@@ -592,11 +658,25 @@ export const geminiService = {
             "model_answer"
           ]
         }
-      }
-    });
+      };
+
+        // Add low temperature only for WrittenExpression to ensure consistent evaluations
+        // OralExpression keeps default temperature for more natural variation
+        if (section === 'WrittenExpression') {
+          config.temperature = 0.1;
+        }
+
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: [
+            { parts: [{ text: systemPrompt }] },
+            { parts: [{ text: userMessage }] }
+          ],
+          config
+        });
     // Parse and normalize the result to ensure all fields are present
     const rawResult = JSON.parse(response.text);
-    return normalizeEvaluationResult(rawResult, section);
+    return normalizeEvaluationResult(rawResult, section, mode, taskPartA, taskPartB);
       } catch (error: any) {
         lastError = error;
         // Check if it's a rate limit error (429)

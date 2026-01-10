@@ -494,5 +494,52 @@ export const persistenceService = {
       console.warn('Remote deletion not implemented in this proxy for safety.');
     }
     localStorage.removeItem(STORAGE_KEY);
-  }
+  },
+
+  /**
+   * Update evaluation data for an existing result (for re-evaluation)
+   * @param resultId - The ID of the result to update
+   * @param evaluation - The new evaluation result
+   * @param moduleData - Optional updated moduleData
+   * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
+   */
+  async updateResultEvaluation(
+    resultId: string,
+    evaluation: EvaluationResult,
+    moduleData?: any,
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<SavedResult> {
+    // Use authenticated fetch if getToken is provided, otherwise use regular fetch
+    if (typeof authTokenOrGetter === 'function') {
+      const data = await authenticatedFetchJSON<{ success: boolean; result: SavedResult }>(
+        `${BACKEND_URL}/api/results/${resultId}/evaluation`,
+        {
+          method: 'PUT',
+          getToken: authTokenOrGetter,
+          body: JSON.stringify({ evaluation, moduleData }),
+        }
+      );
+      return data.result;
+    } else {
+      // Fallback to regular fetch for backward compatibility
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (authTokenOrGetter) {
+        headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+      }
+
+      const response = await fetch(`${BACKEND_URL}/api/results/${resultId}/evaluation`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify({ evaluation, moduleData }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update result evaluation: ${response.status} ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data.result;
+    }
+  },
 };

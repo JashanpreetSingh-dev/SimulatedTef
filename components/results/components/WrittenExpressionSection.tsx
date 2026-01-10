@@ -92,14 +92,31 @@ export const WrittenExpressionSection: React.FC<WrittenExpressionSectionProps> =
 
       {/* Model Answer */}
       <div>
-        <h5 className="text-xs font-black uppercase text-emerald-400 dark:text-emerald-300 mb-4 tracking-widest">
-          {t('results.modelAnswer')}
+        <h5 className="text-xs font-black uppercase text-emerald-400 dark:text-emerald-300 mb-4 tracking-widest flex items-center gap-2">
+          <span className="text-base">✨</span> {t('results.modelAnswer')}
         </h5>
         {hasModelAnswer ? (
-          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-6 border border-emerald-200 dark:border-emerald-800">
-            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
-              {modelAnswer}
-            </p>
+          <div className="bg-emerald-50/70 dark:bg-emerald-900/30 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-inner border border-emerald-200 dark:border-emerald-700/50">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-start gap-3 sm:gap-4 flex-row-reverse">
+                {/* Avatar */}
+                <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-semibold shadow-sm bg-gradient-to-br from-emerald-500 to-green-600 text-white">
+                  ✨
+                </div>
+                
+                {/* Message bubble */}
+                <div className="flex-1 min-w-0 flex flex-col items-end">
+                  <div className="inline-block rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 shadow-sm bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/30 dark:to-emerald-800/20 border border-emerald-200 dark:border-emerald-700/50 rounded-tr-none max-w-[85%] sm:max-w-[80%]">
+                    <div className="text-[10px] sm:text-xs font-semibold mb-1.5 text-emerald-700 dark:text-emerald-300">
+                      {t('results.modelAnswerReference') || 'Référence - Réponse modèle'}
+                    </div>
+                    <p className="text-xs sm:text-sm text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap">
+                      {modelAnswer}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="bg-amber-50/50 dark:bg-amber-900/10 p-6 rounded-xl border border-amber-200/50 dark:border-amber-800/50">

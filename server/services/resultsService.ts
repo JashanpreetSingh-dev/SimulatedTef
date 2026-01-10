@@ -132,6 +132,51 @@ export const resultsService = {
   },
 
   /**
+   * Update evaluation data for an existing result (for re-evaluation)
+   */
+  async updateEvaluation(resultId: string, userId: string, evaluation: any, moduleData?: any): Promise<SavedResult> {
+    const db = await connectDB();
+
+    if (!ObjectId.isValid(resultId)) {
+      throw new Error('Invalid result ID');
+    }
+
+    // Verify the result belongs to the user
+    const existingResult = await db.collection('results').findOne({
+      _id: new ObjectId(resultId),
+      userId
+    });
+
+    if (!existingResult) {
+      throw new Error('Result not found or access denied');
+    }
+
+    // Build update object
+    const updateData: any = {
+      evaluation,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // Update moduleData if provided
+    if (moduleData) {
+      updateData.moduleData = moduleData;
+    }
+
+    // Update the result
+    await db.collection('results').updateOne(
+      { _id: new ObjectId(resultId) },
+      { $set: updateData }
+    );
+
+    // Return updated result
+    const updatedResult = await db.collection('results').findOne({
+      _id: new ObjectId(resultId)
+    });
+
+    return updatedResult as unknown as SavedResult;
+  },
+
+  /**
    * Find result by ID
    */
   async findById(resultId: string, userId: string, populateTasks: boolean = true): Promise<SavedResult | null> {

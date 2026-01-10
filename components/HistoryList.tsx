@@ -5,6 +5,7 @@ import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { persistenceService } from '../services/persistence';
 import { assignmentService } from '../services/assignmentService';
+import { evaluationJobService } from '../services/evaluationJobService';
 import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
 
@@ -26,6 +27,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [recheckingResults, setRecheckingResults] = useState<Set<string>>(new Set()); // Track which results are being rechecked
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
 
   // Initial load and reload when filter mode changes
@@ -188,6 +190,237 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       return result.module === module;
     }
   });
+
+  const handleRecheck = async (result: SavedResult) => {
+    // Only allow recheck for oral and written expression practice results
+    if (result.module !== 'oralExpression' && result.module !== 'writtenExpression') {
+      return;
+    }
+    if (result.resultType !== 'practice') {
+      return;
+    }
+
+    const resultId = result._id;
+    if (!resultId) {
+      alert('Unable to recheck: result ID is missing');
+      return;
+    }
+
+    // Mark as rechecking
+    setRecheckingResults(prev => new Set(prev).add(resultId));
+
+    try {
+      // Extract transcript/text from result
+      let transcript = '';
+      let writtenSectionAText = '';
+      let writtenSectionBText = '';
+      
+      if (result.module === 'oralExpression') {
+        // For oral expression, get transcript from moduleData or legacy fields
+        if (result.moduleData && result.moduleData.type === 'oralExpression') {
+          if (result.mode === 'partA' || result.mode === 'full') {
+            transcript = result.moduleData.sectionA?.text || '';
+          }
+          if (result.mode === 'partB' || result.mode === 'full') {
+            const sectionBText = result.moduleData.sectionB?.text || '';
+            if (result.mode === 'full') {
+              transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
+            } else {
+              transcript = sectionBText;
+            }
+          }
+        } else {
+          // Fallback to legacy transcript field
+          transcript = result.transcript || '';
+        }
+      } else if (result.module === 'writtenExpression') {
+        // For written expression, get text from moduleData
+        if (result.moduleData && result.moduleData.type === 'writtenExpression') {
+          writtenSectionAText = result.moduleData.sectionA?.text || '';
+          writtenSectionBText = result.moduleData.sectionB?.text || '';
+          
+          // Build combined transcript for evaluation
+          if (result.mode === 'partA') {
+            transcript = `Section A (Fait divers):\n${writtenSectionAText}`;
+          } else if (result.mode === 'partB') {
+            transcript = `Section B (Argumentation):\n${writtenSectionBText}`;
+          } else {
+            transcript = `Section A (Fait divers):\n${writtenSectionAText}\n\nSection B (Argumentation):\n${writtenSectionBText}`;
+          }
+        } else {
+          // Fallback to legacy fields
+          const legacySectionA = (result as any).writtenExpressionResult?.sectionA?.text || '';
+          const legacySectionB = (result as any).writtenExpressionResult?.sectionB?.text || '';
+          if (result.mode === 'partA') {
+            transcript = `Section A (Fait divers):\n${legacySectionA}`;
+            writtenSectionAText = legacySectionA;
+          } else if (result.mode === 'partB') {
+            transcript = `Section B (Argumentation):\n${legacySectionB}`;
+            writtenSectionBText = legacySectionB;
+          } else {
+            transcript = `Section A (Fait divers):\n${legacySectionA}\n\nSection B (Argumentation):\n${legacySectionB}`;
+            writtenSectionAText = legacySectionA;
+            writtenSectionBText = legacySectionB;
+          }
+        }
+      }
+
+      if (!transcript || transcript.trim().length === 0) {
+        alert('Unable to recheck: transcript/text is missing');
+        setRecheckingResults(prev => {
+          const next = new Set(prev);
+          next.delete(resultId);
+          return next;
+        });
+        return;
+      }
+
+      // Extract tasks from task references or legacy fields
+      const taskIds: string[] = [];
+      if (result.taskReferences?.taskA?.taskId) {
+        taskIds.push(result.taskReferences.taskA.taskId);
+      }
+      if (result.taskReferences?.taskB?.taskId) {
+        taskIds.push(result.taskReferences.taskB.taskId);
+      }
+
+      let fetchedTasks: NormalizedTask[] = [];
+      if (taskIds.length > 0) {
+        fetchedTasks = await persistenceService.getTasks(taskIds, getToken);
+      }
+
+      const taskMap = new Map(fetchedTasks.map(t => [t.taskId, t]));
+
+      // Get taskPartA and taskPartB
+      let taskPartA: any = null;
+      let taskPartB: any = null;
+
+      if (result.taskReferences?.taskA) {
+        taskPartA = taskMap.get(result.taskReferences.taskA.taskId)?.taskData;
+      }
+      if (result.taskReferences?.taskB) {
+        taskPartB = taskMap.get(result.taskReferences.taskB.taskId)?.taskData;
+      }
+
+      // Fallback to legacy fields
+      if (!taskPartA) {
+        taskPartA = (result as any).taskPartA || (result as any).writtenExpressionResult?.sectionA?.task;
+      }
+      if (!taskPartB) {
+        taskPartB = (result as any).taskPartB || (result as any).writtenExpressionResult?.sectionB?.task;
+      }
+
+      // Build prompt from tasks
+      let prompt = '';
+      if (result.module === 'oralExpression') {
+        if (result.mode === 'partA' || result.mode === 'full') {
+          prompt = taskPartA?.prompt || taskPartA?.subject || '';
+        }
+        if (result.mode === 'partB' || result.mode === 'full') {
+          const partBPrompt = taskPartB?.prompt || taskPartB?.subject || '';
+          if (result.mode === 'full') {
+            prompt = `${prompt ? prompt + '\n\n' : ''}Section B: ${partBPrompt}`;
+          } else {
+            prompt = partBPrompt;
+          }
+        }
+      } else if (result.module === 'writtenExpression') {
+        if (result.mode === 'partA' || result.mode === 'full') {
+          prompt = `Section A: ${taskPartA?.subject || ''}\n${taskPartA?.instruction || ''}`;
+        }
+        if (result.mode === 'partB' || result.mode === 'full') {
+          const partBPrompt = `Section B: ${taskPartB?.subject || ''}\n${taskPartB?.instruction || ''}`;
+          if (result.mode === 'full') {
+            prompt = `${prompt ? prompt + '\n\n' : ''}${partBPrompt}`;
+          } else {
+            prompt = partBPrompt;
+          }
+        }
+      }
+
+      // Determine section type for evaluation
+      const section = result.module === 'oralExpression' ? 'OralExpression' : 'WrittenExpression';
+
+      // Submit re-evaluation job
+      const { jobId } = await evaluationJobService.submitJob(
+        section,
+        prompt,
+        transcript,
+        0, // scenarioId - not used for re-evaluation
+        result.mode === 'partA' ? (25 * 60) : result.mode === 'partB' ? (35 * 60) : (25 * 60) + (35 * 60), // timeLimitSec
+        undefined, // questionCount
+        result.recordingId, // recordingId
+        result.mode || 'full', // mode
+        result.title || 'Re-evaluation', // title
+        taskPartA, // taskPartA
+        taskPartB, // taskPartB
+        undefined, // eo2RemainingSeconds
+        undefined, // fluencyAnalysis
+        getToken,
+        writtenSectionAText || undefined, // writtenSectionAText
+        writtenSectionBText || undefined, // writtenSectionBText
+        undefined, // mockExamId
+        result.module // module
+      );
+
+      // Poll for completion - this returns the new SavedResult created by the worker
+      const newResult = await evaluationJobService.pollJobStatus(
+        jobId,
+        getToken,
+        undefined, // onProgress
+        2000, // intervalMs
+        150 // maxAttempts (5 minutes)
+      );
+
+      // The worker creates a NEW result, so we need to refresh the list to show it
+      // Reload results to include the new entry
+      try {
+        const resultType = (result.module === 'oralExpression' || result.module === 'writtenExpression') 
+          ? 'practice' 
+          : undefined;
+        const response = await persistenceService.getAllResults(
+          userId, 
+          getToken, 
+          RESULTS_PER_PAGE, 
+          0,
+          resultType,
+          result.module,
+          undefined,
+          true // populateTasks
+        );
+        
+        // Update results list - new result will appear at the top (sorted by timestamp)
+        setResults(response.results || []);
+        setHasMore(response.pagination?.hasMore ?? true);
+        
+        // Extract and store tasks from populated results
+        const taskMap = new Map<string, NormalizedTask>();
+        response.results?.forEach((r: any) => {
+          if (r.taskA) {
+            taskMap.set(r.taskReferences?.taskA?.taskId || '', r.taskA);
+          }
+          if (r.taskB) {
+            taskMap.set(r.taskReferences?.taskB?.taskId || '', r.taskB);
+          }
+        });
+        setTasks(taskMap);
+      } catch (error) {
+        console.error('Error refreshing results list:', error);
+      }
+
+      alert('Re-evaluation completed successfully! A new result has been added to your history.');
+    } catch (error) {
+      console.error('Error rechecking result:', error);
+      alert('Failed to recheck result. Please try again.');
+    } finally {
+      // Remove from rechecking set
+      setRecheckingResults(prev => {
+        const next = new Set(prev);
+        next.delete(resultId);
+        return next;
+      });
+    }
+  };
 
   const handleRetake = async (result: SavedResult) => {
     // Determine which mode to use for retake
@@ -505,6 +738,23 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                   >
                     {(item.module === 'reading' || item.module === 'listening') ? t('actions.retake') : t('actions.resume')}
                   </button>
+                  {/* Recheck button - only for oral/written expression practice results */}
+                  {(item.module === 'oralExpression' || item.module === 'writtenExpression') && item.resultType === 'practice' && (
+                    <button 
+                      onClick={() => handleRecheck(item)}
+                      disabled={recheckingResults.has(item._id || '')}
+                      className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded font-black text-xs uppercase tracking-widest hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                    >
+                      {recheckingResults.has(item._id || '') ? (
+                        <>
+                          <div className="w-3 h-3 border-2 border-emerald-600 dark:border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                          {t('actions.recheck')}
+                        </>
+                      ) : (
+                        t('actions.recheck')
+                      )}
+                    </button>
+                  )}
                   <button 
                     onClick={() => navigate(`/results/${item._id}`)}
                     className="px-3 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
@@ -587,6 +837,23 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                       >
                         {(item.module === 'reading' || item.module === 'listening') ? t('actions.retake') : t('actions.resume')}
                       </button>
+                      {/* Recheck button - only for oral/written expression practice results */}
+                      {(item.module === 'oralExpression' || item.module === 'writtenExpression') && item.resultType === 'practice' && (
+                        <button 
+                          onClick={() => handleRecheck(item)}
+                          disabled={recheckingResults.has(item._id || '')}
+                          className="px-3 py-1 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded font-black text-xs uppercase tracking-widest hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+                        >
+                          {recheckingResults.has(item._id || '') ? (
+                            <>
+                              <div className="w-3 h-3 border-2 border-emerald-600 dark:border-emerald-400 border-t-transparent rounded-full animate-spin"></div>
+                              {t('actions.recheck')}
+                            </>
+                          ) : (
+                            t('actions.recheck')
+                          )}
+                        </button>
+                      )}
                       <button 
                         onClick={() => navigate(`/results/${item._id}`)}
                         className="px-3 py-1 bg-slate-900 dark:bg-slate-700 text-white dark:text-slate-100 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-400 dark:hover:bg-indigo-500 transition-all"
