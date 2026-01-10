@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { SavedResult, TEFTask } from '../../types';
+import { SavedResult, TEFTask, EvaluationResult } from '../../types';
 import { SimpleResultView } from './components/SimpleResultView';
 import { ResultHeader } from './components/ResultHeader';
 import { AudioPlayer } from './components/AudioPlayer';
-import { TaskImages } from './components/TaskImages';
-import { Transcript } from './components/Transcript';
+import { TaskAndTranscriptContainer } from './components/TaskAndTranscriptContainer';
 import { OverallComment } from './components/OverallComment';
 import { ModelAnswer } from './components/ModelAnswer';
 import { CriteriaBreakdown } from './components/CriteriaBreakdown';
@@ -24,7 +23,7 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
   const { t } = useLanguage();
 
   // Get evaluation result - for partA/partB, check moduleData first, then fallback to main evaluation
-  const evaluationResult = useMemo(() => {
+  const evaluationResult = useMemo((): EvaluationResult => {
     if (result.moduleData) {
       if (result.moduleData.type === 'oralExpression' || result.moduleData.type === 'writtenExpression') {
         if (result.mode === 'partA' && result.moduleData.sectionA?.result) {
@@ -34,8 +33,8 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
         }
       }
     }
-    // Fallback to main evaluation or legacy structure
-    return result.evaluation || result;
+    // Fallback to main evaluation or legacy structure (cast legacy result as EvaluationResult)
+    return (result.evaluation || result) as EvaluationResult;
   }, [result]);
 
   // Memoize expensive calculations - read from evaluationResult
@@ -46,7 +45,7 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
   const modelAnswer = useMemo(() => evaluationResult.model_answer, [evaluationResult.model_answer]);
   const strengths = useMemo(() => evaluationResult.strengths || [], [evaluationResult.strengths]);
   const weaknesses = useMemo(() => evaluationResult.weaknesses || [], [evaluationResult.weaknesses]);
-  const actualQuestionsCount = useMemo(() => (evaluationResult as any).actual_questions_count, [evaluationResult]);
+  const actualQuestionsCount = useMemo(() => evaluationResult.actual_questions_count, [evaluationResult.actual_questions_count]);
   
   // Memoize tasks to display - use task references or fallback to legacy fields
   const tasksToDisplay = useMemo(() => {
@@ -103,14 +102,12 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
         <OverallComment comment={overallComment} variant="blue" />
       )}
 
-      {/* Task Images Section (for oral expression) */}
-      {result.module !== 'writtenExpression' && tasksToDisplay.length > 0 && (
-        <TaskImages tasks={tasksToDisplay} />
-      )}
-
-      {/* Transcript (for oral expression only) */}
-      {result.module !== 'writtenExpression' && result.transcript && (
-        <Transcript transcript={result.transcript} />
+      {/* Task Images and Transcript Container (for oral expression) */}
+      {result.module !== 'writtenExpression' && (tasksToDisplay.length > 0 || result.transcript) && (
+        <TaskAndTranscriptContainer
+          tasks={tasksToDisplay}
+          transcript={result.transcript}
+        />
       )}
 
       {/* Overall Comment (for non-written expression) */}

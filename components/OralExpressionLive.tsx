@@ -936,13 +936,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         }
         
         // Build the text we send for evaluation.
-        // Primary source: clean transcription from saved audio (examiner + candidate),
+        // Primary source: clean transcription from saved audio (examiner + candidate, diarized),
         // Fallback: live candidate-only transcripts (per section).
         let fullUserTranscript: string;
         if (audioTranscript) {
-          // Primary path: use clean diarized candidate transcript from saved audio.
-          // The prompt for transcribeAudio already tells Gemini that Speaker 1 (first voice)
-          // is the candidate and should be the only one in the output.
+          // Primary path: use clean diarized transcript from saved audio.
+          // The transcribeAudio function returns a full diarized transcript with both
+          // "User:" and "Examiner:" labels. We store this full transcript for display,
+          // and the evaluation prompt will filter to only evaluate the User's speech.
           fullUserTranscript = audioTranscript.trim();
         } else {
           // Fallback: only candidate live transcripts available
