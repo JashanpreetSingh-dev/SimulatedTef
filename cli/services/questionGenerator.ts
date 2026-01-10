@@ -293,12 +293,29 @@ CRITICAL REMINDERS:
 }
 
 /**
- * Get simplified prompt for practice assignments (fewer than 40 questions)
+ * Get simplified prompt for practice assignments
+ * Passes user prompt directly to AI without any pre-processing or detection
  */
-function getPracticePrompt(numberOfQuestions: number, theme?: string): string {
-  const themeSection = theme 
-    ? `\nCONTENT THEME: "${theme}" - Use this theme to guide the topics of your questions and passages.`
-    : '';
+function getPracticePrompt(numberOfQuestions: number, userPrompt?: string): string {
+  // Build the prompt section - just pass it through directly
+  let promptSection = '';
+  if (userPrompt) {
+    promptSection = `\n═══════════════════════════════════════════════════════════════════════════════
+USER'S ASSIGNMENT PROMPT
+═══════════════════════════════════════════════════════════════════════════════
+
+"${userPrompt}"
+
+Interpret this prompt intelligently to determine:
+- What question types would best serve this learning goal
+- What grammar points or content areas to focus on
+- What difficulty level and format is appropriate
+- What TEF Canada sections (A, B, C, D, E, F, G) are most suitable
+`;
+  }
+
+  // Section label instruction - AI decides based on prompt
+  const sectionInstruction = `section: Choose the appropriate TEF section letter (A, B, C, D, E, F, or G) that best fits the question type and learning objective based on the user's prompt above.`;
 
   return `Act as a Senior French Language Expert specialized in the TEF Canada (Test d'Évaluation de Français). 
 You are creating a PRACTICE reading comprehension exercise (NOT a full mock exam).
@@ -308,24 +325,44 @@ PRACTICE ASSIGNMENT REQUIREMENTS
 ═══════════════════════════════════════════════════════════════════════════════
 
 Generate exactly ${numberOfQuestions} reading comprehension questions.
-${themeSection}
+${promptSection}
+═══════════════════════════════════════════════════════════════════════════════
+TEF CANADA QUESTION TYPES REFERENCE
+═══════════════════════════════════════════════════════════════════════════════
 
-SIMPLIFIED STRUCTURE (no sections required):
-- Each question should be standalone with its own reference text
-- Mix of question types: document identification, sentence completion, detail scanning, text interpretation (based on what the user asks for)
-- Consistent difficulty level as the user asks for
+SECTION A - Document Identification (CEFR A1-A2): Short documents (30-80 words), questions about document type/purpose.
 
-CONTENT GUIDELINES:
-- Use DIVERSE topics across all ${numberOfQuestions} questions, based on what the user asks for
-- Focus on practical, everyday French situations
-- Each question needs its own UNIQUE reference text in "questionText"
+SECTION B - Sentence Completion (CEFR A2-B1): Sentences with blanks, test vocabulary, grammar, logical flow. Ideal for grammar practice.
+
+SECTION C - Text Cohesion (CEFR B1-B2): Stories/articles (100-150 words), sentence ordering or insertion. Good for narrative/contextual grammar.
+
+SECTION D - Detailed Scanning (CEFR B1-B2): Informational texts (80-120 words), specific detail questions (prices, dates, features).
+
+SECTION E - Visual Interpretation (CEFR B2): Described graphs/charts, interpretation questions.
+
+SECTIONS F & G - Deep Analysis (CEFR B2-C1): Complex texts (150-200 words), questions about tone, intention, arguments, implicit meanings.
+
+═══════════════════════════════════════════════════════════════════════════════
+QUESTION GENERATION GUIDELINES
+═══════════════════════════════════════════════════════════════════════════════
+
+PRIMARY PRINCIPLE: The user's prompt above is your main guide. Interpret it intelligently to determine:
+- What question types (sections) would best serve their learning goals
+- What grammar points or content to focus on
+- What difficulty level is appropriate
+- What format best tests what they want to practice
+
+Use the TEF Canada structure above as reference, but choose question types based on what would be most pedagogically effective for the user's stated goals.
+
+TECHNICAL REQUIREMENTS:
+- Each question needs its own UNIQUE reference text in "questionText" (required for sections A, C, D, E, F, G; optional for section B)
 - Do NOT reuse the same document for multiple questions
 - Use Standard French (no slang, no regionalisms)
 - Authentic French as used in Canada
 
 DISTRACTORS (4 options per question):
 - One correct answer
-- One 'near-miss' (plausible but incorrect)
+- One 'near-miss' (plausible but logically incorrect)
 - One opposite meaning
 - One irrelevant option
 
@@ -338,10 +375,10 @@ Return ONLY valid JSON with this structure:
 {
   "questions": [
     {
-      "section": "A",
+      "section": "B",
       "questionNumber": 1,
-      "question": "Quel est l'objectif de ce document?",
-      "questionText": "Le texte de référence complet ici...",
+      "question": "La phrase avec [...] à compléter...",
+      "questionText": "Optionnel pour Section B",
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "correctAnswer": 0,
       "explanation": "Explication de la bonne réponse..."
@@ -350,17 +387,18 @@ Return ONLY valid JSON with this structure:
 }
 
 FIELD DESCRIPTIONS:
-- section: Always "A" for practice assignments
+- ${sectionInstruction}
 - questionNumber: Sequential number from 1 to ${numberOfQuestions}
 - question: The question text in French
-- questionText: REQUIRED - the reference text/document/passage (each must be unique)
+- questionText: REQUIRED for sections A, C, D, E, F, G (reference text/document/passage). OPTIONAL for Section B (sentence completion). Each must be unique.
 - options: Array of exactly 4 answer choices in French
 - correctAnswer: Index of correct option (0, 1, 2, or 3)
-- explanation: French explanation of why the answer is correct
+- explanation: French explanation of why the answer is correct, including any relevant grammar points if applicable
 
 CRITICAL: 
 - Generate EXACTLY ${numberOfQuestions} questions (not 40)
-- Each question must have unique questionText
+- Each question must have unique questionText (when required)
+- Follow the user's prompt to determine question types, grammar focus, and learning objectives
 - Count your questions before returning`;
 }
 
@@ -380,15 +418,23 @@ export async function generateQuestions(
   }
 
   const { theme, sections, numberOfQuestions } = options;
-  const isPracticeMode = numberOfQuestions !== undefined && numberOfQuestions < 40;
+  // If numberOfQuestions is provided (not undefined), it's a practice assignment
+  // Practice assignments can have any number of questions, including 40
+  // Mock exams don't pass numberOfQuestions, so they default to 40 questions across all sections
+  const isPracticeMode = numberOfQuestions !== undefined;
   const sectionsToGenerate = sections && sections.length > 0 ? sections : ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
 
   console.log(`\n🤖 Generating questions for task ${taskId}...`);
   if (theme) {
-    console.log(`   Theme: ${theme}`);
+    if (isPracticeMode) {
+      console.log(`   User Prompt: "${theme.substring(0, 150)}${theme.length > 150 ? '...' : ''}"`);
+      console.log(`   (AI will interpret the prompt and choose appropriate question types)`);
+    } else {
+      console.log(`   Theme: ${theme}`);
+    }
   }
   if (isPracticeMode) {
-    console.log(`   Mode: Practice (${numberOfQuestions} questions)`);
+    console.log(`   Mode: Practice assignment (${numberOfQuestions} questions)`);
   } else {
     console.log(`   Mode: Full mock exam (40 questions)`);
     console.log(`   Sections: ${sectionsToGenerate.join(', ')}`);
