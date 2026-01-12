@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,8 +31,49 @@
           background: transparent !important;
         }
         .cl-modalBackdrop {
-          background: rgba(15, 23, 42, 0.8) !important; /* slate-900 with opacity */
+          background: rgba(248, 250, 252, 0.8) !important; /* slate-50 with opacity */
           backdrop-filter: blur(8px) !important;
+        }
+        .dark .cl-modalBackdrop {
+          background: rgba(15, 23, 42, 0.8) !important; /* slate-900 with opacity */
+        }
+        
+        /* Force text colors in Clerk components for dark mode */
+        .dark .cl-button,
+        .dark .cl-buttonText,
+        .dark .cl-formButtonPrimary,
+        .dark .cl-formButtonSecondary,
+        .dark .cl-socialButtonsBlockButton,
+        .dark .cl-socialButtonsBlockButtonText,
+        .dark .cl-formFieldInput,
+        .dark .cl-formFieldLabel,
+        .dark .cl-footerActionLink,
+        .dark .cl-headerTitle,
+        .dark .cl-headerSubtitle,
+        .dark .cl-alertText,
+        .dark .cl-identityPreviewText {
+          color: #f1f5f9 !important; /* slate-100 */
+        }
+        
+        /* Light mode text colors */
+        .cl-button:not(.dark .cl-button),
+        .cl-buttonText:not(.dark .cl-buttonText),
+        .cl-formButtonSecondary:not(.dark .cl-formButtonSecondary),
+        .cl-socialButtonsBlockButton:not(.dark .cl-socialButtonsBlockButton),
+        .cl-socialButtonsBlockButtonText:not(.dark .cl-socialButtonsBlockButtonText),
+        .cl-formFieldInput:not(.dark .cl-formFieldInput),
+        .cl-formFieldLabel:not(.dark .cl-formFieldLabel),
+        .cl-headerTitle:not(.dark .cl-headerTitle),
+        .cl-headerSubtitle:not(.dark .cl-headerSubtitle),
+        .cl-alertText:not(.dark .cl-alertText),
+        .cl-identityPreviewText:not(.dark .cl-identityPreviewText) {
+          color: #0f172a !important; /* slate-900 */
+        }
+        
+        /* Primary button text always white */
+        .cl-formButtonPrimary,
+        .cl-buttonPrimary {
+          color: #ffffff !important;
         }
         
         /* Animations */
@@ -193,8 +234,10 @@
         .delay-600 { animation-delay: 0.6s; }
         
         /* Smooth scroll behavior */
+        /* Scale down UI by reducing base font size (default 16px → 12.8px = 80%) */
         html {
           scroll-behavior: smooth;
+          font-size: 12.8px;
         }
         
         @media (prefers-reduced-motion: reduce) {
@@ -219,7 +262,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+<body class="bg-indigo-100 text-slate-900">
     <div id="root"></div>
 <script type="module" src="/index.tsx"></script>
 </body>

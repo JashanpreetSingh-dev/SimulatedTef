@@ -1,14 +1,14 @@
 /**
  * Centralized MongoDB connection management with connection pooling
+ * Audio files are now stored in S3 - GridFS has been removed
  */
 
-import { MongoClient, Db, GridFSBucket } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 
 const uri = process.env.MONGODB_URI || "";
 const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
 
 let client: MongoClient | null = null;
-let gridFSBucket: GridFSBucket | null = null;
 let isConnected = false;
 
 /**
@@ -46,33 +46,17 @@ export async function connectDB(): Promise<Db> {
     if (!isConnected) {
       await mongoClient.connect();
       isConnected = true;
-      console.log('✅ Connected to MongoDB with connection pooling');
+      console.log('Connected to MongoDB with connection pooling');
     }
     
     const db = mongoClient.db(dbName);
     
-    // Initialize GridFS bucket if not already initialized
-    if (!gridFSBucket) {
-      gridFSBucket = new GridFSBucket(db, { bucketName: 'recordings' });
-      console.log('✅ GridFS bucket initialized');
-    }
-    
     return db;
   } catch (error: any) {
     isConnected = false;
-    console.error('❌ MongoDB connection error:', error.message);
+    console.error('MongoDB connection error:', error.message);
     throw error;
   }
-}
-
-/**
- * Get GridFS bucket for audio recordings
- */
-export function getGridFSBucket(): GridFSBucket {
-  if (!gridFSBucket) {
-    throw new Error('GridFS bucket not initialized. Call connectDB() first.');
-  }
-  return gridFSBucket;
 }
 
 /**
@@ -82,12 +66,11 @@ export async function closeDB(): Promise<void> {
   if (client) {
     try {
       await client.close();
-      console.log('✅ MongoDB connection closed');
+      console.log('MongoDB connection closed');
       client = null;
-      gridFSBucket = null;
       isConnected = false;
     } catch (error: any) {
-      console.error('❌ Error closing MongoDB connection:', error.message);
+      console.error('Error closing MongoDB connection:', error.message);
       throw error;
     }
   }
@@ -105,4 +88,3 @@ export async function checkConnectionHealth(): Promise<boolean> {
     return false;
   }
 }
-

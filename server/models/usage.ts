@@ -13,6 +13,11 @@ export const UsageSchema = z.object({
   sectionBUsed: z.number().min(0).default(0),
   createdAt: z.string(),
   updatedAt: z.string(),
+  // Mock exam tracking
+  completedMockExamIds: z.array(z.string()).optional(),
+  completedModules: z.record(z.array(z.string())).optional(), // { [mockExamId: string]: string[] }
+  activeMockExamId: z.string().optional(),
+  activeMockExamSessionId: z.string().optional(),
 });
 
 export type Usage = z.infer<typeof UsageSchema> & {

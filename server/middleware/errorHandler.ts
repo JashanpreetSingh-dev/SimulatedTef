@@ -44,7 +44,7 @@ export function errorHandler(
 
   // Log error
   if (!isOperational || statusCode >= 500) {
-    console.error('❌ Error:', {
+    console.error('Error:', {
       message: err.message,
       stack: err.stack,
       statusCode,
@@ -53,7 +53,7 @@ export function errorHandler(
       userId: req.userId,
     });
   } else {
-    console.warn('⚠️ Client error:', {
+    console.warn('Client error:', {
       message: err.message,
       statusCode,
       path: req.path,

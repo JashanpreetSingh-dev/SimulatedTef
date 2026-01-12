@@ -19,7 +19,6 @@ import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
-import { startSubscriptionExpiryJob } from './jobs/subscriptionExpiry';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,28 +26,8 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-app.post(
-  '/api/subscription/webhook',
-  express.raw({ type: 'application/json' }),
-  async (req, res) => {
-    try {
-      if (!Buffer.isBuffer(req.body)) {
-        console.error('Webhook: Body is not a Buffer. Type:', typeof req.body, 'Value:', req.body);
-        return res.status(400).json({ error: 'Invalid request body format' });
-      }
-      
-      const { subscriptionController } = await import('./controllers/subscriptionController');
-      await subscriptionController.handleWebhook(req, res);
-    } catch (error: any) {
-      console.error('Webhook route error:', error);
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    }
-  }
-);
-
-app.use(express.json());
+// Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
+app.use(express.json({ limit: '10mb' }));
 
 declare global {
   namespace Express {
@@ -100,20 +79,22 @@ if (!clerkSecretKey) {
     await connectDB();
     await createIndexes();
     
-    startSubscriptionExpiryJob();
-    
     if (process.env.RUN_WORKER === 'true') {
       const { startWorker } = await import('./workers/evaluationWorker');
       startWorker();
-      console.log('Worker started in same process (RUN_WORKER=true)');
+      const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
+      startQuestionGenerationWorker();
+      console.log('Workers started in same process (RUN_WORKER=true)');
     } else if (process.env.NODE_ENV !== 'production') {
       if (process.env.RUN_WORKER !== 'false') {
         const { startWorker } = await import('./workers/evaluationWorker');
         startWorker();
-        console.log('Worker started in same process (development mode)');
+        const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
+        startQuestionGenerationWorker();
+        console.log('Workers started in same process (development mode)');
       }
     } else {
-      console.log('Worker not started (RUN_WORKER not set to true). Run worker as separate service in production.');
+      console.log('Workers not started (RUN_WORKER not set to true). Run workers as separate services in production.');
     }
   } catch (error: any) {
     console.error('Failed to initialize:', error.message);
@@ -184,6 +165,12 @@ process.on('SIGTERM', async () => {
     } catch (error) {
       // Worker not running
     }
+    try {
+      const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
+      await stopQuestionGenerationWorker();
+    } catch (error) {
+      // Worker not running
+    }
     
     await closeDB();
     process.exit(0);
@@ -202,6 +189,12 @@ process.on('SIGINT', async () => {
     try {
       const { stopWorker } = await import('./workers/evaluationWorker');
       await stopWorker();
+    } catch (error) {
+      // Worker not running
+    }
+    try {
+      const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
+      await stopQuestionGenerationWorker();
     } catch (error) {
       // Worker not running
     }

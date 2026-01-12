@@ -1,33 +1,18 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PricingSection } from './PricingSection';
 import { FeatureComparison } from './FeatureComparison';
 import { FAQSection } from './FAQSection';
-import { Footer } from './Footer';
 
 export const PricingPage: React.FC = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
-      <div className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800 px-4 md:px-6 py-4 flex justify-between items-center">
-        <button
-          onClick={() => navigate('/dashboard')}
-          className="text-slate-400 hover:text-white flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-colors"
-        >
-          ← Back to Dashboard
-        </button>
-        <span className="font-black text-lg text-white">Akseli</span>
-      </div>
-
-      <div className="flex-1">
+    <DashboardLayout>
+      <div className="max-w-7xl mx-auto w-full">
         <PricingSection />
         <FeatureComparison />
         <FAQSection />
       </div>
-      
-      <Footer variant="dark" />
-    </div>
+    </DashboardLayout>
   );
 };
 

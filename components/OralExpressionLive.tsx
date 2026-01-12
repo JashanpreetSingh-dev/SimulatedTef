@@ -50,6 +50,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const [transcription, setTranscription] = useState('');
   const [isModelSpeaking, setIsModelSpeaking] = useState(false);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [isAiThinking, setIsAiThinking] = useState(false);
   const [showImageFull, setShowImageFull] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [doesContentOverflow, setDoesContentOverflow] = useState(false);
@@ -72,6 +73,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
+  const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -172,9 +174,15 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     sourcesRef.current.clear();
     // Reset timing ref for audio scheduling
     nextStartTimeRef.current = 0;
+    // Clear silence detection timeout
+    if (userSilenceTimeoutRef.current) {
+      clearTimeout(userSilenceTimeoutRef.current);
+      userSilenceTimeoutRef.current = null;
+    }
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
+      setIsAiThinking(false);
       // Reset timer when stopping
       setTimeLeft(0);
     }
@@ -481,8 +489,33 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               // Note: Microphone is already being recorded via MediaRecorder (connected to audioDestinationRef above)
               
               const volume = inputData.reduce((acc, val) => acc + Math.abs(val), 0) / inputData.length;
+              const wasUserSpeaking = isUserSpeaking;
               if (isMountedRef.current) {
                 setIsUserSpeaking(volume > 0.01);
+                
+                // Detect when user stops speaking
+                if (wasUserSpeaking && volume <= 0.01) {
+                  // Clear any existing timeout
+                  if (userSilenceTimeoutRef.current) {
+                    clearTimeout(userSilenceTimeoutRef.current);
+                  }
+                  
+                  // After brief silence, show "thinking" indicator
+                  userSilenceTimeoutRef.current = setTimeout(() => {
+                    if (!isModelSpeaking && !isUserSpeaking && isMountedRef.current) {
+                      setIsAiThinking(true);
+                    }
+                  }, 500); // Show thinking after 500ms of silence
+                }
+                
+                // Clear thinking state when user starts speaking again
+                if (volume > 0.01 && isAiThinking) {
+                  setIsAiThinking(false);
+                  if (userSilenceTimeoutRef.current) {
+                    clearTimeout(userSilenceTimeoutRef.current);
+                    userSilenceTimeoutRef.current = null;
+                  }
+                }
               }
 
               const pcmBlob = createPcmBlob(inputData, inputAudioCtxRef.current!.sampleRate);
@@ -524,7 +557,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           }
           
           if (message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data) {
+            setIsAiThinking(false); // No longer thinking, now speaking
             setIsModelSpeaking(true);
+            // Clear any silence detection timeouts
+            if (userSilenceTimeoutRef.current) {
+              clearTimeout(userSilenceTimeoutRef.current);
+              userSilenceTimeoutRef.current = null;
+            }
             const base64 = message.serverContent.modelTurn.parts[0].inlineData.data;
             const audioData = decodeAudio(base64);
             const buffer = await decodeAudioData(audioData, outputAudioCtxRef.current!, 24000, 1);
@@ -632,6 +671,12 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             nextStartTimeRef.current = 0;
             if (isMountedRef.current) {
               setIsModelSpeaking(false);
+              setIsAiThinking(false);
+            }
+            // Clear silence detection timeout
+            if (userSilenceTimeoutRef.current) {
+              clearTimeout(userSilenceTimeoutRef.current);
+              userSilenceTimeoutRef.current = null;
             }
           }
         },
@@ -742,6 +787,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setCurrentPart('B');
       setTranscription('');
       setStatus('idle');
+      setIsAiThinking(false); // Clear thinking state when transitioning
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
@@ -758,16 +804,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         timestamp: Date.now(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        resultType: 'practice',
         mode: scenario.mode,
+        module: 'oralExpression',
         title: scenario.title,
-        score: 0,
-        clbLevel: 'CLB 0',
-        cecrLevel: 'A1',
-        feedback: '',
-        strengths: [],
-        weaknesses: [],
-        grammarNotes: '',
-        vocabularyNotes: '',
+        evaluation: {
+          score: 0,
+          clbLevel: 'CLB 0',
+          cecrLevel: 'A1',
+          feedback: '',
+          strengths: [],
+          weaknesses: [],
+          grammarNotes: '',
+          vocabularyNotes: '',
+        },
+        moduleData: {
+          type: 'oralExpression',
+        },
+        taskReferences: {},
         isLoading: true,
         taskPartA: scenario.officialTasks.partA,
         taskPartB: scenario.officialTasks.partB,
@@ -882,13 +936,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         }
         
         // Build the text we send for evaluation.
-        // Primary source: clean transcription from saved audio (examiner + candidate),
+        // Primary source: clean transcription from saved audio (examiner + candidate, diarized),
         // Fallback: live candidate-only transcripts (per section).
         let fullUserTranscript: string;
         if (audioTranscript) {
-          // Primary path: use clean diarized candidate transcript from saved audio.
-          // The prompt for transcribeAudio already tells Gemini that Speaker 1 (first voice)
-          // is the candidate and should be the only one in the output.
+          // Primary path: use clean diarized transcript from saved audio.
+          // The transcribeAudio function returns a full diarized transcript with both
+          // "User:" and "Examiner:" labels. We store this full transcript for display,
+          // and the evaluation prompt will filter to only evaluate the User's speech.
           fullUserTranscript = audioTranscript.trim();
         } else {
           // Fallback: only candidate live transcripts available
@@ -921,6 +976,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             ? timeLeft
             : undefined;
 
+        // Determine if this is a mock exam (check for mockExamId in scenario)
+        const mockExamId = (scenario as any).mockExamId;
+        const module = mockExamId ? 'oralExpression' : undefined;
+        
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
@@ -935,7 +994,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
           fluencyAnalysis ?? undefined,
-          getToken
+          getToken,
+          undefined, // writtenSectionAText
+          undefined, // writtenSectionBText
+          mockExamId, // mockExamId
+          module as 'oralExpression' | undefined // module
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
@@ -951,17 +1014,26 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           timestamp: Date.now(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          resultType: mockExamId ? 'mockExam' : 'practice',
           mode: scenario.mode,
+          module: 'oralExpression',
           title: scenario.title,
-          score: 0,
-          clbLevel: 'CLB 0',
-          cecrLevel: 'A1',
-          feedback: '',
-          strengths: [],
-          weaknesses: [],
-          grammarNotes: '',
-          vocabularyNotes: '',
+          evaluation: {
+            score: 0,
+            clbLevel: 'CLB 0',
+            cecrLevel: 'A1',
+            feedback: '',
+            strengths: [],
+            weaknesses: [],
+            grammarNotes: '',
+            vocabularyNotes: '',
+          },
+          moduleData: {
+            type: 'oralExpression',
+          },
+          taskReferences: {},
           isLoading: true,
+          ...(mockExamId && { mockExamId }),
           taskPartA: scenario.officialTasks.partA,
           taskPartB: scenario.officialTasks.partB,
         };
@@ -989,7 +1061,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           const errorResult: SavedResult = {
             ...placeholderResult,
             isLoading: false,
-            feedback: `Erreur: ${pollError.message || 'Échec de l\'évaluation'}`,
+            evaluation: {
+              ...placeholderResult.evaluation,
+              feedback: `Erreur: ${pollError.message || 'Échec de l\'évaluation'}`,
+            },
           };
           onFinish(errorResult);
         }
@@ -1006,27 +1081,35 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           alert(`Erreur d'évaluation: ${errorMessage}`);
         }
         
-        // Update result with error state (still show result page but with error)
-        const errorResult: SavedResult = {
-          _id: `error-${Date.now()}`,
-          userId: user?.id || 'guest',
-          timestamp: Date.now(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          mode: scenario.mode,
-          title: scenario.title,
-          score: 0,
-          clbLevel: 'CLB 0',
-          cecrLevel: 'A1',
-          feedback: `Erreur: ${errorMessage}`,
-          strengths: [],
-          weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
-          grammarNotes: '',
-          vocabularyNotes: '',
-          isLoading: false,
-          taskPartA: scenario.officialTasks.partA,
-          taskPartB: scenario.officialTasks.partB,
-        };
+          // Update result with error state (still show result page but with error)
+          const errorResult: SavedResult = {
+            _id: `error-${Date.now()}`,
+            userId: user?.id || 'guest',
+            timestamp: Date.now(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            resultType: 'practice',
+            mode: scenario.mode,
+            module: 'oralExpression',
+            title: scenario.title,
+            evaluation: {
+              score: 0,
+              clbLevel: 'CLB 0',
+              cecrLevel: 'A1',
+              feedback: `Erreur: ${errorMessage}`,
+              strengths: [],
+              weaknesses: ['Une erreur est survenue lors de l\'évaluation. Veuillez réessayer.'],
+              grammarNotes: '',
+              vocabularyNotes: '',
+            },
+            moduleData: {
+              type: 'oralExpression',
+            },
+            taskReferences: {},
+            isLoading: false,
+            taskPartA: scenario.officialTasks.partA,
+            taskPartB: scenario.officialTasks.partB,
+          };
         onFinish(errorResult);
       }
     }
@@ -1158,48 +1241,48 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-2">
           {scenario.mode !== 'partB' && (
-            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie A</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'A' ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white dark:text-white shadow-lg' : 'bg-indigo-100/70 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600'}`}>Partie A</div>
           )}
           {scenario.mode !== 'partA' && (
-            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>Partie B</div>
+            <div className={`px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all border ${currentPart === 'B' ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white dark:text-white shadow-lg' : 'bg-indigo-100/70 dark:bg-slate-700/50 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-600'}`}>Partie B</div>
           )}
         </div>
         <div className="flex items-center gap-2 md:gap-3">
           {status === 'active' && timeLeft > 0 && (
             <div className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl md:rounded-xl text-base md:text-base font-black tabular-nums transition-all ${
               timeLeft <= 60 
-                ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30 animate-pulse' 
+                ? 'bg-rose-300 dark:bg-rose-500 text-white dark:text-white shadow-lg shadow-rose-300/30 dark:shadow-rose-500/30 animate-pulse' 
                 : timeLeft <= 120
-                ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30'
-                : 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
+                ? 'bg-amber-300 dark:bg-amber-500 text-white dark:text-white shadow-lg shadow-amber-300/30 dark:shadow-amber-500/30'
+                : 'bg-indigo-400 dark:bg-indigo-500 text-white dark:text-white shadow-lg shadow-indigo-400/30 dark:shadow-indigo-500/30'
             }`}>
               {formatTime(timeLeft)}
             </div>
           )}
-          {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-500 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
+          {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-300 dark:text-rose-400 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-300 dark:bg-rose-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
-          <div className="bg-slate-900 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-white/5">
-            <span className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
+        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
+          <div className="bg-slate-100 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
+            <span className="text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
             <button 
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 setShowImageFull(true);
               }} 
-              className="text-white hover:text-indigo-400 transition-colors text-xs font-bold flex items-center gap-1 cursor-pointer"
+              className="text-slate-600 dark:text-slate-400 hover:text-indigo-400 dark:hover:text-indigo-300 transition-colors text-xs font-bold flex items-center gap-1 cursor-pointer"
             >
               <span>🔍</span> <span className="hidden sm:inline">Agrandir</span>
             </button>
           </div>
-          <div className="flex-1 overflow-y-auto p-4 md:p-5 bg-slate-50 dark:bg-slate-900/50 relative group scrollbar-hide">
+          <div className="flex-1 overflow-y-auto p-4 md:p-5 bg-indigo-100/70 dark:bg-slate-800/50 relative group scrollbar-hide">
             <img 
               src={getImagePath(currentTask.image)} 
               alt="Task Document" 
-              className="w-full h-auto rounded-xl md:rounded-xl shadow-2xl border border-slate-200 dark:border-slate-800 mx-auto transition-transform hover:scale-[1.01]"
+              className="w-full h-auto rounded-xl md:rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 mx-auto transition-transform hover:scale-[1.01]"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 console.warn(`Initial path failed: ${target.src}. Trying fallback...`);
@@ -1227,20 +1310,20 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 target.src = 'https://placehold.co/600x800/1e293b/ffffff?text=DOCUMENT+OFFICIEL\nMANQUANT';
               }}
             />
-            <div className="mt-4 md:mt-5 p-4 md:p-4 bg-white dark:bg-slate-800/80 backdrop-blur rounded-xl md:rounded-xl border border-slate-100 dark:border-slate-700 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
-               <strong className="text-slate-900 dark:text-white not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
+            <div className="mt-4 md:mt-5 p-4 md:p-4 bg-indigo-100/70 dark:bg-slate-700/50 backdrop-blur rounded-xl md:rounded-xl border border-slate-200 dark:border-slate-600 text-[10px] md:text-xs leading-relaxed text-slate-600 dark:text-slate-300 italic shadow-sm">
+               <strong className="text-slate-900 dark:text-slate-100 not-italic block mb-1">Consigne :</strong> {currentTask.prompt}
             </div>
           </div>
         </div>
 
         <div 
           ref={micSectionRef}
-          className="bg-slate-900 dark:bg-slate-900 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
+          className="bg-indigo-400 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
         >
-          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-500' : (isUserSpeaking ? 'bg-emerald-500' : 'bg-transparent')}`} />
+          <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-300' : isAiThinking ? 'bg-amber-300 animate-pulse' : (isUserSpeaking ? 'bg-emerald-300' : 'bg-transparent')}`} />
           
           <div className="relative group flex-shrink-0">
-            <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-500/40 scale-150' : (isUserSpeaking ? 'bg-emerald-500/40 scale-125' : 'bg-white/5 scale-100')}`} />
+            <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-300/40 scale-150' : (isUserSpeaking ? 'bg-emerald-300/40 scale-125' : 'bg-indigo-100/70/5 scale-100')}`} />
             <button
               onClick={(e) => {
                 e.preventDefault();
@@ -1254,11 +1337,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               disabled={status === 'connecting' || status === 'evaluating'}
               className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-12 relative z-10 cursor-pointer ${
                 status === 'active' 
-                  ? 'bg-rose-500 hover:bg-rose-600 ring-rose-500/20 active:scale-90' 
-                  : 'bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-slate-700 ring-white/10 text-slate-900 dark:text-white hover:scale-105 active:scale-95'
+                  ? 'bg-rose-300 dark:bg-rose-500 hover:bg-rose-400 dark:hover:bg-rose-600 ring-rose-300/20 dark:ring-rose-500/20 active:scale-90' 
+                  : 'bg-indigo-100/70 dark:bg-slate-700/50 hover:bg-indigo-100 dark:hover:bg-slate-700 ring-white/10 dark:ring-white/5 text-slate-900 dark:text-slate-100 hover:scale-105 active:scale-95'
               } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-500 border-t-transparent rounded-full" /> : 
+              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" /> : 
                status === 'evaluating' ? <span className="text-xl md:text-2xl animate-bounce">⚖️</span> :
                <>
                 <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
@@ -1269,9 +1352,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
 
           <div className="text-left md:text-center space-y-1.5 md:space-y-2 z-10 flex-1 md:flex-none">
             <h4 className="text-white font-black text-base md:text-xl tracking-tight">
-              {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
+              {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : isAiThinking ? 'L\'examinateur réfléchit...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
-            <p className="text-slate-400 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
+            <p className="text-indigo-100 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
         </div>
       </div>
@@ -1293,7 +1376,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 e.stopPropagation();
                 setShowImageFull(false);
               }} 
-              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg cursor-pointer z-50"
+              className="absolute top-4 right-4 bg-indigo-100/70/10 hover:bg-indigo-100/70/20 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all backdrop-blur-lg cursor-pointer z-50"
             >
               <span className="text-2xl">✕</span>
             </button>
