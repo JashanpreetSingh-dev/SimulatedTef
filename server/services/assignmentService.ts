@@ -151,8 +151,10 @@ export const assignmentService = {
       await db.collection('readingTasks').insertOne(readingTask);
 
       // Generate questions - pass numberOfQuestions for practice mode
+      // Use the user's prompt (which may contain question type instructions) as the theme
+      // The prompt will be analyzed to determine question types and grammar focus
       const questions = await generateReadingQuestions(taskId, {
-        theme: assignmentData.settings.theme || assignmentData.prompt,
+        theme: assignmentData.prompt, // User's prompt is used to determine question types and focus
         numberOfQuestions: assignmentData.settings.numberOfQuestions
       });
       
