@@ -209,37 +209,55 @@ export function enhancePrompt(
 ): string {
   let enhancedPrompt = basePrompt;
   
-  // Add assignment-specific prompt if provided
-  if (taskPrompt && taskPrompt.trim()) {
-    enhancedPrompt = basePrompt + `\n\n═══════════════════════════════════════════════════════════════════════════════
-ASSIGNMENT-SPECIFIC CONTENT GUIDANCE
+  // Add question count instruction
+  if (targetQuestionCount < 40) {
+    // For practice assignments, prioritize user prompt
+    if (taskPrompt && taskPrompt.trim()) {
+      enhancedPrompt = basePrompt + `\n\n═══════════════════════════════════════════════════════════════════════════════
+USER'S ASSIGNMENT PROMPT (PRIMARY GUIDE)
 ═══════════════════════════════════════════════════════════════════════════════
 
-The following prompt/theme should guide the content and topics for this assignment:
+"${taskPrompt}"
 
-${taskPrompt}
+PRIMARY PRINCIPLE: This user prompt is your MAIN guide. Interpret it intelligently to determine:
+- What topics, themes, and situations to focus on in your audio scripts
+- What vocabulary and expressions to include
+- What types of conversations or announcements would best serve this learning goal
+- What difficulty level and format is appropriate
+- What section_id (1, 2, 3, or 4) would be most pedagogically effective:
+  * section_id: 1 = Single-speaker announcements/descriptions (best for simple vocabulary, basic comprehension)
+  * section_id: 2 = Short dialogues (best for practical situations, everyday conversations)
+  * section_id: 3 = Medium conversations (best for work/studies/daily life, more complex interactions)
+  * section_id: 4 = Advanced listening (best for interviews, reports, argumentative content, advanced topics)
 
-IMPORTANT: Use this prompt as guidance for the themes, topics, and situations in your audio scripts and questions. 
-The content should align with this theme while still following the TEF Canada format and structure.
-All audio scripts, questions, and options should be relevant to this theme when possible.
+CRITICAL REQUIREMENTS:
+- The MAJORITY of your audio content (scripts, questions, options) MUST be directly related to this prompt
+- Do NOT just use this as "optional guidance" - it should be the PRIMARY focus of your content
+- All audio scripts should be relevant to the themes and topics in the user's prompt
+- Questions should test comprehension of content that relates to the user's prompt
+- Options should use vocabulary and concepts from the prompt's theme
+- Choose section_id (1, 2, 3, or 4) based on what would best serve the learning objectives in the user's prompt
+
+The TEF Canada format structure (sections, question types, etc.) should be followed, but the CONTENT and section_id selection should be primarily driven by the user's prompt above.
 
 ═══════════════════════════════════════════════════════════════════════════════
 `;
-  }
-  
-  // Add question count instruction
-  if (targetQuestionCount < 40) {
+    }
     // For practice assignments with fewer questions, use simplified structure (no sections required)
+    // Note: If taskPrompt was provided, it's already been added above
     enhancedPrompt = enhancedPrompt + `\n\n⚠️ CRITICAL FOR PRACTICE ASSIGNMENT:
 IGNORE the section structure above. This is a PRACTICE assignment, not a full mock exam.
 
 SIMPLIFIED REQUIREMENTS:
 - Generate exactly ${targetQuestionCount} questions total
 - Each audio should have 1-2 questions maximum
-- All audio items should be short to medium length (15-45 seconds when spoken)
+- All audio items should be short, medium or long length (15-90 seconds when spoken)
 - All audio can be repeatable (set repeatable: true)
-- Use section_id: 2 for dialogues (conversations between 2+ people)
-- Use section_id: 1 for single-speaker announcements/descriptions
+- Choose section_id (1, 2, 3, or 4) based on what best serves the user's prompt and learning objectives:
+  * section_id: 1 = Single-speaker announcements/descriptions (best for simple vocabulary, basic comprehension)
+  * section_id: 2 = Short dialogues (best for practical situations, everyday conversations)
+  * section_id: 3 = Medium conversations (best for work/studies/daily life, more complex interactions)
+  * section_id: 4 = Advanced listening (best for interviews, reports, argumentative content, advanced topics)
 - Question IDs should be sequential from 1 to ${targetQuestionCount}
 
 CONTENT GUIDELINES:
@@ -250,15 +268,16 @@ CONTENT GUIDELINES:
 
 ⚠️⚠️⚠️ CRITICAL - AUDIO SCRIPT FORMAT (OVERRIDES SECTION RULES ABOVE) ⚠️⚠️⚠️
 
-For SINGLE speaker (announcements, descriptions) - use section_id: 1:
+For SINGLE speaker (section_id: 1) - announcements, descriptions:
 - Just write plain text: "Bienvenue à tous. Le magasin ferme dans dix minutes."
+- NO speaker labels needed
 
-For MULTI-SPEAKER dialogues (conversations between 2+ people) - use section_id: 2:
+For MULTI-SPEAKER dialogues (section_id: 2, 3, or 4) - conversations between 2+ people:
 - YOU MUST USE "SpeakerName:" LABELS at the start of EACH speaker's turn
 - Each speaker's line MUST be on a SEPARATE LINE (use actual newlines)
 - WITHOUT labels, the audio will use only ONE voice for everyone!
 
-✅ CORRECT FORMAT for dialogue (section_id: 2):
+✅ CORRECT FORMAT for dialogue (section_id: 2, 3, or 4):
 "Marc: Bonjour Sophie. Comment vas-tu?
 Sophie: Bien, merci Marc. Je suis un peu fatiguée.
 Marc: Moi aussi. Je prends le bus à huit heures.
@@ -270,13 +289,31 @@ Sophie: Ah, moi je conduis ma voiture."
 Speaker label examples: "Client:", "Agent:", "Marc:", "Sophie:", "Homme:", "Femme:", "Employé:", "Réceptionniste:"
 
 OUTPUT FORMAT remains the same JSON structure, but simplified:
-- section_id: 1 for single-speaker, 2 for multi-speaker dialogues
+- section_id: 1 for single-speaker, 2/3/4 for multi-speaker dialogues (choose based on complexity/length)
 - All repeatable values should be true
 - Generate enough audio items to cover ${targetQuestionCount} questions (1-2 questions per audio)
 
 COUNT YOUR QUESTIONS: You must have exactly ${targetQuestionCount} questions total.
 The validation will REJECT your response if you don't have exactly ${targetQuestionCount} questions.`;
   } else {
+    // For full mock exams (40 questions), add taskPrompt as optional theme if provided
+    // Mock exams should maintain format structure, but can incorporate theme as secondary guidance
+    if (taskPrompt && taskPrompt.trim()) {
+      enhancedPrompt = enhancedPrompt + `\n\n═══════════════════════════════════════════════════════════════════════════════
+OPTIONAL THEME (FOR MOCK EXAM)
+═══════════════════════════════════════════════════════════════════════════════
+
+The following theme may be incorporated into SOME questions, but you MUST maintain topic diversity across all 40 questions:
+
+${taskPrompt}
+
+IMPORTANT: This is a FULL MOCK EXAM. The TEF Canada format structure is PRIMARY. 
+You may incorporate this theme into some questions, but do NOT use it for all questions.
+Maintain the required topic diversity across all sections.
+
+═══════════════════════════════════════════════════════════════════════════════
+`;
+    }
     // For full mock exams, use the standard 40-question structure
     enhancedPrompt = enhancedPrompt + `\n\n⚠️ CRITICAL: You MUST generate exactly ${targetQuestionCount} questions total. Count them before returning. The validation will reject your response if you don't have exactly ${targetQuestionCount} questions.`;
   }
