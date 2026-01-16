@@ -6,6 +6,8 @@ import { useScrollAnimation } from '../utils/animations';
 import { FAQSection } from '../components/FAQSection';
 import { ExamInterfaceShowcase } from '../components/ExamInterfaceShowcase';
 import { ResultsDashboardShowcase } from '../components/ResultsDashboardShowcase';
+import { BatchManagementShowcase } from '../components/BatchManagementShowcase';
+import { AssignmentCreationShowcase } from '../components/AssignmentCreationShowcase';
 import { EnterpriseCTA } from '../components/EnterpriseCTA';
 import { Footer } from '../components/Footer';
 
@@ -313,6 +315,12 @@ export function LandingPage() {
 
       {/* Results Dashboard Showcase */}
       <ResultsDashboardShowcase />
+
+      {/* Batch Management Showcase */}
+      <BatchManagementShowcase />
+
+      {/* Assignment Creation Showcase */}
+      <AssignmentCreationShowcase />
 
       {/* Enterprise CTA Section */}
       <EnterpriseCTA />
