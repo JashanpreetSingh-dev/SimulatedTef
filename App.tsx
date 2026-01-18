@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { ClerkProviderWithTheme } from './providers/ClerkProviderWithTheme';
@@ -12,8 +11,8 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 function App() {
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <ClerkProviderWithTheme>
+      <ClerkProviderWithTheme>
+        <LanguageProvider>
           <BrowserRouter>
             <SignedOut>
               <Routes>
@@ -27,8 +26,8 @@ function App() {
               <ProtectedRoutes />
             </SignedIn>
           </BrowserRouter>
-        </ClerkProviderWithTheme>
-      </LanguageProvider>
+        </LanguageProvider>
+      </ClerkProviderWithTheme>
     </ThemeProvider>
   );
 }
