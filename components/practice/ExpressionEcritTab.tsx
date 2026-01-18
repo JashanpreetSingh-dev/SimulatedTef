@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { ExamCard } from './ExamCard';
@@ -21,7 +20,6 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
     });
   };
 
-  // Written expression has no limits, so we pass null for status
   return (
     <div className="space-y-6 md:space-y-8">
       {/* Regular Practice Section */}
@@ -31,16 +29,16 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
         </h3>
         {/* Mobile: Stacked cards */}
         <div className="md:hidden space-y-4">
-          <ExamCard mode="partA" status={null} onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
-          <ExamCard mode="partB" status={null} onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
-          <ExamCard mode="full" status={null} onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
+          <ExamCard mode="partA" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
+          <ExamCard mode="partB" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
+          <ExamCard mode="full" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
         </div>
 
         {/* Desktop: 3-column grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-6">
-          <ExamCard mode="partA" status={null} onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
-          <ExamCard mode="partB" status={null} onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
-          <ExamCard mode="full" status={null} onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
+          <ExamCard mode="partA" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
+          <ExamCard mode="partB" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
+          <ExamCard mode="full" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
         </div>
       </div>
 
