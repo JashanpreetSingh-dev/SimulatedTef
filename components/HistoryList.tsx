@@ -493,7 +493,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       try {
         const assignment = await assignmentService.getAssignment(result.assignmentId, getToken);
         if (assignment && assignment.taskId) {
-          navigate(`/exam/assignment/${result.module}?taskId=${assignment.taskId}&assignmentId=${result.assignmentId}`);
+          navigate(`/exam/${result.module}?taskId=${assignment.taskId}&assignmentId=${result.assignmentId}`);
         } else {
           alert('Unable to retake this assignment. Assignment information is missing.');
         }
@@ -736,7 +736,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                     onClick={() => handleRetake(item)}
                     className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
                   >
-                    {t('actions.retake')}
+                    {(item.module === 'reading' || item.module === 'listening') ? t('actions.retake') : t('actions.resume')}
                   </button>
                   {/* Recheck button - only for oral/written expression practice results */}
                   {(item.module === 'oralExpression' || item.module === 'writtenExpression') && item.resultType === 'practice' && (
@@ -835,7 +835,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                         onClick={() => handleRetake(item)}
                         className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-300 rounded font-black text-xs uppercase tracking-widest hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all"
                       >
-                        {t('actions.resume')}
+                        {(item.module === 'reading' || item.module === 'listening') ? t('actions.retake') : t('actions.resume')}
                       </button>
                       {/* Recheck button - only for oral/written expression practice results */}
                       {(item.module === 'oralExpression' || item.module === 'writtenExpression') && item.resultType === 'practice' && (
