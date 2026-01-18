@@ -211,6 +211,21 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Traitement de l\'enregistrement audio',
     'writtenExpression.transcribingAudio': 'Transcription de l\'audio',
     
+    // Guided Writing
+    'guidedWriting.companionTitle': 'Compagnon d\'apprentissage',
+    'guidedWriting.words': 'mots',
+    'guidedWriting.analyzing': 'Analyse en cours...',
+    'guidedWriting.getFeedback': 'Obtenir un retour',
+    'guidedWriting.greeting': 'Bonjour!',
+    'guidedWriting.welcomeMessage': 'Cliquez sur "Obtenir un retour" pour recevoir des suggestions, corrections et idées pour améliorer votre texte.',
+    'guidedWriting.progress': 'Progression',
+    'guidedWriting.corrections': 'Corrections',
+    'guidedWriting.suggestions': 'Suggestions',
+    'guidedWriting.ideas': 'Idées pour continuer',
+    'guidedWriting.structure': 'Structure',
+    'guidedWriting.guidedSectionA': 'Apprentissage guidé - Section A',
+    'guidedWriting.guidedSectionB': 'Apprentissage guidé - Section B',
+    
     // Practice
     'practice.title': 'Pratique',
     'practice.oralSubtitle': 'Prêt à pratiquer votre expression orale aujourd\'hui ?',
@@ -234,6 +249,13 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.assignmentNoQuestions': 'Ce devoir n\'a pas encore de questions.',
     'practice.questions': 'questions',
     'practice.start': 'Commencer →',
+    'practice.guidedLearning': 'Apprentissage guidé',
+    'practice.guidedDescription': 'Pratiquez avec un compagnon IA qui vous donne des retours en temps réel pendant que vous écrivez.',
+    'practice.guidedSectionA': 'Section A guidée',
+    'practice.guidedSectionB': 'Section B guidée',
+    'practice.guidedSectionADescription': 'Fait divers avec retour en temps réel',
+    'practice.guidedSectionBDescription': 'Argumentation avec retour en temps réel',
+    'practice.standardPractice': 'Pratique standard',
     
     // Errors
     'errors.error': 'Erreur',
@@ -582,6 +604,21 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Processing audio recording',
     'writtenExpression.transcribingAudio': 'Transcribing audio',
     
+    // Guided Writing
+    'guidedWriting.companionTitle': 'Learning Companion',
+    'guidedWriting.words': 'words',
+    'guidedWriting.analyzing': 'Analyzing...',
+    'guidedWriting.getFeedback': 'Get Feedback',
+    'guidedWriting.greeting': 'Hello!',
+    'guidedWriting.welcomeMessage': 'Click on "Get Feedback" to receive suggestions, corrections and ideas to improve your text.',
+    'guidedWriting.progress': 'Progress',
+    'guidedWriting.corrections': 'Corrections',
+    'guidedWriting.suggestions': 'Suggestions',
+    'guidedWriting.ideas': 'Ideas to Continue',
+    'guidedWriting.structure': 'Structure',
+    'guidedWriting.guidedSectionA': 'Guided Learning - Section A',
+    'guidedWriting.guidedSectionB': 'Guided Learning - Section B',
+    
     // Practice
     'practice.title': 'Practice',
     'practice.oralSubtitle': 'Ready to practice your oral expression today?',
@@ -605,6 +642,13 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.assignmentNoQuestions': 'This assignment does not have questions yet.',
     'practice.questions': 'questions',
     'practice.start': 'Start →',
+    'practice.guidedLearning': 'Guided Learning',
+    'practice.guidedDescription': 'Practice with an AI companion that gives you real-time feedback while you write.',
+    'practice.guidedSectionA': 'Guided Section A',
+    'practice.guidedSectionB': 'Guided Section B',
+    'practice.guidedSectionADescription': 'News story with real-time feedback',
+    'practice.guidedSectionBDescription': 'Argumentation with real-time feedback',
+    'practice.standardPractice': 'Standard Practice',
     
     // Errors
     'errors.error': 'Error',

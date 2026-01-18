@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Dashboard } from '../pages/Dashboard';
 import { PracticeView } from '../pages/PracticeView';
@@ -6,12 +5,12 @@ import { HistoryView } from '../pages/HistoryView';
 import { ResultView } from '../pages/ResultView';
 import { ExamView } from '../pages/ExamView';
 import { WrittenExamView } from '../pages/WrittenExamView';
+import { GuidedWrittenExamView } from '../pages/GuidedWrittenExamView';
 import { AssignmentsView } from '../pages/AssignmentsView';
 import { AssignmentCreationView } from '../pages/AssignmentCreationView';
 import { AssignmentExamView } from '../pages/AssignmentExamView';
 import { BatchesView } from '../pages/BatchesView';
 import { BatchDetailView } from '../pages/BatchDetailView';
-import { StudentBatchView } from '../pages/StudentBatchView';
 import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { MockExamView } from '../components/MockExamView';
@@ -31,6 +30,7 @@ export function ProtectedRoutes() {
       <Route path="/exam/reading" element={<AssignmentExamView />} />
       <Route path="/exam/listening" element={<AssignmentExamView />} />
       <Route path="/exam/written/:mode" element={<WrittenExamView />} />
+      <Route path="/practice/guided-written/:mode" element={<GuidedWrittenExamView />} />
       <Route path="/mock-exam/:mockExamId" element={
         <DashboardLayout>
           <MockExamView />

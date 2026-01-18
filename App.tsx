@@ -12,8 +12,8 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 function App() {
   return (
     <ThemeProvider>
-      <LanguageProvider>
-        <ClerkProviderWithTheme>
+      <ClerkProviderWithTheme>
+        <LanguageProvider>
           <BrowserRouter>
             <SignedOut>
               <Routes>
@@ -27,8 +27,8 @@ function App() {
               <ProtectedRoutes />
             </SignedIn>
           </BrowserRouter>
-        </ClerkProviderWithTheme>
-      </LanguageProvider>
+        </LanguageProvider>
+      </ClerkProviderWithTheme>
     </ThemeProvider>
   );
 }

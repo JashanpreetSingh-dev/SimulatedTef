@@ -13,33 +13,69 @@ export const SECTION_A_TASKS: TEFTask[] = sectionATasks as TEFTask[];
 export const SECTION_B_TASKS: TEFTask[] = sectionBTasks as TEFTask[];
 
 /**
+ * Shuffle an array using Fisher-Yates algorithm (in-place)
+ */
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]; // Create a copy to avoid mutating the original
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+/**
  * Get a random task from Section A, excluding completed task IDs
+ * Randomizes the order of suggested_questions array
  */
 export function getRandomSectionATask(completedTaskIds: number[] = []): TEFTask {
   const availableTasks = SECTION_A_TASKS.filter(task => !completedTaskIds.includes(task.id));
   
+  let selectedTask: TEFTask;
   if (availableTasks.length === 0) {
     // If all tasks are completed, reset and use all tasks
     console.warn('All Section A tasks completed, resetting available tasks');
-    return SECTION_A_TASKS[Math.floor(Math.random() * SECTION_A_TASKS.length)];
+    selectedTask = SECTION_A_TASKS[Math.floor(Math.random() * SECTION_A_TASKS.length)];
+  } else {
+    selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
   }
   
-  return availableTasks[Math.floor(Math.random() * availableTasks.length)];
+  // Randomize the order of suggested_questions if they exist
+  if (selectedTask.suggested_questions && selectedTask.suggested_questions.length > 0) {
+    return {
+      ...selectedTask,
+      suggested_questions: shuffleArray(selectedTask.suggested_questions)
+    };
+  }
+  
+  return selectedTask;
 }
 
 /**
  * Get a random task from Section B, excluding completed task IDs
+ * Randomizes the order of counter_arguments array
  */
 export function getRandomSectionBTask(completedTaskIds: number[] = []): TEFTask {
   const availableTasks = SECTION_B_TASKS.filter(task => !completedTaskIds.includes(task.id));
   
+  let selectedTask: TEFTask;
   if (availableTasks.length === 0) {
     // If all tasks are completed, reset and use all tasks
     console.warn('All Section B tasks completed, resetting available tasks');
-    return SECTION_B_TASKS[Math.floor(Math.random() * SECTION_B_TASKS.length)];
+    selectedTask = SECTION_B_TASKS[Math.floor(Math.random() * SECTION_B_TASKS.length)];
+  } else {
+    selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
   }
   
-  return availableTasks[Math.floor(Math.random() * availableTasks.length)];
+  // Randomize the order of counter_arguments if they exist
+  if (selectedTask.counter_arguments && selectedTask.counter_arguments.length > 0) {
+    return {
+      ...selectedTask,
+      counter_arguments: shuffleArray(selectedTask.counter_arguments)
+    };
+  }
+  
+  return selectedTask;
 }
 
 /**
@@ -54,10 +90,32 @@ export function getRandomTasks(completedTaskIds: number[] = []): { partA: TEFTas
 
 /**
  * Get a specific task by ID for retake
+ * Randomizes the order of suggested_questions (Section A) or counter_arguments (Section B)
  */
 export function getTaskById(section: 'A' | 'B', taskId: number): TEFTask | null {
   const tasks = section === 'A' ? SECTION_A_TASKS : SECTION_B_TASKS;
-  return tasks.find(task => task.id === taskId) || null;
+  const task = tasks.find(task => task.id === taskId);
+  
+  if (!task) {
+    return null;
+  }
+  
+  // Randomize the order of questions/arguments for retakes
+  if (section === 'A' && task.suggested_questions && task.suggested_questions.length > 0) {
+    return {
+      ...task,
+      suggested_questions: shuffleArray(task.suggested_questions)
+    };
+  }
+  
+  if (section === 'B' && task.counter_arguments && task.counter_arguments.length > 0) {
+    return {
+      ...task,
+      counter_arguments: shuffleArray(task.counter_arguments)
+    };
+  }
+  
+  return task;
 }
 
 // ===== Reading/Listening Task Functions (API-based) =====
