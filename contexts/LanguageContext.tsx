@@ -5,7 +5,7 @@ type Language = 'fr' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -75,6 +75,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Vérification...',
     'status.loadingExam': 'Chargement de l\'examen...',
     'status.checkingSubscription': 'Vérification de l\'abonnement...',
+    
+    // Loading
+    'loading.moduleLoading': 'Chargement du module...',
+    'loading.preparingModule': 'Préparation de {module}',
+    'loading.preparingTasks': 'Préparation des tâches',
+    'loading.initializingExam': 'Initialisation de l\'examen',
     
     // Mock Exam
     'mockExam.title': 'Examen Blanc',
@@ -491,6 +497,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Checking...',
     'status.loadingExam': 'Loading exam...',
     'status.checkingSubscription': 'Checking subscription...',
+    
+    // Loading
+    'loading.moduleLoading': 'Loading module...',
+    'loading.preparingModule': 'Preparing {module}',
+    'loading.preparingTasks': 'Preparing tasks',
+    'loading.initializingExam': 'Initializing exam',
     
     // Mock Exam
     'mockExam.title': 'Mock Exam',

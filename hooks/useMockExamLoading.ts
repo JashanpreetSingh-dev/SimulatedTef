@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useLoading } from './useLoading';
 
 export type LoadingState = 'idle' | 'loading' | 'initializing';
 export type LoadingType = 'module' | 'evaluation' | 'initialization';
@@ -21,6 +22,17 @@ export function useMockExamLoading() {
     type: null,
     module: null,
   });
+
+  // Use useLoading hook internally for error handling and timeout support
+  const {
+    isLoading: hookLoading,
+    error,
+    isError,
+    startLoading: hookStartLoading,
+    stopLoading: hookStopLoading,
+  } = useLoading({
+    timeout: 120000, // 2 minutes timeout
+  });
   
   const startLoading = useCallback((type: LoadingType, module?: string) => {
     setLoadingState({
@@ -28,7 +40,8 @@ export function useMockExamLoading() {
       type,
       module: module || null,
     });
-  }, []);
+    hookStartLoading(`Loading ${type}${module ? `: ${module}` : ''}`);
+  }, [hookStartLoading]);
   
   const stopLoading = useCallback(() => {
     setLoadingState({
@@ -36,7 +49,8 @@ export function useMockExamLoading() {
       type: null,
       module: null,
     });
-  }, []);
+    hookStopLoading(true);
+  }, [hookStopLoading]);
   
   const setInitializing = useCallback((initializing: boolean) => {
     setLoadingState(prev => ({
@@ -44,9 +58,14 @@ export function useMockExamLoading() {
       state: initializing ? 'initializing' : 'idle',
       type: initializing ? 'initialization' : null,
     }));
-  }, []);
+    if (initializing) {
+      hookStartLoading('Initializing...');
+    } else {
+      hookStopLoading(true);
+    }
+  }, [hookStartLoading, hookStopLoading]);
   
-  const isLoading = loadingState.state === 'loading';
+  const isLoading = loadingState.state === 'loading' || hookLoading;
   const isInitializing = loadingState.state === 'initializing';
   const isLoadingModule = loadingState.type === 'module';
   const isLoadingEvaluation = loadingState.type === 'evaluation';
@@ -58,11 +77,15 @@ export function useMockExamLoading() {
   };
   
   return {
+    // Existing API (maintain for backward compatibility)
     loading: isLoading,
     initializing: isInitializing,
     loadingModule: loadingState.module,
     isLoadingEvaluation,
     isLoadingModule,
     ...actions,
+    // New additions
+    error,
+    isError,
   };
 }

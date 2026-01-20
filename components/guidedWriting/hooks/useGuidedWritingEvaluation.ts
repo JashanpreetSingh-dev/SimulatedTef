@@ -10,6 +10,7 @@ interface UseGuidedWritingEvaluationOptions {
   onSuccess: (result: SavedResult) => void;
   onError?: (error: Error) => void;
   mode: 'partA' | 'partB';
+  onProgress?: (progress: number) => void; // Progress callback
 }
 
 export function useGuidedWritingEvaluation({
@@ -19,6 +20,7 @@ export function useGuidedWritingEvaluation({
   onSuccess,
   onError,
   mode,
+  onProgress,
 }: UseGuidedWritingEvaluationOptions) {
   const { getToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,11 +71,16 @@ export function useGuidedWritingEvaluation({
       setIsSubmitting(false);
       setIsEvaluating(true);
 
-      // Poll for result
+      // Poll for result with progress tracking
       const result = await evaluationJobService.pollJobStatus(
         jobId,
         getToken,
-        undefined, // onProgress
+        (progress) => {
+          // Update progress if callback provided
+          if (onProgress) {
+            onProgress(progress);
+          }
+        },
         2000, // intervalMs
         150 // maxAttempts (5 minutes)
       );

@@ -8,6 +8,7 @@ import { assignmentService } from '../services/assignmentService';
 import { evaluationJobService } from '../services/evaluationJobService';
 import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
+import { LoadingSpinner, LoadingSkeleton } from './common/Loading';
 
 interface HistoryListProps {
   module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
@@ -512,7 +513,48 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   };
 
   if (loading) {
-    return <div className="py-20 text-center animate-pulse text-slate-500 dark:text-slate-400">{t('history.syncing')}</div>;
+    return (
+      <div className="grid gap-4 pt-6">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-indigo-100/70 dark:bg-slate-800/70 p-4 rounded-lg border border-slate-200 dark:border-slate-700"
+          >
+            <div className="hidden sm:flex items-center gap-4">
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <LoadingSkeleton variant="rectangular" width={60} height={24} />
+                <LoadingSkeleton variant="text" width={40} height={20} />
+              </div>
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <LoadingSkeleton variant="rectangular" width={70} height={24} />
+                <LoadingSkeleton variant="rectangular" width={50} height={24} />
+                <LoadingSkeleton variant="text" width={100} height={16} />
+                <LoadingSkeleton variant="text" width={80} height={16} />
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+              </div>
+            </div>
+            <div className="sm:hidden space-y-3">
+              <div className="flex items-center gap-2">
+                <LoadingSkeleton variant="rectangular" width={60} height={24} />
+                <LoadingSkeleton variant="text" width={40} height={20} />
+              </div>
+              <div className="flex items-center gap-2">
+                <LoadingSkeleton variant="rectangular" width={70} height={24} />
+                <LoadingSkeleton variant="rectangular" width={50} height={24} />
+              </div>
+              <LoadingSkeleton variant="text" width="100%" height={16} />
+              <div className="flex gap-2">
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (results.length === 0) {
@@ -872,10 +914,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             {/* Loading more indicator */}
             {loadingMore && (
               <div className="py-8 text-center">
-                <div className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                  <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium">{t('status.loading')}</span>
-                </div>
+                <LoadingSpinner size="sm" color="primary" text={t('status.loading')} />
               </div>
             )}
             
