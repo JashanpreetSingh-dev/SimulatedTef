@@ -6,6 +6,7 @@ import { batchAssignmentService } from '../services/batchAssignmentService';
 import { useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { AssignmentList } from '../components/assignments/AssignmentList';
+import { LoadingSkeleton } from '../components/common/Loading';
 import { Assignment } from '../types';
 
 export function StudentBatchView() {
@@ -59,9 +60,33 @@ export function StudentBatchView() {
     return (
       <DashboardLayout>
         <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 lg:space-y-12">
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">{t('batches.loading')}</p>
+          {/* Header skeleton */}
+          <div className="space-y-2 md:space-y-3">
+            <LoadingSkeleton variant="text" width={120} height={16} />
+            <LoadingSkeleton variant="text" width={200} height={32} />
+            <LoadingSkeleton variant="text" width={300} height={16} />
+          </div>
+
+          {/* Assignment cards skeleton */}
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 sm:p-5 md:p-6"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <LoadingSkeleton variant="text" width="60%" height={24} />
+                      <LoadingSkeleton variant="rectangular" width={80} height={24} />
+                      <LoadingSkeleton variant="rectangular" width={100} height={24} />
+                    </div>
+                    <LoadingSkeleton variant="text" width="100%" height={16} className="mb-3" />
+                    <LoadingSkeleton variant="text" width="80%" height={16} />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </main>
       </DashboardLayout>

@@ -11,6 +11,7 @@ interface UseWrittenExpressionEvaluationOptions {
   onSuccess: (result: SavedResult) => void;
   onError?: (error: Error) => void;
   mode?: 'partA' | 'partB' | 'full';
+  onProgress?: (progress: number) => void; // Progress callback
 }
 
 export function useWrittenExpressionEvaluation({
@@ -21,6 +22,7 @@ export function useWrittenExpressionEvaluation({
   onSuccess,
   onError,
   mode = 'full',
+  onProgress,
 }: UseWrittenExpressionEvaluationOptions) {
   const { getToken } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -74,11 +76,16 @@ export function useWrittenExpressionEvaluation({
       setIsSubmitting(false);
       setIsEvaluating(true);
 
-      // Poll for result
+      // Poll for result with progress tracking
       const result = await evaluationJobService.pollJobStatus(
         jobId,
         getToken,
-        undefined, // onProgress
+        (progress) => {
+          // Update progress if callback provided
+          if (onProgress) {
+            onProgress(progress);
+          }
+        },
         2000, // intervalMs
         150 // maxAttempts (5 minutes)
       );

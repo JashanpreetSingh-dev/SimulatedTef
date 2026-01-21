@@ -10,6 +10,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { AssignmentList } from '../components/assignments/AssignmentList';
 import { StudentSelectDropdown } from '../components/batches/StudentSelectDropdown';
 import { ConfirmationModal } from '../components/common/ConfirmationModal';
+import { LoadingSkeleton } from '../components/common/Loading';
 import { Assignment } from '../types';
 
 type TabType = 'students' | 'assignments';
@@ -228,10 +229,34 @@ export function BatchDetailView() {
   if (loading) {
     return (
       <DashboardLayout>
-        <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10">
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">{t('batches.loadingBatch')}</p>
+        <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 lg:space-y-12">
+          {/* Batch header skeleton */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="space-y-2 md:space-y-3">
+              <LoadingSkeleton variant="text" width={120} height={16} />
+              <LoadingSkeleton variant="text" width={200} height={32} />
+            </div>
+            <LoadingSkeleton variant="rectangular" width={120} height={40} />
+          </div>
+
+          {/* Tabs skeleton */}
+          <div className="flex gap-2 p-1 rounded-xl bg-slate-100 dark:bg-slate-800">
+            <LoadingSkeleton variant="rectangular" width="50%" height={40} />
+            <LoadingSkeleton variant="rectangular" width="50%" height={40} />
+          </div>
+
+          {/* Content skeleton */}
+          <div className="space-y-4">
+            <LoadingSkeleton variant="text" width={150} height={24} />
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4"
+              >
+                <LoadingSkeleton variant="text" width="60%" height={20} />
+                <LoadingSkeleton variant="text" width="40%" height={16} className="mt-2" />
+              </div>
+            ))}
           </div>
         </main>
       </DashboardLayout>

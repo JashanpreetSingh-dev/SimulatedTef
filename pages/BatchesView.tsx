@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '@clerk/clerk-react';
 import { batchService } from '../services/batchService';
 import { ConfirmationModal } from '../components/common/ConfirmationModal';
+import { LoadingSkeleton } from '../components/common/Loading';
 
 export function BatchesView() {
   const navigate = useNavigate();
@@ -68,9 +69,19 @@ export function BatchesView() {
     return (
       <DashboardLayout>
         <main className="max-w-5xl mx-auto p-4 md:p-6 lg:p-10 space-y-6 md:space-y-8 lg:space-y-12">
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-            <p className="mt-4 text-slate-500 dark:text-slate-400">{t('batches.loadingBatches')}</p>
+          <div className="space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <LoadingSkeleton variant="text" width="40%" height={28} />
+                  <LoadingSkeleton variant="rectangular" width={100} height={36} />
+                </div>
+                <LoadingSkeleton variant="text" width="60%" height={16} />
+              </div>
+            ))}
           </div>
         </main>
       </DashboardLayout>
