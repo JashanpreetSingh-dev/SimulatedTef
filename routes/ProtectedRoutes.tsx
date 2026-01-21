@@ -15,6 +15,7 @@ import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
 import { MockExamView } from '../components/MockExamView';
 import { DashboardLayout } from '../layouts/DashboardLayout';
+import { AdminUsageView } from '../pages/AdminUsageView';
 
 /**
  * Protected routes - only accessible when signed in
@@ -46,6 +47,7 @@ export function ProtectedRoutes() {
       <Route path="/dashboard/assignments/create/:assignmentId" element={<AssignmentCreationView />} />
       <Route path="/dashboard/batches" element={<BatchesView />} />
       <Route path="/dashboard/batches/:batchId" element={<BatchDetailView />} />
+      <Route path="/admin/usage" element={<AdminUsageView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

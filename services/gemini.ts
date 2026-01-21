@@ -407,8 +407,16 @@ export const geminiService = {
         voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
       },
       systemInstruction,
-      outputAudioTranscription: {}, // Model's speech transcription
-      inputAudioTranscription: {}, // User's speech transcription
+      // outputAudioTranscription: {}, // Model's speech transcription
+      // inputAudioTranscription: {}, // User's speech transcription
+      // Cost optimization: Enable context window compression to extend sessions and reduce costs
+      // See: https://ai.google.dev/api/live#ContextWindowCompressionConfig
+      contextWindowCompression: {
+        slidingWindow: {
+          targetTokens: 500, // Keep at least 5000 tokens in context
+        },
+        triggerTokens: 750, // Start compressing when context exceeds 1000 tokens
+      },
     };
 
     // Add timeout configs if provided (if the SDK supports them)

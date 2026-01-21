@@ -65,8 +65,15 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         // Collect all roles from all memberships
         req.userRoles = memberships.data.map((m) => m.role);
         
-        // Set userRole to professor if they have it in any org
-        if (req.userRoles.includes('org:professor')) {
+        // Set userRole to admin if they have it in any org (highest priority)
+        if (req.userRoles.includes('org:admin')) {
+          req.userRole = 'org:admin';
+          // Also set orgId from the admin membership
+          const adminMembership = memberships.data.find(m => m.role === 'org:admin');
+          if (adminMembership) {
+            req.orgId = adminMembership.organization.id;
+          }
+        } else if (req.userRoles.includes('org:professor')) {
           req.userRole = 'org:professor';
           // Also set orgId from the professor membership
           const professorMembership = memberships.data.find(m => m.role === 'org:professor');

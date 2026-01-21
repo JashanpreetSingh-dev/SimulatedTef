@@ -5,7 +5,7 @@ type Language = 'fr' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -75,6 +75,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Vérification...',
     'status.loadingExam': 'Chargement de l\'examen...',
     'status.checkingSubscription': 'Vérification de l\'abonnement...',
+    
+    // Loading
+    'loading.moduleLoading': 'Chargement du module...',
+    'loading.preparingModule': 'Préparation de {module}',
+    'loading.preparingTasks': 'Préparation des tâches',
+    'loading.initializingExam': 'Initialisation de l\'examen',
     
     // Mock Exam
     'mockExam.title': 'Examen Blanc',
@@ -426,6 +432,38 @@ const translations: Record<Language, Record<string, string>> = {
     'batches.loadingBatches': 'Chargement des groupes...',
     'batches.loadingBatch': 'Chargement du groupe...',
     'batches.loading': 'Chargement...',
+    
+    // Admin Usage
+    'admin.usageGlobal': 'Usage Global',
+    'admin.usageTitle': 'Usage Global de l\'Organisation',
+    'admin.usageSubtitle': 'Vue d\'ensemble de l\'utilisation de l\'API Gemini pour tous les utilisateurs',
+    'admin.sessions': 'Sessions',
+    'admin.users': 'Utilisateurs',
+    'admin.billedTokens': 'Tokens Facturés',
+    'admin.finalSize': 'Taille Finale',
+    'admin.totalCost': 'Coût Total',
+    'admin.examType': 'Type d\'examen',
+    'admin.allTypes': 'Tous',
+    'admin.startDate': 'Date de début',
+    'admin.endDate': 'Date de fin',
+    'admin.reset': 'Réinitialiser',
+    'admin.conversationLogs': 'Journaux de Conversation',
+    'admin.loadingLogs': 'Chargement des journaux...',
+    'admin.noLogsFound': 'Aucun journal trouvé',
+    'admin.loadMore': 'Charger plus',
+    'admin.loading': 'Chargement...',
+    'admin.sessionDetails': 'Détails de la Session',
+    'admin.information': 'Informations',
+    'admin.task': 'Tâche',
+    'admin.part': 'Partie',
+    'admin.userId': 'User ID',
+    'admin.date': 'Date',
+    'admin.tokenUsage': 'Token Usage',
+    'admin.conversationSize': 'Conversation Size',
+    'admin.finalContext': '(Final context)',
+    'admin.totalBilled': 'Total Billed',
+    'admin.allTurns': '(All turns)',
+    'admin.totalCostLabel': 'Total Cost',
   },
   en: {
     // Navigation
@@ -491,6 +529,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Checking...',
     'status.loadingExam': 'Loading exam...',
     'status.checkingSubscription': 'Checking subscription...',
+    
+    // Loading
+    'loading.moduleLoading': 'Loading module...',
+    'loading.preparingModule': 'Preparing {module}',
+    'loading.preparingTasks': 'Preparing tasks',
+    'loading.initializingExam': 'Initializing exam',
     
     // Mock Exam
     'mockExam.title': 'Mock Exam',
@@ -842,6 +886,38 @@ const translations: Record<Language, Record<string, string>> = {
     'batches.loadingBatches': 'Loading batches...',
     'batches.loadingBatch': 'Loading batch...',
     'batches.loading': 'Loading...',
+    
+    // Admin Usage
+    'admin.usageGlobal': 'Global Usage',
+    'admin.usageTitle': 'Organization Global Usage',
+    'admin.usageSubtitle': 'Overview of Gemini API usage for all users',
+    'admin.sessions': 'Sessions',
+    'admin.users': 'Users',
+    'admin.billedTokens': 'Billed Tokens',
+    'admin.finalSize': 'Final Size',
+    'admin.totalCost': 'Total Cost',
+    'admin.examType': 'Exam Type',
+    'admin.allTypes': 'All',
+    'admin.startDate': 'Start Date',
+    'admin.endDate': 'End Date',
+    'admin.reset': 'Reset',
+    'admin.conversationLogs': 'Conversation Logs',
+    'admin.loadingLogs': 'Loading logs...',
+    'admin.noLogsFound': 'No logs found',
+    'admin.loadMore': 'Load More',
+    'admin.loading': 'Loading...',
+    'admin.sessionDetails': 'Session Details',
+    'admin.information': 'Information',
+    'admin.task': 'Task',
+    'admin.part': 'Part',
+    'admin.userId': 'User ID',
+    'admin.date': 'Date',
+    'admin.tokenUsage': 'Token Usage',
+    'admin.conversationSize': 'Conversation Size',
+    'admin.finalContext': '(Final context)',
+    'admin.totalBilled': 'Total Billed',
+    'admin.allTurns': '(All turns)',
+    'admin.totalCostLabel': 'Total Cost',
   },
 };
 

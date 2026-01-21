@@ -17,7 +17,7 @@ const router = Router();
 router.use(requireAuth);
 
 // POST /api/assignments - Create new assignment (draft) - Professor only
-router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { type, title, prompt, settings, creatorName } = req.body;
   const userId = req.userId!;
   const orgId = req.orgId;
@@ -57,7 +57,7 @@ router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request,
 
 // GET /api/assignments/my - Get all assignments for the organization (or by creator if no org)
 // MUST come before /:assignmentId route to avoid matching "my" as an assignmentId
-router.get('/my', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.get('/my', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId!;
   const orgId = req.orgId;
 
@@ -88,7 +88,7 @@ router.get('/published', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // GET /api/assignments/bank - Get assessment bank (all published assignments for org) - Professor only
-router.get('/bank', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.get('/bank', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { type } = req.query;
   const orgId = req.orgId;
 
@@ -114,7 +114,7 @@ router.get('/assigned', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // POST /api/assignments/:assignmentId/generate - Trigger AI question generation (async job) - Professor only
-router.post('/:assignmentId/generate', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/:assignmentId/generate', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
@@ -160,7 +160,7 @@ router.post('/:assignmentId/generate', requireRole('org:professor'), asyncHandle
 }));
 
 // GET /api/assignments/:assignmentId/generate/:jobId - Get question generation job status - Professor only
-router.get('/:assignmentId/generate/:jobId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.get('/:assignmentId/generate/:jobId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId, jobId } = req.params;
   const userId = req.userId!;
 
@@ -213,8 +213,8 @@ router.get('/:assignmentId', asyncHandler(async (req: Request, res: Response) =>
     return res.status(404).json({ error: 'Assignment not found' });
   }
 
-  // Check if user is professor (can access any assignment in their org)
-  const isProfessor = req.userRole === 'org:professor';
+  // Check if user is professor or admin (can access any assignment in their org)
+  const isProfessor = req.userRole === 'org:professor' || req.userRole === 'org:admin';
   
   if (isProfessor) {
     // Professors can access any assignment in their organization
@@ -243,7 +243,7 @@ router.get('/:assignmentId', asyncHandler(async (req: Request, res: Response) =>
 }));
 
 // PUT /api/assignments/:assignmentId - Update assignment - Professor only
-router.put('/:assignmentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.put('/:assignmentId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
   const { title, prompt, settings, status } = req.body;
@@ -271,7 +271,7 @@ router.put('/:assignmentId', requireRole('org:professor'), asyncHandler(async (r
 }));
 
 // PUT /api/assignments/:assignmentId/questions/:questionId - Update a question - Professor only
-router.put('/:assignmentId/questions/:questionId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.put('/:assignmentId/questions/:questionId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId, questionId } = req.params;
   const userId = req.userId!;
   const { question, questionText, options, correctAnswer, explanation } = req.body;
@@ -308,7 +308,7 @@ router.put('/:assignmentId/questions/:questionId', requireRole('org:professor'),
 }));
 
 // POST /api/assignments/:assignmentId/publish - Publish assignment - Professor only
-router.post('/:assignmentId/publish', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/:assignmentId/publish', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 
@@ -332,7 +332,7 @@ router.post('/:assignmentId/publish', requireRole('org:professor'), asyncHandler
 }));
 
 // DELETE /api/assignments/:assignmentId - Delete assignment - Professor only
-router.delete('/:assignmentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.delete('/:assignmentId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { assignmentId } = req.params;
   const userId = req.userId!;
 

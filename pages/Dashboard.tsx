@@ -13,9 +13,9 @@ export function Dashboard() {
   const { t } = useLanguage();
   const [batch, setBatch] = useState<Batch | null>(null);
 
-  // Check if user is a professor
+  // Check if user is a professor or admin (admins have all professor permissions)
   const isProfessor = user?.organizationMemberships?.some(
-    (membership) => membership.role === 'org:professor'
+    (membership) => membership.role === 'org:professor' || membership.role === 'org:admin'
   ) ?? false;
 
   useEffect(() => {

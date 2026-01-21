@@ -9,12 +9,14 @@ import { evaluationJobService } from '../services/evaluationJobService';
 import { geminiService } from '../services/gemini';
 import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
+import { LoadingSkeleton } from './common/Loading';
+import ReactPaginate from 'react-paginate';
 
 interface HistoryListProps {
   module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
 }
 
-const RESULTS_PER_PAGE = 20;
+const RESULTS_PER_PAGE = 5;
 
 export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   const { user } = useUser();
@@ -26,21 +28,20 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   const [tasks, setTasks] = useState<Map<string, NormalizedTask>>(new Map()); // Map of taskId -> task
   const [assignmentCompletionCounts, setAssignmentCompletionCounts] = useState<Map<string, number>>(new Map()); // Map of assignmentId -> completion count
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
   const [recheckingResults, setRecheckingResults] = useState<Set<string>>(new Set()); // Track which results are being rechecked
-  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
 
-  // Initial load and reload when filter mode changes
+  // Reset to first page when module filter changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [module]);
+
+  // Fetch results when page or filter changes
   useEffect(() => {
     const fetchResults = async () => {
       setLoading(true);
-      setResults([]);
-      setHasMore(true);
-      // Reset scroll position
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-      }
       try {
         // Determine resultType based on module
         // For oral/written expression: show practice results
@@ -50,18 +51,30 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
           : (module === 'reading' || module === 'listening') 
             ? 'assignment' 
             : undefined;
+        
+        const skip = currentPage * RESULTS_PER_PAGE;
         const response = await persistenceService.getAllResults(
           userId, 
           getToken, 
           RESULTS_PER_PAGE, 
-          0,
+          skip,
           resultType,
           module,
           undefined,
           true // populateTasks
         );
         setResults(response.results || []);
-        setHasMore(response.pagination?.hasMore ?? true);
+        
+        // Calculate pagination info
+        if (response.pagination) {
+          const total = response.pagination.total || 0;
+          setTotalResults(total);
+          setTotalPages(Math.ceil(total / RESULTS_PER_PAGE));
+        } else {
+          // Fallback: if no pagination info, assume we have more if results.length === RESULTS_PER_PAGE
+          setTotalResults(response.results?.length || 0);
+          setTotalPages(response.results?.length === RESULTS_PER_PAGE ? currentPage + 2 : currentPage + 1);
+        }
         
         // Extract and store tasks from populated results
         const taskMap = new Map<string, NormalizedTask>();
@@ -106,70 +119,21 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       } catch (error) {
         console.error('Error loading results:', error);
         setResults([]);
-        setHasMore(false);
+        setTotalPages(0);
+        setTotalResults(0);
       } finally {
         setLoading(false);
       }
     };
     fetchResults();
-  }, [userId, getToken, module]);
+  }, [userId, getToken, module, currentPage]);
 
-  // Load more results when scrolling
-  const loadMore = React.useCallback(async () => {
-    if (loadingMore || !hasMore) return;
-    
-    setLoadingMore(true);
-    // Determine resultType based on module (same logic as initial fetch)
-    const resultType = (module === 'oralExpression' || module === 'writtenExpression') 
-      ? 'practice' 
-      : (module === 'reading' || module === 'listening') 
-        ? 'assignment' 
-        : undefined;
-    const response = await persistenceService.getAllResults(
-      userId, 
-      getToken, 
-      RESULTS_PER_PAGE, 
-      results.length,
-      resultType,
-      module,
-      undefined,
-      true // populateTasks
-    );
-    setResults(prev => [...prev, ...response.results]);
-    setHasMore(response.pagination?.hasMore ?? false);
-    
-    // Update tasks map with new tasks
-    setTasks(prev => {
-      const newMap = new Map(prev);
-      response.results?.forEach((result: any) => {
-        if (result.taskA) {
-          newMap.set(result.taskReferences?.taskA?.taskId || '', result.taskA);
-        }
-        if (result.taskB) {
-          newMap.set(result.taskReferences?.taskB?.taskId || '', result.taskB);
-        }
-      });
-      return newMap;
-    });
-    setLoadingMore(false);
-  }, [userId, getToken, results.length, loadingMore, hasMore, module]);
-
-  // Scroll detection for infinite scroll
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      // Load more when user is within 200px of bottom
-      if (scrollHeight - scrollTop - clientHeight < 200 && hasMore && !loadingMore) {
-        loadMore();
-      }
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [hasMore, loadingMore, loadMore]);
+  // Handle page change
+  const handlePageChange = ({ selected }: { selected: number }) => {
+    setCurrentPage(selected);
+    // Scroll to top when page changes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Filter results by module type and resultType (no mode filtering - show all)
   const filteredResults = results.filter(result => {
@@ -427,7 +391,8 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       );
 
       // The worker creates a NEW result, so we need to refresh the list to show it
-      // Reload results to include the new entry
+      // Reload results to include the new entry - go to first page
+      setCurrentPage(0);
       try {
         const resultType = (result.module === 'oralExpression' || result.module === 'writtenExpression') 
           ? 'practice' 
@@ -445,7 +410,13 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         
         // Update results list - new result will appear at the top (sorted by timestamp)
         setResults(response.results || []);
-        setHasMore(response.pagination?.hasMore ?? true);
+        
+        // Update pagination info
+        if (response.pagination) {
+          const total = response.pagination.total || 0;
+          setTotalResults(total);
+          setTotalPages(Math.ceil(total / RESULTS_PER_PAGE));
+        }
         
         // Extract and store tasks from populated results
         const taskMap = new Map<string, NormalizedTask>();
@@ -566,7 +537,48 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   };
 
   if (loading) {
-    return <div className="py-20 text-center animate-pulse text-slate-500 dark:text-slate-400">{t('history.syncing')}</div>;
+    return (
+      <div className="grid gap-2 pt-6">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="bg-indigo-100/70 dark:bg-slate-800/70 p-2 rounded border border-slate-200 dark:border-slate-700"
+          >
+            <div className="hidden sm:flex items-center gap-2">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <LoadingSkeleton variant="rectangular" width={60} height={24} />
+                <LoadingSkeleton variant="text" width={40} height={20} />
+              </div>
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <LoadingSkeleton variant="rectangular" width={70} height={24} />
+                <LoadingSkeleton variant="rectangular" width={50} height={24} />
+                <LoadingSkeleton variant="text" width={100} height={16} />
+                <LoadingSkeleton variant="text" width={80} height={16} />
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+              </div>
+            </div>
+            <div className="sm:hidden space-y-2">
+              <div className="flex items-center gap-1.5">
+                <LoadingSkeleton variant="rectangular" width={60} height={24} />
+                <LoadingSkeleton variant="text" width={40} height={20} />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <LoadingSkeleton variant="rectangular" width={70} height={24} />
+                <LoadingSkeleton variant="rectangular" width={50} height={24} />
+              </div>
+              <LoadingSkeleton variant="text" width="100%" height={16} />
+              <div className="flex gap-1.5">
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+                <LoadingSkeleton variant="rectangular" width={80} height={32} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   if (results.length === 0) {
@@ -583,12 +595,8 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
 
   return (
     <div className="h-full flex flex-col animate-in fade-in duration-700">
-
-      {/* Scrollable list container */}
-      <div 
-        ref={scrollContainerRef}
-        className="flex-1 min-h-0 overflow-y-auto pt-6"
-      >
+      {/* Results list container */}
+      <div className="flex-1 min-h-0 pt-6">
         {filteredResults.length === 0 && !loading ? (
           <div className="py-12 text-center bg-indigo-100/70 dark:bg-slate-800/70 rounded-2xl border border-slate-200 dark:border-slate-700 transition-colors">
             <p className="text-slate-500 dark:text-slate-400">{t('history.noResults')}</p>
@@ -715,9 +723,9 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             };
             
             return (
-            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
+            <div key={item._id || item.timestamp} className="bg-indigo-100/70 dark:bg-slate-800/70 p-2 rounded border border-slate-200 dark:border-slate-700 shadow-sm hover:border-indigo-300/50 dark:hover:border-indigo-600/50 hover:shadow-md transition-all">
               {/* Desktop: Single row layout */}
-              <div className="hidden sm:flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2">
                 {/* Left section: Mode badge, Score (only for reading/listening MCQ) */}
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
@@ -733,7 +741,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                 </div>
 
                 {/* Center section: CLB, CECR, Task, Date */}
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
                   {/* CLB Badge */}
                   {clbLevel && (
                     <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-1 rounded flex items-center gap-1 flex-shrink-0">
@@ -819,7 +827,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
               </div>
 
               {/* Mobile: Compact column layout */}
-              <div className="flex sm:hidden items-start gap-4">
+              <div className="flex sm:hidden items-start gap-2">
                 {/* Mode badge and Score (only for reading/listening MCQ) */}
                 <div className="flex flex-col items-start gap-2 flex-shrink-0">
                   <div className={`px-2 py-1 rounded border font-black text-xs uppercase tracking-wider ${getModeBadgeColor(item.mode)}`}>
@@ -837,7 +845,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                 {/* Main content */}
                 <div className="flex-1 min-w-0">
                   {/* First row: Badges and task */}
-                  <div className="flex items-center gap-2 flex-wrap mb-2">
+                  <div className="flex items-center gap-1.5 flex-wrap mb-1">
                     {clbLevel && (
                       <div className="bg-indigo-400 dark:bg-indigo-500 text-white px-2 py-1 rounded flex items-center gap-1 flex-shrink-0">
                         <span className="text-xs font-black uppercase tracking-wider opacity-80">CLB</span>
@@ -866,7 +874,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                   
                   {/* Title/Assignment name row */}
                   {item.title && (
-                    <div className="mb-2 flex items-center gap-2">
+                    <div className="mb-1 flex items-center gap-1.5">
                       <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                         {item.title}
                       </span>
@@ -880,7 +888,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
                   )}
                   
                   {/* Second row: Date and buttons */}
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-1.5">
                     <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
                       {formatDateFrench(item.timestamp)}
                     </span>
@@ -922,28 +930,43 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             );
           })}
             </div>
-            
-            {/* Loading more indicator */}
-            {loadingMore && (
-              <div className="py-8 text-center">
-                <div className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                  <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium">{t('status.loading')}</span>
-                </div>
-              </div>
-            )}
-            
-            {/* End of results indicator */}
-            {!hasMore && filteredResults.length > 0 && (
-              <div className="py-4 text-center">
-                <p className="text-xs text-slate-400 dark:text-slate-600 font-medium opacity-60">
-                  {t('history.endOfResults')}
-                </p>
-              </div>
-            )}
           </>
         )}
       </div>
+      
+      {/* Pagination controls */}
+      {!loading && totalPages > 1 && (
+        <div className="mt-6 flex justify-center">
+          <ReactPaginate
+            previousLabel={'←'}
+            nextLabel={'→'}
+            breakLabel={'...'}
+            pageCount={totalPages}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageChange}
+            forcePage={currentPage}
+            containerClassName="flex items-center gap-2"
+            pageClassName="px-3 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors"
+            pageLinkClassName="block"
+            previousClassName="px-3 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            previousLinkClassName="block"
+            nextClassName="px-3 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            nextLinkClassName="block"
+            breakClassName="px-2 text-slate-500 dark:text-slate-400"
+            activeClassName="bg-indigo-500 text-white border-indigo-500 dark:bg-indigo-600 dark:border-indigo-600"
+            activeLinkClassName="block"
+            disabledClassName="opacity-50 cursor-not-allowed"
+          />
+        </div>
+      )}
+      
+      {/* Results count info */}
+      {!loading && totalResults > 0 && (
+        <div className="mt-4 text-center text-sm text-slate-500 dark:text-slate-400">
+          Showing {currentPage * RESULTS_PER_PAGE + 1} to {Math.min((currentPage + 1) * RESULTS_PER_PAGE, totalResults)} of {totalResults} results
+        </div>
+      )}
     </div>
   );
 };

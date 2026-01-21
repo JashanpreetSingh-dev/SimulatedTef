@@ -1,7 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { SavedResult } from '../types';
 import { useUsage } from './useUsage';
+import { useLoading } from './useLoading';
 
 interface UseExamResultOptions {
   onSuccess?: (result: SavedResult) => void;
@@ -17,6 +18,23 @@ export const useExamResult = (options: UseExamResultOptions = {}) => {
   const navigate = useNavigate();
   const { completeSession } = useUsage();
   const [result, setResult] = useState<SavedResult | null>(null);
+  
+  // Use useLoading hook for better state management
+  const {
+    isLoading: hookLoading,
+    error: hookError,
+    startLoading: hookStartLoading,
+    stopLoading: hookStopLoading,
+  } = useLoading({
+    timeout: 120000, // 2 minutes timeout for evaluation
+    onError: (err) => {
+      if (onError) {
+        onError(err);
+      }
+    },
+  });
+
+  // Keep isLoading for backward compatibility
   const [isLoading, setIsLoading] = useState(false);
 
   const handleResult = useCallback((savedResult: SavedResult) => {
@@ -25,15 +43,18 @@ export const useExamResult = (options: UseExamResultOptions = {}) => {
     if (savedResult.isLoading) {
       // Result is still loading - show loading state
       setIsLoading(true);
+      hookStartLoading('Evaluating result...');
       return;
     }
 
     // Result is complete
     setIsLoading(false);
+    hookStopLoading(true);
 
     // Check if result indicates an error (has error message in feedback)
     if (savedResult.feedback?.startsWith('Erreur:')) {
       const error = new Error(savedResult.feedback);
+      hookStopLoading(false, error);
       if (onError) {
         onError(error);
       }
@@ -67,19 +88,31 @@ export const useExamResult = (options: UseExamResultOptions = {}) => {
   const handleError = useCallback((error: Error | string) => {
     setIsLoading(false);
     const errorObj = error instanceof Error ? error : new Error(error);
+    hookStopLoading(false, errorObj);
     if (onError) {
       onError(errorObj);
     }
-  }, [onError]);
+  }, [onError, hookStopLoading]);
 
   const clearResult = useCallback(() => {
     setResult(null);
     setIsLoading(false);
-  }, []);
+    hookStopLoading(true);
+  }, [hookStopLoading]);
+
+  // Sync isLoading with hookLoading for backward compatibility
+  useEffect(() => {
+    if (hookLoading && !result?.isLoading) {
+      setIsLoading(true);
+    } else if (!hookLoading && !result?.isLoading) {
+      setIsLoading(false);
+    }
+  }, [hookLoading, result?.isLoading]);
 
   return {
     result,
-    isLoading,
+    isLoading, // Backward compatible
+    error: hookError, // New: expose error
     handleResult,
     handleError,
     clearResult,
