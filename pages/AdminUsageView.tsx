@@ -135,7 +135,16 @@ export function AdminUsageView() {
           </div>
 
           {/* Summary Cards */}
-          {summary && (
+          {loading && !summary ? (
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse">
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-20"></div>
+                  <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                </div>
+              ))}
+            </div>
+          ) : summary ? (
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
                 <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sessions</div>
@@ -168,7 +177,7 @@ export function AdminUsageView() {
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Filters */}
           <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 space-y-4">
@@ -232,7 +241,15 @@ export function AdminUsageView() {
               </h2>
             </div>
             <div className="divide-y divide-slate-200 dark:divide-slate-700">
-              {logs.length === 0 ? (
+              {loading && logs.length === 0 ? (
+                <div className="p-8 space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="h-16 bg-slate-100 dark:bg-slate-700/50 rounded-lg"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : logs.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                   Aucun journal trouvé
                 </div>
