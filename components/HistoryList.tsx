@@ -6,6 +6,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { persistenceService } from '../services/persistence';
 import { assignmentService } from '../services/assignmentService';
 import { evaluationJobService } from '../services/evaluationJobService';
+import { geminiService } from '../services/gemini';
 import { SavedResult, NormalizedTask } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
 
@@ -214,24 +215,77 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       let transcript = '';
       let writtenSectionAText = '';
       let writtenSectionBText = '';
+      let fluencyAnalysis: any | null = null;
       
       if (result.module === 'oralExpression') {
-        // For oral expression, get transcript from moduleData or legacy fields
-        if (result.moduleData && result.moduleData.type === 'oralExpression') {
-          if (result.mode === 'partA' || result.mode === 'full') {
-            transcript = result.moduleData.sectionA?.text || '';
-          }
-          if (result.mode === 'partB' || result.mode === 'full') {
-            const sectionBText = result.moduleData.sectionB?.text || '';
-            if (result.mode === 'full') {
-              transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
+        // For oral expression, re-transcribe from audio file if available
+        if (result.recordingId) {
+          try {
+            console.log('🎤 Re-transcribing audio from recording:', result.recordingId);
+            const audioBlob = await persistenceService.downloadRecording(result.recordingId, getToken);
+            
+            if (audioBlob) {
+              // Re-transcribe the audio file
+              const transcriptionResult = await geminiService.transcribeAudio(audioBlob);
+              transcript = transcriptionResult.transcript || '';
+              fluencyAnalysis = transcriptionResult.fluency_analysis || null;
+              console.log('✅ Audio re-transcribed successfully:', transcript.substring(0, 100) + (transcript.length > 100 ? '...' : ''));
             } else {
-              transcript = sectionBText;
+              console.warn('⚠️ Failed to download audio, falling back to saved transcript');
+              // Fallback to saved transcript if download fails
+              if (result.moduleData && result.moduleData.type === 'oralExpression') {
+                if (result.mode === 'partA' || result.mode === 'full') {
+                  transcript = result.moduleData.sectionA?.text || '';
+                }
+                if (result.mode === 'partB' || result.mode === 'full') {
+                  const sectionBText = result.moduleData.sectionB?.text || '';
+                  if (result.mode === 'full') {
+                    transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
+                  } else {
+                    transcript = sectionBText;
+                  }
+                }
+              } else {
+                transcript = result.transcript || '';
+              }
+            }
+          } catch (error) {
+            console.error('❌ Error re-transcribing audio:', error);
+            // Fallback to saved transcript if transcription fails
+            if (result.moduleData && result.moduleData.type === 'oralExpression') {
+              if (result.mode === 'partA' || result.mode === 'full') {
+                transcript = result.moduleData.sectionA?.text || '';
+              }
+              if (result.mode === 'partB' || result.mode === 'full') {
+                const sectionBText = result.moduleData.sectionB?.text || '';
+                if (result.mode === 'full') {
+                  transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
+                } else {
+                  transcript = sectionBText;
+                }
+              }
+            } else {
+              transcript = result.transcript || '';
             }
           }
         } else {
-          // Fallback to legacy transcript field
-          transcript = result.transcript || '';
+          // No recording ID, use saved transcript
+          if (result.moduleData && result.moduleData.type === 'oralExpression') {
+            if (result.mode === 'partA' || result.mode === 'full') {
+              transcript = result.moduleData.sectionA?.text || '';
+            }
+            if (result.mode === 'partB' || result.mode === 'full') {
+              const sectionBText = result.moduleData.sectionB?.text || '';
+              if (result.mode === 'full') {
+                transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
+              } else {
+                transcript = sectionBText;
+              }
+            }
+          } else {
+            // Fallback to legacy transcript field
+            transcript = result.transcript || '';
+          }
         }
       } else if (result.module === 'writtenExpression') {
         // For written expression, get text from moduleData
@@ -355,7 +409,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         taskPartA, // taskPartA
         taskPartB, // taskPartB
         undefined, // eo2RemainingSeconds
-        undefined, // fluencyAnalysis
+        fluencyAnalysis || undefined, // fluencyAnalysis - use fresh analysis if available
         getToken,
         writtenSectionAText || undefined, // writtenSectionAText
         writtenSectionBText || undefined, // writtenSectionBText

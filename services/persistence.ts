@@ -3,7 +3,7 @@ import { EvaluationResult, SavedResult } from '../types';
 import { TaskReference, TaskType, generateTaskId, NormalizedTask } from '../types/task';
 import { TEFTask, WrittenTask, ReadingTask, ListeningTask } from '../types';
 import { mongoDBService } from './mongodb';
-import { authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
+import { authenticatedFetch, authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
 
 const STORAGE_KEY = 'tef_master_results';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
@@ -93,6 +93,65 @@ export const persistenceService = {
       }
     } catch (error) {
       console.error('❌ Recording upload error:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Downloads audio recording as Blob
+   * @param recordingId - The recording ID to download
+   * @param authTokenOrGetter - Optional Clerk session token for authentication, or a function that returns a token
+   */
+  async downloadRecording(
+    recordingId: string,
+    authTokenOrGetter?: string | null | TokenGetter
+  ): Promise<Blob | null> {
+    try {
+      const url = `${BACKEND_URL}/api/recordings/${recordingId}`;
+      
+      if (typeof authTokenOrGetter === 'function') {
+        try {
+          const response = await authenticatedFetch(url, {
+            method: 'GET',
+            getToken: authTokenOrGetter,
+          });
+          
+          if (!response.ok) {
+            console.error('⚠️ Recording download failed:', response.status);
+            return null;
+          }
+          
+          const blob = await response.blob();
+          console.log('✅ Audio recording downloaded:', recordingId, `(${(blob.size / 1024).toFixed(2)} KB)`);
+          return blob;
+        } catch (error) {
+          console.error('⚠️ Recording download failed:', error);
+          return null;
+        }
+      } else {
+        // Fallback to regular fetch for backward compatibility
+        const headers: HeadersInit = {};
+        if (authTokenOrGetter) {
+          headers['Authorization'] = `Bearer ${authTokenOrGetter}`;
+        }
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          headers,
+        });
+        
+        if (response.ok) {
+          const blob = await response.blob();
+          console.log('✅ Audio recording downloaded:', recordingId, `(${(blob.size / 1024).toFixed(2)} KB)`);
+          return blob;
+        } else {
+          const errorText = await response.text();
+          console.error('⚠️ Recording download failed:', response.status, errorText);
+          return null;
+        }
+      }
+    } catch (error) {
+      console.error('❌ Recording download error:', error);
       return null;
     }
   },
