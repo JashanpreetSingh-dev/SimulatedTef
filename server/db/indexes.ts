@@ -372,6 +372,37 @@ export async function createIndexes(): Promise<void> {
     );
     console.log(' Created index: batchAssignments.batchAssignmentId_idx');
     
+    // Conversation Logs collection indexes
+    const conversationLogsCollection = db.collection('conversationLogs');
+    
+    // Compound index for user log queries sorted by start time
+    await conversationLogsCollection.createIndex(
+      { userId: 1, startedAt: -1 },
+      { name: 'userId_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_startedAt_idx');
+    
+    // Index for session detail queries
+    await conversationLogsCollection.createIndex(
+      { sessionId: 1 },
+      { name: 'sessionId_idx' }
+    );
+    console.log(' Created index: conversationLogs.sessionId_idx');
+    
+    // Compound index for filtered queries by examType
+    await conversationLogsCollection.createIndex(
+      { userId: 1, examType: 1, startedAt: -1 },
+      { name: 'userId_examType_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_examType_startedAt_idx');
+    
+    // Compound index for filtering by part (A or B)
+    await conversationLogsCollection.createIndex(
+      { userId: 1, part: 1, startedAt: -1 },
+      { name: 'userId_part_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_part_startedAt_idx');
+    
     console.log(' All database indexes created successfully');
   } catch (error: any) {
     console.error('Error creating indexes:', error.message);

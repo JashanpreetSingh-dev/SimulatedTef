@@ -14,9 +14,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   
+  // Check if user has admin role in any organization membership
+  const isAdmin = user?.organizationMemberships?.some(
+    (membership) => membership.role === 'org:admin'
+  ) ?? false;
+
   // Check if user has professor role in any organization membership
+  // Admins also have all professor permissions
   const isProfessor = user?.organizationMemberships?.some(
-    (membership) => membership.role === 'org:professor'
+    (membership) => membership.role === 'org:professor' || membership.role === 'org:admin'
   ) ?? false;
 
   const isActive = (path: string) => location.pathname === path;
@@ -62,6 +68,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   {t('nav.createAssignment')}
                 </button>
               </>
+            )}
+            {isAdmin && (
+              <button 
+                onClick={() => navigate('/admin/usage')}
+                className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                Usage Global
+              </button>
             )}
           </div>
         </div>
@@ -178,6 +191,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     {t('nav.createAssignment')}
                   </button>
                 </>
+              )}
+              {isAdmin && (
+                <button 
+                  onClick={() => handleNavigate('/admin/usage')}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive('/admin/usage')
+                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Usage Global
+                </button>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
               <button 

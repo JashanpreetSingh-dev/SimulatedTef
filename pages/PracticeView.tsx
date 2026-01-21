@@ -135,7 +135,7 @@ export function PracticeView() {
                 ) : selectedModule === 'listening' ? (
                   <ListeningTab />
                 ) : null
-              ) : (
+              ) : practiceTab === 'history' ? (
                 /* History Tab Content */
                 <div className="flex-1 min-h-0 overflow-hidden">
                   <HistoryList module={
@@ -145,7 +145,7 @@ export function PracticeView() {
                     selectedModule === 'listening' ? 'listening' : 'oralExpression'
                   } />
                 </div>
-              )}
+              ) : null}
             </div>
           </>
         )}

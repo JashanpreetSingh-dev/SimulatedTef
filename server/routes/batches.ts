@@ -14,7 +14,7 @@ const router = Router();
 router.use(requireAuth);
 
 // POST /api/batches - Create batch (professor only)
-router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { name } = req.body;
   const userId = req.userId!;
   const orgId = req.orgId;
@@ -32,7 +32,7 @@ router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request,
 }));
 
 // GET /api/batches - List professor's batches (professor only)
-router.get('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.get('/', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId!;
 
   const batches = await batchService.getBatchesByProfessor(userId);
@@ -52,7 +52,7 @@ router.get('/my', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // GET /api/batches/students - Get all students in organization (professor only)
-router.get('/students', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.get('/students', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const orgId = req.orgId;
 
   if (!orgId) {
@@ -90,7 +90,7 @@ router.get('/:batchId', asyncHandler(async (req: Request, res: Response) => {
 }));
 
 // PUT /api/batches/:batchId - Update batch name (professor only)
-router.put('/:batchId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.put('/:batchId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchId } = req.params;
   const userId = req.userId!;
   const { name } = req.body;
@@ -114,7 +114,7 @@ router.put('/:batchId', requireRole('org:professor'), asyncHandler(async (req: R
 }));
 
 // DELETE /api/batches/:batchId - Delete batch (professor only)
-router.delete('/:batchId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.delete('/:batchId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchId } = req.params;
   const userId = req.userId!;
 
@@ -133,7 +133,7 @@ router.delete('/:batchId', requireRole('org:professor'), asyncHandler(async (req
 }));
 
 // POST /api/batches/:batchId/students - Add student (professor only)
-router.post('/:batchId/students', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/:batchId/students', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchId } = req.params;
   const userId = req.userId!;
   const orgId = req.orgId;
@@ -162,7 +162,7 @@ router.post('/:batchId/students', requireRole('org:professor'), asyncHandler(asy
 }));
 
 // DELETE /api/batches/:batchId/students/:studentId - Remove student (professor only)
-router.delete('/:batchId/students/:studentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.delete('/:batchId/students/:studentId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchId, studentId } = req.params;
   const userId = req.userId!;
 

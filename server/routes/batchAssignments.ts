@@ -14,7 +14,7 @@ const router = Router();
 router.use(requireAuth);
 
 // POST /api/batch-assignments - Assign assessment to batch (professor only)
-router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.post('/', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchId, assignmentId } = req.body;
   const userId = req.userId!;
   const orgId = req.orgId;
@@ -42,7 +42,7 @@ router.post('/', requireRole('org:professor'), asyncHandler(async (req: Request,
 }));
 
 // DELETE /api/batch-assignments/:batchAssignmentId - Unassign (professor only)
-router.delete('/:batchAssignmentId', requireRole('org:professor'), asyncHandler(async (req: Request, res: Response) => {
+router.delete('/:batchAssignmentId', requireRole('org:professor', 'org:admin'), asyncHandler(async (req: Request, res: Response) => {
   const { batchAssignmentId } = req.params;
 
   await batchAssignmentService.unassignFromBatch(batchAssignmentId);
