@@ -125,56 +125,56 @@ export function AdminUsageView() {
 
   return (
     <DashboardLayout>
-      <div className="max-w-7xl mx-auto p-6 md:p-8 space-y-6">
-        <div className="space-y-4">
+      <div className="max-w-7xl mx-auto p-4 md:p-6 space-y-3">
+        <div className="space-y-2">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
+            <h1 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100">
               {t('admin.usageTitle')}
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {t('admin.usageSubtitle')}
             </p>
           </div>
 
           {/* Summary Cards */}
           {loading && !summary ? (
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 animate-pulse">
-                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded mb-2 w-20"></div>
-                  <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-16"></div>
+                <div key={i} className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700 animate-pulse">
+                  <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded mb-1 w-16"></div>
+                  <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-12"></div>
                 </div>
               ))}
             </div>
           ) : summary ? (
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.sessions')}</div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('admin.sessions')}</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {summary.totalSessions.toLocaleString()}
                 </div>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.users')}</div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('admin.users')}</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {summary.uniqueUsers.toLocaleString()}
                 </div>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.billedTokens')}</div>
-                <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('admin.billedTokens')}</div>
+                <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
                   {formatTokenCount(summary.totalBilledTokens)}
                 </div>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.finalSize')}</div>
-                <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('admin.finalSize')}</div>
+                <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
                   {formatTokenCount(summary.totalTokens)}
                 </div>
               </div>
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.totalCost')}</div>
-                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{t('admin.totalCost')}</div>
+                <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
                   {formatCost(summary.totalCost)}
                 </div>
               </div>
@@ -182,16 +182,16 @@ export function AdminUsageView() {
           ) : null}
 
           {/* Filters */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t('admin.examType')}
                 </label>
                 <select
                   value={examTypeFilter}
                   onChange={(e) => setExamTypeFilter(e.target.value as 'partA' | 'partB' | 'all')}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
+                  className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
                 >
                   <option value="all">{t('admin.allTypes')}</option>
                   <option value="partA">{t('practice.sectionA')}</option>
@@ -199,25 +199,25 @@ export function AdminUsageView() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t('admin.startDate')}
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
+                  className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                   {t('admin.endDate')}
                 </label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
+                  className="w-full px-2 py-1 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
                 />
               </div>
               <div className="flex items-end">
@@ -227,7 +227,7 @@ export function AdminUsageView() {
                     setStartDate('');
                     setEndDate('');
                   }}
-                  className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors"
+                  className="w-full px-3 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors"
                 >
                   {t('admin.reset')}
                 </button>
@@ -236,23 +236,23 @@ export function AdminUsageView() {
           </div>
 
           {/* Logs List */}
-          <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+          <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="p-2 border-b border-slate-200 dark:border-slate-700">
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
                 {t('admin.conversationLogs')} ({logs.length} {hasMore ? '+' : ''})
               </h2>
             </div>
             <div className="divide-y divide-slate-200 dark:divide-slate-700">
               {loading && logs.length === 0 ? (
-                <div className="p-8 space-y-3">
+                <div className="p-2 space-y-1">
                   {[...Array(5)].map((_, i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="h-16 bg-slate-100 dark:bg-slate-700/50 rounded-lg"></div>
+                      <div className="h-10 bg-slate-100 dark:bg-slate-700/50 rounded"></div>
                     </div>
                   ))}
                 </div>
               ) : logs.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 dark:text-slate-400">
+                <div className="p-2 text-center text-slate-500 dark:text-slate-400">
                   {t('admin.noLogsFound')}
                 </div>
               ) : (
@@ -260,12 +260,12 @@ export function AdminUsageView() {
                   <div
                     key={log._id || log.sessionId}
                     onClick={() => setSelectedLog(log)}
-                    className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
+                    className="p-2 hover:bg-slate-50 dark:hover:bg-slate-700/50 cursor-pointer transition-colors"
                   >
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-bold ${
                             log.part === 'A'
                               ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                               : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
@@ -276,7 +276,7 @@ export function AdminUsageView() {
                             User: {log.userId.substring(0, 8)}...
                           </span>
                         </div>
-                        <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-1 truncate">
+                        <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100 mb-0.5 truncate">
                           {log.taskTitle}
                         </h3>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -284,7 +284,7 @@ export function AdminUsageView() {
                         </p>
                       </div>
                       <div className="text-right flex-shrink-0">
-                        <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-1">
+                        <div className="text-xs font-bold text-slate-900 dark:text-slate-100 mb-0.5">
                           {formatTokenCount(log.metrics.totalBilledTokens || log.metrics.totalTokens)} tokens
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">
@@ -297,11 +297,11 @@ export function AdminUsageView() {
               )}
             </div>
             {hasMore && (
-              <div className="p-4 border-t border-slate-200 dark:border-slate-700 text-center">
+              <div className="p-2 border-t border-slate-200 dark:border-slate-700 text-center">
                 <button
                   onClick={loadMore}
                   disabled={loadingMore}
-                  className="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded-lg text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-colors disabled:opacity-50"
+                  className="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-colors disabled:opacity-50"
                 >
                   {loadingMore ? t('admin.loading') : t('admin.loadMore')}
                 </button>
