@@ -73,7 +73,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <button 
                 onClick={() => navigate('/admin/usage')}
                 className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-                Usage Global
+                {t('admin.usageGlobal')}
               </button>
             )}
           </div>
@@ -201,7 +201,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                       : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  Usage Global
+                  {t('admin.usageGlobal')}
                 </button>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />

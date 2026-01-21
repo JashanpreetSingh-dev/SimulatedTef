@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { adminService, OrgConversationLog } from '../services/adminService';
 import { formatDateFrench } from '../utils/dateFormatting';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const LOGS_PER_PAGE = 50;
 
@@ -11,6 +12,7 @@ export function AdminUsageView() {
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [logs, setLogs] = useState<OrgConversationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -115,7 +117,7 @@ export function AdminUsageView() {
       <DashboardLayout>
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin w-8 h-8 border-4 border-indigo-400 border-t-transparent rounded-full" />
-          <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Chargement des journaux...</span>
+          <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">{t('admin.loadingLogs')}</span>
         </div>
       </DashboardLayout>
     );
@@ -127,10 +129,10 @@ export function AdminUsageView() {
         <div className="space-y-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Usage Global de l'Organisation
+              {t('admin.usageTitle')}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Vue d'ensemble de l'utilisation de l'API Gemini pour tous les utilisateurs
+              {t('admin.usageSubtitle')}
             </p>
           </div>
 
@@ -147,31 +149,31 @@ export function AdminUsageView() {
           ) : summary ? (
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sessions</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.sessions')}</div>
                 <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {summary.totalSessions.toLocaleString()}
                 </div>
               </div>
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Utilisateurs</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.users')}</div>
                 <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {summary.uniqueUsers.toLocaleString()}
                 </div>
               </div>
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Tokens Facturés</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.billedTokens')}</div>
                 <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                   {formatTokenCount(summary.totalBilledTokens)}
                 </div>
               </div>
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Taille Finale</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.finalSize')}</div>
                 <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                   {formatTokenCount(summary.totalTokens)}
                 </div>
               </div>
               <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">Coût Total</div>
+                <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">{t('admin.totalCost')}</div>
                 <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                   {formatCost(summary.totalCost)}
                 </div>
@@ -184,21 +186,21 @@ export function AdminUsageView() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Type d'examen
+                  {t('admin.examType')}
                 </label>
                 <select
                   value={examTypeFilter}
                   onChange={(e) => setExamTypeFilter(e.target.value as 'partA' | 'partB' | 'all')}
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm font-bold text-slate-900 dark:text-slate-100"
                 >
-                  <option value="all">Tous</option>
-                  <option value="partA">Partie A</option>
-                  <option value="partB">Partie B</option>
+                  <option value="all">{t('admin.allTypes')}</option>
+                  <option value="partA">{t('practice.sectionA')}</option>
+                  <option value="partB">{t('practice.sectionB')}</option>
                 </select>
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Date de début
+                  {t('admin.startDate')}
                 </label>
                 <input
                   type="date"
@@ -209,7 +211,7 @@ export function AdminUsageView() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
-                  Date de fin
+                  {t('admin.endDate')}
                 </label>
                 <input
                   type="date"
@@ -227,7 +229,7 @@ export function AdminUsageView() {
                   }}
                   className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors"
                 >
-                  Réinitialiser
+                  {t('admin.reset')}
                 </button>
               </div>
             </div>
@@ -237,7 +239,7 @@ export function AdminUsageView() {
           <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
             <div className="p-4 border-b border-slate-200 dark:border-slate-700">
               <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
-                Journaux de Conversation ({logs.length} {hasMore ? '+' : ''})
+                {t('admin.conversationLogs')} ({logs.length} {hasMore ? '+' : ''})
               </h2>
             </div>
             <div className="divide-y divide-slate-200 dark:divide-slate-700">
@@ -251,7 +253,7 @@ export function AdminUsageView() {
                 </div>
               ) : logs.length === 0 ? (
                 <div className="p-8 text-center text-slate-500 dark:text-slate-400">
-                  Aucun journal trouvé
+                  {t('admin.noLogsFound')}
                 </div>
               ) : (
                 logs.map((log) => (
@@ -268,7 +270,7 @@ export function AdminUsageView() {
                               ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                               : 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
                           }`}>
-                            Partie {log.part}
+                            {t('admin.part')} {log.part}
                           </span>
                           <span className="text-xs text-slate-400 dark:text-slate-500">
                             User: {log.userId.substring(0, 8)}...
@@ -301,7 +303,7 @@ export function AdminUsageView() {
                   disabled={loadingMore}
                   className="px-4 py-2 bg-indigo-100 dark:bg-indigo-900/30 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded-lg text-sm font-bold text-indigo-700 dark:text-indigo-300 transition-colors disabled:opacity-50"
                 >
-                  {loadingMore ? 'Chargement...' : 'Charger plus'}
+                  {loadingMore ? t('admin.loading') : t('admin.loadMore')}
                 </button>
               </div>
             )}
@@ -321,7 +323,7 @@ export function AdminUsageView() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                Détails de la Session
+                {t('admin.sessionDetails')}
               </h2>
               <button
                 onClick={() => setSelectedLog(null)}
@@ -333,49 +335,49 @@ export function AdminUsageView() {
 
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2">Informations</h3>
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2">{t('admin.information')}</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Tâche:</span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('admin.task')}:</span>
                     <span className="font-bold text-slate-900 dark:text-slate-100">{selectedLog.taskTitle}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Partie:</span>
-                    <span className="font-bold text-slate-900 dark:text-slate-100">Partie {selectedLog.part}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('admin.part')}:</span>
+                    <span className="font-bold text-slate-900 dark:text-slate-100">{t('results.section')} {selectedLog.part}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">User ID:</span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('admin.userId')}:</span>
                     <span className="font-bold text-slate-900 dark:text-slate-100 font-mono text-xs">{selectedLog.userId}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500 dark:text-slate-400">Date:</span>
+                    <span className="text-slate-500 dark:text-slate-400">{t('admin.date')}:</span>
                     <span className="font-bold text-slate-900 dark:text-slate-100">{formatDateFrench(selectedLog.startedAt)}</span>
                   </div>
                 </div>
               </div>
 
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2">Token Usage</h3>
+                <h3 className="font-bold text-slate-900 dark:text-slate-100 mb-2">{t('admin.tokenUsage')}</h3>
                 <div className="grid grid-cols-3 gap-4 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                       {formatTokenCount(selectedLog.metrics.totalTokens)}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Conversation Size</div>
-                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">(Final context)</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('admin.conversationSize')}</div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('admin.finalContext')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                       {formatTokenCount(selectedLog.metrics.totalBilledTokens || selectedLog.metrics.totalTokens)}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Total Billed</div>
-                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">(All turns)</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('admin.totalBilled')}</div>
+                    <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('admin.allTurns')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                       {formatCost(selectedLog.metrics.totalCost)}
                     </div>
-                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">Total Cost</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('admin.totalCostLabel')}</div>
                   </div>
                 </div>
               </div>
