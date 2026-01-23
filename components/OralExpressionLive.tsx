@@ -75,7 +75,10 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
+  const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const usedCounterArgsRef = useRef<string[]>([]); // Track used counter-argument identifiers for Section B
+  const counterArgIdMapRef = useRef<Map<string, string>>(new Map()); // Map counter-argument text to identifier
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -197,6 +200,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       clearTimeout(userSilenceTimeoutRef.current);
       userSilenceTimeoutRef.current = null;
     }
+    // Reset time update tracking
+    hasSentTimeUpdateRef.current = 0;
+    // Reset counter-argument tracking
+    usedCounterArgsRef.current = [];
+    counterArgIdMapRef.current = new Map();
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
@@ -317,6 +325,39 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
       hasSent60ControlRef.current = false;
+      hasSentTimeUpdateRef.current = 0; // Reset time update tracking
+      
+      // Initialize counter-argument tracking for Section B
+      if (currentPart === 'B') {
+        usedCounterArgsRef.current = [];
+        // Extract and create identifier mapping for counter-arguments
+        const validCounterArgs = currentTask.counter_arguments?.filter(arg => 
+          !arg.includes('Liste de contre-arguments') && 
+          !arg.includes('contre-arguments possibles') &&
+          arg.trim().length > 0
+        ) || [];
+        
+        // Create mapping: counter-argument text (without ID format) -> identifier
+        // Look for [ID:identifier] or [COUNTER_ID:identifier] format in the counter-argument string
+        const idMap = new Map<string, string>();
+        validCounterArgs.forEach(arg => {
+          // Look for [ID:identifier] or [COUNTER_ID:identifier] format
+          const idMatch = arg.match(/\[(?:ID|COUNTER_ID):([^\]]+)\]/i);
+          if (idMatch) {
+            const identifier = idMatch[1].trim().toLowerCase();
+            // Remove the ID format from the argument text for display/AI
+            const cleanArg = arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim();
+            idMap.set(cleanArg, identifier);
+          } else {
+            // Fallback: if no ID format found, use index (shouldn't happen if data is properly formatted)
+            console.warn(`⚠️ Counter-argument missing ID format: "${arg.substring(0, 50)}..."`);
+            const fallbackId = `arg${idMap.size}`;
+            idMap.set(arg, fallbackId);
+          }
+        });
+        counterArgIdMapRef.current = idMap;
+        console.log(`📋 Loaded ${validCounterArgs.length} counter-arguments with identifier mapping for Section B`);
+      }
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -540,6 +581,40 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                     clearTimeout(userSilenceTimeoutRef.current);
                   }
                   
+                  // Inject tracking information for Section B when user finishes speaking
+                  if (currentPart === 'B' && sessionRef.current) {
+                    const messages: string[] = [];
+                    
+                    // Inject time remaining if critical (< 60s)
+                    if (timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
+                      hasSentTimeUpdateRef.current = timeLeft;
+                      messages.push(`Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`);
+                    }
+                    
+                    // Inject used counter-arguments list to prevent repetition
+                    if (usedCounterArgsRef.current.length > 0) {
+                      const usedList = usedCounterArgsRef.current.join(', ');
+                      messages.push(`Contre-arguments déjà utilisés: ${usedList}. Tu ne dois PAS répéter ces contre-arguments. Continue avec des contre-arguments DIFFÉRENTS de la liste.`);
+                    }
+                    
+                    // Send combined message if any tracking info to send
+                    if (messages.length > 0) {
+                      try {
+                        sessionRef.current.sendRealtimeInput({
+                          text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): ${messages.join(' ')}`
+                        });
+                        if (timeLeft < 60 && timeLeft > 0) {
+                          console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
+                        }
+                        if (usedCounterArgsRef.current.length > 0) {
+                          console.log(`📋 Injected used counter-arguments: ${usedCounterArgsRef.current.join(', ')}`);
+                        }
+                      } catch (e) {
+                        console.debug('Failed to send tracking update', e);
+                      }
+                    }
+                  }
+                  
                   // After brief silence, show "thinking" indicator
                   userSilenceTimeoutRef.current = setTimeout(() => {
                     if (!isModelSpeaking && !isUserSpeaking && isMountedRef.current) {
@@ -732,7 +807,25 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           
           // Also capture model's output transcription for display (examiner speech)
           if (message.serverContent?.outputTranscription) {
-            const modelText = message.serverContent.outputTranscription.text;
+            let modelText = message.serverContent.outputTranscription.text;
+            
+            // Parse counter-argument identifier from Section B responses
+            if (currentPart === 'B' && modelText && modelText.trim().length > 0) {
+              // Look for __COUNTER_ID:identifier__ pattern at the end of the response
+              const counterMatch = modelText.match(/__COUNTER_ID:([^_]+)__/i);
+              if (counterMatch) {
+                const counterId = counterMatch[1].trim().toLowerCase();
+                // Remove the internal format from the text before displaying
+                modelText = modelText.replace(/__COUNTER_ID:[^_]+__/gi, '').trim();
+                
+                // Add to used list if not already there
+                if (!usedCounterArgsRef.current.includes(counterId)) {
+                  usedCounterArgsRef.current.push(counterId);
+                  console.log(`📌 Tracked counter-argument identifier: ${counterId} (total used: ${usedCounterArgsRef.current.length})`);
+                }
+              }
+            }
+            
             // Don't accumulate model speech in transcripts - only show in UI
             setTranscription(prev => modelText);
           }
@@ -878,6 +971,37 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
+      
+      // Initialize counter-argument tracking for Part B
+      usedCounterArgsRef.current = [];
+      const partBTask = scenario.officialTasks.partB;
+      const validCounterArgs = partBTask.counter_arguments?.filter(arg => 
+        !arg.includes('Liste de contre-arguments') && 
+        !arg.includes('contre-arguments possibles') &&
+        arg.trim().length > 0
+      ) || [];
+      
+      // Create mapping: counter-argument text (without ID format) -> identifier
+      // Look for [ID:identifier] or [COUNTER_ID:identifier] format in the counter-argument string
+      const idMap = new Map<string, string>();
+      validCounterArgs.forEach(arg => {
+        // Look for [ID:identifier] or [COUNTER_ID:identifier] format
+        const idMatch = arg.match(/\[(?:ID|COUNTER_ID):([^\]]+)\]/i);
+        if (idMatch) {
+          const identifier = idMatch[1].trim().toLowerCase();
+          // Remove the ID format from the argument text for display/AI
+          const cleanArg = arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim();
+          idMap.set(cleanArg, identifier);
+        } else {
+          // Fallback: if no ID format found, use index (shouldn't happen if data is properly formatted)
+          console.warn(`⚠️ Counter-argument missing ID format: "${arg.substring(0, 50)}..."`);
+          const fallbackId = `arg${idMap.size}`;
+          idMap.set(arg, fallbackId);
+        }
+      });
+      counterArgIdMapRef.current = idMap;
+      console.log(`📋 Loaded ${validCounterArgs.length} counter-arguments with identifier mapping for Part B`);
+      hasSentTimeUpdateRef.current = 0; // Reset time update tracking for Part B
       console.log('✅ Ready for Part B - user can click mic to start');
       // Part A chunks are now saved in recordedChunksPartARef, Part B will start fresh
     } else {
@@ -1436,19 +1560,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                   playInstructionsAndStartSession();
                 }
               }}
-              disabled={status === 'connecting' || status === 'evaluating'}
+              disabled={status === 'connecting'}
               className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-12 relative z-10 cursor-pointer ${
                 status === 'active' 
                   ? 'bg-rose-300 dark:bg-rose-500 hover:bg-rose-400 dark:hover:bg-rose-600 ring-rose-300/20 dark:ring-rose-500/20 active:scale-90' 
                   : 'bg-indigo-100/70 dark:bg-slate-700/50 hover:bg-indigo-100 dark:hover:bg-slate-700 ring-white/10 dark:ring-white/5 text-slate-900 dark:text-slate-100 hover:scale-105 active:scale-95'
-              } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${status === 'connecting' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" /> : 
-               status === 'evaluating' ? <span className="text-xl md:text-2xl animate-bounce">⚖️</span> :
-               <>
-                <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
-                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
-               </>}
+              {status === 'connecting' ? (
+                <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" />
+              ) : (
+                <>
+                  <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
+                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
+                </>
+              )}
             </button>
           </div>
 

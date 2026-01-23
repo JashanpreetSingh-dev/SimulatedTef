@@ -401,6 +401,25 @@ export const geminiService = {
     // Use the new prompt system
     const systemInstruction = makeExamInstructions(task, part, ocrFacts);
 
+    // Section B needs a larger context window due to longer duration (35 min vs 25 min)
+    // and more complex back-and-forth conversation with counter-arguments
+    const isSectionB = part === 'B';
+    const contextWindowConfig = isSectionB
+      ? {
+          // Section B: Larger window to preserve more conversation history and time updates
+          slidingWindow: {
+            targetTokens: 1000, // Keep at least 1000 tokens in context (vs 500 for Section A)
+          },
+          triggerTokens: 1500, // Start compressing when context exceeds 1500 tokens (vs 750 for Section A)
+        }
+      : {
+          // Section A: Smaller window is sufficient for shorter, simpler interactions
+          slidingWindow: {
+            targetTokens: 500, // Keep at least 500 tokens in context
+          },
+          triggerTokens: 750, // Start compressing when context exceeds 750 tokens
+        };
+
     const config: any = {
       responseModalities: [Modality.AUDIO],
       speechConfig: {
@@ -411,12 +430,7 @@ export const geminiService = {
       // inputAudioTranscription: {}, // User's speech transcription
       // Cost optimization: Enable context window compression to extend sessions and reduce costs
       // See: https://ai.google.dev/api/live#ContextWindowCompressionConfig
-      contextWindowCompression: {
-        slidingWindow: {
-          targetTokens: 500, // Keep at least 5000 tokens in context
-        },
-        triggerTokens: 750, // Start compressing when context exceeds 1000 tokens
-      },
+      contextWindowCompression: contextWindowConfig,
     };
 
     // Add timeout configs if provided (if the SDK supports them)
