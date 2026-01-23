@@ -46,19 +46,29 @@ export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpressio
 
   const cardConfig = config[mode];
 
+  const cardPadding = isWrittenExpression ? 'p-2' : 'p-4';
+  const cardRounded = isWrittenExpression ? 'rounded-lg' : 'rounded-2xl';
+  const iconSize = isWrittenExpression ? 'w-6 h-6' : 'w-8 h-8';
+  const iconTextSize = isWrittenExpression ? 'text-base' : 'text-lg';
+  const titleSize = isWrittenExpression ? 'text-sm' : 'text-base';
+  const titleMargin = isWrittenExpression ? 'mb-0.5' : 'mb-1';
+  const descriptionMargin = isWrittenExpression ? 'mb-1' : 'mb-2';
+  const sectionMargin = isWrittenExpression ? 'mb-1.5' : 'mb-3';
+  const buttonMargin = isWrittenExpression ? 'mt-1.5' : 'mt-3';
+
   if (variant === 'mobile') {
     return (
       <div 
-        className={`${cardConfig.bgColor} rounded-2xl p-4 ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
+        className={`${cardConfig.bgColor} ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
         onClick={() => onStart(mode)}
       >
-        <div className="flex items-start justify-between mb-3">
-          <div className={`w-8 h-8 ${cardConfig.iconBg} rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform`}>
+        <div className={`flex items-start justify-between ${sectionMargin}`}>
+          <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} group-hover:scale-110 transition-transform`}>
             {cardConfig.icon}
           </div>
         </div>
-        <h3 className={`text-base font-bold ${cardConfig.titleColor} mb-1`}>{cardConfig.title}</h3>
-        <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed mb-2`}>
+        <h3 className={`${titleSize} font-bold ${cardConfig.titleColor} ${titleMargin}`}>{cardConfig.title}</h3>
+        <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed ${descriptionMargin}`}>
           {cardConfig.description}
         </p>
         <div className={`flex items-center ${cardConfig.textColor} font-bold text-xs`}>
@@ -71,19 +81,19 @@ export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpressio
   // Desktop variant
   return (
     <div 
-      className={`${cardConfig.bgColor} rounded-2xl p-4 ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
+      className={`${cardConfig.bgColor} ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
       onClick={() => onStart(mode)}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className={`w-8 h-8 ${cardConfig.iconBg} rounded-lg flex items-center justify-center text-lg group-hover:scale-110 transition-transform`}>
+      <div className={`flex items-start justify-between ${sectionMargin}`}>
+        <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} group-hover:scale-110 transition-transform`}>
           {cardConfig.icon}
         </div>
       </div>
-      <h3 className={`text-base font-bold ${cardConfig.titleColor} mb-1`}>{cardConfig.title}</h3>
+      <h3 className={`${titleSize} font-bold ${cardConfig.titleColor} ${titleMargin}`}>{cardConfig.title}</h3>
       <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed`}>
         {cardConfig.description}
       </p>
-      <div className={`mt-3 flex items-center ${cardConfig.textColor} font-bold text-xs`}>
+      <div className={`${buttonMargin} flex items-center ${cardConfig.textColor} font-bold text-xs`}>
         {t('common.commencer')} <span className="ml-1.5">→</span>
       </div>
     </div>

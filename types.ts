@@ -309,3 +309,24 @@ export interface Assignment {
   createdAt: string;
   updatedAt: string;
 }
+
+// Batch Types
+export interface Batch {
+  batchId: string; // Unique identifier (batch_1, batch_2, ...)
+  name: string; // Batch name (required)
+  professorId: string; // Clerk user ID of owner
+  orgId: string; // Organization ID
+  studentIds: string[]; // Array of student Clerk user IDs
+  createdAt: string;
+  updatedAt: string;
+}
+
+// BatchAssignment Types
+export interface BatchAssignment {
+  batchAssignmentId: string; // Unique identifier
+  batchId: string; // Reference to batch
+  assignmentId: string; // Reference to assignment (from assessment bank)
+  assignedBy: string; // Professor ID who assigned it
+  assignedAt: string; // ISO timestamp
+  orgId: string; // Organization ID (for filtering)
+}

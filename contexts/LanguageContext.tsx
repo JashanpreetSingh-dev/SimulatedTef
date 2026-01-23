@@ -5,7 +5,7 @@ type Language = 'fr' | 'en';
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -75,6 +75,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Vérification...',
     'status.loadingExam': 'Chargement de l\'examen...',
     'status.checkingSubscription': 'Vérification de l\'abonnement...',
+    
+    // Loading
+    'loading.moduleLoading': 'Chargement du module...',
+    'loading.preparingModule': 'Préparation de {module}',
+    'loading.preparingTasks': 'Préparation des tâches',
+    'loading.initializingExam': 'Initialisation de l\'examen',
     
     // Mock Exam
     'mockExam.title': 'Examen Blanc',
@@ -211,6 +217,21 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Traitement de l\'enregistrement audio',
     'writtenExpression.transcribingAudio': 'Transcription de l\'audio',
     
+    // Guided Writing
+    'guidedWriting.companionTitle': 'Compagnon d\'apprentissage',
+    'guidedWriting.words': 'mots',
+    'guidedWriting.analyzing': 'Analyse en cours...',
+    'guidedWriting.getFeedback': 'Obtenir un retour',
+    'guidedWriting.greeting': 'Bonjour!',
+    'guidedWriting.welcomeMessage': 'Cliquez sur "Obtenir un retour" pour recevoir des suggestions, corrections et idées pour améliorer votre texte.',
+    'guidedWriting.progress': 'Progression',
+    'guidedWriting.corrections': 'Corrections',
+    'guidedWriting.suggestions': 'Suggestions',
+    'guidedWriting.ideas': 'Idées pour continuer',
+    'guidedWriting.structure': 'Structure',
+    'guidedWriting.guidedSectionA': 'Apprentissage guidé - Section A',
+    'guidedWriting.guidedSectionB': 'Apprentissage guidé - Section B',
+    
     // Practice
     'practice.title': 'Pratique',
     'practice.oralSubtitle': 'Prêt à pratiquer votre expression orale aujourd\'hui ?',
@@ -225,7 +246,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.writtenCompleteExam': 'Entraînement Complet - Expression Écrite',
     'practice.writtenSectionA': 'Section A - Expression Écrite',
     'practice.writtenSectionB': 'Section B - Expression Écrite',
-    'practice.cardDescription': 'Pratiquez l\'expression orale avec Section A, Section B et Examens Complets. Consultez votre historique de pratique.',
+    'practice.cardDescription': 'Pratiquez l\'expression orale, l\'expression écrite, la compréhension écrite et la compréhension orale. Consultez votre historique de pratique.',
     'practice.readingSubtitle': 'Pratiquez la compréhension écrite avec des devoirs créés par les enseignants',
     'practice.listeningSubtitle': 'Pratiquez la compréhension orale avec des devoirs créés par les enseignants',
     'practice.loadingAssignments': 'Chargement des devoirs...',
@@ -234,6 +255,13 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.assignmentNoQuestions': 'Ce devoir n\'a pas encore de questions.',
     'practice.questions': 'questions',
     'practice.start': 'Commencer →',
+    'practice.guidedLearning': 'Apprentissage guidé',
+    'practice.guidedDescription': 'Pratiquez avec un compagnon IA qui vous donne des retours en temps réel pendant que vous écrivez.',
+    'practice.guidedSectionA': 'Section A guidée',
+    'practice.guidedSectionB': 'Section B guidée',
+    'practice.guidedSectionADescription': 'Fait divers avec retour en temps réel',
+    'practice.guidedSectionBDescription': 'Argumentation avec retour en temps réel',
+    'practice.standardPractice': 'Pratique standard',
     
     // Errors
     'errors.error': 'Erreur',
@@ -354,6 +382,88 @@ const translations: Record<Language, Record<string, string>> = {
     'assignments.completedCheckHistory': 'Devoir terminé. Consultez votre historique pour voir les résultats.',
     'assignments.submittingResults': 'Soumission des résultats...',
     'assignments.loadingAssignmentData': 'Chargement du devoir...',
+    
+    // Batches
+    'batches.title': 'Mes Groupes',
+    'batches.subtitle': 'Créez et gérez des groupes d\'étudiants',
+    'batches.createBatch': 'Créer un Groupe',
+    'batches.myBatches': 'Mes Groupes',
+    'batches.batchName': 'Nom du groupe',
+    'batches.enterBatchName': 'Entrez le nom du groupe',
+    'batches.students': 'Étudiants',
+    'batches.assignments': 'Devoirs',
+    'batches.assignedAssessments': 'Devoirs Assignés',
+    'batches.addStudent': 'Ajouter un Étudiant',
+    'batches.removeStudent': 'Retirer l\'Étudiant',
+    'batches.assignAssessment': 'Assigner un Devoir',
+    'batches.unassign': 'Retirer',
+    'batches.deleteBatch': 'Supprimer le Groupe',
+    'batches.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action ne peut pas être annulée.',
+    'batches.removeStudentConfirm': 'Êtes-vous sûr de vouloir retirer cet étudiant du groupe ?',
+    'batches.noBatches': 'Aucun groupe pour le moment. Créez votre premier groupe.',
+    'batches.noStudents': 'Aucun étudiant dans ce groupe pour le moment.',
+    'batches.noAssignments': 'Aucun devoir dans ce groupe pour le moment.',
+    'batches.noAvailableStudents': 'Aucun étudiant disponible. Tous les étudiants de votre organisation sont déjà assignés à des groupes.',
+    'batches.selectStudent': 'Sélectionnez un étudiant...',
+    'batches.assessmentBank': 'Banque de Devoirs',
+    'batches.selectAssessments': 'Sélectionnez des devoirs de votre banque de devoirs pour les assigner à ce groupe',
+    'batches.noAvailableAssessments': 'Aucun devoir {type} disponible.',
+    'batches.reading': 'Compréhension Écrite',
+    'batches.listening': 'Compréhension Orale',
+    'batches.view': 'Voir',
+    'batches.delete': 'Supprimer',
+    'batches.cancel': 'Annuler',
+    'batches.add': 'Ajouter',
+    'batches.remove': 'Retirer',
+    'batches.assign': 'Assigner',
+    'batches.confirm': 'Confirmer',
+    'batches.created': 'Créé',
+    'batches.student': 'Étudiant',
+    'batches.studentsPlural': 'Étudiants',
+    'batches.assignment': 'Devoir',
+    'batches.assignmentsPlural': 'Devoirs',
+    'batches.myBatch': 'Mon Groupe',
+    'batches.noBatchAssigned': 'Aucun Groupe Assigné',
+    'batches.noBatchAssignedDescription': 'Vous n\'êtes assigné à aucun groupe pour le moment. Votre professeur vous assignera à un groupe.',
+    'batches.assignedAssessmentsTitle': 'Devoirs Assignés',
+    'batches.noAssignmentsYet': 'Aucun devoir pour le moment. Votre professeur assignera des devoirs à votre groupe.',
+    'batches.start': 'Commencer',
+    'batches.notReady': 'Pas Prêt',
+    'batches.loadingBatches': 'Chargement des groupes...',
+    'batches.loadingBatch': 'Chargement du groupe...',
+    'batches.loading': 'Chargement...',
+    
+    // Admin Usage
+    'admin.usageGlobal': 'Usage Global',
+    'admin.usageTitle': 'Usage Global de l\'Organisation',
+    'admin.usageSubtitle': 'Vue d\'ensemble de l\'utilisation de l\'API Gemini pour tous les utilisateurs',
+    'admin.sessions': 'Sessions',
+    'admin.users': 'Utilisateurs',
+    'admin.billedTokens': 'Tokens Facturés',
+    'admin.finalSize': 'Taille Finale',
+    'admin.totalCost': 'Coût Total',
+    'admin.examType': 'Type d\'examen',
+    'admin.allTypes': 'Tous',
+    'admin.startDate': 'Date de début',
+    'admin.endDate': 'Date de fin',
+    'admin.reset': 'Réinitialiser',
+    'admin.conversationLogs': 'Journaux de Conversation',
+    'admin.loadingLogs': 'Chargement des journaux...',
+    'admin.noLogsFound': 'Aucun journal trouvé',
+    'admin.loadMore': 'Charger plus',
+    'admin.loading': 'Chargement...',
+    'admin.sessionDetails': 'Détails de la Session',
+    'admin.information': 'Informations',
+    'admin.task': 'Tâche',
+    'admin.part': 'Partie',
+    'admin.userId': 'User ID',
+    'admin.date': 'Date',
+    'admin.tokenUsage': 'Token Usage',
+    'admin.conversationSize': 'Conversation Size',
+    'admin.finalContext': '(Final context)',
+    'admin.totalBilled': 'Total Billed',
+    'admin.allTurns': '(All turns)',
+    'admin.totalCostLabel': 'Total Cost',
   },
   en: {
     // Navigation
@@ -372,7 +482,7 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionADescription': 'Ask questions to get information. (4 min)',
     'dashboard.sectionBDescription': 'Argue to convince a friend. (8 min)',
     'dashboard.oralExpressionDescription': 'Chain both sections for a real simulation. (12 min)',
-    'dashboard.mockExamDescription': 'Complete 3-module exam: Oral Expression, Reading, and Listening',
+    'dashboard.mockExamDescription': 'Complete 4-module exam: Oral Expression, Written Expression, Reading, and Listening',
     
     // Back buttons
     'back.dashboard': 'Back to Dashboard',
@@ -419,6 +529,12 @@ const translations: Record<Language, Record<string, string>> = {
     'status.checking': 'Checking...',
     'status.loadingExam': 'Loading exam...',
     'status.checkingSubscription': 'Checking subscription...',
+    
+    // Loading
+    'loading.moduleLoading': 'Loading module...',
+    'loading.preparingModule': 'Preparing {module}',
+    'loading.preparingTasks': 'Preparing tasks',
+    'loading.initializingExam': 'Initializing exam',
     
     // Mock Exam
     'mockExam.title': 'Mock Exam',
@@ -532,6 +648,44 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.processingAudio': 'Processing audio recording',
     'writtenExpression.transcribingAudio': 'Transcribing audio',
     
+    // Listening Exam
+    'listeningExam.close': 'Close',
+    'listeningExam.questionOf': 'Question {current} of {total}',
+    'listeningExam.answered': 'answered',
+    'listeningExam.readQuestionCarefully': 'Read the question carefully',
+    'listeningExam.audioWillPlayAuto': 'Audio will play automatically after the countdown',
+    'listeningExam.listenToAudio': 'Listen to audio',
+    'listeningExam.loadingAudio': 'Loading audio...',
+    'listeningExam.audioNotAvailable': 'Audio not available. This task uses the old audio format. Please regenerate with the new CLI.',
+    'listeningExam.chooseAnswer': 'Choose your answer',
+    'listeningExam.nextQuestionAuto': 'The next question will start automatically when the timer reaches 0',
+    'listeningExam.lastQuestion': 'This is the last question. Submit when you are ready.',
+    'listeningExam.previous': '← Previous',
+    'listeningExam.next': 'Next →',
+    'listeningExam.submitExam': 'Submit Exam',
+    'listeningExam.submitting': 'Submitting...',
+    'listeningExam.incompleteAnswers': 'You can submit with incomplete answers. Questions without answers will be marked as incorrect.',
+    'listeningExam.noQuestionsAvailable': 'No questions available',
+    'listeningExam.noQuestionsGenerated': 'This listening task has no generated questions.',
+    'listeningExam.noAudioAvailable': 'No audio file available',
+    'listeningExam.noAudioGenerated': 'This listening task has no generated audio files.',
+    'listeningExam.taskId': 'Task ID',
+    
+    // Guided Writing
+    'guidedWriting.companionTitle': 'Learning Companion',
+    'guidedWriting.words': 'words',
+    'guidedWriting.analyzing': 'Analyzing...',
+    'guidedWriting.getFeedback': 'Get Feedback',
+    'guidedWriting.greeting': 'Hello!',
+    'guidedWriting.welcomeMessage': 'Click on "Get Feedback" to receive suggestions, corrections and ideas to improve your text.',
+    'guidedWriting.progress': 'Progress',
+    'guidedWriting.corrections': 'Corrections',
+    'guidedWriting.suggestions': 'Suggestions',
+    'guidedWriting.ideas': 'Ideas to Continue',
+    'guidedWriting.structure': 'Structure',
+    'guidedWriting.guidedSectionA': 'Guided Learning - Section A',
+    'guidedWriting.guidedSectionB': 'Guided Learning - Section B',
+    
     // Practice
     'practice.title': 'Practice',
     'practice.oralSubtitle': 'Ready to practice your oral expression today?',
@@ -546,7 +700,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.writtenCompleteExam': 'Complete Exam - Written Expression',
     'practice.writtenSectionA': 'Section A - Written Expression',
     'practice.writtenSectionB': 'Section B - Written Expression',
-    'practice.cardDescription': 'Practice oral expression with Section A, Section B, and Complete Exams. View your practice history.',
+    'practice.cardDescription': 'Practice oral expression, written expression, reading comprehension, and listening comprehension. View your practice history.',
     'practice.readingSubtitle': 'Practice reading comprehension with teacher-created assignments',
     'practice.listeningSubtitle': 'Practice listening comprehension with teacher-created assignments',
     'practice.loadingAssignments': 'Loading assignments...',
@@ -555,6 +709,13 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.assignmentNoQuestions': 'This assignment does not have questions yet.',
     'practice.questions': 'questions',
     'practice.start': 'Start →',
+    'practice.guidedLearning': 'Guided Learning',
+    'practice.guidedDescription': 'Practice with an AI companion that gives you real-time feedback while you write.',
+    'practice.guidedSectionA': 'Guided Section A',
+    'practice.guidedSectionB': 'Guided Section B',
+    'practice.guidedSectionADescription': 'News story with real-time feedback',
+    'practice.guidedSectionBDescription': 'Argumentation with real-time feedback',
+    'practice.standardPractice': 'Standard Practice',
     
     // Errors
     'errors.error': 'Error',
@@ -675,6 +836,88 @@ const translations: Record<Language, Record<string, string>> = {
     'assignments.completedCheckHistory': 'Assignment completed. Check your history for results.',
     'assignments.submittingResults': 'Submitting results...',
     'assignments.loadingAssignmentData': 'Loading assignment...',
+    
+    // Batches
+    'batches.title': 'My Batches',
+    'batches.subtitle': 'Create and manage student batches',
+    'batches.createBatch': 'Create Batch',
+    'batches.myBatches': 'My Batches',
+    'batches.batchName': 'Batch Name',
+    'batches.enterBatchName': 'Enter batch name',
+    'batches.students': 'Students',
+    'batches.assignments': 'Assignments',
+    'batches.assignedAssessments': 'Assigned Assessments',
+    'batches.addStudent': 'Add Student',
+    'batches.removeStudent': 'Remove Student',
+    'batches.assignAssessment': 'Assign Assessment',
+    'batches.unassign': 'Unassign',
+    'batches.deleteBatch': 'Delete Batch',
+    'batches.deleteConfirm': 'Are you sure you want to delete this batch? This action cannot be undone.',
+    'batches.removeStudentConfirm': 'Are you sure you want to remove this student from the batch?',
+    'batches.noBatches': 'No batches yet. Create your first batch.',
+    'batches.noStudents': 'No students in this batch yet.',
+    'batches.noAssignments': 'No assignments in this batch yet.',
+    'batches.noAvailableStudents': 'No available students. All students in your organization are already assigned to batches.',
+    'batches.selectStudent': 'Select a student...',
+    'batches.assessmentBank': 'Assessment Bank',
+    'batches.selectAssessments': 'Select assessments from your assessment bank to assign to this batch',
+    'batches.noAvailableAssessments': 'No available {type} assessments.',
+    'batches.reading': 'Reading',
+    'batches.listening': 'Listening',
+    'batches.view': 'View',
+    'batches.delete': 'Delete',
+    'batches.cancel': 'Cancel',
+    'batches.add': 'Add',
+    'batches.remove': 'Remove',
+    'batches.assign': 'Assign',
+    'batches.confirm': 'Confirm',
+    'batches.created': 'Created',
+    'batches.student': 'Student',
+    'batches.studentsPlural': 'Students',
+    'batches.assignment': 'Assignment',
+    'batches.assignmentsPlural': 'Assignments',
+    'batches.myBatch': 'My Batch',
+    'batches.noBatchAssigned': 'No Batch Assigned',
+    'batches.noBatchAssignedDescription': 'You are not assigned to any batch yet. Your professor will assign you to a batch.',
+    'batches.assignedAssessmentsTitle': 'Assigned Assessments',
+    'batches.noAssignmentsYet': 'No assignments yet. Your professor will assign assessments to your batch.',
+    'batches.start': 'Start',
+    'batches.notReady': 'Not Ready',
+    'batches.loadingBatches': 'Loading batches...',
+    'batches.loadingBatch': 'Loading batch...',
+    'batches.loading': 'Loading...',
+    
+    // Admin Usage
+    'admin.usageGlobal': 'Global Usage',
+    'admin.usageTitle': 'Organization Global Usage',
+    'admin.usageSubtitle': 'Overview of Gemini API usage for all users',
+    'admin.sessions': 'Sessions',
+    'admin.users': 'Users',
+    'admin.billedTokens': 'Billed Tokens',
+    'admin.finalSize': 'Final Size',
+    'admin.totalCost': 'Total Cost',
+    'admin.examType': 'Exam Type',
+    'admin.allTypes': 'All',
+    'admin.startDate': 'Start Date',
+    'admin.endDate': 'End Date',
+    'admin.reset': 'Reset',
+    'admin.conversationLogs': 'Conversation Logs',
+    'admin.loadingLogs': 'Loading logs...',
+    'admin.noLogsFound': 'No logs found',
+    'admin.loadMore': 'Load More',
+    'admin.loading': 'Loading...',
+    'admin.sessionDetails': 'Session Details',
+    'admin.information': 'Information',
+    'admin.task': 'Task',
+    'admin.part': 'Part',
+    'admin.userId': 'User ID',
+    'admin.date': 'Date',
+    'admin.tokenUsage': 'Token Usage',
+    'admin.conversationSize': 'Conversation Size',
+    'admin.finalContext': '(Final context)',
+    'admin.totalBilled': 'Total Billed',
+    'admin.allTurns': '(All turns)',
+    'admin.totalCostLabel': 'Total Cost',
   },
 };
 
@@ -690,8 +933,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     localStorage.setItem('language', lang);
   };
 
-  const t = (key: string): string => {
-    return translations[language][key] || key;
+  const t = (key: string, params?: Record<string, string>): string => {
+    let text = translations[language][key] || key;
+    if (params) {
+      Object.entries(params).forEach(([param, value]) => {
+        text = text.replace(`{${param}}`, value);
+      });
+    }
+    return text;
   };
 
   return (

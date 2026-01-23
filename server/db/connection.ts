@@ -24,9 +24,9 @@ function getClient(): MongoClient {
       maxPoolSize: 10,        // Maximum connections in pool
       minPoolSize: 2,        // Minimum connections in pool
       maxIdleTimeMS: 30000,  // Close idle connections after 30s
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 30000, // Increased from 5000ms to 30s
       socketTimeoutMS: 45000,
-      connectTimeoutMS: 10000,
+      connectTimeoutMS: 30000, // Increased from 10s to 30s
     });
   }
 
@@ -38,12 +38,17 @@ function getClient(): MongoClient {
  * Reuses existing connection if available
  */
 export async function connectDB(): Promise<Db> {
+  if (!uri) {
+    throw new Error('MONGODB_URI environment variable is not set. Please add it to your .env file.');
+  }
+
   const mongoClient = getClient();
   
   try {
     // Connect if not already connected
     // MongoDB's connect() is idempotent (safe to call multiple times)
     if (!isConnected) {
+      console.log('Attempting to connect to MongoDB...');
       await mongoClient.connect();
       isConnected = true;
       console.log('Connected to MongoDB with connection pooling');
@@ -55,6 +60,21 @@ export async function connectDB(): Promise<Db> {
   } catch (error: any) {
     isConnected = false;
     console.error('MongoDB connection error:', error.message);
+    
+    // Provide helpful error messages
+    if (error.message.includes('timed out')) {
+      console.error('\n⚠️  Connection timeout. Possible issues:');
+      console.error('   1. MongoDB server is not running (if using local MongoDB)');
+      console.error('   2. Network/firewall is blocking the connection');
+      console.error('   3. MONGODB_URI is incorrect');
+      console.error('   4. MongoDB Atlas IP whitelist restrictions');
+      console.error('\n   Check your MONGODB_URI in .env file');
+    } else if (error.message.includes('authentication failed')) {
+      console.error('\n⚠️  Authentication failed. Check your MongoDB username and password in MONGODB_URI');
+    } else if (error.message.includes('ENOTFOUND') || error.message.includes('getaddrinfo')) {
+      console.error('\n⚠️  Cannot resolve MongoDB hostname. Check your MONGODB_URI connection string');
+    }
+    
     throw error;
   }
 }

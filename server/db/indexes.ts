@@ -303,6 +303,106 @@ export async function createIndexes(): Promise<void> {
     );
     console.log(' Created index: audioItems.s3Key_idx');
     
+    // Batches collection indexes
+    const batchesCollection = db.collection('batches');
+    
+    // Index for finding professor's batches
+    await batchesCollection.createIndex(
+      { professorId: 1 },
+      { name: 'professorId_idx' }
+    );
+    console.log(' Created index: batches.professorId_idx');
+    
+    // Index for finding student's batch (array index)
+    await batchesCollection.createIndex(
+      { studentIds: 1 },
+      { name: 'studentIds_idx' }
+    );
+    console.log(' Created index: batches.studentIds_idx');
+    
+    // Unique index on batchId
+    await batchesCollection.createIndex(
+      { batchId: 1 },
+      { name: 'batchId_idx', unique: true }
+    );
+    console.log(' Created index: batches.batchId_idx');
+    
+    // Index for org filtering
+    await batchesCollection.createIndex(
+      { orgId: 1 },
+      { name: 'orgId_idx' }
+    );
+    console.log(' Created index: batches.orgId_idx');
+    
+    // BatchAssignments collection indexes
+    const batchAssignmentsCollection = db.collection('batchAssignments');
+    
+    // Index for finding batch assignments
+    await batchAssignmentsCollection.createIndex(
+      { batchId: 1 },
+      { name: 'batchId_idx' }
+    );
+    console.log(' Created index: batchAssignments.batchId_idx');
+    
+    // Index for finding batches with assignment
+    await batchAssignmentsCollection.createIndex(
+      { assignmentId: 1 },
+      { name: 'assignmentId_idx' }
+    );
+    console.log(' Created index: batchAssignments.assignmentId_idx');
+    
+    // Index for org filtering
+    await batchAssignmentsCollection.createIndex(
+      { orgId: 1 },
+      { name: 'orgId_idx' }
+    );
+    console.log(' Created index: batchAssignments.orgId_idx');
+    
+    // Compound index for checking if assignment already assigned to batch
+    await batchAssignmentsCollection.createIndex(
+      { batchId: 1, assignmentId: 1 },
+      { name: 'batchId_assignmentId_idx', unique: true }
+    );
+    console.log(' Created index: batchAssignments.batchId_assignmentId_idx');
+    
+    // Unique index on batchAssignmentId
+    await batchAssignmentsCollection.createIndex(
+      { batchAssignmentId: 1 },
+      { name: 'batchAssignmentId_idx', unique: true }
+    );
+    console.log(' Created index: batchAssignments.batchAssignmentId_idx');
+    
+    // Conversation Logs collection indexes
+    const conversationLogsCollection = db.collection('conversationLogs');
+    
+    // Compound index for user log queries sorted by start time
+    await conversationLogsCollection.createIndex(
+      { userId: 1, startedAt: -1 },
+      { name: 'userId_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_startedAt_idx');
+    
+    // Index for session detail queries
+    await conversationLogsCollection.createIndex(
+      { sessionId: 1 },
+      { name: 'sessionId_idx' }
+    );
+    console.log(' Created index: conversationLogs.sessionId_idx');
+    
+    // Compound index for filtered queries by examType
+    await conversationLogsCollection.createIndex(
+      { userId: 1, examType: 1, startedAt: -1 },
+      { name: 'userId_examType_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_examType_startedAt_idx');
+    
+    // Compound index for filtering by part (A or B)
+    await conversationLogsCollection.createIndex(
+      { userId: 1, part: 1, startedAt: -1 },
+      { name: 'userId_part_startedAt_idx' }
+    );
+    console.log(' Created index: conversationLogs.userId_part_startedAt_idx');
+    
     console.log(' All database indexes created successfully');
   } catch (error: any) {
     console.error('Error creating indexes:', error.message);

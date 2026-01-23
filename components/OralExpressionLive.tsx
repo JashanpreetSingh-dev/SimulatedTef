@@ -3,10 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
 import { TEFTask, SavedResult } from '../types';
-// Removed combineAudioChunks and mergeAudioTracks - now using MediaRecorder for real-time recording
 import { persistenceService } from '../services/persistence';
 import { evaluationJobService } from '../services/evaluationJobService';
 import { LoadingResult } from './LoadingResult';
+import { conversationLogService } from '../services/conversationLogService';
 
 // Type declaration for Web Speech API
 interface SpeechRecognition extends EventTarget {
@@ -67,6 +67,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const isLiveRef = useRef(false);
   const isMountedRef = useRef(true);
   const streamRef = useRef<MediaStream | null>(null);
+  const currentSessionIdRef = useRef<string | null>(null); // Track sessionId for logging
+  const currentLogPartRef = useRef<'A' | 'B' | null>(null); // Track which part we're logging
   
   const transcriptA = useRef('');
   const transcriptB = useRef('');
@@ -119,6 +121,22 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     isLiveRef.current = false;
     const session = sessionRef.current;
     sessionRef.current = null; // Prevent double-close
+    
+    // Log session end if we have an active log (only for partA/partB practice sessions)
+    const effectiveMode = mode || scenario.mode;
+    if (currentSessionIdRef.current && currentLogPartRef.current && effectiveMode !== 'full') {
+      conversationLogService.logSessionEnd(
+        currentSessionIdRef.current,
+        'abandoned', // Default to abandoned if stopped manually
+        undefined,
+        getToken
+      ).catch(err => {
+        console.error('Failed to log session end:', err);
+      });
+      currentSessionIdRef.current = null;
+      currentLogPartRef.current = null;
+    }
+    
     if (session) {
       try {
         session.close();
@@ -264,6 +282,28 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Store sessionId if provided
       if (result.sessionId) {
         sessionStorage.setItem(`exam_session_${mode}`, result.sessionId);
+        currentSessionIdRef.current = result.sessionId;
+        
+        // Use scenario.mode as fallback if mode prop is undefined
+        const effectiveMode = mode || scenario.mode;
+        
+        // Log session start (only for partA/partB practice sessions, not full exams)
+        if (effectiveMode !== 'full' && (effectiveMode === 'partA' || effectiveMode === 'partB')) {
+          const examType = effectiveMode === 'partA' ? 'partA' : 'partB';
+          const part = effectiveMode === 'partA' ? 'A' : 'B';
+          currentLogPartRef.current = part;
+          
+          conversationLogService.logSessionStart(
+            result.sessionId,
+            examType,
+            part,
+            String(currentTask.id),
+            scenario.title,
+            getToken
+          ).catch(err => {
+            console.error('Failed to log session start:', err);
+          });
+        }
       }
     }
     
@@ -546,14 +586,42 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         onmessage: async (message: any) => {
           if (!isMountedRef.current) return;
           
-          // Debug: Log message structure to understand transcription format
-          if (message.clientContent || message.serverContent) {
-            console.debug('📨 Message received:', {
-              hasClientContent: !!message.clientContent,
-              hasServerContent: !!message.serverContent,
-              clientKeys: message.clientContent ? Object.keys(message.clientContent) : [],
-              serverKeys: message.serverContent ? Object.keys(message.serverContent) : []
-            });
+          // Check for usage metadata from 'content' event (Gemini Live API)
+          // Usage metadata comes with response.usageMetadata when model processes full context
+          const effectiveMode = mode || scenario.mode;
+          if (currentSessionIdRef.current && currentLogPartRef.current && effectiveMode !== 'full') {
+            // Look for usageMetadata in various locations (from 'content' event)
+            const usageMetadataRaw = message.usageMetadata 
+              || message.response?.usageMetadata
+              || message.serverContent?.usageMetadata 
+              || message.serverContent?.modelTurn?.usageMetadata
+              || (message as any).usage;
+            
+            if (usageMetadataRaw) {
+              // Extract token counts from Gemini API
+              const usageMetadata = {
+                promptTokenCount: usageMetadataRaw.promptTokenCount,
+                candidatesTokenCount: usageMetadataRaw.candidatesTokenCount,
+                totalTokenCount: usageMetadataRaw.totalTokenCount,
+                blockTokenCount: usageMetadataRaw.blockTokenCount || 0, // Live API has no blocks
+              };
+              
+              // Calculate cost using blended rate: totalTokenCount * 0.0000035
+              const cost = usageMetadata.totalTokenCount 
+                ? usageMetadata.totalTokenCount * 0.0000035 
+                : undefined;
+              
+              // Log token usage and cost
+              conversationLogService.logMessage(
+                currentSessionIdRef.current,
+                'ai',
+                { ...usageMetadata, cost },
+                undefined,
+                getToken
+              ).catch(err => {
+                console.error('Failed to log AI message:', err);
+              });
+            }
           }
           
           if (message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data) {
@@ -564,6 +632,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               clearTimeout(userSilenceTimeoutRef.current);
               userSilenceTimeoutRef.current = null;
             }
+            
             const base64 = message.serverContent.modelTurn.parts[0].inlineData.data;
             const audioData = decodeAudio(base64);
             const buffer = await decodeAudioData(audioData, outputAudioCtxRef.current!, 24000, 1);
@@ -640,6 +709,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               }
               // Update UI with latest user speech
               setTranscription(userText);
+              
+              // Log user message - usage metadata typically comes with AI response
+              // (user input is part of the promptTokenCount in the AI response)
             }
           }
           
@@ -689,6 +761,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             timestamp: new Date().toISOString()
           };
           console.error("WebSocket session error:", errorDetails);
+          
+          // Log error (only for partA/partB practice sessions)
+          const effectiveMode = mode || scenario.mode;
+          if (currentSessionIdRef.current && currentLogPartRef.current && effectiveMode !== 'full') {
+            conversationLogService.logError(
+              currentSessionIdRef.current,
+              e,
+              errorDetails,
+              getToken
+            ).catch(err => {
+              console.error('Failed to log error:', err);
+            });
+          }
           
           // Check for API key errors specifically
           const errorMessage = e?.reason || e?.message || String(e);
@@ -776,6 +861,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Save Part A's chunks to recordedChunksPartARef
       recordedChunksPartARef.current = [...recordedChunksRef.current];
       console.log('💾 Part A audio chunks saved:', recordedChunksPartARef.current.length, 'chunks');
+      
+      // Note: We don't log full exam sessions, only partA/partB practice sessions
       
       // Now stop the session (this will close WebSocket, audio contexts, etc.)
       stopSession();
@@ -1002,6 +1089,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
+        
+        // Log session end for practice sessions (only partA/partB, not full)
+        const effectiveMode = mode || scenario.mode;
+        if (currentSessionIdRef.current && currentLogPartRef.current && effectiveMode !== 'full') {
+          conversationLogService.logSessionEnd(
+            currentSessionIdRef.current,
+            'completed',
+            undefined, // resultId will be set later when result is available
+            getToken
+          ).catch(err => {
+            console.error('Failed to log session end:', err);
+          });
+          currentSessionIdRef.current = null;
+          currentLogPartRef.current = null;
+        }
         
         // Clear recorded chunks after upload
         recordedChunksRef.current = [];

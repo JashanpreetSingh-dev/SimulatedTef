@@ -11,6 +11,10 @@ import examRouter from './exam';
 import tasksRouter from './tasks';
 import audioRouter from './audio';
 import assignmentsRouter from './assignments';
+import batchesRouter from './batches';
+import batchAssignmentsRouter from './batchAssignments';
+import conversationLogsRouter from './conversationLogs';
+import adminRouter from './admin';
 
 const router = Router();
 
@@ -23,6 +27,10 @@ router.use('/exam', examRouter);
 router.use('/tasks', tasksRouter);
 router.use('/audio', audioRouter);
 router.use('/assignments', assignmentsRouter);
+router.use('/batches', batchesRouter);
+router.use('/batch-assignments', batchAssignmentsRouter);
+router.use('/conversation-logs', conversationLogsRouter);
+router.use('/admin', adminRouter);
 
 export default router;
 
