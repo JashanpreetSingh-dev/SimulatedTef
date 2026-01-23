@@ -2,7 +2,7 @@
  * Clerk theme configuration matching app's theme (light/dark)
  */
 export const getClerkAppearance = (theme: 'light' | 'dark') => ({
-  baseTheme: theme === 'dark' ? 'dark' : undefined,
+  ...(theme === 'dark' && { baseTheme: 'dark' }),
   variables: {
     colorPrimary: theme === 'dark' ? '#818cf8' : '#6366f1', // indigo-400 : indigo-500
     colorBackground: theme === 'dark' ? '#1e293b' : '#ffffff', // slate-800 : white
