@@ -230,13 +230,13 @@ export async function createMockExamCommand(argv: any) {
       finalListening,
       {
         description,
-        isActive: active !== false
-      }
-    );
+      isActive: active !== false
+    }
+  );
 
-    await mockExamsCollection.insertOne(mockExam);
-    
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+  await mockExamsCollection.insertOne(mockExam as any);
+  
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     
     console.log('\n' + '═'.repeat(60));
     console.log('✅ Mock Exam Created Successfully!');
@@ -666,13 +666,13 @@ export async function generateMockExamCommand(argv: any) {
       finalListening,
       {
         description,
-        isActive: active !== false
-      }
-    );
+      isActive: active !== false
+    }
+  );
 
-    await mockExamsCollection.insertOne(mockExam);
-    
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+  await mockExamsCollection.insertOne(mockExam as any);
+  
+  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     
     console.log('\n' + '═'.repeat(60));
     console.log('✅ Complete Mock Exam Generated Successfully!');
