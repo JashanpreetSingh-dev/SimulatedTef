@@ -14,7 +14,7 @@ export interface UsageMetadata {
   candidatesTokenCount?: number;
   totalTokenCount?: number;
   blockTokenCount?: number;
-  cost?: number; // Calculated cost: totalTokenCount * 0.0000035 (blended rate)
+  cost?: number; // Calculated cost: (promptTokenCount * 0.000003) + (candidatesTokenCount * 0.000012)
 }
 
 export const conversationLogService = {

@@ -75,6 +75,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
+  const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Real-time MediaRecorder for conversation recording
@@ -197,6 +198,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       clearTimeout(userSilenceTimeoutRef.current);
       userSilenceTimeoutRef.current = null;
     }
+    // Reset time update tracking
+    hasSentTimeUpdateRef.current = 0;
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
@@ -317,6 +320,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
       hasSent60ControlRef.current = false;
+      hasSentTimeUpdateRef.current = 0; // Reset time update tracking
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -540,6 +544,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                     clearTimeout(userSilenceTimeoutRef.current);
                   }
                   
+                  // Inject time remaining if critical (< 60s) for Section B
+                  if (currentPart === 'B' && sessionRef.current && timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
+                    hasSentTimeUpdateRef.current = timeLeft;
+                    try {
+                      sessionRef.current.sendRealtimeInput({
+                        text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`
+                      });
+                      console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
+                    } catch (e) {
+                      console.debug('Failed to send time update', e);
+                    }
+                  }
+                  
                   // After brief silence, show "thinking" indicator
                   userSilenceTimeoutRef.current = setTimeout(() => {
                     if (!isModelSpeaking && !isUserSpeaking && isMountedRef.current) {
@@ -606,10 +623,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 blockTokenCount: usageMetadataRaw.blockTokenCount || 0, // Live API has no blocks
               };
               
-              // Calculate cost using blended rate: totalTokenCount * 0.0000035
-              const cost = usageMetadata.totalTokenCount 
-                ? usageMetadata.totalTokenCount * 0.0000035 
-                : undefined;
+              // Calculate cost using actual rates:
+              // Input tokens: $3.00 per 1M tokens = $0.000003 per token
+              // Output tokens: $12.00 per 1M tokens = $0.000012 per token
+              const cost = usageMetadata.promptTokenCount !== undefined && usageMetadata.candidatesTokenCount !== undefined
+                ? (usageMetadata.promptTokenCount * 0.000003) + (usageMetadata.candidatesTokenCount * 0.000012)
+                : usageMetadata.totalTokenCount 
+                  ? usageMetadata.totalTokenCount * 0.0000035 // Fallback to blended rate if individual counts unavailable
+                  : undefined;
               
               // Log token usage and cost
               conversationLogService.logMessage(
@@ -732,7 +753,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           
           // Also capture model's output transcription for display (examiner speech)
           if (message.serverContent?.outputTranscription) {
-            const modelText = message.serverContent.outputTranscription.text;
+            let modelText = message.serverContent.outputTranscription.text;
+            
             // Don't accumulate model speech in transcripts - only show in UI
             setTranscription(prev => modelText);
           }
@@ -878,6 +900,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
+      hasSentTimeUpdateRef.current = 0; // Reset time update tracking for Part B
       console.log('✅ Ready for Part B - user can click mic to start');
       // Part A chunks are now saved in recordedChunksPartARef, Part B will start fresh
     } else {
@@ -1436,19 +1459,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                   playInstructionsAndStartSession();
                 }
               }}
-              disabled={status === 'connecting' || status === 'evaluating'}
+              disabled={status === 'connecting'}
               className={`w-28 h-28 md:w-36 md:h-36 rounded-full flex flex-col items-center justify-center transition-all duration-500 ring-6 md:ring-12 relative z-10 cursor-pointer ${
                 status === 'active' 
                   ? 'bg-rose-300 dark:bg-rose-500 hover:bg-rose-400 dark:hover:bg-rose-600 ring-rose-300/20 dark:ring-rose-500/20 active:scale-90' 
                   : 'bg-indigo-100/70 dark:bg-slate-700/50 hover:bg-indigo-100 dark:hover:bg-slate-700 ring-white/10 dark:ring-white/5 text-slate-900 dark:text-slate-100 hover:scale-105 active:scale-95'
-              } ${status === 'connecting' || status === 'evaluating' ? 'opacity-50 cursor-not-allowed' : ''}`}
+              } ${status === 'connecting' ? 'opacity-50 cursor-not-allowed' : ''}`}
             >
-              {status === 'connecting' ? <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" /> : 
-               status === 'evaluating' ? <span className="text-xl md:text-2xl animate-bounce">⚖️</span> :
-               <>
-                <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
-                <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
-               </>}
+              {status === 'connecting' ? (
+                <div className="animate-spin w-7 h-7 md:w-9 md:h-9 border-[3px] border-indigo-300 dark:border-indigo-400 border-t-transparent rounded-full" />
+              ) : (
+                <>
+                  <span className="text-3xl md:text-4xl mb-0.5 md:mb-1.5">{status === 'active' ? '⏹' : '🎙'}</span>
+                  <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em]">{status === 'active' ? (scenario.mode === 'full' && currentPart === 'A' ? 'Suite' : 'Terminer') : 'Start'}</span>
+                </>
+              )}
             </button>
           </div>
 
