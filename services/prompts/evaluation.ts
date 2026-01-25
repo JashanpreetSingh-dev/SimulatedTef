@@ -3,7 +3,7 @@ import { TEFSection } from '../../types';
 /**
  * Builds the evaluation system prompt with CCI Paris framework
  */
-export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean = false): string {
+export function buildRubricSystemPrompt(section: TEFSection, isFullExam: boolean = false, mode?: string): string {
   const sectionFocus = section === 'OralExpression'
     ? `- EO1 focus: interactional competence, asking relevant questions, clarity, register, turn-taking, reactivity.
 - EO2 focus: persuasion, argument structure, handling counter-arguments, coherence, examples, nuance.`
@@ -101,6 +101,29 @@ OPTIONAL FLUENCY ANALYSIS (if provided):
 - Use these metrics ONLY to inform the \"fluency\" and \"interaction\" criteria (scores and comments). They should NOT directly change grammar or vocabulary scores.
 - If this section is missing, rely solely on the transcript to infer fluency.
 ${fullExamGuidance}
+${mode === 'partB' ? `
+CRITICAL - SECTION B ONLY EVALUATION:
+This is a SECTION B ONLY evaluation (mode: partB). The candidate has ONLY completed Section B${section === 'OralExpression' ? ' (EO2 - persuasion task)' : ' (Argumentation - letter to journal)'}.
+
+IMPORTANT:
+- DO NOT check for or evaluate Section A${section === 'OralExpression' ? ' (EO1)' : ' (Fait divers)'} - it was NOT completed.
+- DO NOT mention Section A in your evaluation, feedback, or comments.
+- DO NOT penalize the candidate for missing Section A - they were only required to complete Section B.
+- Evaluate ONLY the Section B performance that is provided.
+- Focus your evaluation entirely on Section B requirements${section === 'WrittenExpression' ? ': letter format, at least 3 arguments, development/nuance/clarification, formal register, 200 mots minimum' : ': persuasion, argument structure, handling counter-arguments, coherence, examples, nuance'}.
+- Your overall_comment should address ONLY Section B performance, not Section A.
+
+If you see any mention of "Section A not completed" or similar in the transcript, ignore it - this is a Section B only evaluation.` : mode === 'partA' ? `
+CRITICAL - SECTION A ONLY EVALUATION:
+This is a SECTION A ONLY evaluation (mode: partA). The candidate has ONLY completed Section A${section === 'OralExpression' ? ' (EO1 - interactive telephone call)' : ' (Fait divers - news article continuation)'}.
+
+IMPORTANT:
+- DO NOT check for or evaluate Section B${section === 'OralExpression' ? ' (EO2)' : ' (Argumentation)'} - it was NOT completed.
+- DO NOT mention Section B in your evaluation, feedback, or comments.
+- DO NOT penalize the candidate for missing Section B - they were only required to complete Section A.
+- Evaluate ONLY the Section A performance that is provided.
+- Focus your evaluation entirely on Section A requirements${section === 'WrittenExpression' ? ': news article continuation, multiple paragraphs, journalistic style, factual reporting, past tenses, 80 mots minimum' : ': interactional competence, asking relevant questions (target 9-10), clarity, register, turn-taking, reactivity'}.
+- Your overall_comment should address ONLY Section A performance, not Section B.` : ''}
 
 SCORING SYSTEM:
 - Overall score (score field): Provide a TEF score from 0 to 699 (integer). This represents the candidate's overall performance on the TEF Canada scale.
@@ -322,7 +345,8 @@ export function buildEvaluationUserMessage(
   taskPartA?: any,
   taskPartB?: any,
   eo2RemainingSeconds?: number,
-  fluencyAnalysis?: any
+  fluencyAnalysis?: any,
+  mode?: string
 ): string {
   const eo1Metrics = section === 'OralExpression' && estimatedQuestionsCount !== undefined
     ? `\nEO1 metric — estimated questions asked (heuristic): ${estimatedQuestionsCount} (target 9–10).
@@ -394,6 +418,18 @@ Count the actual words yourself to verify, then factor this into your evaluation
       })()
     : '';
 
+  // Add explicit context for partB-only or partA-only evaluations
+  const singleSectionContext = !isFullExam && (mode === 'partB' || mode === 'partA')
+    ? `\n\n=== ${mode === 'partB' ? 'SECTION B ONLY' : 'SECTION A ONLY'} EVALUATION CONTEXT ===
+This is a ${mode === 'partB' ? 'SECTION B ONLY' : 'SECTION A ONLY'} evaluation (mode: ${mode}).
+The candidate has ONLY completed ${mode === 'partB' ? 'Section B' : 'Section A'}${section === 'WrittenExpression' ? (mode === 'partB' ? ' (Argumentation - letter to journal)' : ' (Fait divers - news article continuation)') : (mode === 'partB' ? ' (EO2)' : ' (EO1)')}.
+
+IMPORTANT:
+- Section ${mode === 'partB' ? 'A' : 'B'} was NOT completed and should NOT be evaluated or mentioned.
+- Evaluate ONLY the ${mode === 'partB' ? 'Section B' : 'Section A'} performance provided.
+- Do NOT check for or mention ${mode === 'partB' ? 'Section A' : 'Section B'} in your evaluation.`
+    : '';
+
   const fullExamContext = isFullExam && taskPartA && taskPartB
     ? `\n\n=== FULL EXAM CONTEXT ===
 This is a COMPLETE exam evaluation (mode: full) that includes BOTH tasks:
@@ -449,7 +485,7 @@ fluency_comment: ${fluencyAnalysis.fluency_comment ?? 'N/A'}`
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${fullExamContext}${eo2TimeContext}${fluencyContext}
+Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${singleSectionContext}${fullExamContext}${eo2TimeContext}${fluencyContext}
 
 Candidate ${section === 'WrittenExpression' ? 'text' : 'transcript'} (French):
 ${candidateText || "(empty)"}`;
