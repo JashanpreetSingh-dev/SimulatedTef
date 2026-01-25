@@ -55,11 +55,9 @@ export function ClerkProviderWithTheme({ children }: { children: React.ReactNode
   return (
     <ClerkProvider 
       publishableKey={PUBLISHABLE_KEY}
-      appearance={getClerkAppearance(theme)}
+      appearance={getClerkAppearance(theme) as any}
       signInUrl="/"
-      signUpUrl="/"
       afterSignInUrl="/dashboard"
-      afterSignUpUrl="/dashboard"
     >
       {children}
     </ClerkProvider>
