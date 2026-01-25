@@ -26,7 +26,7 @@ export const ConversationLogSchema = z.object({
       candidatesTokenCount: z.number().optional(),
       totalTokenCount: z.number().optional(),
       blockTokenCount: z.number().optional(),
-      cost: z.number().optional(), // Calculated cost: totalTokenCount * 0.0000035
+      cost: z.number().optional(), // Calculated cost: (promptTokenCount * 0.000003) + (candidatesTokenCount * 0.000012)
     }).optional(),
   })),
   metrics: z.object({
@@ -41,7 +41,7 @@ export const ConversationLogSchema = z.object({
     totalCompletionTokens: z.number().default(0), // Sum of all completion tokens
     totalTokens: z.number().default(0), // Final total (last totalTokenCount)
     totalBilledTokens: z.number().default(0), // Sum of all totalTokenCounts (actual billing)
-    totalCost: z.number().default(0), // Total cost: sum of all costs (totalTokenCount * 0.0000035)
+    totalCost: z.number().default(0), // Total cost: sum of all costs (input: $3/1M, output: $12/1M)
   }),
   resultId: z.string().optional(), // Link to result if completed
   createdAt: z.string(),
