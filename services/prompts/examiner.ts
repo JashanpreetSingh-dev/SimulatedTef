@@ -70,30 +70,13 @@ function getEO2Instructions(task: TEFTask): string {
     arg.trim().length > 0
   ) || [];
   
-  // Extract identifiers from [ID:identifier] or [COUNTER_ID:identifier] format
-  // and create clean counter-arguments (without the ID format) for the AI
-  const counterArgsWithIds: Array<{ text: string; id: string }> = [];
-  validCounterArgs.forEach(arg => {
-    const idMatch = arg.match(/\[(?:ID|COUNTER_ID):([^\]]+)\]/i);
-    if (idMatch) {
-      const identifier = idMatch[1].trim().toLowerCase();
-      // Remove the ID format from the argument text
-      const cleanArg = arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim();
-      counterArgsWithIds.push({ text: cleanArg, id: identifier });
-    } else {
-      // Fallback: if no ID format found, use the argument as-is with a generated ID
-      console.warn(`⚠️ Counter-argument missing ID format: "${arg.substring(0, 50)}..."`);
-      counterArgsWithIds.push({ text: arg, id: `arg${counterArgsWithIds.length}` });
-    }
-  });
+  // Remove ID format tags from counter-arguments if present (for display)
+  const cleanCounterArgs = validCounterArgs.map(arg => 
+    arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim()
+  );
   
-  // Join clean counter-arguments for AI (without ID format)
-  const counterArgs = counterArgsWithIds.map(item => item.text).join(' | ');
-  
-  // Generate identifier mapping instructions for AI
-  const idMappingInstructions = counterArgsWithIds.map(item => 
-    `"${item.text}" → identifiant: ${item.id}`
-  ).join('\n');
+  // Join counter-arguments for AI
+  const counterArgs = cleanCounterArgs.join(' | ');
 
   return `Épreuve EO2: argumentation / persuasion.
 Le candidat doit convaincre un(e) ami(e). Tu joues l'ami(e) sceptique.
@@ -110,14 +93,6 @@ Quand tu reçois une note interne indiquant le temps restant (< 60 secondes), co
 CONTRAINTE ABSOLUE: tu dois utiliser UNIQUEMENT les contre-arguments ci-dessous (tu peux paraphraser), et tu ne dois PAS inventer de nouvelles objections.
 Choisis le prochain contre-argument en fonction de ce que le candidat vient de dire.
 Le ton reste amical et informel, comme une vraie discussion entre ami(e)s.
-
-IMPORTANT — IDENTIFICATION DES CONTRE-ARGUMENTS:
-Après chaque contre-argument que tu utilises, tu DOIS ajouter à la fin de ta réponse (après ton dernier mot) le format suivant: __COUNTER_ID:identifiant__
-où identifiant correspond au contre-argument utilisé.
-Exemple: Si tu utilises "C'est trop cher", ta réponse doit se terminer par " __COUNTER_ID:cher__" (sans les guillemets).
-Ce format est interne et ne sera pas prononcé — il sert uniquement au suivi technique.
-Mapping des contre-arguments vers identifiants:
-${idMappingInstructions}
 
 Consigne: ${task.prompt}
 Contre-arguments possibles (à utiliser graduellement): ${counterArgs}`;

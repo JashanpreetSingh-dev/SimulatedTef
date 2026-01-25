@@ -77,8 +77,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const hasSent60ControlRef = useRef(false);
   const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const usedCounterArgsRef = useRef<string[]>([]); // Track used counter-argument identifiers for Section B
-  const counterArgIdMapRef = useRef<Map<string, string>>(new Map()); // Map counter-argument text to identifier
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -202,9 +200,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     }
     // Reset time update tracking
     hasSentTimeUpdateRef.current = 0;
-    // Reset counter-argument tracking
-    usedCounterArgsRef.current = [];
-    counterArgIdMapRef.current = new Map();
     if (isMountedRef.current) {
       setIsModelSpeaking(false);
       setIsUserSpeaking(false);
@@ -326,38 +321,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
       hasSent60ControlRef.current = false;
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
-      
-      // Initialize counter-argument tracking for Section B
-      if (currentPart === 'B') {
-        usedCounterArgsRef.current = [];
-        // Extract and create identifier mapping for counter-arguments
-        const validCounterArgs = currentTask.counter_arguments?.filter(arg => 
-          !arg.includes('Liste de contre-arguments') && 
-          !arg.includes('contre-arguments possibles') &&
-          arg.trim().length > 0
-        ) || [];
-        
-        // Create mapping: counter-argument text (without ID format) -> identifier
-        // Look for [ID:identifier] or [COUNTER_ID:identifier] format in the counter-argument string
-        const idMap = new Map<string, string>();
-        validCounterArgs.forEach(arg => {
-          // Look for [ID:identifier] or [COUNTER_ID:identifier] format
-          const idMatch = arg.match(/\[(?:ID|COUNTER_ID):([^\]]+)\]/i);
-          if (idMatch) {
-            const identifier = idMatch[1].trim().toLowerCase();
-            // Remove the ID format from the argument text for display/AI
-            const cleanArg = arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim();
-            idMap.set(cleanArg, identifier);
-          } else {
-            // Fallback: if no ID format found, use index (shouldn't happen if data is properly formatted)
-            console.warn(`⚠️ Counter-argument missing ID format: "${arg.substring(0, 50)}..."`);
-            const fallbackId = `arg${idMap.size}`;
-            idMap.set(arg, fallbackId);
-          }
-        });
-        counterArgIdMapRef.current = idMap;
-        console.log(`📋 Loaded ${validCounterArgs.length} counter-arguments with identifier mapping for Section B`);
-      }
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -581,37 +544,16 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                     clearTimeout(userSilenceTimeoutRef.current);
                   }
                   
-                  // Inject tracking information for Section B when user finishes speaking
-                  if (currentPart === 'B' && sessionRef.current) {
-                    const messages: string[] = [];
-                    
-                    // Inject time remaining if critical (< 60s)
-                    if (timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
-                      hasSentTimeUpdateRef.current = timeLeft;
-                      messages.push(`Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`);
-                    }
-                    
-                    // Inject used counter-arguments list to prevent repetition
-                    if (usedCounterArgsRef.current.length > 0) {
-                      const usedList = usedCounterArgsRef.current.join(', ');
-                      messages.push(`Contre-arguments déjà utilisés: ${usedList}. Tu ne dois PAS répéter ces contre-arguments. Continue avec des contre-arguments DIFFÉRENTS de la liste.`);
-                    }
-                    
-                    // Send combined message if any tracking info to send
-                    if (messages.length > 0) {
-                      try {
-                        sessionRef.current.sendRealtimeInput({
-                          text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): ${messages.join(' ')}`
-                        });
-                        if (timeLeft < 60 && timeLeft > 0) {
-                          console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
-                        }
-                        if (usedCounterArgsRef.current.length > 0) {
-                          console.log(`📋 Injected used counter-arguments: ${usedCounterArgsRef.current.join(', ')}`);
-                        }
-                      } catch (e) {
-                        console.debug('Failed to send tracking update', e);
-                      }
+                  // Inject time remaining if critical (< 60s) for Section B
+                  if (currentPart === 'B' && sessionRef.current && timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
+                    hasSentTimeUpdateRef.current = timeLeft;
+                    try {
+                      sessionRef.current.sendRealtimeInput({
+                        text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`
+                      });
+                      console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
+                    } catch (e) {
+                      console.debug('Failed to send time update', e);
                     }
                   }
                   
@@ -809,23 +751,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           if (message.serverContent?.outputTranscription) {
             let modelText = message.serverContent.outputTranscription.text;
             
-            // Parse counter-argument identifier from Section B responses
-            if (currentPart === 'B' && modelText && modelText.trim().length > 0) {
-              // Look for __COUNTER_ID:identifier__ pattern at the end of the response
-              const counterMatch = modelText.match(/__COUNTER_ID:([^_]+)__/i);
-              if (counterMatch) {
-                const counterId = counterMatch[1].trim().toLowerCase();
-                // Remove the internal format from the text before displaying
-                modelText = modelText.replace(/__COUNTER_ID:[^_]+__/gi, '').trim();
-                
-                // Add to used list if not already there
-                if (!usedCounterArgsRef.current.includes(counterId)) {
-                  usedCounterArgsRef.current.push(counterId);
-                  console.log(`📌 Tracked counter-argument identifier: ${counterId} (total used: ${usedCounterArgsRef.current.length})`);
-                }
-              }
-            }
-            
             // Don't accumulate model speech in transcripts - only show in UI
             setTranscription(prev => modelText);
           }
@@ -971,36 +896,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Reset timer for Part B
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
-      
-      // Initialize counter-argument tracking for Part B
-      usedCounterArgsRef.current = [];
-      const partBTask = scenario.officialTasks.partB;
-      const validCounterArgs = partBTask.counter_arguments?.filter(arg => 
-        !arg.includes('Liste de contre-arguments') && 
-        !arg.includes('contre-arguments possibles') &&
-        arg.trim().length > 0
-      ) || [];
-      
-      // Create mapping: counter-argument text (without ID format) -> identifier
-      // Look for [ID:identifier] or [COUNTER_ID:identifier] format in the counter-argument string
-      const idMap = new Map<string, string>();
-      validCounterArgs.forEach(arg => {
-        // Look for [ID:identifier] or [COUNTER_ID:identifier] format
-        const idMatch = arg.match(/\[(?:ID|COUNTER_ID):([^\]]+)\]/i);
-        if (idMatch) {
-          const identifier = idMatch[1].trim().toLowerCase();
-          // Remove the ID format from the argument text for display/AI
-          const cleanArg = arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim();
-          idMap.set(cleanArg, identifier);
-        } else {
-          // Fallback: if no ID format found, use index (shouldn't happen if data is properly formatted)
-          console.warn(`⚠️ Counter-argument missing ID format: "${arg.substring(0, 50)}..."`);
-          const fallbackId = `arg${idMap.size}`;
-          idMap.set(arg, fallbackId);
-        }
-      });
-      counterArgIdMapRef.current = idMap;
-      console.log(`📋 Loaded ${validCounterArgs.length} counter-arguments with identifier mapping for Part B`);
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking for Part B
       console.log('✅ Ready for Part B - user can click mic to start');
       // Part A chunks are now saved in recordedChunksPartARef, Part B will start fresh
