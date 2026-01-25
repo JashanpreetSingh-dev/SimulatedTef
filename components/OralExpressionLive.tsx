@@ -7,6 +7,7 @@ import { persistenceService } from '../services/persistence';
 import { evaluationJobService } from '../services/evaluationJobService';
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
+import { conversationLogService } from '../services/conversationLogService';
 
 // Type declaration for Web Speech API
 interface SpeechRecognition extends EventTarget {
