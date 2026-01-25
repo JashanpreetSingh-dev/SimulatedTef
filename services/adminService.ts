@@ -80,4 +80,80 @@ export const adminService = {
       getToken: getToken,
     });
   },
+
+  /**
+   * Get vote analytics for oral expression results
+   */
+  async getVoteAnalytics(
+    getToken: () => Promise<string | null>,
+    options?: {
+      startDate?: string;
+      endDate?: string;
+    }
+  ): Promise<VoteAnalytics> {
+    const params = new URLSearchParams();
+    if (options?.startDate) params.append('startDate', options.startDate);
+    if (options?.endDate) params.append('endDate', options.endDate);
+
+    const url = `${BACKEND_URL}/api/admin/results/vote-analytics${params.toString() ? `?${params.toString()}` : ''}`;
+    return authenticatedFetchJSON<VoteAnalytics>(url, {
+      method: 'GET',
+      getToken: getToken,
+    });
+  },
 };
+
+export interface VoteAnalytics {
+  summary: {
+    totalResults: number;
+    totalUpvotes: number;
+    totalDownvotes: number;
+    totalVotes: number;
+    upvotePercentage: number;
+    downvotePercentage: number;
+  };
+  byMode: {
+    full: {
+      totalResults: number;
+      upvotes: number;
+      downvotes: number;
+      votes: number;
+    };
+    partA: {
+      totalResults: number;
+      upvotes: number;
+      downvotes: number;
+      votes: number;
+    };
+    partB: {
+      totalResults: number;
+      upvotes: number;
+      downvotes: number;
+      votes: number;
+    };
+  };
+  byReason: {
+    inaccurate_score: number;
+    poor_feedback: number;
+    technical_issue: number;
+  };
+  topDownvotedResults: Array<{
+    resultId: string;
+    title: string;
+    mode: string;
+    downvotes: number;
+    upvotes: number;
+    downvoteReasons: {
+      inaccurate_score: number;
+      poor_feedback: number;
+      technical_issue: number;
+    };
+  }>;
+  recentVotes: Array<{
+    resultId: string;
+    userId: string;
+    vote: 'upvote' | 'downvote';
+    reason?: string;
+    timestamp: string;
+  }>;
+}

@@ -222,6 +222,28 @@ export interface MCQData {
 
 export type ModuleData = OralExpressionData | WrittenExpressionData | MCQData;
 
+// Voting types for Speaking results
+export type VoteType = 'upvote' | 'downvote';
+export type DownvoteReason = 'inaccurate_score' | 'poor_feedback' | 'technical_issue';
+
+export interface UserVote {
+  userId: string;
+  vote: VoteType;
+  reason?: DownvoteReason;
+  timestamp: string;
+}
+
+export interface ResultVotes {
+  upvotes: number;
+  downvotes: number;
+  downvoteReasons: {
+    inaccurate_score: number;
+    poor_feedback: number;
+    technical_issue: number;
+  };
+  userVotes: UserVote[];
+}
+
 export interface SavedResult extends MongoDocument {
   // Core identification
   resultType: 'practice' | 'mockExam' | 'assignment';
@@ -248,6 +270,9 @@ export interface SavedResult extends MongoDocument {
   recordingId?: string;
   transcript?: string;
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
+  
+  // Voting (for oral expression results)
+  votes?: ResultVotes; // Vote scope determined by result.mode (full, partA, partB)
   
   // Legacy fields (deprecated, kept for backward compatibility during transition)
   taskPartA?: TEFTask;

@@ -4,7 +4,7 @@
 
 import { ObjectId } from 'mongodb';
 import { connectDB } from '../db/connection';
-import { SavedResult } from '../../types';
+import { SavedResult, VoteType, DownvoteReason, ResultVotes } from '../../types';
 import * as taskService from './taskService';
 
 const DEFAULT_LIMIT = 50;
@@ -347,6 +347,185 @@ export const resultsService = {
       _id: doc?._id?.toString(),
       isLoading: false,
     } as SavedResult;
+  },
+
+  /**
+   * Add or update a vote for a result
+   * Vote scope is determined by result.mode (full, partA, partB)
+   */
+  async addVote(
+    resultId: string,
+    userId: string,
+    vote: VoteType,
+    reason?: DownvoteReason
+  ): Promise<SavedResult> {
+    const db = await connectDB();
+
+    if (!ObjectId.isValid(resultId)) {
+      throw new Error('Invalid result ID');
+    }
+
+    // Get the result to check mode and existing votes
+    const result = await db.collection('results').findOne({
+      _id: new ObjectId(resultId),
+    });
+
+    if (!result) {
+      throw new Error('Result not found');
+    }
+
+    // Only allow voting on oral expression results
+    if (result.module !== 'oralExpression') {
+      throw new Error('Voting is only available for oral expression results');
+    }
+
+    // Initialize votes if it doesn't exist
+    const currentVotes: ResultVotes = result.votes || {
+      upvotes: 0,
+      downvotes: 0,
+      downvoteReasons: {
+        inaccurate_score: 0,
+        poor_feedback: 0,
+        technical_issue: 0,
+      },
+      userVotes: [],
+    };
+
+    // Find existing vote from this user
+    const existingVoteIndex = currentVotes.userVotes.findIndex(
+      (v) => v.userId === userId
+    );
+
+    let previousVote: VoteType | null = null;
+    let previousReason: DownvoteReason | undefined = undefined;
+
+    // If user already voted, remove the previous vote
+    if (existingVoteIndex !== -1) {
+      const existingVote = currentVotes.userVotes[existingVoteIndex];
+      previousVote = existingVote.vote;
+      previousReason = existingVote.reason;
+
+      // Decrement previous vote count
+      if (previousVote === 'upvote') {
+        currentVotes.upvotes = Math.max(0, currentVotes.upvotes - 1);
+      } else if (previousVote === 'downvote') {
+        currentVotes.downvotes = Math.max(0, currentVotes.downvotes - 1);
+        // Decrement previous reason count if it exists
+        if (previousReason && currentVotes.downvoteReasons[previousReason] > 0) {
+          currentVotes.downvoteReasons[previousReason]--;
+        }
+      }
+
+      // Remove the old vote
+      currentVotes.userVotes.splice(existingVoteIndex, 1);
+    }
+
+    // Add the new vote
+    if (vote === 'upvote') {
+      currentVotes.upvotes++;
+    } else if (vote === 'downvote') {
+      currentVotes.downvotes++;
+      if (reason) {
+        currentVotes.downvoteReasons[reason]++;
+      }
+    }
+
+    // Add user vote record
+    currentVotes.userVotes.push({
+      userId,
+      vote,
+      reason,
+      timestamp: new Date().toISOString(),
+    });
+
+    // Update the result
+    await db.collection('results').updateOne(
+      { _id: new ObjectId(resultId) },
+      {
+        $set: {
+          votes: currentVotes,
+          updatedAt: new Date().toISOString(),
+        },
+      }
+    );
+
+    // Return updated result
+    const updatedResult = await db.collection('results').findOne({
+      _id: new ObjectId(resultId),
+    });
+
+    return updatedResult as unknown as SavedResult;
+  },
+
+  /**
+   * Remove a vote from a result
+   * Vote scope is determined by result.mode (full, partA, partB)
+   */
+  async removeVote(resultId: string, userId: string): Promise<SavedResult> {
+    const db = await connectDB();
+
+    if (!ObjectId.isValid(resultId)) {
+      throw new Error('Invalid result ID');
+    }
+
+    // Get the result
+    const result = await db.collection('results').findOne({
+      _id: new ObjectId(resultId),
+    });
+
+    if (!result) {
+      throw new Error('Result not found');
+    }
+
+    if (!result.votes) {
+      return result as unknown as SavedResult;
+    }
+
+    const currentVotes: ResultVotes = result.votes;
+
+    // Find and remove user's vote
+    const existingVoteIndex = currentVotes.userVotes.findIndex(
+      (v) => v.userId === userId
+    );
+
+    if (existingVoteIndex === -1) {
+      // No vote to remove
+      return result as unknown as SavedResult;
+    }
+
+    const existingVote = currentVotes.userVotes[existingVoteIndex];
+
+    // Decrement vote count
+    if (existingVote.vote === 'upvote') {
+      currentVotes.upvotes = Math.max(0, currentVotes.upvotes - 1);
+    } else if (existingVote.vote === 'downvote') {
+      currentVotes.downvotes = Math.max(0, currentVotes.downvotes - 1);
+      // Decrement reason count if it exists
+      if (existingVote.reason && currentVotes.downvoteReasons[existingVote.reason] > 0) {
+        currentVotes.downvoteReasons[existingVote.reason]--;
+      }
+    }
+
+    // Remove user vote
+    currentVotes.userVotes.splice(existingVoteIndex, 1);
+
+    // Update the result
+    await db.collection('results').updateOne(
+      { _id: new ObjectId(resultId) },
+      {
+        $set: {
+          votes: currentVotes,
+          updatedAt: new Date().toISOString(),
+        },
+      }
+    );
+
+    // Return updated result
+    const updatedResult = await db.collection('results').findOne({
+      _id: new ObjectId(resultId),
+    });
+
+    return updatedResult as unknown as SavedResult;
   },
 };
 

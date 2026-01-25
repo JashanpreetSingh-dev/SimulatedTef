@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { SavedResult, TEFTask, EvaluationResult } from '../../types';
 import { SimpleResultView } from './components/SimpleResultView';
@@ -13,6 +13,7 @@ import { UpgradedSentences } from './components/UpgradedSentences';
 import { WrittenExpressionTabs } from './components/WrittenExpressionTabs';
 import { StrengthsWeaknesses } from './components/StrengthsWeaknesses';
 import { QuestionCount } from './components/QuestionCount';
+import { ResultVoting } from './components/ResultVoting';
 
 interface DetailedResultViewProps {
   result: SavedResult;
@@ -21,21 +22,30 @@ interface DetailedResultViewProps {
 
 export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, onBack }) => {
   const { t } = useLanguage();
+  const [currentResult, setCurrentResult] = useState<SavedResult>(result);
+
+  // Update current result when prop changes
+  useEffect(() => {
+    setCurrentResult(result);
+  }, [result]);
+
+  // Use currentResult instead of result for rendering
+  const displayResult = currentResult;
 
   // Get evaluation result - for partA/partB, check moduleData first, then fallback to main evaluation
   const evaluationResult = useMemo((): EvaluationResult => {
-    if (result.moduleData) {
-      if (result.moduleData.type === 'oralExpression' || result.moduleData.type === 'writtenExpression') {
-        if (result.mode === 'partA' && result.moduleData.sectionA?.result) {
-          return result.moduleData.sectionA.result;
-        } else if (result.mode === 'partB' && result.moduleData.sectionB?.result) {
-          return result.moduleData.sectionB.result;
+    if (displayResult.moduleData) {
+      if (displayResult.moduleData.type === 'oralExpression' || displayResult.moduleData.type === 'writtenExpression') {
+        if (displayResult.mode === 'partA' && displayResult.moduleData.sectionA?.result) {
+          return displayResult.moduleData.sectionA.result;
+        } else if (displayResult.mode === 'partB' && displayResult.moduleData.sectionB?.result) {
+          return displayResult.moduleData.sectionB.result;
         }
       }
     }
     // Fallback to main evaluation or legacy structure (cast legacy result as EvaluationResult)
-    return (result.evaluation || result) as EvaluationResult;
-  }, [result]);
+    return (displayResult.evaluation || displayResult) as EvaluationResult;
+  }, [displayResult]);
 
   // Memoize expensive calculations - read from evaluationResult
   const criteria = useMemo(() => evaluationResult.criteria || {}, [evaluationResult.criteria]);
@@ -52,96 +62,122 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
     const tasks: Array<{ task: TEFTask; label: string }> = [];
     
     // Try to get tasks from populated result (taskA/taskB) or legacy fields
-    const taskA = (result as any).taskA?.taskData || result.taskPartA;
-    const taskB = (result as any).taskB?.taskData || result.taskPartB;
+    const taskA = (displayResult as any).taskA?.taskData || displayResult.taskPartA;
+    const taskB = (displayResult as any).taskB?.taskData || displayResult.taskPartB;
     
-    if (result.mode === 'partA' && taskA) {
+    if (displayResult.mode === 'partA' && taskA) {
       tasks.push({ task: taskA, label: `Section ${t('results.sectionA')}` });
-    } else if (result.mode === 'partB' && taskB) {
+    } else if (displayResult.mode === 'partB' && taskB) {
       tasks.push({ task: taskB, label: `Section ${t('results.sectionB')}` });
-    } else if (result.mode === 'full') {
+    } else if (displayResult.mode === 'full') {
       if (taskA) tasks.push({ task: taskA, label: `${t('results.section')} ${t('results.sectionA')}` });
       if (taskB) tasks.push({ task: taskB, label: `${t('results.section')} ${t('results.sectionB')}` });
     }
     return tasks;
-  }, [result.mode, result.taskPartA, result.taskPartB, (result as any).taskA, (result as any).taskB, t]);
+  }, [displayResult.mode, displayResult.taskPartA, displayResult.taskPartB, (displayResult as any).taskA, (displayResult as any).taskB, t]);
 
   // For reading/listening results, show simple view
-  if (result.module === 'reading' || result.module === 'listening') {
-    return <SimpleResultView result={result} onBack={onBack} />;
+  if (displayResult.module === 'reading' || displayResult.module === 'listening') {
+    return <SimpleResultView result={displayResult} onBack={onBack} />;
   }
 
   // For written expression and oral expression results, show full detailed view
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-8 duration-500">
-      {/* Header with Back Button */}
-      <button 
-        onClick={onBack}
-        className="text-indigo-400 dark:text-indigo-300 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:opacity-70 transition-opacity"
-      >
-        <span>←</span> {t('back.toList')}
-      </button>
+      {/* Header with Back Button and Voting */}
+      <div className="flex items-center justify-between gap-4">
+        <button 
+          onClick={onBack}
+          className="text-indigo-400 dark:text-indigo-300 font-black text-[10px] uppercase tracking-widest flex items-center gap-2 hover:opacity-70 transition-opacity"
+        >
+          <span>←</span> {t('back.toList')}
+        </button>
+
+        {/* Voting Component - Mobile only (same level as back button) */}
+        {displayResult.module === 'oralExpression' && !displayResult.isLoading && (
+          <div className="md:hidden">
+            <ResultVoting
+              result={displayResult}
+              onVoteUpdate={(updatedResult) => {
+                // Only update the votes field, preserving all other data
+                setCurrentResult((prevResult) => ({
+                  ...prevResult,
+                  votes: updatedResult.votes,
+                }));
+              }}
+              compact={true}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Compact Top Section: Section Badge, CLB, CECR, Recording */}
       <ResultHeader
-        result={result}
+        result={displayResult}
         audioPlayer={
-          result.module !== 'writtenExpression' && result.recordingId ? (
-            <AudioPlayer recordingId={result.recordingId} />
+          displayResult.module !== 'writtenExpression' && displayResult.recordingId ? (
+            <AudioPlayer recordingId={displayResult.recordingId} />
           ) : undefined
         }
+        onVoteUpdate={(updatedResult) => {
+          // Only update the votes field, preserving all other data
+          setCurrentResult((prevResult) => ({
+            ...prevResult,
+            votes: updatedResult.votes,
+          }));
+        }}
       />
 
       {/* Written Expression - Tabbed Display */}
-      {result.module === 'writtenExpression' && (
-        <WrittenExpressionTabs result={result} />
+      {displayResult.module === 'writtenExpression' && (
+        <WrittenExpressionTabs result={displayResult} />
       )}
 
       {/* Written Expression Overall Comment (shown only if moduleData is missing) */}
-      {result.module === 'writtenExpression' && !result.moduleData && overallComment && (
+      {displayResult.module === 'writtenExpression' && !displayResult.moduleData && overallComment && (
         <OverallComment comment={overallComment} variant="blue" />
       )}
 
       {/* Task Images and Transcript Container (for oral expression) */}
-      {result.module !== 'writtenExpression' && (tasksToDisplay.length > 0 || result.transcript) && (
+      {displayResult.module !== 'writtenExpression' && (tasksToDisplay.length > 0 || displayResult.transcript) && (
         <TaskAndTranscriptContainer
           tasks={tasksToDisplay}
-          transcript={result.transcript}
+          transcript={displayResult.transcript}
         />
       )}
 
       {/* Overall Comment (for non-written expression) */}
-      {result.module !== 'writtenExpression' && overallComment && (
+      {displayResult.module !== 'writtenExpression' && overallComment && (
         <OverallComment comment={overallComment} variant="indigo" />
       )}
 
       {/* Question Count (for oral expression Section A only) */}
-      {result.module === 'oralExpression' && (result.mode === 'partA' || result.mode === 'full') && typeof actualQuestionsCount === 'number' && (
+      {displayResult.module === 'oralExpression' && (displayResult.mode === 'partA' || displayResult.mode === 'full') && typeof actualQuestionsCount === 'number' && (
         <QuestionCount actualCount={actualQuestionsCount} />
       )}
 
       {/* Strengths & Weaknesses (for non-written expression) */}
-      {result.module !== 'writtenExpression' && (strengths.length > 0 || weaknesses.length > 0) && (
+      {displayResult.module !== 'writtenExpression' && (strengths.length > 0 || weaknesses.length > 0) && (
         <StrengthsWeaknesses strengths={strengths} weaknesses={weaknesses} />
       )}
 
       {/* Criteria Breakdown (for non-written expression) */}
-      {result.module !== 'writtenExpression' && Object.keys(criteria).length > 0 && (
+      {displayResult.module !== 'writtenExpression' && Object.keys(criteria).length > 0 && (
         <CriteriaBreakdown criteria={criteria} />
       )}
 
       {/* Top Improvements (for non-written expression) */}
-      {result.module !== 'writtenExpression' && topImprovements.length > 0 && (
+      {displayResult.module !== 'writtenExpression' && topImprovements.length > 0 && (
         <TopImprovements improvements={topImprovements} />
       )}
 
       {/* Upgraded Sentences (for non-written expression) */}
-      {result.module !== 'writtenExpression' && upgradedSentences.length > 0 && (
+      {displayResult.module !== 'writtenExpression' && upgradedSentences.length > 0 && (
         <UpgradedSentences sentences={upgradedSentences} />
       )}
 
       {/* Model Answer (for non-written expression) */}
-      {result.module !== 'writtenExpression' && modelAnswer && (
+      {displayResult.module !== 'writtenExpression' && modelAnswer && (
         <ModelAnswer modelAnswer={modelAnswer} />
       )}
     </div>

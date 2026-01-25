@@ -10,9 +10,9 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 
 function App() {
   return (
-    <ThemeProvider>
-      <ClerkProviderWithTheme>
-        <LanguageProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <ClerkProviderWithTheme>
           <BrowserRouter>
             <SignedOut>
               <Routes>
@@ -26,9 +26,9 @@ function App() {
               <ProtectedRoutes />
             </SignedIn>
           </BrowserRouter>
-        </LanguageProvider>
-      </ClerkProviderWithTheme>
-    </ThemeProvider>
+        </ClerkProviderWithTheme>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

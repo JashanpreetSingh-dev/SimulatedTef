@@ -26,6 +26,21 @@ export const ResultSchema = z.object({
   taskPartA: z.any().optional(),
   taskPartB: z.any().optional(),
   isLoading: z.boolean().optional(),
+  votes: z.object({
+    upvotes: z.number().default(0),
+    downvotes: z.number().default(0),
+    downvoteReasons: z.object({
+      inaccurate_score: z.number().default(0),
+      poor_feedback: z.number().default(0),
+      technical_issue: z.number().default(0),
+    }).optional(),
+    userVotes: z.array(z.object({
+      userId: z.string(),
+      vote: z.enum(['upvote', 'downvote']),
+      reason: z.enum(['inaccurate_score', 'poor_feedback', 'technical_issue']).optional(),
+      timestamp: z.string(),
+    })).default([]),
+  }).optional(),
 });
 
 export type Result = z.infer<typeof ResultSchema>;

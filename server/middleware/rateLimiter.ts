@@ -9,13 +9,13 @@ import { Request } from 'express';
 /**
  * Custom key generator that uses userId if available, otherwise uses IP with IPv6 support
  */
-const keyGenerator = (req: Request) => {
+const keyGenerator = (req: Request): string => {
   // If user is authenticated, use userId
   if ((req as any).userId) {
-    return (req as any).userId;
+    return String((req as any).userId);
   }
   // Otherwise, use IP with proper IPv6 handling
-  return ipKeyGenerator(req);
+  return ipKeyGenerator(req as any);
 };
 
 /**
@@ -46,11 +46,11 @@ export const mcqSubmissionLimiter = rateLimit({
 
 /**
  * Rate limiter for result retrieval endpoints
- * Limit: 20 requests per minute per user
+ * Limit: 60 requests per minute per user
  */
 export const resultRetrievalLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20, // 20 requests per window
+  max: 60, // 60 requests per window
   message: 'Too many result retrieval requests. Please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

@@ -70,11 +70,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </>
             )}
             {isAdmin && (
-              <button 
-                onClick={() => navigate('/admin/usage')}
-                className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-                {t('admin.usageGlobal')}
-              </button>
+              <>
+                <button 
+                  onClick={() => navigate('/admin/usage')}
+                  className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.usageGlobal')}
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/vote-analytics')}
+                  className={isActive('/admin/vote-analytics') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.voteAnalytics') || 'Vote Analytics'}
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -193,16 +200,28 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </>
               )}
               {isAdmin && (
-                <button 
-                  onClick={() => handleNavigate('/admin/usage')}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                    isActive('/admin/usage')
-                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {t('admin.usageGlobal')}
-                </button>
+                <>
+                  <button 
+                    onClick={() => handleNavigate('/admin/usage')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/usage')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {t('admin.usageGlobal')}
+                  </button>
+                  <button 
+                    onClick={() => handleNavigate('/admin/vote-analytics')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/vote-analytics')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {t('admin.voteAnalytics') || 'Vote Analytics'}
+                  </button>
+                </>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
               <button 

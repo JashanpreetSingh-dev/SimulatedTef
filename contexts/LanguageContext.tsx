@@ -464,6 +464,31 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.totalBilled': 'Total Billed',
     'admin.allTurns': '(All turns)',
     'admin.totalCostLabel': 'Total Cost',
+    
+    // Voting
+    'voting.title': 'Cette évaluation vous a-t-elle été utile ?',
+    'voting.totalVotes': 'votes au total',
+    'voting.yourReason': 'Votre raison',
+    'voting.selectReason': 'Pourquoi votez-vous contre ce résultat ?',
+    'voting.reason.inaccurateScore': 'Score/niveau inexact',
+    'voting.reason.poorFeedback': 'Retour médiocre ou peu utile',
+    'voting.reason.technicalIssue': 'Problème technique',
+    
+    // Admin Vote Analytics
+    'admin.voteAnalytics': 'Analytique des Votes',
+    'admin.voteAnalyticsSubtitle': 'Analytique des votes pour les résultats d\'expression orale',
+    'admin.loadingAnalytics': 'Chargement de l\'analytique...',
+    'admin.failedToLoad': 'Échec du chargement de l\'analytique',
+    'admin.totalVotes': 'Total des Votes',
+    'admin.upvotePercentage': '% de Votes Positifs',
+    'admin.downvotePercentage': '% de Votes Négatifs',
+    'admin.totalResults': 'Total des Résultats',
+    'admin.breakdownByMode': 'Répartition par Mode d\'Examen',
+    'admin.downvoteReasons': 'Raisons des Votes Négatifs',
+    'admin.topDownvotedResults': 'Résultats les Plus Désapprouvés',
+    
+    // Common
+    'common.cancel': 'Annuler',
   },
   en: {
     // Navigation
@@ -918,6 +943,31 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.totalBilled': 'Total Billed',
     'admin.allTurns': '(All turns)',
     'admin.totalCostLabel': 'Total Cost',
+    
+    // Voting
+    'voting.title': 'Was this evaluation helpful?',
+    'voting.totalVotes': 'total votes',
+    'voting.yourReason': 'Your reason',
+    'voting.selectReason': 'Why are you downvoting this result?',
+    'voting.reason.inaccurateScore': 'Inaccurate score/level',
+    'voting.reason.poorFeedback': 'Poor or unhelpful feedback',
+    'voting.reason.technicalIssue': 'Technical issue',
+    
+    // Admin Vote Analytics
+    'admin.voteAnalytics': 'Vote Analytics',
+    'admin.voteAnalyticsSubtitle': 'Analytics for Speaking results voting',
+    'admin.loadingAnalytics': 'Loading analytics...',
+    'admin.failedToLoad': 'Failed to load analytics',
+    'admin.totalVotes': 'Total Votes',
+    'admin.upvotePercentage': 'Upvote %',
+    'admin.downvotePercentage': 'Downvote %',
+    'admin.totalResults': 'Total Results',
+    'admin.breakdownByMode': 'Breakdown by Exam Mode',
+    'admin.downvoteReasons': 'Downvote Reasons',
+    'admin.topDownvotedResults': 'Top Downvoted Results',
+    
+    // Common
+    'common.cancel': 'Cancel',
   },
 };
 

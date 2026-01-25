@@ -12,14 +12,14 @@ import { resultsService } from '../services/resultsService';
 const router = Router();
 
 // GET /api/results/:userId - Get all results for a user
-// Rate limit: 20 requests per minute
+// Rate limit: 60 requests per minute
 router.get('/:userId', requireAuth, resultRetrievalLimiter, resultsController.getUserResults);
 
 // POST /api/results - Create a new result
 router.post('/', requireAuth, resultsController.createResult);
 
 // GET /api/results/detail/:id - Get specific result by ID
-// Rate limit: 20 requests per minute
+// Rate limit: 60 requests per minute
 router.get('/detail/:id', requireAuth, resultRetrievalLimiter, resultsController.getResultById);
 
 // POST /api/results/update-metadata - Update result metadata (for mock exams)
@@ -67,6 +67,42 @@ router.put('/:id/evaluation', requireAuth, asyncHandler(async (req: Request, res
   } catch (error: any) {
     if (error.message === 'Result not found or access denied') {
       return res.status(404).json({ error: error.message });
+    }
+    throw error;
+  }
+}));
+
+// POST /api/results/:id/vote - Add or update a vote for a result
+router.post('/:id/vote', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const resultId = req.params.id;
+  const { vote, reason } = req.body;
+
+  if (!vote || (vote !== 'upvote' && vote !== 'downvote')) {
+    return res.status(400).json({ error: 'vote is required and must be "upvote" or "downvote"' });
+  }
+
+  // Validate reason if downvote
+  if (vote === 'downvote' && reason) {
+    const validReasons = ['inaccurate_score', 'poor_feedback', 'technical_issue'];
+    if (!validReasons.includes(reason)) {
+      return res.status(400).json({ error: 'Invalid downvote reason' });
+    }
+  }
+
+  try {
+    const updatedResult = await resultsService.addVote(resultId, userId, vote, reason);
+    res.json({ success: true, result: updatedResult });
+  } catch (error: any) {
+    if (error.message === 'Result not found') {
+      return res.status(404).json({ error: error.message });
+    }
+    if (error.message === 'Voting is only available for oral expression results') {
+      return res.status(400).json({ error: error.message });
     }
     throw error;
   }

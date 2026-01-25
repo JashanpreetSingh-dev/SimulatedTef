@@ -7,6 +7,7 @@ import { requireAuth, requireRole } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { Request, Response } from 'express';
 import { conversationLogService } from '../services/conversationLogService';
+import { voteAnalyticsService } from '../services/voteAnalyticsService';
 import { createClerkClient } from '@clerk/backend';
 
 const router = Router();
@@ -100,6 +101,80 @@ router.get(
     } catch (error: any) {
       console.error('Error fetching org conversation logs:', error);
       res.status(500).json({ error: error.message || 'Failed to fetch organization conversation logs' });
+    }
+  })
+);
+
+/**
+ * GET /api/admin/results/vote-analytics
+ * Get vote analytics for oral expression results in the admin's organization
+ * Requires org:admin role
+ */
+router.get(
+  '/results/vote-analytics',
+  requireAuth,
+  requireRole('org:admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const orgId = req.orgId;
+    if (!orgId) {
+      return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    // Get all user IDs in the organization
+    let orgUserIds: string[] = [];
+    
+    if (clerkClient && clerkSecretKey) {
+      try {
+        const members = await clerkClient.organizations.getOrganizationMembershipList({
+          organizationId: orgId,
+        });
+        orgUserIds = members.data.map((m) => m.publicUserData?.userId || '').filter(Boolean);
+      } catch (error: any) {
+        console.error('Error fetching org members:', error);
+        return res.status(500).json({ error: 'Failed to fetch organization members' });
+      }
+    } else {
+      // Development mode - return empty analytics
+      console.warn('Clerk client not available, returning empty analytics');
+      return res.json({
+        summary: {
+          totalResults: 0,
+          totalUpvotes: 0,
+          totalDownvotes: 0,
+          totalVotes: 0,
+          upvotePercentage: 0,
+          downvotePercentage: 0,
+        },
+        byMode: {
+          full: { totalResults: 0, upvotes: 0, downvotes: 0, votes: 0 },
+          partA: { totalResults: 0, upvotes: 0, downvotes: 0, votes: 0 },
+          partB: { totalResults: 0, upvotes: 0, downvotes: 0, votes: 0 },
+        },
+        byReason: {
+          inaccurate_score: 0,
+          poor_feedback: 0,
+          technical_issue: 0,
+        },
+        topDownvotedResults: [],
+        recentVotes: [],
+      });
+    }
+
+    // Parse query parameters
+    const startDate = req.query.startDate as string | undefined;
+    const endDate = req.query.endDate as string | undefined;
+
+    try {
+      const analytics = await voteAnalyticsService.getAnalytics(
+        orgUserIds.length > 0 ? orgUserIds : undefined,
+        startDate,
+        endDate
+      );
+
+      res.json(analytics);
+    } catch (error: any) {
+      console.error('Error fetching vote analytics:', error);
+      res.status(500).json({ error: error.message || 'Failed to fetch vote analytics' });
     }
   })
 );
