@@ -623,10 +623,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 blockTokenCount: usageMetadataRaw.blockTokenCount || 0, // Live API has no blocks
               };
               
-              // Calculate cost using blended rate: totalTokenCount * 0.0000035
-              const cost = usageMetadata.totalTokenCount 
-                ? usageMetadata.totalTokenCount * 0.0000035 
-                : undefined;
+              // Calculate cost using actual rates:
+              // Input tokens: $3.00 per 1M tokens = $0.000003 per token
+              // Output tokens: $12.00 per 1M tokens = $0.000012 per token
+              const cost = usageMetadata.promptTokenCount !== undefined && usageMetadata.candidatesTokenCount !== undefined
+                ? (usageMetadata.promptTokenCount * 0.000003) + (usageMetadata.candidatesTokenCount * 0.000012)
+                : usageMetadata.totalTokenCount 
+                  ? usageMetadata.totalTokenCount * 0.0000035 // Fallback to blended rate if individual counts unavailable
+                  : undefined;
               
               // Log token usage and cost
               conversationLogService.logMessage(
