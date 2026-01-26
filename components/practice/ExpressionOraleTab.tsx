@@ -12,14 +12,12 @@ export function ExpressionOraleTab({ onStartExam }: ExpressionOraleTabProps) {
       <div className="md:hidden space-y-4">
         <ExamCard mode="partA" onStart={onStartExam} variant="mobile" />
         <ExamCard mode="partB" onStart={onStartExam} variant="mobile" />
-        <ExamCard mode="full" onStart={onStartExam} variant="mobile" />
       </div>
 
-      {/* Desktop: 3-column grid */}
-      <div className="hidden md:grid md:grid-cols-3 gap-6">
+      {/* Desktop: 2-column grid */}
+      <div className="hidden md:grid md:grid-cols-2 gap-6">
         <ExamCard mode="partA" onStart={onStartExam} variant="desktop" />
         <ExamCard mode="partB" onStart={onStartExam} variant="desktop" />
-        <ExamCard mode="full" onStart={onStartExam} variant="desktop" />
       </div>
     </div>
   );
