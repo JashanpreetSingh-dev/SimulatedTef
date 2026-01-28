@@ -81,6 +81,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   className={isActive('/admin/vote-analytics') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
                   {t('admin.voteAnalytics') || 'Vote Analytics'}
                 </button>
+                <button 
+                  onClick={() => navigate('/admin/org-config')}
+                  className={isActive('/admin/org-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.orgConfig') || 'Organization Settings'}
+                </button>
               </>
             )}
           </div>

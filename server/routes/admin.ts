@@ -8,6 +8,7 @@ import { asyncHandler } from '../middleware/errorHandler';
 import { Request, Response } from 'express';
 import { conversationLogService } from '../services/conversationLogService';
 import { voteAnalyticsService } from '../services/voteAnalyticsService';
+import { organizationConfigService } from '../services/organizationConfigService';
 import { createClerkClient } from '@clerk/backend';
 
 const router = Router();
@@ -175,6 +176,69 @@ router.get(
     } catch (error: any) {
       console.error('Error fetching vote analytics:', error);
       res.status(500).json({ error: error.message || 'Failed to fetch vote analytics' });
+    }
+  })
+);
+
+/**
+ * GET /api/admin/org-config
+ * Get current organization configuration (or defaults)
+ * Requires org:admin role
+ */
+router.get(
+  '/org-config',
+  requireAuth,
+  requireRole('org:admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const orgId = req.orgId;
+    if (!orgId) {
+      return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    try {
+      const config = await organizationConfigService.getConfig(orgId);
+      res.json(config);
+    } catch (error: any) {
+      console.error('Error fetching org config:', error);
+      res.status(500).json({ error: error.message || 'Failed to fetch organization configuration' });
+    }
+  })
+);
+
+/**
+ * PUT /api/admin/org-config
+ * Update organization configuration limits
+ * Requires org:admin role
+ */
+router.put(
+  '/org-config',
+  requireAuth,
+  requireRole('org:admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const orgId = req.orgId;
+    if (!orgId) {
+      return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    const { sectionALimit, sectionBLimit } = req.body;
+
+    if (typeof sectionALimit !== 'number' || typeof sectionBLimit !== 'number') {
+      return res.status(400).json({ error: 'sectionALimit and sectionBLimit must be numbers' });
+    }
+
+    if (sectionALimit < 1 || sectionBLimit < 1) {
+      return res.status(400).json({ error: 'Limits must be at least 1' });
+    }
+
+    try {
+      const updated = await organizationConfigService.updateConfig(orgId, {
+        sectionALimit,
+        sectionBLimit,
+      });
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating org config:', error);
+      res.status(500).json({ error: error.message || 'Failed to update organization configuration' });
     }
   })
 );

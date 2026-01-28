@@ -101,7 +101,40 @@ export const adminService = {
       getToken: getToken,
     });
   },
+
+  /**
+   * Get organization configuration
+   */
+  async getOrgConfig(
+    getToken: () => Promise<string | null>
+  ): Promise<OrgConfig> {
+    const url = `${BACKEND_URL}/api/admin/org-config`;
+    return authenticatedFetchJSON<OrgConfig>(url, {
+      method: 'GET',
+      getToken: getToken,
+    });
+  },
+
+  /**
+   * Update organization configuration
+   */
+  async updateOrgConfig(
+    getToken: () => Promise<string | null>,
+    limits: { sectionALimit: number; sectionBLimit: number }
+  ): Promise<OrgConfig> {
+    const url = `${BACKEND_URL}/api/admin/org-config`;
+    return authenticatedFetchJSON<OrgConfig>(url, {
+      method: 'PUT',
+      getToken: getToken,
+      body: JSON.stringify(limits),
+    });
+  },
 };
+
+export interface OrgConfig {
+  sectionALimit: number;
+  sectionBLimit: number;
+}
 
 export interface VoteAnalytics {
   summary: {
