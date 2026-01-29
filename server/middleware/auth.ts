@@ -51,12 +51,14 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     const userId = sessionClaims.sub; // 'sub' is the user ID in Clerk tokens
     req.userId = userId;
     
-    // Extract organization role from session claims (if org is active)
+    // Extract organization role and ID from session claims (if org is active in Clerk)
+    // When setActive() is called on frontend, Clerk updates token with org_id and org_role
     req.userRole = (sessionClaims as any).org_role || null;
     req.orgId = (sessionClaims as any).org_id || null;
     
-    // If no active org role, fetch user's organization memberships from Clerk API
-    if (!req.userRole && userId) {
+    // If no active org in token, fetch user's organization memberships from Clerk API
+    // This handles cases where user hasn't set an active org yet
+    if (!req.orgId && userId) {
       try {
         const memberships = await clerkClient.users.getOrganizationMembershipList({
           userId,
@@ -67,30 +69,68 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         
         // Set userRole to admin if they have it in any org (highest priority)
         if (req.userRoles.includes('org:admin')) {
-          req.userRole = 'org:admin';
-          // Also set orgId from the admin membership
-          const adminMembership = memberships.data.find(m => m.role === 'org:admin');
-          if (adminMembership) {
-            req.orgId = adminMembership.organization.id;
+          req.userRole = req.userRole || 'org:admin';
+          // Set orgId from the first admin membership (or use active org if available)
+          if (!req.orgId) {
+            const adminMembership = memberships.data.find(m => m.role === 'org:admin');
+            if (adminMembership) {
+              req.orgId = adminMembership.organization.id;
+            }
           }
         } else if (req.userRoles.includes('org:professor')) {
-          req.userRole = 'org:professor';
-          // Also set orgId from the professor membership
-          const professorMembership = memberships.data.find(m => m.role === 'org:professor');
-          if (professorMembership) {
-            req.orgId = professorMembership.organization.id;
+          req.userRole = req.userRole || 'org:professor';
+          // Set orgId from the first professor membership (or use active org if available)
+          if (!req.orgId) {
+            const professorMembership = memberships.data.find(m => m.role === 'org:professor');
+            if (professorMembership) {
+              req.orgId = professorMembership.organization.id;
+            }
           }
         } else if (req.userRoles.length > 0) {
-          req.userRole = req.userRoles[0]; // Use first role
-          // Set orgId from first membership
-          req.orgId = memberships.data[0]?.organization.id || null;
+          req.userRole = req.userRole || req.userRoles[0]; // Use first role
+          // Set orgId from first membership (or use active org if available)
+          if (!req.orgId) {
+            req.orgId = memberships.data[0]?.organization.id || null;
+          }
         }
       } catch (err) {
         console.error('Failed to fetch user memberships:', err);
         // Continue without role - will be blocked by requireRole if needed
       }
     } else {
-      req.userRoles = req.userRole ? [req.userRole] : [];
+      // If we have orgId from token, still fetch all memberships to get all roles
+      if (userId && req.orgId) {
+        try {
+          const memberships = await clerkClient.users.getOrganizationMembershipList({
+            userId,
+          });
+          req.userRoles = memberships.data.map((m) => m.role);
+          // Ensure userRole is set if we have orgId from token
+          if (!req.userRole && req.userRoles.length > 0) {
+            // Find role for the active org
+            const activeMembership = memberships.data.find(m => m.organization.id === req.orgId);
+            if (activeMembership) {
+              req.userRole = activeMembership.role;
+            } else if (req.userRoles.includes('org:admin')) {
+              req.userRole = 'org:admin';
+            } else if (req.userRoles.includes('org:professor')) {
+              req.userRole = 'org:professor';
+            } else {
+              req.userRole = req.userRoles[0];
+            }
+          }
+        } catch (err) {
+          console.error('Failed to fetch user memberships:', err);
+          req.userRoles = req.userRole ? [req.userRole] : [];
+        }
+      } else {
+        req.userRoles = req.userRole ? [req.userRole] : [];
+      }
+    }
+    
+    // Debug logging in development
+    if (process.env.NODE_ENV === 'development' && req.orgId) {
+      console.debug(`[Auth] User ${userId} - OrgId: ${req.orgId}, Role: ${req.userRole}`);
     }
     
     next();

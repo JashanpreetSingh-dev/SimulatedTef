@@ -7,6 +7,7 @@ import { z } from 'zod';
 // Zod schema for usage validation
 export const UsageSchema = z.object({
   userId: z.string().min(1),
+  orgId: z.string().optional(), // Organization ID (optional for backward compatibility)
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD format
   fullTestsUsed: z.number().min(0).default(0),
   sectionAUsed: z.number().min(0).default(0),

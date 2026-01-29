@@ -25,9 +25,23 @@ router.get(
   requireAuth,
   requireRole('org:admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const orgId = req.orgId;
+    // Prefer explicit orgId from query param (for org switching), fallback to token orgId
+    const explicitOrgId = req.query.orgId as string | undefined;
+    const tokenOrgId = req.orgId;
+    const orgId = explicitOrgId || tokenOrgId;
+    
     if (!orgId) {
       return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    // Validate that explicit orgId matches token orgId (security check)
+    if (explicitOrgId && tokenOrgId && explicitOrgId !== tokenOrgId) {
+      // Check if user has admin access to the requested org
+      const userRoles = req.userRoles || [];
+      if (!userRoles.includes('org:admin')) {
+        return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+      }
+      // If admin, allow access to any org they're admin of (for org switching)
     }
 
     // Get all user IDs in the organization
@@ -87,6 +101,7 @@ router.get(
         endDate,
         limit,
         skip,
+        orgId: orgId, // Pass orgId for accurate filtering
       });
 
       res.json({
@@ -116,9 +131,23 @@ router.get(
   requireAuth,
   requireRole('org:admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const orgId = req.orgId;
+    // Prefer explicit orgId from query param (for org switching), fallback to token orgId
+    const explicitOrgId = req.query.orgId as string | undefined;
+    const tokenOrgId = req.orgId;
+    const orgId = explicitOrgId || tokenOrgId;
+    
     if (!orgId) {
       return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    // Validate that explicit orgId matches token orgId (security check)
+    if (explicitOrgId && tokenOrgId && explicitOrgId !== tokenOrgId) {
+      // Check if user has admin access to the requested org
+      const userRoles = req.userRoles || [];
+      if (!userRoles.includes('org:admin')) {
+        return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+      }
+      // If admin, allow access to any org they're admin of (for org switching)
     }
 
     // Get all user IDs in the organization
@@ -169,7 +198,8 @@ router.get(
       const analytics = await voteAnalyticsService.getAnalytics(
         orgUserIds.length > 0 ? orgUserIds : undefined,
         startDate,
-        endDate
+        endDate,
+        orgId // Pass orgId for accurate filtering
       );
 
       res.json(analytics);
@@ -190,9 +220,24 @@ router.get(
   requireAuth,
   requireRole('org:admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const orgId = req.orgId;
+    // Prefer explicit orgId from query param (for org switching), fallback to token orgId
+    const explicitOrgId = req.query.orgId as string | undefined;
+    const tokenOrgId = req.orgId;
+    const orgId = explicitOrgId || tokenOrgId;
+    
     if (!orgId) {
       return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    // Validate that explicit orgId matches token orgId (security check)
+    if (explicitOrgId && tokenOrgId && explicitOrgId !== tokenOrgId) {
+      // Check if user has admin access to the requested org
+      const userRoles = req.userRoles || [];
+      if (!userRoles.includes('org:admin')) {
+        return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+      }
+      // If admin, allow access to any org they're admin of (for org switching)
+      // The orgId will be validated by organizationConfigService
     }
 
     try {
@@ -215,9 +260,23 @@ router.put(
   requireAuth,
   requireRole('org:admin'),
   asyncHandler(async (req: Request, res: Response) => {
-    const orgId = req.orgId;
+    // Prefer explicit orgId from query param (for org switching), fallback to token orgId
+    const explicitOrgId = req.query.orgId as string | undefined;
+    const tokenOrgId = req.orgId;
+    const orgId = explicitOrgId || tokenOrgId;
+    
     if (!orgId) {
       return res.status(400).json({ error: 'Organization ID not found' });
+    }
+
+    // Validate that explicit orgId matches token orgId (security check)
+    if (explicitOrgId && tokenOrgId && explicitOrgId !== tokenOrgId) {
+      // Check if user has admin access to the requested org
+      const userRoles = req.userRoles || [];
+      if (!userRoles.includes('org:admin')) {
+        return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+      }
+      // If admin, allow access to any org they're admin of (for org switching)
     }
 
     const { sectionALimit, sectionBLimit } = req.body;

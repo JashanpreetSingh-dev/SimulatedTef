@@ -5,6 +5,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { adminService, OrgConversationLog } from '../services/adminService';
 import { formatDateFrench } from '../utils/dateFormatting';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useOrganization } from '@clerk/clerk-react';
 
 const LOGS_PER_PAGE = 50;
 
@@ -13,6 +14,7 @@ export function AdminUsageView() {
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { organization } = useOrganization();
   const [logs, setLogs] = useState<OrgConversationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -41,8 +43,12 @@ export function AdminUsageView() {
       navigate('/dashboard');
       return;
     }
+    // Reset state when org changes
+    setLogs([]);
+    setSummary(null);
+    setHasMore(true);
     fetchLogs(0, false);
-  }, [examTypeFilter, startDate, endDate, isAdmin, navigate]);
+  }, [examTypeFilter, startDate, endDate, isAdmin, navigate, organization?.id]);
 
   const fetchLogs = async (skip: number = 0, append: boolean = false) => {
     if (!isAdmin) return;
@@ -62,6 +68,7 @@ export function AdminUsageView() {
           endDate: endDate || undefined,
           limit: LOGS_PER_PAGE,
           skip,
+          orgId: organization?.id, // Pass explicit orgId for org switching
         }
       );
 

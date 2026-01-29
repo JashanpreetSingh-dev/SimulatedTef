@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { adminService, OrgConfig } from '../services/adminService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useOrganization } from '@clerk/clerk-react';
 
 export function AdminOrgConfigView() {
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { organization } = useOrganization();
   
   const [config, setConfig] = useState<OrgConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,8 +37,15 @@ export function AdminOrgConfigView() {
       navigate('/dashboard');
       return;
     }
+    // Reset state when org changes
+    setConfig(null);
+    setSectionALimit(45); // Reset to default
+    setSectionBLimit(45); // Reset to default
+    setError(null);
+    setSuccess(false);
+    setValidationErrors({});
     fetchConfig();
-  }, [isAdmin, navigate]);
+  }, [isAdmin, navigate, organization?.id]);
 
   const fetchConfig = async () => {
     if (!isAdmin) return;
@@ -44,7 +53,8 @@ export function AdminOrgConfigView() {
     try {
       setLoading(true);
       setError(null);
-      const data = await adminService.getOrgConfig(getToken);
+      // Pass explicit orgId to ensure we get the right org's config
+      const data = await adminService.getOrgConfig(getToken, organization?.id);
       setConfig(data);
       setSectionALimit(data.sectionALimit);
       setSectionBLimit(data.sectionBLimit);
@@ -83,10 +93,11 @@ export function AdminOrgConfigView() {
       setError(null);
       setSuccess(false);
 
+      // Pass explicit orgId to ensure we update the right org's config
       const updated = await adminService.updateOrgConfig(getToken, {
         sectionALimit,
         sectionBLimit,
-      });
+      }, organization?.id);
 
       setConfig(updated);
       setSuccess(true);

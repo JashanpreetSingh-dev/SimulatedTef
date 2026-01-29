@@ -8,6 +8,7 @@ import { SavedResult } from '../../types';
 // Zod schema for result validation
 export const ResultSchema = z.object({
   userId: z.string().min(1),
+  orgId: z.string().optional(), // Organization ID (optional for backward compatibility)
   score: z.number().min(0).max(699),
   clbLevel: z.string(),
   cecrLevel: z.string().regex(/^(A1|A2|B1|B2|C1|C2)$/),

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useUser, useClerk, UserButton } from '@clerk/clerk-react';
+import { useUser, useClerk, UserButton, OrganizationSwitcher } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Footer } from '../components/Footer';
@@ -49,7 +49,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               Akseli
             </span>
           </div>
-          <div className="hidden md:flex gap-4 text-sm font-bold">
+          <div className="hidden md:flex gap-4 text-sm font-bold items-center">
+            {isAdmin && (
+              <div className="flex items-center">
+                <OrganizationSwitcher 
+                  hidePersonal={true}
+                  appearance={{
+                    elements: {
+                      organizationSwitcherTrigger: "text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200",
+                      organizationSwitcherPopoverCard: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700",
+                    }
+                  }}
+                />
+              </div>
+            )}
             <button 
               onClick={() => navigate('/dashboard')}
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
@@ -170,6 +183,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Menu Panel */}
           <div className="fixed top-[57px] left-0 right-0 bg-indigo-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 z-40 md:hidden shadow-lg transition-colors duration-300">
             <div className="px-4 py-3 space-y-1">
+              {isAdmin && (
+                <div className="px-4 py-3 mb-2">
+                  <OrganizationSwitcher 
+                    hidePersonal={true}
+                    appearance={{
+                      elements: {
+                        organizationSwitcherTrigger: "text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200",
+                        organizationSwitcherPopoverCard: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700",
+                      }
+                    }}
+                  />
+                </div>
+              )}
               <button 
                 onClick={() => handleNavigate('/dashboard')}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
