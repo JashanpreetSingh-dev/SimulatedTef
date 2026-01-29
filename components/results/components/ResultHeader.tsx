@@ -67,9 +67,9 @@ export const ResultHeader: React.FC<ResultHeaderProps> = ({ result, audioPlayer,
         <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0 flex-wrap justify-end md:justify-start">
           {/* Audio Player */}
           {audioPlayer && (
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 sm:flex-initial order-1">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 w-full sm:w-auto flex-1 sm:flex-initial order-1">
               <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex-shrink-0">🎙️</span>
-              <div className="min-w-0 flex-1">{audioPlayer}</div>
+              <div className="min-w-0 flex-1 w-full sm:w-auto">{audioPlayer}</div>
             </div>
           )}
 
