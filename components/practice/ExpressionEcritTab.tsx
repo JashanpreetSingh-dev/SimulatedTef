@@ -31,14 +31,12 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
         <div className="md:hidden space-y-2">
           <ExamCard mode="partA" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
           <ExamCard mode="partB" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
-          <ExamCard mode="full" onStart={onStartExam} variant="mobile" isWrittenExpression={true} />
         </div>
 
-        {/* Desktop: 3-column grid */}
-        <div className="hidden md:grid md:grid-cols-3 gap-3">
+        {/* Desktop: 2-column grid */}
+        <div className="hidden md:grid md:grid-cols-2 gap-3">
           <ExamCard mode="partA" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
           <ExamCard mode="partB" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
-          <ExamCard mode="full" onStart={onStartExam} variant="desktop" isWrittenExpression={true} />
         </div>
       </div>
 
