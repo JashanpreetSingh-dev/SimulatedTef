@@ -5,7 +5,14 @@
 export interface EvaluationJobData {
   section: 'OralExpression' | 'WrittenExpression';
   prompt: string;
-  transcript: string;
+  /** 
+   * For OralExpression: audio blob as base64 string (worker will transcribe)
+   * For WrittenExpression: text content directly
+   * If transcript is provided, it will be used directly (backward compatibility)
+   */
+  transcript?: string;
+  /** Audio blob as base64 string for OralExpression (worker will transcribe) */
+  audioBlob?: string;
   scenarioId: number;
   timeLimitSec: number;
   questionCount?: number;
@@ -23,6 +30,7 @@ export interface EvaluationJobData {
   /**
    * Optional fluency metrics derived from the saved audio (hesitations, fillers, pauses, etc.).
    * Passed through to the evaluation model as extra context for fluency/interaction scoring.
+   * If not provided and audioBlob is present, worker will generate this during transcription.
    */
   fluencyAnalysis?: any;
   /**

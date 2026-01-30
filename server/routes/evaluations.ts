@@ -17,5 +17,8 @@ router.get('/:jobId', requireAuth, evaluationController.getJobStatus);
 // GET /api/evaluations/:jobId/result - Get result when job is completed
 router.get('/:jobId/result', requireAuth, evaluationController.getJobResult);
 
+// GET /api/evaluations/:jobId/stream - Stream job progress using SSE
+router.get('/:jobId/stream', requireAuth, evaluationController.streamJobProgress);
+
 export default router;
 

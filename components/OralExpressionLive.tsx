@@ -110,8 +110,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           new Promise(resolve => setTimeout(resolve, 2000))
         ]);
         
-        // Additional wait to ensure all chunks are available
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Removed 300ms delay - chunks are available immediately after stop event
       } catch (e) {
         console.error('Error stopping MediaRecorder:', e);
       }
@@ -487,7 +486,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 
                 // For non-network errors, we can try to restart
                 if (errorType !== 'no-speech' && errorType !== 'aborted' && isLiveRef.current && isMountedRef.current) {
-                  // Wait a bit before retrying
+                  // Reduced delay before retrying (1000ms -> 100ms)
                   setTimeout(() => {
                     if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
                       try {
@@ -496,14 +495,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                         console.debug('Failed to restart recognition after error:', e);
                       }
                     }
-                  }, 1000);
+                  }, 100);
                 }
               };
               
               recognition.onend = () => {
                 // Only restart recognition if session is still active and it wasn't stopped due to an error
                 if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
-                  // Small delay before restarting to avoid rapid restarts
+                  // Reduced delay before restarting to avoid rapid restarts (500ms -> 100ms)
                   setTimeout(() => {
                     if (isLiveRef.current && isMountedRef.current && recognitionRef.current) {
                       try {
@@ -512,7 +511,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                         console.debug('Recognition already started or error:', e);
                       }
                     }
-                  }, 500);
+                  }, 100);
                 }
               };
               
@@ -986,8 +985,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           }
         }
         
-        // Additional wait to ensure all chunks are available
-        await new Promise(resolve => setTimeout(resolve, 300));
+        // Removed 300ms delay - chunks are available immediately after stop event
         
         // For full mode, combine Part A and Part B chunks; otherwise just use current chunks
         const chunksToProcess = scenario.mode === 'full' 
@@ -1012,29 +1010,20 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             // Use the blob directly
             wavBlob = recordedBlob;
             
-            // Upload recording to GridFS (for playback/debug)
-            recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', getToken) || undefined;
-            console.log('📦 Audio recording uploaded:', recordingId || 'failed');
-
-            // Transcribe the saved audio for grading (cleaner, less fragmented text)
+            // Upload recording to GridFS (for playback in results)
+            // We await this so recordingId is available when submitting the job
+            console.log('📦 Uploading audio recording...');
             try {
-              console.log('🎤 Transcribing saved audio for evaluation...');
-              const { transcript, fluency_analysis } = await geminiService.transcribeAudio(wavBlob);
-              audioTranscript = transcript || null;
-              fluencyAnalysis = fluency_analysis || null;
-              if (audioTranscript) {
-                console.log(
-                  '✅ Audio transcription completed:',
-                  audioTranscript.substring(0, 120) + (audioTranscript.length > 120 ? '...' : '')
-                );
-              } else {
-                console.warn('⚠️ Transcription JSON returned empty transcript.');
-              }
-            } catch (transcribeError) {
-              console.error('❌ Error transcribing saved audio:', transcribeError);
-              audioTranscript = null; // Fallback to live transcripts below
-              fluencyAnalysis = null;
+              recordingId = await persistenceService.uploadRecording(wavBlob, user?.id || 'guest', getToken) || undefined;
+              console.log('📦 Audio recording uploaded:', recordingId || 'failed');
+            } catch (err) {
+              console.error('❌ Error uploading recording:', err);
+              // Continue without recordingId - audio playback won't be available
             }
+            
+            // Note: Transcription will be done by the worker, so we don't transcribe here
+            // This saves ~15-30 seconds by not blocking on transcription
+            console.log('✅ Audio blob ready - worker will transcribe and evaluate');
           } catch (error) {
             console.error('❌ Error processing audio recording:', error);
             audioTranscript = null;
@@ -1045,34 +1034,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           audioTranscript = null;
         }
         
-        // Build the text we send for evaluation.
-        // Primary source: clean transcription from saved audio (examiner + candidate, diarized),
-        // Fallback: live candidate-only transcripts (per section).
-        let fullUserTranscript: string;
-        if (audioTranscript) {
-          // Primary path: use clean diarized transcript from saved audio.
-          // The transcribeAudio function returns a full diarized transcript with both
-          // "User:" and "Examiner:" labels. We store this full transcript for display,
-          // and the evaluation prompt will filter to only evaluate the User's speech.
-          fullUserTranscript = audioTranscript.trim();
+        // For OralExpression: send audio blob to worker (worker will transcribe)
+        // We still need a transcript for the job submission (can be empty or live transcript as fallback)
+        // The worker will use audioBlob to generate the actual transcript
+        let fullUserTranscript: string = '';
+        if (scenario.mode === 'partA') {
+          fullUserTranscript = transcriptA.current.trim() || '';
+        } else if (scenario.mode === 'partB') {
+          fullUserTranscript = transcriptB.current.trim() || '';
         } else {
-          // Fallback: only candidate live transcripts available
-          if (scenario.mode === 'partA') {
-            fullUserTranscript = transcriptA.current.trim() || '(aucune transcription)';
-          } else if (scenario.mode === 'partB') {
-            fullUserTranscript = transcriptB.current.trim() || '(aucune transcription)';
-          } else {
-            fullUserTranscript = [
-              transcriptA.current.trim(),
-              transcriptB.current.trim()
-            ].filter(Boolean).join('\n\n').trim() || '(aucune transcription)';
-          }
+          fullUserTranscript = [
+            transcriptA.current.trim(),
+            transcriptB.current.trim()
+          ].filter(Boolean).join('\n\n').trim() || '';
         }
         
-        // Log what we're sending for debugging
-        console.log('📝 Using transcript for evaluation:', {
-          source: audioTranscript ? 'saved audio transcription + candidate-only transcript' : 'candidate-only live transcript',
-          length: fullUserTranscript.length,
+        console.log('📝 Submitting job with audio blob (worker will transcribe):', {
+          audioBlobSize: wavBlob?.size || 0,
+          fallbackTranscriptLength: fullUserTranscript.length,
           preview: fullUserTranscript.substring(0, 200) + (fullUserTranscript.length > 200 ? '...' : '')
         });
         
@@ -1093,7 +1072,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
-          fullUserTranscript,
+          fullUserTranscript || undefined, // Optional fallback transcript (worker will use audioBlob)
           scenario.officialTasks.partA.id,
           scenario.officialTasks.partA.time_limit_sec + (scenario.officialTasks.partB?.time_limit_sec || 0),
           questionCount > 0 ? questionCount : undefined,
@@ -1103,12 +1082,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
-          fluencyAnalysis ?? undefined,
+          undefined, // fluencyAnalysis - worker will generate this from audio
           getToken,
           undefined, // writtenSectionAText
           undefined, // writtenSectionBText
           mockExamId, // mockExamId
-          module as 'oralExpression' | undefined // module
+          module as 'oralExpression' | undefined, // module
+          wavBlob || undefined // audioBlob - worker will transcribe this
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
