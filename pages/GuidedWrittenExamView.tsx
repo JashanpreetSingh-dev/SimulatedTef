@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useIsD2C } from '../utils/userType';
 import { GuidedWritingExam } from '../components/guidedWriting/GuidedWritingExam';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
@@ -11,6 +12,8 @@ import { persistenceService } from '../services/persistence';
 import { useExamResult } from '../hooks/useExamResult';
 import { WrittenTask } from '../types';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
+
 export function GuidedWrittenExamView() {
   const { mode } = useParams<{ mode: 'partA' | 'partB' }>();
   const navigate = useNavigate();
@@ -18,8 +21,10 @@ export function GuidedWrittenExamView() {
   const { user } = useUser();
   const { getToken } = useAuth();
   const { t } = useLanguage();
+  const isD2C = useIsD2C();
   const [tasks, setTasks] = useState<{ taskA: WrittenTask; taskB: WrittenTask } | null>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [limitCheckPassed, setLimitCheckPassed] = useState<boolean | null>(isD2C ? null : true);
   const initializedModeRef = useRef<string | null>(null);
 
   // Use the custom hook for result management
@@ -35,6 +40,44 @@ export function GuidedWrittenExamView() {
     autoNavigate: true,
   });
 
+  // D2C: guard written expression by limit (e.g. direct URL or refresh)
+  useEffect(() => {
+    if (!mode || !['partA', 'partB'].includes(mode) || !isD2C || limitCheckPassed !== null) return;
+
+    let cancelled = false;
+    const section = mode === 'partA' ? 'A' : 'B';
+    (async () => {
+      try {
+        const token = await getToken();
+        const response = await fetch(`${BACKEND_URL}/api/usage/check-written`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({ section }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (cancelled) return;
+        if (!response.ok || !data.canStart) {
+          navigate('/practice', {
+            replace: true,
+            state: {
+              module: 'written',
+              limitReached: true,
+              reason: data.reason || data.error,
+            },
+          });
+          return;
+        }
+        setLimitCheckPassed(true);
+      } catch {
+        if (!cancelled) setLimitCheckPassed(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [mode, isD2C, limitCheckPassed, navigate, getToken]);
+
   useEffect(() => {
     if (!mode || !['partA', 'partB'].includes(mode)) {
       navigate('/practice');
@@ -43,6 +86,9 @@ export function GuidedWrittenExamView() {
 
     // Only run initialization once per mode
     if (hasInitialized && initializedModeRef.current === mode) return;
+
+    // D2C: wait for limit check to pass before loading tasks
+    if (isD2C && limitCheckPassed !== true) return;
 
     // Check if scenario was passed via location state (for retakes)
     if (location.state?.tasks && !tasks) {
@@ -85,10 +131,10 @@ export function GuidedWrittenExamView() {
           const results = response.results;
           const completedIds: string[] = [];
           results.forEach(result => {
-            if (result.writtenExpressionResult?.sectionA?.task?.id) {
+            if ('writtenExpressionResult' in result && result.writtenExpressionResult?.sectionA?.task?.id) {
               completedIds.push(result.writtenExpressionResult.sectionA.task.id);
             }
-            if (result.writtenExpressionResult?.sectionB?.task?.id) {
+            if ('writtenExpressionResult' in result && result.writtenExpressionResult?.sectionB?.task?.id) {
               completedIds.push(result.writtenExpressionResult.sectionB.task.id);
             }
           });
@@ -132,7 +178,7 @@ export function GuidedWrittenExamView() {
       
       loadCompletedTaskIds();
     }
-  }, [mode, navigate, user, getToken, hasInitialized, location.state, tasks]);
+  }, [mode, navigate, user, getToken, hasInitialized, location.state, tasks, isD2C, limitCheckPassed]);
 
   // Reset initialization when mode changes
   useEffect(() => {

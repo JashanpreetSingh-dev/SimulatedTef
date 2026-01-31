@@ -10,7 +10,7 @@ import { resultsService } from '../services/resultsService';
 import * as taskService from '../services/taskService';
 import { generateTaskId, TaskType } from '../../types/task';
 import { SavedResult, OralExpressionData, WrittenExpressionData } from '../../types';
-import { closeDB } from '../db/connection';
+import { connectDB, closeDB } from '../db/connection';
 
 let worker: Worker<EvaluationJobData, EvaluationJobResult> | null = null;
 
@@ -272,6 +272,49 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           savedResult = await resultsService.upsertMockExamResult(resultToSave);
         } else {
           savedResult = await resultsService.create(resultToSave);
+        }
+
+        // Track usage for written expression (non-mock exam practice) - D2C users only
+        // D2C users can only do guided learning (partA or partB), not full exams
+        if (module === 'writtenExpression' && !job.data.mockExamId) {
+          const { getTodayUTC } = await import('../models/usage');
+          const today = getTodayUTC();
+          const db = await connectDB();
+
+          // Check if user is D2C (no orgId) by checking existing usage records or results
+          // If user has orgId in any usage record, they're B2B and we don't track written expression usage
+          const existingUsage = await db.collection('usage').findOne({ userId });
+          const hasOrgId = existingUsage?.orgId !== null && existingUsage?.orgId !== undefined;
+          
+          // Only track usage for D2C users (no orgId)
+          if (!hasOrgId) {
+            // Track based on mode: partA increments Section A, partB increments Section B
+            // Full mode should not be allowed for D2C users, but if it happens, track both
+            const updateFields: any = {
+              $set: { updatedAt: new Date().toISOString() },
+              $setOnInsert: { createdAt: new Date().toISOString() }
+            };
+            
+            if (mode === 'partA') {
+              updateFields.$inc = { writtenExpressionSectionAUsed: 1 };
+            } else if (mode === 'partB') {
+              updateFields.$inc = { writtenExpressionSectionBUsed: 1 };
+            } else if (mode === 'full') {
+              // Full mode should not be allowed for D2C, but if it happens, track both sections
+              updateFields.$inc = { 
+                writtenExpressionSectionAUsed: 1,
+                writtenExpressionSectionBUsed: 1
+              };
+            }
+            
+            if (updateFields.$inc) {
+              await db.collection('usage').updateOne(
+                { userId, date: today },
+                updateFields,
+                { upsert: true }
+              );
+            }
+          }
         }
 
         await job.updateProgress(100); // 100% - Complete

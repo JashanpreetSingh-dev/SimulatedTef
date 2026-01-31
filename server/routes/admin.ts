@@ -9,6 +9,7 @@ import { Request, Response } from 'express';
 import { conversationLogService } from '../services/conversationLogService';
 import { voteAnalyticsService } from '../services/voteAnalyticsService';
 import { organizationConfigService } from '../services/organizationConfigService';
+import { d2cConfigService } from '../services/d2cConfigService';
 import { createClerkClient } from '@clerk/backend';
 
 const router = Router();
@@ -298,6 +299,74 @@ router.put(
     } catch (error: any) {
       console.error('Error updating org config:', error);
       res.status(500).json({ error: error.message || 'Failed to update organization configuration' });
+    }
+  })
+);
+
+/**
+ * GET /api/admin/d2c-config
+ * Get current D2C configuration (default limits for D2C users)
+ * Requires org:admin role
+ */
+router.get(
+  '/d2c-config',
+  requireAuth,
+  requireRole('org:admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    try {
+      const config = await d2cConfigService.getConfig();
+      res.json(config);
+    } catch (error: any) {
+      console.error('Error fetching D2C config:', error);
+      res.status(500).json({ error: error.message || 'Failed to fetch D2C configuration' });
+    }
+  })
+);
+
+/**
+ * PUT /api/admin/d2c-config
+ * Update D2C configuration limits (default limits for D2C users)
+ * Requires org:admin role
+ */
+router.put(
+  '/d2c-config',
+  requireAuth,
+  requireRole('org:admin'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const { sectionALimit, sectionBLimit, writtenExpressionSectionALimit, writtenExpressionSectionBLimit, mockExamLimit } = req.body;
+
+    if (typeof sectionALimit !== 'number' || typeof sectionBLimit !== 'number') {
+      return res.status(400).json({ error: 'sectionALimit and sectionBLimit must be numbers' });
+    }
+
+    if (sectionALimit < 0 || sectionBLimit < 0) {
+      return res.status(400).json({ error: 'Limits must be non-negative' });
+    }
+
+    if (writtenExpressionSectionALimit !== undefined && typeof writtenExpressionSectionALimit !== 'number') {
+      return res.status(400).json({ error: 'writtenExpressionSectionALimit must be a number' });
+    }
+
+    if (writtenExpressionSectionBLimit !== undefined && typeof writtenExpressionSectionBLimit !== 'number') {
+      return res.status(400).json({ error: 'writtenExpressionSectionBLimit must be a number' });
+    }
+
+    if (mockExamLimit !== undefined && (typeof mockExamLimit !== 'number' || mockExamLimit < 0)) {
+      return res.status(400).json({ error: 'mockExamLimit must be a non-negative number' });
+    }
+
+    try {
+      const updated = await d2cConfigService.updateConfig({
+        sectionALimit,
+        sectionBLimit,
+        writtenExpressionSectionALimit: writtenExpressionSectionALimit ?? 1,
+        writtenExpressionSectionBLimit: writtenExpressionSectionBLimit ?? 1,
+        mockExamLimit: mockExamLimit ?? 1,
+      });
+      res.json(updated);
+    } catch (error: any) {
+      console.error('Error updating D2C config:', error);
+      res.status(500).json({ error: error.message || 'Failed to update D2C configuration' });
     }
   })
 );

@@ -141,11 +141,22 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
       onMockExamSelected(mockExamId, response.sessionId);
     } catch (error: any) {
       console.error('Failed to start mock exam:', error);
-      if (error.message?.includes('credits')) {
-        setError(t('errors.creditsNeeded'));
+      let displayError = t('errors.startFailed');
+      const msg = error?.message || '';
+      if (msg.includes('credits')) {
+        displayError = t('errors.creditsNeeded');
       } else {
-        setError(t('errors.startFailed'));
+        try {
+          const jsonMatch = msg.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const data = JSON.parse(jsonMatch[0]);
+            if (data.error && typeof data.error === 'string') displayError = data.error;
+          }
+        } catch {
+          // use default
+        }
       }
+      setError(displayError);
     } finally {
       setLoading(false);
     }

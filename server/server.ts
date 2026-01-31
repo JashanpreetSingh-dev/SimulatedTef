@@ -19,6 +19,8 @@ import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
+import { subscriptionService } from './services/subscriptionService';
+import { d2cConfigService } from './services/d2cConfigService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,7 +28,13 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
+// Stripe webhooks need raw body for signature verification
+// MUST be mounted BEFORE express.json() middleware
+import stripeWebhooksRouter from './routes/stripeWebhooks';
+app.use('/api/stripe-webhooks', express.raw({ type: 'application/json' }), stripeWebhooksRouter);
+
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
+// This must come AFTER the webhook route to avoid parsing webhook bodies as JSON
 app.use(express.json({ limit: '10mb' }));
 
 declare global {
@@ -78,7 +86,10 @@ if (!clerkSecretKey) {
   try {
     await connectDB();
     await createIndexes();
-    
+    // Ensure default data exists (subscription tiers + D2C config) so fresh DB works without manual migrations
+    await subscriptionService.initializeSubscriptionTiers();
+    await d2cConfigService.ensureDefaultConfig();
+
     if (process.env.RUN_WORKER === 'true') {
       const { startWorker } = await import('./workers/evaluationWorker');
       startWorker();

@@ -5,10 +5,14 @@
 import { connectDB } from '../db/connection';
 import { getDefaultConfig } from '../models/OrganizationConfig';
 import { organizationConfigService } from './organizationConfigService';
+import { d2cConfigService } from './d2cConfigService';
 
 export interface MonthlyUsage {
   sectionAUsed: number;
   sectionBUsed: number;
+  writtenExpressionSectionAUsed?: number;
+  writtenExpressionSectionBUsed?: number;
+  mockExamsUsed?: number;
 }
 
 export interface CanStartResult {
@@ -52,18 +56,179 @@ export async function getUserMonthlyUsage(
     })
     .toArray();
 
-  // Sum sectionAUsed and sectionBUsed across all daily records
+  // Sum sectionAUsed, sectionBUsed, and mockExamsUsed across all daily records
   const totals = usageRecords.reduce(
     (acc, record) => {
       return {
         sectionAUsed: acc.sectionAUsed + (record.sectionAUsed || 0),
         sectionBUsed: acc.sectionBUsed + (record.sectionBUsed || 0),
+        mockExamsUsed: (acc.mockExamsUsed || 0) + (record.mockExamsUsed || 0),
       };
     },
-    { sectionAUsed: 0, sectionBUsed: 0 }
+    { sectionAUsed: 0, sectionBUsed: 0, mockExamsUsed: 0 }
   );
 
   return totals;
+}
+
+/**
+ * Get user's usage within a date range (for subscription billing cycle)
+ * @param userId - User ID
+ * @param startDate - Start date (ISO string or YYYY-MM-DD)
+ * @param endDate - End date (ISO string or YYYY-MM-DD)
+ * @returns Usage totals for Section A, Section B, and mock exams
+ */
+export async function getUserUsageInRange(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<MonthlyUsage> {
+  const db = await connectDB();
+  
+  // Convert ISO dates to YYYY-MM-DD format if needed
+  const startDateStr = startDate.includes('T') 
+    ? startDate.split('T')[0] 
+    : startDate;
+  const endDateStr = endDate.includes('T') 
+    ? endDate.split('T')[0] 
+    : endDate;
+  
+  // Query all daily usage records for the user within the date range
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $gte: startDateStr, $lte: endDateStr },
+    })
+    .toArray();
+
+  // Sum sectionAUsed, sectionBUsed, writtenExpressionUsed, and mockExamsUsed across all daily records
+  const totals = usageRecords.reduce(
+    (acc, record) => {
+      return {
+        sectionAUsed: acc.sectionAUsed + (record.sectionAUsed || 0),
+        sectionBUsed: acc.sectionBUsed + (record.sectionBUsed || 0),
+        writtenExpressionUsed: (acc.writtenExpressionUsed || 0) + (record.writtenExpressionUsed || 0),
+        mockExamsUsed: (acc.mockExamsUsed || 0) + (record.mockExamsUsed || 0),
+      };
+    },
+    { sectionAUsed: 0, sectionBUsed: 0, writtenExpressionUsed: 0, mockExamsUsed: 0 }
+  );
+
+  return totals;
+}
+
+/**
+ * Get user's monthly mock exam usage
+ * @param userId - User ID
+ * @param yearMonth - Month in YYYY-MM format (e.g., "2024-01")
+ * @returns Monthly mock exam usage count
+ */
+export async function getUserMonthlyMockExamUsage(
+  userId: string,
+  yearMonth: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  const monthPrefix = yearMonth;
+  
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $regex: `^${monthPrefix}` },
+    })
+    .toArray();
+
+  // Sum mockExamsUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.mockExamsUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get user's monthly written expression usage (Section A + B combined)
+ * @param userId - User ID
+ * @param yearMonth - Month in YYYY-MM format (e.g., "2024-01")
+ * @returns Monthly written expression usage count
+ */
+export async function getUserMonthlyWrittenExpressionUsage(
+  userId: string,
+  yearMonth: string
+): Promise<number> {
+  const db = await connectDB();
+
+  const monthPrefix = yearMonth;
+
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $regex: `^${monthPrefix}` },
+    })
+    .toArray();
+
+  const total = usageRecords.reduce(
+    (acc, record) =>
+      acc +
+      (record.writtenExpressionSectionAUsed || 0) +
+      (record.writtenExpressionSectionBUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get limits for D2C user (check subscription first, fallback to D2C config)
+ * @param userId - User ID
+ * @returns Limits object
+ */
+async function getD2CLimits(userId: string): Promise<{
+  sectionALimit: number;
+  sectionBLimit: number;
+  writtenExpressionSectionALimit: number;
+  writtenExpressionSectionBLimit: number;
+  mockExamLimit: number;
+}> {
+  // Check if user has active subscription
+  // Note: Even if cancelAtPeriodEnd is true, subscription is still 'active' until period ends
+  // This ensures users retain access for the remainder of their paid period
+  const db = await connectDB();
+  const subscription = await db.collection('subscriptions').findOne({
+    userId,
+    status: { $in: ['active', 'trialing'] },
+  });
+
+  if (subscription) {
+    // Get subscription tier limits
+    const tier = await db.collection('subscriptionTiers').findOne({
+      id: subscription.tier,
+    });
+
+    if (tier && tier.limits) {
+      return {
+        sectionALimit: tier.limits.sectionALimit,
+        sectionBLimit: tier.limits.sectionBLimit,
+        writtenExpressionSectionALimit: tier.limits.writtenExpressionSectionALimit,
+        writtenExpressionSectionBLimit: tier.limits.writtenExpressionSectionBLimit,
+        mockExamLimit: tier.limits.mockExamLimit || 1,
+      };
+    }
+  }
+
+  // Fallback to D2C config defaults
+  const d2cConfig = await d2cConfigService.getConfig();
+  return {
+    sectionALimit: d2cConfig.sectionALimit,
+    sectionBLimit: d2cConfig.sectionBLimit,
+    writtenExpressionSectionALimit: d2cConfig.writtenExpressionSectionALimit,
+    writtenExpressionSectionBLimit: d2cConfig.writtenExpressionSectionBLimit,
+    mockExamLimit: d2cConfig.mockExamLimit,
+  };
 }
 
 /**
@@ -78,24 +243,47 @@ export async function checkCanStartSection(
   orgId: string | null,
   section: 'A' | 'B'
 ): Promise<CanStartResult> {
-  // Get current month
-  const currentMonth = getCurrentMonth();
+  let usage: MonthlyUsage;
+  let limit: number;
   
-  // Get user's monthly usage
-  const usage = await getUserMonthlyUsage(userId, currentMonth);
+  if (orgId) {
+    // B2B user - use org config and calendar month
+    const currentMonth = getCurrentMonth();
+    usage = await getUserMonthlyUsage(userId, currentMonth);
+    const config = await organizationConfigService.getConfig(orgId);
+    limit = section === 'A' ? config.sectionALimit : config.sectionBLimit;
+  } else {
+    // D2C user - check subscription billing cycle or calendar month for free tier
+    const db = await connectDB();
+    const subscription = await db.collection('subscriptions').findOne({
+      userId,
+      status: { $in: ['active', 'trialing'] },
+    });
+    
+    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+      // Paid subscription - use billing cycle
+      usage = await getUserUsageInRange(
+        userId,
+        subscription.currentPeriodStart,
+        subscription.currentPeriodEnd
+      );
+    } else {
+      // Free tier - use calendar month
+      const currentMonth = getCurrentMonth();
+      usage = await getUserMonthlyUsage(userId, currentMonth);
+    }
+    
+    // Get limits
+    const d2cLimits = await getD2CLimits(userId);
+    limit = section === 'A' ? d2cLimits.sectionALimit : d2cLimits.sectionBLimit;
+  }
   
-  // Get org config (or defaults)
-  const config = orgId
-    ? await organizationConfigService.getConfig(orgId)
-    : getDefaultConfig();
-  
-  const limit = section === 'A' ? config.sectionALimit : config.sectionBLimit;
   const currentUsage = section === 'A' ? usage.sectionAUsed : usage.sectionBUsed;
   
   if (currentUsage >= limit) {
     return {
       canStart: false,
-      reason: `Monthly limit reached: ${currentUsage}/${limit} Section ${section} attempts used this month`,
+      reason: `Monthly limit reached: ${currentUsage}/${limit} Section ${section} attempts used this billing period`,
       currentUsage,
       limit,
     };
@@ -139,9 +327,391 @@ export async function checkCanStartFullExam(
   };
 }
 
+/**
+ * Get user's written expression Section A usage within a date range (for subscription billing cycle)
+ * @param userId - User ID
+ * @param startDate - Start date (ISO string or YYYY-MM-DD)
+ * @param endDate - End date (ISO string or YYYY-MM-DD)
+ * @returns Written expression Section A usage count
+ */
+export async function getUserWrittenExpressionSectionAUsageInRange(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  // Convert ISO dates to YYYY-MM-DD format if needed
+  const startDateStr = startDate.includes('T') 
+    ? startDate.split('T')[0] 
+    : startDate;
+  const endDateStr = endDate.includes('T') 
+    ? endDate.split('T')[0] 
+    : endDate;
+  
+  // Query all daily usage records for the user within the date range
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $gte: startDateStr, $lte: endDateStr },
+    })
+    .toArray();
+
+  // Sum writtenExpressionSectionAUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.writtenExpressionSectionAUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get user's written expression Section B usage within a date range (for subscription billing cycle)
+ * @param userId - User ID
+ * @param startDate - Start date (ISO string or YYYY-MM-DD)
+ * @param endDate - End date (ISO string or YYYY-MM-DD)
+ * @returns Written expression Section B usage count
+ */
+export async function getUserWrittenExpressionSectionBUsageInRange(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  // Convert ISO dates to YYYY-MM-DD format if needed
+  const startDateStr = startDate.includes('T') 
+    ? startDate.split('T')[0] 
+    : startDate;
+  const endDateStr = endDate.includes('T') 
+    ? endDate.split('T')[0] 
+    : endDate;
+  
+  // Query all daily usage records for the user within the date range
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $gte: startDateStr, $lte: endDateStr },
+    })
+    .toArray();
+
+  // Sum writtenExpressionSectionBUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.writtenExpressionSectionBUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get user's monthly written expression Section A usage
+ * @param userId - User ID
+ * @param yearMonth - Month in YYYY-MM format (e.g., "2024-01")
+ * @returns Monthly written expression Section A usage count
+ */
+export async function getUserMonthlyWrittenExpressionSectionAUsage(
+  userId: string,
+  yearMonth: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  const monthPrefix = yearMonth;
+  
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $regex: `^${monthPrefix}` },
+    })
+    .toArray();
+
+  // Sum writtenExpressionSectionAUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.writtenExpressionSectionAUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get user's monthly written expression Section B usage
+ * @param userId - User ID
+ * @param yearMonth - Month in YYYY-MM format (e.g., "2024-01")
+ * @returns Monthly written expression Section B usage count
+ */
+export async function getUserMonthlyWrittenExpressionSectionBUsage(
+  userId: string,
+  yearMonth: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  const monthPrefix = yearMonth;
+  
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $regex: `^${monthPrefix}` },
+    })
+    .toArray();
+
+  // Sum writtenExpressionSectionBUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.writtenExpressionSectionBUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Check if user can start written expression (Section A or B)
+ * @param userId - User ID
+ * @param orgId - Organization ID
+ * @param section - 'A' or 'B' for written expression
+ * @returns Result indicating if user can start and current usage/limit info
+ */
+export async function checkCanStartWrittenExpression(
+  userId: string,
+  orgId: string | null,
+  section: 'A' | 'B'
+): Promise<CanStartResult> {
+  let currentUsage: number;
+  let limit: number;
+  
+  if (orgId) {
+    // B2B user - unlimited for now (can be configured later)
+    limit = -1; // -1 indicates unlimited for B2B
+    currentUsage = 0; // Not tracked for B2B
+  } else {
+    // D2C user - check subscription billing cycle or calendar month for free tier
+    const db = await connectDB();
+    const subscription = await db.collection('subscriptions').findOne({
+      userId,
+      status: { $in: ['active', 'trialing'] },
+    });
+    
+    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+      // Paid subscription - use billing cycle
+      if (section === 'A') {
+        currentUsage = await getUserWrittenExpressionSectionAUsageInRange(
+          userId,
+          subscription.currentPeriodStart,
+          subscription.currentPeriodEnd
+        );
+      } else {
+        currentUsage = await getUserWrittenExpressionSectionBUsageInRange(
+          userId,
+          subscription.currentPeriodStart,
+          subscription.currentPeriodEnd
+        );
+      }
+    } else {
+      // Free tier - use calendar month
+      const currentMonth = getCurrentMonth();
+      if (section === 'A') {
+        currentUsage = await getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
+      } else {
+        currentUsage = await getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
+      }
+    }
+    
+    // Get limits
+    const d2cLimits = await getD2CLimits(userId);
+    limit = section === 'A' ? d2cLimits.writtenExpressionSectionALimit : d2cLimits.writtenExpressionSectionBLimit;
+  }
+  
+  // If limit is -1, it's unlimited
+  if (limit === -1) {
+    return {
+      canStart: true,
+      currentUsage,
+      limit: -1,
+    };
+  }
+  
+  if (currentUsage >= limit) {
+    return {
+      canStart: false,
+      reason: `Monthly limit reached: ${currentUsage}/${limit} written expression Section ${section} attempts used this billing period`,
+      currentUsage,
+      limit,
+    };
+  }
+  
+  return {
+    canStart: true,
+    currentUsage,
+    limit,
+  };
+}
+
+/**
+ * Get user's mock exam usage within a date range (for subscription billing cycle)
+ * @param userId - User ID
+ * @param startDate - Start date (ISO string or YYYY-MM-DD)
+ * @param endDate - End date (ISO string or YYYY-MM-DD)
+ * @returns Mock exam usage count
+ */
+export async function getUserMockExamUsageInRange(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  const db = await connectDB();
+  
+  // Convert ISO dates to YYYY-MM-DD format if needed
+  const startDateStr = startDate.includes('T') 
+    ? startDate.split('T')[0] 
+    : startDate;
+  const endDateStr = endDate.includes('T') 
+    ? endDate.split('T')[0] 
+    : endDate;
+  
+  // Query all daily usage records for the user within the date range
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $gte: startDateStr, $lte: endDateStr },
+    })
+    .toArray();
+
+  // Sum mockExamsUsed across all daily records
+  const total = usageRecords.reduce(
+    (acc, record) => acc + (record.mockExamsUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Get user's written expression usage (Section A + B combined) within a date range (for subscription billing cycle)
+ * @param userId - User ID
+ * @param startDate - Start date (ISO string or YYYY-MM-DD)
+ * @param endDate - End date (ISO string or YYYY-MM-DD)
+ * @returns Written expression usage count
+ */
+export async function getUserWrittenExpressionUsageInRange(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<number> {
+  const db = await connectDB();
+
+  const startDateStr = startDate.includes('T')
+    ? startDate.split('T')[0]
+    : startDate;
+  const endDateStr = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+
+  const usageRecords = await db
+    .collection('usage')
+    .find({
+      userId,
+      date: { $gte: startDateStr, $lte: endDateStr },
+    })
+    .toArray();
+
+  const total = usageRecords.reduce(
+    (acc, record) =>
+      acc +
+      (record.writtenExpressionSectionAUsed || 0) +
+      (record.writtenExpressionSectionBUsed || 0),
+    0
+  );
+
+  return total;
+}
+
+/**
+ * Check if user can start a mock exam
+ * @param userId - User ID
+ * @param orgId - Organization ID
+ * @returns Result indicating if user can start and current usage/limit info
+ */
+export async function checkCanStartMockExam(
+  userId: string,
+  orgId: string | null
+): Promise<CanStartResult> {
+  let currentUsage: number;
+  let limit: number;
+  
+  if (orgId) {
+    // B2B users - unlimited mock exams, use calendar month for tracking
+    const currentMonth = getCurrentMonth();
+    currentUsage = await getUserMonthlyMockExamUsage(userId, currentMonth);
+    limit = -1; // -1 indicates unlimited
+  } else {
+    // D2C user - check subscription billing cycle or calendar month for free tier
+    const db = await connectDB();
+    const subscription = await db.collection('subscriptions').findOne({
+      userId,
+      status: { $in: ['active', 'trialing'] },
+    });
+    
+    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+      // Paid subscription - use billing cycle
+      currentUsage = await getUserMockExamUsageInRange(
+        userId,
+        subscription.currentPeriodStart,
+        subscription.currentPeriodEnd
+      );
+    } else {
+      // Free tier - use calendar month
+      const currentMonth = getCurrentMonth();
+      currentUsage = await getUserMonthlyMockExamUsage(userId, currentMonth);
+    }
+    
+    // Get limits
+    const d2cLimits = await getD2CLimits(userId);
+    limit = d2cLimits.mockExamLimit;
+  }
+  
+  // If limit is -1, it's unlimited
+  if (limit === -1) {
+    return {
+      canStart: true,
+      currentUsage,
+      limit: -1,
+    };
+  }
+  
+  if (currentUsage >= limit) {
+    return {
+      canStart: false,
+      reason: `Monthly limit reached: ${currentUsage}/${limit} mock exams used this billing period`,
+      currentUsage,
+      limit,
+    };
+  }
+  
+  return {
+    canStart: true,
+    currentUsage,
+    limit,
+  };
+}
+
 export const userUsageService = {
   getCurrentMonth,
   getUserMonthlyUsage,
+  getUserMonthlyMockExamUsage,
+  getUserMonthlyWrittenExpressionUsage,
+  getUserMonthlyWrittenExpressionSectionAUsage,
+  getUserMonthlyWrittenExpressionSectionBUsage,
+  getUserUsageInRange,
+  getUserMockExamUsageInRange,
+  getUserWrittenExpressionUsageInRange,
+  getUserWrittenExpressionSectionAUsageInRange,
+  getUserWrittenExpressionSectionBUsageInRange,
   checkCanStartSection,
   checkCanStartFullExam,
+  checkCanStartWrittenExpression,
+  checkCanStartMockExam,
 };

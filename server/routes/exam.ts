@@ -59,18 +59,45 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
   // Handle mock exam start
   if (mockExamId) {
     const { mockExamService } = await import('../services/mockExamService');
+    const orgId = req.orgId || null;
 
-    // Check if user can start this mock exam
+    // Check monthly usage limits before creating session
+    const limitCheck = await userUsageService.checkCanStartMockExam(userId, orgId);
+    if (!limitCheck.canStart) {
+      return res.status(403).json({
+        error: limitCheck.reason || 'Monthly limit reached',
+        canStart: false,
+        currentUsage: limitCheck.currentUsage,
+        limit: limitCheck.limit,
+      });
+    }
+
+    // Check if user can start this specific mock exam (not already completed, etc.)
     const canStart = await mockExamService.canStartMockExam(userId, mockExamId);
     if (!canStart) {
       return res.status(403).json({ error: 'Cannot start mock exam' });
     }
 
-    // Create mock exam session
+    // Create mock exam session and track usage
     const sessionResult = await mockExamService.createMockExamSession(userId, mockExamId);
     if (!sessionResult.success) {
       return res.status(400).json({ error: sessionResult.error || 'Failed to create mock exam session' });
     }
+
+    // Track mock exam usage
+    const db = await connectDB();
+    const today = getTodayUTC();
+    await db.collection('usage').updateOne(
+      { userId, date: today },
+      {
+        $inc: {
+          mockExamsUsed: 1,
+        },
+        $set: { updatedAt: new Date().toISOString() },
+        $setOnInsert: { createdAt: new Date().toISOString() }
+      },
+      { upsert: true }
+    );
 
     return res.json({
       sessionId: sessionResult.sessionId,

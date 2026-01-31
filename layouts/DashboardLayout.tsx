@@ -4,6 +4,7 @@ import { useUser, useClerk, UserButton, OrganizationSwitcher } from '@clerk/cler
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Footer } from '../components/Footer';
+import { useIsD2C } from '../utils/userType';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -24,6 +25,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isProfessor = user?.organizationMemberships?.some(
     (membership) => membership.role === 'org:professor' || membership.role === 'org:admin'
   ) ?? false;
+
+  // Check if user is D2C (no organization membership)
+  const isD2CUser = useIsD2C();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -82,6 +86,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </button>
               </>
             )}
+            {isD2CUser && (
+              <button 
+                onClick={() => navigate('/subscription')}
+                className={isActive('/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                Subscription
+              </button>
+            )}
             {isAdmin && (
               <>
                 <button 
@@ -98,6 +109,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   onClick={() => navigate('/admin/org-config')}
                   className={isActive('/admin/org-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
                   {t('admin.orgConfig') || 'Organization Settings'}
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/d2c-config')}
+                  className={isActive('/admin/d2c-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  D2C Settings
                 </button>
               </>
             )}
@@ -230,6 +246,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </button>
                 </>
               )}
+              {isD2CUser && (
+                <button 
+                  onClick={() => handleNavigate('/subscription')}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive('/subscription')
+                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Subscription
+                </button>
+              )}
               {isAdmin && (
                 <>
                   <button 
@@ -251,6 +279,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     }`}
                   >
                     {t('admin.voteAnalytics') || 'Vote Analytics'}
+                  </button>
+                  <button 
+                    onClick={() => handleNavigate('/admin/d2c-config')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/d2c-config')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    D2C Settings
                   </button>
                 </>
               )}

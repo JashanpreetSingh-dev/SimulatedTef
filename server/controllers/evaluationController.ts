@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import { evaluationQueue } from '../jobs/evaluationQueue';
 import { EvaluationJobData } from '../jobs/jobTypes';
 import { resultsService } from '../services/resultsService';
+import { userUsageService } from '../services/userUsageService';
 import { asyncHandler } from '../middleware/errorHandler';
 
 export const evaluationController = {
@@ -54,6 +55,26 @@ export const evaluationController = {
       return res.status(400).json({
         error: 'Missing required field: either transcript or audioBlob must be provided for OralExpression',
       });
+    }
+
+    // D2C/B2B: enforce written expression limit before accepting job (non-mock only)
+    if (module === 'writtenExpression' && !mockExamId && req.userId) {
+      const writtenSection: 'A' | 'B' =
+        writtenSectionAText != null && String(writtenSectionAText).trim() ? 'A' : 'B';
+      const orgId = req.orgId ?? null;
+      const limitCheck = await userUsageService.checkCanStartWrittenExpression(
+        req.userId,
+        orgId,
+        writtenSection
+      );
+      if (!limitCheck.canStart) {
+        return res.status(403).json({
+          error: limitCheck.reason || 'Monthly written expression limit reached',
+          canStart: false,
+          currentUsage: limitCheck.currentUsage,
+          limit: limitCheck.limit,
+        });
+      }
     }
 
     // Add job to queue (FIFO - first in, first out for fairness)

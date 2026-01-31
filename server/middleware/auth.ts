@@ -67,35 +67,45 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         // Collect all roles from all memberships
         req.userRoles = memberships.data.map((m) => m.role);
         
-        // Set userRole to admin if they have it in any org (highest priority)
-        if (req.userRoles.includes('org:admin')) {
-          req.userRole = req.userRole || 'org:admin';
-          // Set orgId from the first admin membership (or use active org if available)
-          if (!req.orgId) {
-            const adminMembership = memberships.data.find(m => m.role === 'org:admin');
-            if (adminMembership) {
-              req.orgId = adminMembership.organization.id;
+        // If user has no organization memberships, they are a D2C user
+        if (memberships.data.length === 0) {
+          req.orgId = null; // Explicitly set to null for D2C users
+          req.userRole = null;
+          req.userRoles = [];
+        } else {
+          // Set userRole to admin if they have it in any org (highest priority)
+          if (req.userRoles.includes('org:admin')) {
+            req.userRole = req.userRole || 'org:admin';
+            // Set orgId from the first admin membership (or use active org if available)
+            if (!req.orgId) {
+              const adminMembership = memberships.data.find(m => m.role === 'org:admin');
+              if (adminMembership) {
+                req.orgId = adminMembership.organization.id;
+              }
             }
-          }
-        } else if (req.userRoles.includes('org:professor')) {
-          req.userRole = req.userRole || 'org:professor';
-          // Set orgId from the first professor membership (or use active org if available)
-          if (!req.orgId) {
-            const professorMembership = memberships.data.find(m => m.role === 'org:professor');
-            if (professorMembership) {
-              req.orgId = professorMembership.organization.id;
+          } else if (req.userRoles.includes('org:professor')) {
+            req.userRole = req.userRole || 'org:professor';
+            // Set orgId from the first professor membership (or use active org if available)
+            if (!req.orgId) {
+              const professorMembership = memberships.data.find(m => m.role === 'org:professor');
+              if (professorMembership) {
+                req.orgId = professorMembership.organization.id;
+              }
             }
-          }
-        } else if (req.userRoles.length > 0) {
-          req.userRole = req.userRole || req.userRoles[0]; // Use first role
-          // Set orgId from first membership (or use active org if available)
-          if (!req.orgId) {
-            req.orgId = memberships.data[0]?.organization.id || null;
+          } else if (req.userRoles.length > 0) {
+            req.userRole = req.userRole || req.userRoles[0]; // Use first role
+            // Set orgId from first membership (or use active org if available)
+            if (!req.orgId) {
+              req.orgId = memberships.data[0]?.organization.id || null;
+            }
           }
         }
       } catch (err) {
         console.error('Failed to fetch user memberships:', err);
-        // Continue without role - will be blocked by requireRole if needed
+        // If error fetching memberships, assume D2C user (no org)
+        req.orgId = null;
+        req.userRole = null;
+        req.userRoles = [];
       }
     } else {
       // If we have orgId from token, still fetch all memberships to get all roles
@@ -124,8 +134,15 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
           req.userRoles = req.userRole ? [req.userRole] : [];
         }
       } else {
+        // No orgId and no userId to fetch memberships - D2C user
+        req.orgId = null;
         req.userRoles = req.userRole ? [req.userRole] : [];
       }
+    }
+    
+    // Ensure orgId is explicitly set (null for D2C users)
+    if (req.orgId === undefined) {
+      req.orgId = null;
     }
     
     // Debug logging in development

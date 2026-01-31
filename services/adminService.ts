@@ -151,11 +151,50 @@ export const adminService = {
       body: JSON.stringify(limits),
     });
   },
+
+  /**
+   * Get D2C configuration (default limits for D2C users)
+   */
+  async getD2CConfig(
+    getToken: () => Promise<string | null>
+  ): Promise<D2CConfig> {
+    const params = new URLSearchParams();
+    params.append('_t', String(Date.now()));
+    const url = `${BACKEND_URL}/api/admin/d2c-config?${params.toString()}`;
+    return authenticatedFetchJSON<D2CConfig>(url, {
+      method: 'GET',
+      getToken: getToken,
+    });
+  },
+
+  /**
+   * Update D2C configuration (default limits for D2C users)
+   */
+  async updateD2CConfig(
+    getToken: () => Promise<string | null>,
+    limits: { sectionALimit: number; sectionBLimit: number; writtenExpressionLimit: number; mockExamLimit: number }
+  ): Promise<D2CConfig> {
+    const params = new URLSearchParams();
+    params.append('_t', String(Date.now()));
+    const url = `${BACKEND_URL}/api/admin/d2c-config?${params.toString()}`;
+    return authenticatedFetchJSON<D2CConfig>(url, {
+      method: 'PUT',
+      getToken: getToken,
+      body: JSON.stringify(limits),
+    });
+  },
 };
 
 export interface OrgConfig {
   sectionALimit: number;
   sectionBLimit: number;
+}
+
+export interface D2CConfig {
+  sectionALimit: number;
+  sectionBLimit: number;
+  writtenExpressionLimit: number; // -1 for unlimited
+  mockExamLimit: number;
 }
 
 export interface VoteAnalytics {

@@ -121,8 +121,8 @@ export function ExamView() {
           const results = response.results;
           const completedIds: number[] = [];
           results.forEach(result => {
-            if (result.taskPartA?.id) completedIds.push(result.taskPartA.id);
-            if (result.taskPartB?.id) completedIds.push(result.taskPartB.id);
+            if ('taskPartA' in result && result.taskPartA?.id) completedIds.push(result.taskPartA.id);
+            if ('taskPartB' in result && result.taskPartB?.id) completedIds.push(result.taskPartB.id);
           });
           
           const { partA, partB } = getRandomTasks(completedIds);
@@ -257,7 +257,7 @@ export function ExamView() {
           >
             ← {location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
           </button>
-          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} />}
+          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} mode={mode!} />}
           <ExamWarningModal
             isOpen={showWarning}
             onConfirm={handleConfirmWarning}
