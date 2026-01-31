@@ -44,7 +44,7 @@ const tiers: SubscriptionTier[] = [
   {
     id: 'basic',
     name: 'Basic',
-    price: 'Starting at',
+    price: '$10',
     priceSubtext: 'per month',
     limits: {
       sectionALimit: 10,
@@ -66,7 +66,7 @@ const tiers: SubscriptionTier[] = [
   {
     id: 'premium',
     name: 'Premium',
-    price: 'Starting at',
+    price: '$30',
     priceSubtext: 'per month',
     limits: {
       sectionALimit: 30,
