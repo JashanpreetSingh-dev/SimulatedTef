@@ -13,18 +13,10 @@ interface ResultHeaderProps {
 export const ResultHeader: React.FC<ResultHeaderProps> = ({ result, audioPlayer, onVoteUpdate }) => {
   const { t } = useLanguage();
 
-  // Get evaluation result - for partA/partB, check moduleData first, then fallback to main evaluation
+  // Get evaluation result - always use top-level evaluation
+  // For oral expression: evaluation is at top level (no moduleData needed)
+  // For written expression: evaluation is at top level (moduleData.sectionA/B.text contains written text, not evaluation)
   const evaluationResult = React.useMemo(() => {
-    if (result.moduleData) {
-      if (result.moduleData.type === 'oralExpression' || result.moduleData.type === 'writtenExpression') {
-        if (result.mode === 'partA' && result.moduleData.sectionA?.result) {
-          return result.moduleData.sectionA.result;
-        } else if (result.mode === 'partB' && result.moduleData.sectionB?.result) {
-          return result.moduleData.sectionB.result;
-        }
-      }
-    }
-    // Fallback to main evaluation or legacy structure
     return result.evaluation || result;
   }, [result]);
 

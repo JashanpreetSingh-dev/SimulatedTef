@@ -1,5 +1,7 @@
-import { useMemo } from 'react';
-import { SavedResult, WrittenTask } from '../../../types';
+import { useMemo, useState, useEffect } from 'react';
+import { useAuth } from '@clerk/clerk-react';
+import { SavedResult, WrittenTask, NormalizedTask } from '../../../types';
+import { persistenceService } from '../../../services/persistence';
 
 /**
  * Helper to extract WrittenTask from NormalizedTask or WrittenTask
@@ -44,18 +46,55 @@ function extractWrittenTask(task: any): WrittenTask | undefined {
  * Hook to reconstruct written expression data from result
  */
 export function useWrittenExpressionData(result: SavedResult) {
+  const { getToken } = useAuth();
+  const [fetchedTasks, setFetchedTasks] = useState<Map<string, WrittenTask>>(new Map());
+
+  // Fetch tasks using taskReferences
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!result.taskReferences || result.module !== 'writtenExpression') return;
+      
+      const taskIds: string[] = [];
+      if (result.taskReferences.taskA?.taskId) {
+        taskIds.push(result.taskReferences.taskA.taskId);
+      }
+      if (result.taskReferences.taskB?.taskId) {
+        taskIds.push(result.taskReferences.taskB.taskId);
+      }
+      
+      if (taskIds.length > 0 && getToken) {
+        try {
+          const tasks = await persistenceService.getTasks(taskIds, getToken);
+          const taskMap = new Map<string, WrittenTask>();
+          tasks.forEach(task => {
+            if (task.taskData) {
+              const writtenTask = extractWrittenTask(task);
+              if (writtenTask) {
+                taskMap.set(task.taskId, writtenTask);
+              }
+            }
+          });
+          setFetchedTasks(taskMap);
+        } catch (error) {
+          console.error('Failed to fetch tasks:', error);
+        }
+      }
+    };
+    
+    fetchTasks();
+  }, [result.taskReferences, result.module, getToken]);
+
   return useMemo(() => {
     if (result.module !== 'writtenExpression') return null;
     
     // If moduleData exists and is WrittenExpressionData, use it
     if (result.moduleData && result.moduleData.type === 'writtenExpression') {
       const moduleData = result.moduleData;
-      // Get tasks from populated result or legacy fields
-      // Normalize tasks to always be WrittenTask objects
-      const taskA = extractWrittenTask((result as any).taskA) || 
+      // Get tasks from fetchedTasks (populated from taskReferences) or legacy fields
+      const taskA = (result.taskReferences?.taskA?.taskId && fetchedTasks.get(result.taskReferences.taskA.taskId)) ||
                     extractWrittenTask((result as any).writtenExpressionResult?.sectionA?.task) || 
                     result.taskPartA as WrittenTask | undefined;
-      const taskB = extractWrittenTask((result as any).taskB) || 
+      const taskB = (result.taskReferences?.taskB?.taskId && fetchedTasks.get(result.taskReferences.taskB.taskId)) ||
                     extractWrittenTask((result as any).writtenExpressionResult?.sectionB?.task) || 
                     result.taskPartB as WrittenTask | undefined;
       
@@ -99,9 +138,11 @@ export function useWrittenExpressionData(result: SavedResult) {
     }
     
     // Otherwise, try to reconstruct from transcript and task data
-    // Normalize tasks to always be WrittenTask objects
-    const taskA = extractWrittenTask((result as any).taskA) || result.taskPartA as WrittenTask | undefined;
-    const taskB = extractWrittenTask((result as any).taskB) || result.taskPartB as WrittenTask | undefined;
+    // Get tasks from fetchedTasks (populated from taskReferences) or legacy fields
+    const taskA = (result.taskReferences?.taskA?.taskId && fetchedTasks.get(result.taskReferences.taskA.taskId)) || 
+                  result.taskPartA as WrittenTask | undefined;
+    const taskB = (result.taskReferences?.taskB?.taskId && fetchedTasks.get(result.taskReferences.taskB.taskId)) || 
+                  result.taskPartB as WrittenTask | undefined;
     
     if (result.transcript && taskA && taskB) {
       const transcript = result.transcript;
@@ -123,5 +164,5 @@ export function useWrittenExpressionData(result: SavedResult) {
     }
     
     return null;
-  }, [result]);
+  }, [result, fetchedTasks]);
 }

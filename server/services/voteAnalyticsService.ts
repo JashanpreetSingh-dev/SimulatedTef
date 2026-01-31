@@ -67,7 +67,8 @@ export const voteAnalyticsService = {
   async getAnalytics(
     orgUserIds?: string[],
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    orgId?: string
   ): Promise<VoteAnalytics> {
     const db = await connectDB();
 
@@ -77,9 +78,17 @@ export const voteAnalyticsService = {
     };
 
     // Filter by organization users if provided
-    if (orgUserIds && orgUserIds.length > 0) {
+    // Prefer orgId filter if available (more accurate for multi-org admins)
+    // Fallback to userId filter for records without orgId (backward compatibility)
+    if (orgId && orgUserIds && orgUserIds.length > 0) {
+      filter.$or = [
+        { orgId: orgId }, // Records with orgId (after migration)
+        { userId: { $in: orgUserIds }, orgId: { $exists: false } } // Records without orgId (legacy, before migration)
+      ];
+    } else if (orgUserIds && orgUserIds.length > 0) {
       filter.userId = { $in: orgUserIds };
     }
+    // If no orgUserIds, filter will only have module: 'oralExpression', which is fine (shows all)
 
     // Filter by date range if provided
     if (startDate || endDate) {
