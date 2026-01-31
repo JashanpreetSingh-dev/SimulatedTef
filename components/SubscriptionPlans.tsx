@@ -9,7 +9,8 @@ interface SubscriptionTier {
   limits: {
     sectionALimit: number;
     sectionBLimit: number;
-    writtenExpressionLimit: number;
+    writtenExpressionSectionALimit: number;
+    writtenExpressionSectionBLimit: number;
     mockExamLimit: number;
   };
   features: string[];
@@ -26,14 +27,16 @@ const tiers: SubscriptionTier[] = [
     limits: {
       sectionALimit: 1,
       sectionBLimit: 1,
-      writtenExpressionLimit: -1,
+      writtenExpressionSectionALimit: 1,
+      writtenExpressionSectionBLimit: 1,
       mockExamLimit: 1,
     },
     features: [
       '1 Section A speaking practice (total)',
       '1 Section B speaking practice (total)',
+      '1 Written expression Section A (total)',
+      '1 Written expression Section B (total)',
       '1 Mock exam (total)',
-      'Unlimited written expression practice',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -46,14 +49,16 @@ const tiers: SubscriptionTier[] = [
     limits: {
       sectionALimit: 10,
       sectionBLimit: 10,
-      writtenExpressionLimit: -1,
+      writtenExpressionSectionALimit: 10,
+      writtenExpressionSectionBLimit: 10,
       mockExamLimit: 5,
     },
     features: [
       '10 Section A speaking practices/month',
       '10 Section B speaking practices/month',
+      '10 Written expression Section A/month',
+      '10 Written expression Section B/month',
       '5 Mock exams/month',
-      'Unlimited written expression practice',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -66,14 +71,16 @@ const tiers: SubscriptionTier[] = [
     limits: {
       sectionALimit: 30,
       sectionBLimit: 30,
-      writtenExpressionLimit: -1,
+      writtenExpressionSectionALimit: 30,
+      writtenExpressionSectionBLimit: 30,
       mockExamLimit: 10,
     },
     features: [
       '30 Section A speaking practices/month',
       '30 Section B speaking practices/month',
+      '30 Written expression Section A/month',
+      '30 Written expression Section B/month',
       '10 Mock exams/month',
-      'Unlimited written expression practice',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -95,7 +102,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
             Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Plan</span>
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-            Start free and upgrade anytime. All plans include unlimited written expression practice.
+            Start free and upgrade anytime. All plans include all 4 TEF modules with AI evaluation.
           </p>
         </div>
 

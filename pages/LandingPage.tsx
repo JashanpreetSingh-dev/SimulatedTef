@@ -128,11 +128,11 @@ export function LandingPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4 animate-fade-in-up delay-350">
                   <p className="text-indigo-600 dark:text-indigo-400 text-sm sm:text-base font-semibold">
-                    ✨ Start free: 1 speaking practice + 1 mock exam (try it out!)
+                    ✨ Start free: 1 speaking (Section A & B each), 1 written (Section A & B each), 1 mock exam
                   </p>
                   <span className="hidden sm:inline text-slate-400">•</span>
                   <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
-                    Unlimited written practice
+                    All 4 TEF modules • Upgrade anytime
                   </p>
                 </div>
               </div>
