@@ -27,6 +27,7 @@ export const resultsController = {
     const module = req.query.module as string;
     const resultType = req.query.resultType as 'practice' | 'mockExam' | 'assignment' | undefined;
     const populateTasks = req.query.populateTasks === 'true';
+    const summary = req.query.summary === 'true'; // Return flat ResultListItem instead of full SavedResult
 
     const response = await resultsService.findByUserId(
       authenticatedUserId || '', 
@@ -36,7 +37,8 @@ export const resultsController = {
       assignmentId,
       module,
       resultType,
-      populateTasks
+      populateTasks,
+      summary
     );
 
     res.json(response);

@@ -7,7 +7,7 @@ import { persistenceService } from '../services/persistence';
 import { assignmentService } from '../services/assignmentService';
 import { evaluationJobService } from '../services/evaluationJobService';
 import { geminiService } from '../services/gemini';
-import { SavedResult, NormalizedTask } from '../types';
+import { SavedResult, NormalizedTask, ResultListItem } from '../types';
 import { formatDateFrench } from '../utils/dateFormatting';
 import { LoadingSkeleton } from './common/Loading';
 import ReactPaginate from 'react-paginate';
@@ -24,7 +24,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const userId = user?.id || 'guest';
-  const [results, setResults] = useState<SavedResult[]>([]);
+  const [results, setResults] = useState<(SavedResult | ResultListItem)[]>([]);
   const [tasks, setTasks] = useState<Map<string, NormalizedTask>>(new Map()); // Map of taskId -> task
   const [assignmentCompletionCounts, setAssignmentCompletionCounts] = useState<Map<string, number>>(new Map()); // Map of assignmentId -> completion count
   const [loading, setLoading] = useState(true);
@@ -76,17 +76,29 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
           setTotalPages(response.results?.length === RESULTS_PER_PAGE ? currentPage + 2 : currentPage + 1);
         }
         
-        // Extract and store tasks from populated results
-        const taskMap = new Map<string, NormalizedTask>();
+        // Fetch tasks using taskReferences (taskA/taskB are no longer populated)
+        const taskIds = new Set<string>();
         response.results?.forEach((result: any) => {
-          if (result.taskA) {
-            taskMap.set(result.taskReferences?.taskA?.taskId || '', result.taskA);
+          if (result.taskReferences?.taskA?.taskId) {
+            taskIds.add(result.taskReferences.taskA.taskId);
           }
-          if (result.taskB) {
-            taskMap.set(result.taskReferences?.taskB?.taskId || '', result.taskB);
+          if (result.taskReferences?.taskB?.taskId) {
+            taskIds.add(result.taskReferences.taskB.taskId);
           }
         });
-        setTasks(taskMap);
+        
+        if (taskIds.size > 0 && getToken) {
+          try {
+            const fetchedTasks = await persistenceService.getTasks(Array.from(taskIds), getToken);
+            const taskMap = new Map<string, NormalizedTask>();
+            fetchedTasks.forEach(task => {
+              taskMap.set(task.taskId, task);
+            });
+            setTasks(taskMap);
+          } catch (error) {
+            console.error('Failed to fetch tasks:', error);
+          }
+        }
         
         // Count assignment completions - fetch all assignment results for this user to get accurate counts
         if (userId && userId !== 'guest') {
@@ -156,16 +168,45 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
     }
   });
 
-  const handleRecheck = async (result: SavedResult) => {
+  const handleRecheck = async (result: SavedResult | ResultListItem) => {
+    // Only allow recheck for SavedResult (full data required)
+    // ResultListItem doesn't have the necessary data (transcript, moduleData, etc.)
+    if (!('evaluation' in result) && !('moduleData' in result)) {
+      // This is a ResultListItem - fetch full result first
+      const resultId = result._id;
+      if (!resultId || !getToken) return;
+      
+      try {
+        // Fetch full result from API
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/results/detail/${resultId}`, {
+          headers: {
+            'Authorization': `Bearer ${await getToken()}`,
+          },
+        });
+        if (!response.ok) {
+          alert('Unable to recheck: result not found');
+          return;
+        }
+        const fullResult = await response.json();
+        // Recursively call with full result
+        return handleRecheck(fullResult);
+      } catch (error) {
+        console.error('Failed to fetch full result for recheck:', error);
+        alert('Unable to recheck: failed to load result details');
+        return;
+      }
+    }
+    
     // Only allow recheck for oral and written expression practice results
-    if (result.module !== 'oralExpression' && result.module !== 'writtenExpression') {
+    const savedResult = result as SavedResult;
+    if (savedResult.module !== 'oralExpression' && savedResult.module !== 'writtenExpression') {
       return;
     }
-    if (result.resultType !== 'practice') {
+    if (savedResult.resultType !== 'practice') {
       return;
     }
 
-    const resultId = result._id;
+    const resultId = savedResult._id;
     if (!resultId) {
       alert('Unable to recheck: result ID is missing');
       return;
@@ -181,9 +222,9 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       let writtenSectionBText = '';
       let fluencyAnalysis: any | null = null;
       
-      if (result.module === 'oralExpression') {
+      if (savedResult.module === 'oralExpression') {
         // For oral expression, re-transcribe from audio file if available
-        if (result.recordingId) {
+        if (savedResult.recordingId) {
           try {
             console.log('🎤 Re-transcribing audio from recording:', result.recordingId);
             const audioBlob = await persistenceService.downloadRecording(result.recordingId, getToken);
@@ -197,79 +238,39 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             } else {
               console.warn('⚠️ Failed to download audio, falling back to saved transcript');
               // Fallback to saved transcript if download fails
-              if (result.moduleData && result.moduleData.type === 'oralExpression') {
-                if (result.mode === 'partA' || result.mode === 'full') {
-                  transcript = result.moduleData.sectionA?.text || '';
-                }
-                if (result.mode === 'partB' || result.mode === 'full') {
-                  const sectionBText = result.moduleData.sectionB?.text || '';
-                  if (result.mode === 'full') {
-                    transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
-                  } else {
-                    transcript = sectionBText;
-                  }
-                }
-              } else {
-                transcript = result.transcript || '';
-              }
+              // For oral expression, transcript is always at top level
+              transcript = savedResult.transcript || '';
             }
           } catch (error) {
             console.error('❌ Error re-transcribing audio:', error);
             // Fallback to saved transcript if transcription fails
-            if (result.moduleData && result.moduleData.type === 'oralExpression') {
-              if (result.mode === 'partA' || result.mode === 'full') {
-                transcript = result.moduleData.sectionA?.text || '';
-              }
-              if (result.mode === 'partB' || result.mode === 'full') {
-                const sectionBText = result.moduleData.sectionB?.text || '';
-                if (result.mode === 'full') {
-                  transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
-                } else {
-                  transcript = sectionBText;
-                }
-              }
-            } else {
-              transcript = result.transcript || '';
-            }
+            // For oral expression, transcript is always at top level
+            transcript = savedResult.transcript || '';
           }
         } else {
           // No recording ID, use saved transcript
-          if (result.moduleData && result.moduleData.type === 'oralExpression') {
-            if (result.mode === 'partA' || result.mode === 'full') {
-              transcript = result.moduleData.sectionA?.text || '';
-            }
-            if (result.mode === 'partB' || result.mode === 'full') {
-              const sectionBText = result.moduleData.sectionB?.text || '';
-              if (result.mode === 'full') {
-                transcript = `${transcript ? transcript + '\n\n' : ''}Section B:\n${sectionBText}`;
-              } else {
-                transcript = sectionBText;
-              }
-            }
-          } else {
-            // Fallback to legacy transcript field
-            transcript = result.transcript || '';
-          }
+          // For oral expression, transcript is always at top level
+          transcript = savedResult.transcript || '';
         }
-      } else if (result.module === 'writtenExpression') {
+      } else if (savedResult.module === 'writtenExpression') {
         // For written expression, get text from moduleData
-        if (result.moduleData && result.moduleData.type === 'writtenExpression') {
-          writtenSectionAText = result.moduleData.sectionA?.text || '';
-          writtenSectionBText = result.moduleData.sectionB?.text || '';
+        if (savedResult.moduleData && savedResult.moduleData.type === 'writtenExpression') {
+          writtenSectionAText = savedResult.moduleData.sectionA?.text || '';
+          writtenSectionBText = savedResult.moduleData.sectionB?.text || '';
           
           // Build combined transcript for evaluation
-          if (result.mode === 'partA') {
+          if (savedResult.mode === 'partA') {
             transcript = `Section A (Fait divers):\n${writtenSectionAText}`;
-          } else if (result.mode === 'partB') {
+          } else if (savedResult.mode === 'partB') {
             transcript = `Section B (Argumentation):\n${writtenSectionBText}`;
           } else {
             transcript = `Section A (Fait divers):\n${writtenSectionAText}\n\nSection B (Argumentation):\n${writtenSectionBText}`;
           }
         } else {
           // Fallback to legacy fields
-          const legacySectionA = (result as any).writtenExpressionResult?.sectionA?.text || '';
-          const legacySectionB = (result as any).writtenExpressionResult?.sectionB?.text || '';
-          if (result.mode === 'partA') {
+          const legacySectionA = (savedResult as any).writtenExpressionResult?.sectionA?.text || '';
+          const legacySectionB = (savedResult as any).writtenExpressionResult?.sectionB?.text || '';
+          if (savedResult.mode === 'partA') {
             transcript = `Section A (Fait divers):\n${legacySectionA}`;
             writtenSectionAText = legacySectionA;
           } else if (result.mode === 'partB') {
@@ -447,7 +448,7 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
     }
   };
 
-  const handleRetake = async (result: SavedResult) => {
+  const handleRetake = async (result: SavedResult | ResultListItem) => {
     // Determine which mode to use for retake
     let retakeMode: 'partA' | 'partB' | 'full' = result.mode as 'partA' | 'partB' | 'full';
     
@@ -528,8 +529,9 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       }
     } else if (result.module === 'reading' || result.module === 'listening') {
       // For reading/listening mock exams - navigate to mock exam view
-      if (result.mockExamId) {
-        navigate(`/mock-exam/${result.mockExamId}?module=${result.module}`);
+      const mockExamId = 'mockExamId' in result ? result.mockExamId : undefined;
+      if (mockExamId) {
+        navigate(`/mock-exam/${mockExamId}?module=${result.module}`);
       } else {
         alert('Unable to retake this exam. Mock exam information is missing.');
       }
@@ -654,59 +656,70 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
             }
             const taskNumberText = taskNumbers.join(' / ');
             
-            // Get evaluation data from new structure or legacy fields
-            const getEvaluationData = (result: SavedResult) => {
-              // For partA/partB, check moduleData first
-              if (result.moduleData && result.moduleData.type === 'oralExpression') {
-                if (result.mode === 'partA' && result.moduleData.sectionA?.result) {
-                  return result.moduleData.sectionA.result;
-                } else if (result.mode === 'partB' && result.moduleData.sectionB?.result) {
-                  return result.moduleData.sectionB.result;
-                }
-              }
-              // Fallback to main evaluation or legacy structure
-              return result.evaluation || result;
-            };
-            
-            const evaluationData = getEvaluationData(item);
-            
-            // For reading/listening (including assignments), get score from moduleData
+            // Get evaluation data - handle both ResultListItem (summary) and SavedResult (full)
             let score: number | undefined;
             let totalQuestions: number | undefined;
-            if (item.module === 'reading' || item.module === 'listening') {
-              if (item.moduleData && item.moduleData.type === 'mcq') {
-                score = item.moduleData.score;
-                totalQuestions = item.moduleData.totalQuestions;
-              } else if (item.module === 'reading' && (item as any).readingResult) {
-                score = (item as any).readingResult.score;
-                totalQuestions = (item as any).readingResult.totalQuestions;
-              } else if (item.module === 'listening' && (item as any).listeningResult) {
-                score = (item as any).listeningResult.score;
-                totalQuestions = (item as any).listeningResult.totalQuestions;
-              }
-            } else {
-              // For oral/written expression, use evaluation score
-              // evaluationData can be EvaluationResult or SavedResult
-              if ('score' in evaluationData) {
-                score = evaluationData.score;
-              } else {
-                // If evaluationData is SavedResult, use its evaluation property
-                score = (evaluationData as SavedResult).evaluation?.score;
-              }
-            }
-            
-            // Handle clbLevel and cecrLevel similarly
             let clbLevel: string | undefined;
             let cecrLevel: string | undefined;
-            if ('clbLevel' in evaluationData) {
-              clbLevel = evaluationData.clbLevel;
+            
+            // Check if item is ResultListItem (has flattened fields) or SavedResult (has nested evaluation)
+            if ('score' in item && 'clbLevel' in item && 'cecrLevel' in item && !('evaluation' in item)) {
+              // ResultListItem - use flattened fields directly
+              score = item.score;
+              clbLevel = item.clbLevel;
+              cecrLevel = item.cecrLevel;
+              
+              // For MCQ results, use flattened mcqScore/mcqTotalQuestions
+              if (item.module === 'reading' || item.module === 'listening') {
+                score = item.mcqScore;
+                totalQuestions = item.mcqTotalQuestions;
+              }
             } else {
-              clbLevel = (evaluationData as SavedResult).evaluation?.clbLevel;
-            }
-            if ('cecrLevel' in evaluationData) {
-              cecrLevel = evaluationData.cecrLevel;
-            } else {
-              cecrLevel = (evaluationData as SavedResult).evaluation?.cecrLevel;
+              // SavedResult - use existing logic
+              const getEvaluationData = (result: SavedResult) => {
+                if ('evaluationSummary' in result && result.evaluationSummary) {
+                  return result.evaluationSummary;
+                }
+                return result.evaluation || result;
+              };
+              
+              const evaluationData = getEvaluationData(item as SavedResult);
+              
+              // For reading/listening (including assignments), get score from moduleData
+              if (item.module === 'reading' || item.module === 'listening') {
+                const savedResult = item as SavedResult;
+                if (savedResult.moduleData && savedResult.moduleData.type === 'mcq') {
+                  score = savedResult.moduleData.score;
+                  totalQuestions = savedResult.moduleData.totalQuestions;
+                } else if (item.module === 'reading' && (item as any).readingResult) {
+                  score = (item as any).readingResult.score;
+                  totalQuestions = (item as any).readingResult.totalQuestions;
+                } else if (item.module === 'listening' && (item as any).listeningResult) {
+                  score = (item as any).listeningResult.score;
+                  totalQuestions = (item as any).listeningResult.totalQuestions;
+                }
+              } else {
+                // For oral/written expression, use evaluation score
+                const evalData = evaluationData as any;
+                if ('score' in evalData && typeof evalData.score === 'number') {
+                  score = evalData.score;
+                } else if (evalData && typeof evalData === 'object' && 'evaluation' in evalData) {
+                  score = (evalData as SavedResult).evaluation?.score;
+                }
+              }
+              
+              // Handle clbLevel and cecrLevel
+              const evalData = evaluationData as any;
+              if ('clbLevel' in evalData && typeof evalData.clbLevel === 'string') {
+                clbLevel = evalData.clbLevel;
+              } else if (evalData && typeof evalData === 'object' && 'evaluation' in evalData) {
+                clbLevel = (evalData as SavedResult).evaluation?.clbLevel;
+              }
+              if ('cecrLevel' in evalData && typeof evalData.cecrLevel === 'string') {
+                cecrLevel = evalData.cecrLevel;
+              } else if (evalData && typeof evalData === 'object' && 'evaluation' in evalData) {
+                cecrLevel = (evalData as SavedResult).evaluation?.cecrLevel;
+              }
             }
             
             // Get mode badge color and label

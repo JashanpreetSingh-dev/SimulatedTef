@@ -1,6 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useAuth } from '@clerk/clerk-react';
 import { SavedResult, TEFTask, EvaluationResult } from '../../types';
+import { persistenceService } from '../../services/persistence';
 import { SimpleResultView } from './components/SimpleResultView';
 import { ResultHeader } from './components/ResultHeader';
 import { AudioPlayer } from './components/AudioPlayer';
@@ -22,29 +24,57 @@ interface DetailedResultViewProps {
 
 export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, onBack }) => {
   const { t } = useLanguage();
+  const { getToken } = useAuth();
   const [currentResult, setCurrentResult] = useState<SavedResult>(result);
+  const [fetchedTasks, setFetchedTasks] = useState<Map<string, TEFTask>>(new Map());
 
   // Update current result when prop changes
   useEffect(() => {
     setCurrentResult(result);
   }, [result]);
 
+  // Fetch tasks using taskReferences
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (!result.taskReferences) return;
+      
+      const taskIds: string[] = [];
+      if (result.taskReferences.taskA?.taskId) {
+        taskIds.push(result.taskReferences.taskA.taskId);
+      }
+      if (result.taskReferences.taskB?.taskId) {
+        taskIds.push(result.taskReferences.taskB.taskId);
+      }
+      
+      if (taskIds.length > 0 && getToken) {
+        try {
+          const normalizedTasks = await persistenceService.getTasks(taskIds, getToken);
+          const taskMap = new Map<string, TEFTask>();
+          normalizedTasks.forEach(normalizedTask => {
+            // Extract taskData from NormalizedTask - it contains the actual TEFTask with image, prompt, etc.
+            if (normalizedTask.taskData && (normalizedTask.type === 'oralA' || normalizedTask.type === 'oralB')) {
+              taskMap.set(normalizedTask.taskId, normalizedTask.taskData as TEFTask);
+            }
+          });
+          setFetchedTasks(taskMap);
+        } catch (error) {
+          console.error('Failed to fetch tasks:', error);
+        }
+      }
+    };
+    
+    fetchTasks();
+  }, [result.taskReferences, getToken]);
+
   // Use currentResult instead of result for rendering
   const displayResult = currentResult;
 
   // Get evaluation result - for partA/partB, check moduleData first, then fallback to main evaluation
   const evaluationResult = useMemo((): EvaluationResult => {
-    if (displayResult.moduleData) {
-      if (displayResult.moduleData.type === 'oralExpression' || displayResult.moduleData.type === 'writtenExpression') {
-        if (displayResult.mode === 'partA' && displayResult.moduleData.sectionA?.result) {
-          return displayResult.moduleData.sectionA.result;
-        } else if (displayResult.mode === 'partB' && displayResult.moduleData.sectionB?.result) {
-          return displayResult.moduleData.sectionB.result;
-        }
-      }
-    }
-    // Fallback to main evaluation or legacy structure (cast legacy result as EvaluationResult)
-    return (displayResult.evaluation || displayResult) as EvaluationResult;
+    // Always use the top-level evaluation as the single source of truth
+    // For oral expression: evaluation is at top level (no sectionA/sectionB.result)
+    // For written expression: evaluation is at top level (sectionA/sectionB.text contains written text, not evaluation)
+    return displayResult.evaluation || displayResult as EvaluationResult;
   }, [displayResult]);
 
   // Memoize expensive calculations - read from evaluationResult
@@ -57,13 +87,13 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
   const weaknesses = useMemo(() => evaluationResult.weaknesses || [], [evaluationResult.weaknesses]);
   const actualQuestionsCount = useMemo(() => evaluationResult.actual_questions_count, [evaluationResult.actual_questions_count]);
   
-  // Memoize tasks to display - use task references or fallback to legacy fields
+  // Memoize tasks to display - fetch from taskReferences or fallback to legacy fields
   const tasksToDisplay = useMemo(() => {
     const tasks: Array<{ task: TEFTask; label: string }> = [];
     
-    // Try to get tasks from populated result (taskA/taskB) or legacy fields
-    const taskA = (displayResult as any).taskA?.taskData || displayResult.taskPartA;
-    const taskB = (displayResult as any).taskB?.taskData || displayResult.taskPartB;
+    // Get tasks from fetchedTasks (populated from taskReferences) or legacy fields
+    const taskA = (displayResult.taskReferences?.taskA?.taskId && fetchedTasks.get(displayResult.taskReferences.taskA.taskId)) || displayResult.taskPartA;
+    const taskB = (displayResult.taskReferences?.taskB?.taskId && fetchedTasks.get(displayResult.taskReferences.taskB.taskId)) || displayResult.taskPartB;
     
     if (displayResult.mode === 'partA' && taskA) {
       tasks.push({ task: taskA, label: `Section ${t('results.sectionA')}` });
@@ -74,7 +104,7 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
       if (taskB) tasks.push({ task: taskB, label: `${t('results.section')} ${t('results.sectionB')}` });
     }
     return tasks;
-  }, [displayResult.mode, displayResult.taskPartA, displayResult.taskPartB, (displayResult as any).taskA, (displayResult as any).taskB, t]);
+  }, [displayResult.mode, displayResult.taskReferences, displayResult.taskPartA, displayResult.taskPartB, fetchedTasks, t]);
 
   // For reading/listening results, show simple view
   if (displayResult.module === 'reading' || displayResult.module === 'listening') {

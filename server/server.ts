@@ -85,6 +85,12 @@ if (!clerkSecretKey) {
       const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
       startQuestionGenerationWorker();
       console.log('Workers started in same process (RUN_WORKER=true)');
+      
+      // Set up periodic cleanup of old jobs to prevent Redis memory issues
+      const { cleanupOldJobs } = await import('./jobs/evaluationQueue');
+      setInterval(async () => {
+        await cleanupOldJobs();
+      }, 15 * 60 * 1000); // Clean up every 15 minutes
     } else if (process.env.NODE_ENV !== 'production') {
       if (process.env.RUN_WORKER !== 'false') {
         const { startWorker } = await import('./workers/evaluationWorker');
@@ -92,6 +98,12 @@ if (!clerkSecretKey) {
         const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
         startQuestionGenerationWorker();
         console.log('Workers started in same process (development mode)');
+        
+        // Set up periodic cleanup of old jobs to prevent Redis memory issues
+        const { cleanupOldJobs } = await import('./jobs/evaluationQueue');
+        setInterval(async () => {
+          await cleanupOldJobs();
+        }, 15 * 60 * 1000); // Clean up every 15 minutes
       }
     } else {
       console.log('Workers not started (RUN_WORKER not set to true). Run workers as separate services in production.');

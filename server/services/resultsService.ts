@@ -4,7 +4,7 @@
 
 import { ObjectId } from 'mongodb';
 import { connectDB } from '../db/connection';
-import { SavedResult, VoteType, DownvoteReason, ResultVotes } from '../../types';
+import { SavedResult, VoteType, DownvoteReason, ResultVotes, ResultListItem } from '../../types';
 import * as taskService from './taskService';
 
 const DEFAULT_LIMIT = 50;
@@ -22,8 +22,9 @@ export const resultsService = {
     assignmentId?: string,
     module?: string,
     resultType?: 'practice' | 'mockExam' | 'assignment',
-    populateTasks: boolean = false
-  ): Promise<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
+    populateTasks: boolean = false,
+    summary: boolean = false
+  ): Promise<{ results: (SavedResult | ResultListItem)[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
     const db = await connectDB();
 
     // Build filter query
@@ -44,16 +45,95 @@ export const resultsService = {
     // Get total count for pagination
     const totalCount = await db.collection('results').countDocuments(filter);
 
-    const results = await db.collection('results')
-      .find(filter)
+    // Build projection for summary mode (only fetch fields needed for list view)
+    let projection: any = undefined;
+    if (summary) {
+      projection = {
+        _id: 1,
+        userId: 1,
+        resultType: 1,
+        mode: 1,
+        module: 1,
+        title: 1,
+        timestamp: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        assignmentId: 1,
+        recordingId: 1,
+        isLoading: 1,
+        taskReferences: 1,
+        evaluationSummary: 1, // Flattened evaluation data (preferred)
+        'evaluation.score': 1, // Fallback for older documents without evaluationSummary
+        'evaluation.clbLevel': 1,
+        'evaluation.cecrLevel': 1,
+        'moduleData.type': 1, // For MCQ type check
+        'moduleData.score': 1, // For MCQ score
+        'moduleData.totalQuestions': 1, // For MCQ total
+        // Exclude large fields: transcript, full evaluation object (except score/clbLevel/cecrLevel), moduleData (except type/score/totalQuestions)
+      };
+    }
+
+    const query = db.collection('results').find(filter);
+    if (projection) {
+      query.project(projection);
+    }
+    const results = await query
       .sort({ timestamp: -1 })
       .limit(Math.min(limit, MAX_LIMIT))
       .skip(skip)
       .toArray();
 
+    // Transform to flat ResultListItem if summary mode
+    if (summary) {
+      const listItems: ResultListItem[] = results.map((result: any) => {
+        const item: ResultListItem = {
+          _id: result._id?.toString() || '',
+          resultType: result.resultType,
+          mode: result.mode,
+          module: result.module,
+          title: result.title,
+          timestamp: result.timestamp,
+          createdAt: result.createdAt,
+          taskReferences: result.taskReferences || {},
+          assignmentId: result.assignmentId,
+          recordingId: result.recordingId,
+          isLoading: result.isLoading,
+        };
+
+        // Flatten evaluation data from evaluationSummary or evaluation
+        if (result.evaluationSummary) {
+          item.score = result.evaluationSummary.score;
+          item.clbLevel = result.evaluationSummary.clbLevel;
+          item.cecrLevel = result.evaluationSummary.cecrLevel;
+        } else if (result.evaluation) {
+          item.score = result.evaluation.score;
+          item.clbLevel = result.evaluation.clbLevel;
+          item.cecrLevel = result.evaluation.cecrLevel;
+        }
+
+        // Flatten MCQ data from moduleData
+        if (result.moduleData?.type === 'mcq') {
+          item.mcqScore = result.moduleData.score;
+          item.mcqTotalQuestions = result.moduleData.totalQuestions;
+        }
+
+        return item;
+      });
+
+      return {
+        results: listItems,
+        pagination: {
+          total: totalCount,
+          limit: Math.min(limit, MAX_LIMIT),
+          skip,
+          hasMore: skip + results.length < totalCount
+        }
+      };
+    }
+
+    // Full results mode - populate tasks if requested
     let populatedResults = results as unknown as SavedResult[];
 
-    // Optionally populate task references
     if (populateTasks) {
       const taskIds: string[] = [];
       results.forEach((result: any) => {
@@ -69,23 +149,9 @@ export const resultsService = {
         const tasks = await taskService.getTasks([...new Set(taskIds)]);
         const taskMap = new Map(tasks.map(t => [t.taskId, t]));
 
-        populatedResults = results.map((result: any) => {
-          const populated = { ...result };
-          // Add populated tasks to result for frontend access
-          if (result.taskReferences?.taskA?.taskId) {
-            const task = taskMap.get(result.taskReferences.taskA.taskId);
-            if (task) {
-              populated.taskA = task;
-            }
-          }
-          if (result.taskReferences?.taskB?.taskId) {
-            const task = taskMap.get(result.taskReferences.taskB.taskId);
-            if (task) {
-              populated.taskB = task;
-            }
-          }
-          return populated;
-        }) as SavedResult[];
+        // Note: We don't add taskA/taskB at top level to keep API consistent with DB schema
+        // Frontend should use taskReferences.taskA/taskB.taskId to fetch tasks when needed
+        populatedResults = results as SavedResult[];
       }
     }
 
@@ -211,15 +277,9 @@ export const resultsService = {
         const tasks = await taskService.getTasks([...new Set(taskIds)]);
         const taskMap = new Map(tasks.map(t => [t.taskId, t]));
 
-        populatedResult = {
-          ...result,
-          ...(result.taskReferences?.taskA?.taskId && {
-            taskA: taskMap.get(result.taskReferences.taskA.taskId)
-          }),
-          ...(result.taskReferences?.taskB?.taskId && {
-            taskB: taskMap.get(result.taskReferences.taskB.taskId)
-          })
-        } as unknown as SavedResult;
+        // Note: We don't add taskA/taskB at top level to keep API consistent with DB schema
+        // Frontend should use taskReferences.taskA/taskB.taskId to fetch tasks when needed
+        populatedResult = result as SavedResult;
       }
     }
     

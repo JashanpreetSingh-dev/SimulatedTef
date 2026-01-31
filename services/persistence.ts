@@ -1,6 +1,6 @@
 
-import { EvaluationResult, SavedResult } from '../types';
-import { TaskReference, TaskType, generateTaskId, NormalizedTask } from '../types/task';
+import { EvaluationResult, SavedResult, ResultListItem } from '../types';
+import { TaskReference, TaskType, NormalizedTask } from '../types/task';
 import { TEFTask, WrittenTask, ReadingTask, ListeningTask } from '../types';
 import { mongoDBService } from './mongodb';
 import { authenticatedFetch, authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
@@ -426,8 +426,9 @@ export const persistenceService = {
     resultType?: 'practice' | 'mockExam' | 'assignment',
     module?: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening',
     mockExamId?: string,
-    populateTasks: boolean = false
-  ): Promise<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
+    populateTasks: boolean = false,
+    summary: boolean = true // Default to true for list views - returns flat ResultListItem
+  ): Promise<{ results: (SavedResult | ResultListItem)[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }> {
     try {
       // Build query params for pagination and filtering
       const params = new URLSearchParams();
@@ -437,13 +438,14 @@ export const persistenceService = {
       if (module) params.append('module', module);
       if (mockExamId) params.append('mockExamId', mockExamId);
       if (populateTasks) params.append('populateTasks', 'true');
+      if (summary) params.append('summary', 'true'); // Add summary parameter
       const queryString = params.toString();
       const url = `${BACKEND_URL}/api/results/${userId}${queryString ? `?${queryString}` : ''}`;
       
       // Use authenticated fetch if getToken is provided, otherwise use regular fetch
       if (typeof authTokenOrGetter === 'function') {
         try {
-          const response = await authenticatedFetchJSON<{ results: SavedResult[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }>(
+          const response = await authenticatedFetchJSON<{ results: (SavedResult | ResultListItem)[]; pagination?: { total: number; limit: number; skip: number; hasMore: boolean } }>(
             url,
             {
               getToken: authTokenOrGetter,
