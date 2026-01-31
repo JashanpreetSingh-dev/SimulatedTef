@@ -17,6 +17,7 @@ import { MockExamView } from '../components/MockExamView';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AdminUsageView } from '../pages/AdminUsageView';
 import { AdminVoteAnalyticsView } from '../pages/AdminVoteAnalyticsView';
+import { AdminOrgConfigView } from '../pages/AdminOrgConfigView';
 
 /**
  * Protected routes - only accessible when signed in
@@ -50,6 +51,7 @@ export function ProtectedRoutes() {
       <Route path="/dashboard/batches/:batchId" element={<BatchDetailView />} />
       <Route path="/admin/usage" element={<AdminUsageView />} />
       <Route path="/admin/vote-analytics" element={<AdminVoteAnalyticsView />} />
+      <Route path="/admin/org-config" element={<AdminOrgConfigView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

@@ -15,6 +15,7 @@
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",
     "clear-mock-data": "tsx server/scripts/clearMockData.ts",
+    "migrate-org-id": "tsx server/scripts/migrateOrgId.ts",
     "cli": "tsx cli/index.ts",
     "convert-service-account": "tsx scripts/convert-service-account-to-env.ts"
   },

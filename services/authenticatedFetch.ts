@@ -79,6 +79,10 @@ export async function authenticatedFetch(
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
+      // Prevent caching for admin endpoints (org switching needs fresh data)
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      headers.set('Pragma', 'no-cache');
+      headers.set('Expires', '0');
       
       // Create abort controller for timeout
       const controller = new AbortController();

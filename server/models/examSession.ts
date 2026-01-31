@@ -11,6 +11,7 @@ export type ExamType = 'full' | 'partA' | 'partB' | 'mock';
 export const ExamSessionSchema = z.object({
   sessionId: z.string().uuid(),
   userId: z.string().min(1),
+  orgId: z.string().optional(), // Organization ID (optional for backward compatibility)
   examType: z.enum(['full', 'partA', 'partB', 'mock']),
   createdAt: z.string(),
   completed: z.boolean().default(false),

@@ -5,12 +5,14 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { adminService, VoteAnalytics } from '../services/adminService';
 import { formatDateFrench } from '../utils/dateFormatting';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useOrganization } from '@clerk/clerk-react';
 
 export function AdminVoteAnalyticsView() {
   const { user } = useUser();
   const { getToken } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { organization } = useOrganization();
   const [analytics, setAnalytics] = useState<VoteAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
   
@@ -28,8 +30,10 @@ export function AdminVoteAnalyticsView() {
       navigate('/dashboard');
       return;
     }
+    // Reset state when org changes
+    setAnalytics(null);
     fetchAnalytics();
-  }, [startDate, endDate, isAdmin, navigate]);
+  }, [startDate, endDate, isAdmin, navigate, organization?.id]);
 
   const fetchAnalytics = async () => {
     if (!isAdmin) return;
@@ -39,6 +43,7 @@ export function AdminVoteAnalyticsView() {
       const data = await adminService.getVoteAnalytics(getToken, {
         startDate: startDate || undefined,
         endDate: endDate || undefined,
+        orgId: organization?.id, // Pass explicit orgId for org switching
       });
       setAnalytics(data);
     } catch (error) {

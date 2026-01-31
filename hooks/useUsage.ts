@@ -9,6 +9,8 @@ export interface CanStartExamResult {
   canStart: boolean;
   reason?: string;
   sessionId?: string;
+  currentUsage?: number;
+  limit?: number;
 }
 
 export const useUsage = () => {
@@ -34,7 +36,13 @@ export const useUsage = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to check usage');
+        // Return error response with usage info if available
+        return {
+          canStart: false,
+          reason: error.error || error.reason || 'Failed to check usage',
+          currentUsage: error.currentUsage,
+          limit: error.limit,
+        };
       }
 
       const data = await response.json();
@@ -66,7 +74,13 @@ export const useUsage = () => {
 
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || 'Failed to start exam');
+        // Return error response with usage info if available
+        return {
+          canStart: false,
+          reason: error.error || error.reason || 'Failed to start exam',
+          currentUsage: error.currentUsage,
+          limit: error.limit,
+        };
       }
 
       const data = await response.json();

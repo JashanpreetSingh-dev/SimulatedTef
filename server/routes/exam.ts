@@ -1,5 +1,5 @@
 /**
- * Exam session API routes - B2B mode (tracking only, no limits)
+ * Exam session API routes - enforces monthly usage limits
  */
 
 import { Router } from 'express';
@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { connectDB } from '../db/connection';
 import { getTodayUTC } from '../models/usage';
 import { ObjectId } from 'mongodb';
+import { userUsageService } from '../services/userUsageService';
 
 const router = Router();
 
@@ -27,14 +28,15 @@ async function createExamSession(userId: string, examType: string) {
     status: 'active'
   });
 
-  // Track usage for B2B analytics
+  // Track usage for monthly limits
+  // Full exams count as 1 Section A + 1 Section B usage
   await db.collection('usage').updateOne(
     { userId, date: today },
     {
       $inc: {
         fullTestsUsed: examType === 'full' ? 1 : 0,
-        sectionAUsed: examType === 'partA' ? 1 : 0,
-        sectionBUsed: examType === 'partB' ? 1 : 0,
+        sectionAUsed: examType === 'partA' || examType === 'full' ? 1 : 0,
+        sectionBUsed: examType === 'partB' || examType === 'full' ? 1 : 0,
       },
       $set: { updatedAt: new Date().toISOString() },
       $setOnInsert: { createdAt: new Date().toISOString() }
@@ -81,7 +83,30 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(400).json({ error: 'Invalid exam type' });
   }
 
-  // B2B mode: Always allow, just track usage
+  // Check monthly usage limits before creating session
+  const orgId = req.orgId || null;
+  let limitCheck;
+  
+  if (examType === 'partA') {
+    limitCheck = await userUsageService.checkCanStartSection(userId, orgId, 'A');
+  } else if (examType === 'partB') {
+    limitCheck = await userUsageService.checkCanStartSection(userId, orgId, 'B');
+  } else if (examType === 'full') {
+    limitCheck = await userUsageService.checkCanStartFullExam(userId, orgId);
+  } else {
+    return res.status(400).json({ error: 'Invalid exam type' });
+  }
+
+  if (!limitCheck.canStart) {
+    return res.status(403).json({
+      error: limitCheck.reason || 'Monthly limit reached',
+      canStart: false,
+      currentUsage: limitCheck.currentUsage,
+      limit: limitCheck.limit,
+    });
+  }
+
+  // Create session and track usage only if within limits
   const sessionId = await createExamSession(userId, examType);
   res.json({ sessionId, canStart: true });
 }));

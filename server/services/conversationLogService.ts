@@ -232,6 +232,7 @@ export const conversationLogService = {
       endDate?: string;
       limit?: number;
       skip?: number;
+      orgId?: string; // Optional orgId for more accurate filtering
     }
   ): Promise<{
     logs: ConversationLog[];
@@ -250,12 +251,27 @@ export const conversationLogService = {
 
       const limit = options?.limit || 50;
       const skip = options?.skip || 0;
+      const orgId = options?.orgId;
 
       // Build query - filter by userIds in the organization
+      // If orgId is provided, also filter by orgId for better performance and accuracy
       const query: any = {
-        userId: { $in: userIds },
         module: 'oralExpression', // Only oral expression logs
       };
+
+      // Prefer orgId filter if available (more accurate for multi-org admins)
+      // Fallback to userId filter for records without orgId (backward compatibility)
+      if (orgId && userIds.length > 0) {
+        query.$or = [
+          { orgId: orgId }, // Records with orgId (after migration)
+          { userId: { $in: userIds }, orgId: { $exists: false } } // Records without orgId (legacy, before migration)
+        ];
+      } else if (userIds.length > 0) {
+        query.userId = { $in: userIds };
+      } else {
+        // No users in org, return empty results
+        query.userId = { $in: [] };
+      }
 
       if (options?.examType) {
         query.examType = options.examType;
