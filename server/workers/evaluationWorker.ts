@@ -14,6 +14,19 @@ import { connectDB } from '../db/connection';
 
 let worker: Worker<EvaluationJobData, EvaluationJobResult> | null = null;
 
+/** Call job.updateProgress without failing the job if Redis job key is missing (e.g. after connection close). */
+async function safeUpdateProgress(job: { id?: string; updateProgress: (p: number) => Promise<void> }, percent: number): Promise<void> {
+  try {
+    await job.updateProgress(percent);
+  } catch (err: any) {
+    if (err?.message?.includes('Missing key') || err?.code === -1) {
+      // Job key gone in Redis (e.g. subscriber closed); continue without progress updates
+      return;
+    }
+    throw err;
+  }
+}
+
 /** Publish to Redis; if main connection is closed, use a one-off connection so events still get through. */
 async function safePublish(channel: string, message: string): Promise<void> {
   const tryPublish = async (client: { publish: (ch: string, msg: string) => Promise<number> }) => {
@@ -78,9 +91,9 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
       } = job.data;
 
       try {
-        // Update job progress
-        await job.updateProgress(5); // 5% - Starting
-        
+        // Update job progress (no-op if Redis job key missing)
+        await safeUpdateProgress(job, 5); // 5% - Starting
+
         // Publish progress event to Redis for SSE clients (no-op if Redis closed)
         const channel = `evaluation:${job.id}:progress`;
         await safePublish(channel, JSON.stringify({ status: 'active', progress: 5 }));
@@ -92,7 +105,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
         // For OralExpression: transcribe audio if audioBlob is provided and transcript is not
         if (section === 'OralExpression' && audioBlob && !transcript) {
-          await job.updateProgress(15); // 15% - Transcribing
+          await safeUpdateProgress(job, 15); // 15% - Transcribing
           await safePublish(channel, JSON.stringify({ status: 'active', progress: 15 }));
 
           console.log(`Transcribing audio for job ${job.id}...`);
@@ -181,14 +194,14 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           
           console.log(`✅ Transcription completed for job ${job.id}, transcript length: ${transcript.length}`);
           
-          await job.updateProgress(30); // 30% - Transcription complete
+          await safeUpdateProgress(job, 30); // 30% - Transcription complete
           await safePublish(channel, JSON.stringify({ status: 'active', progress: 30 }));
         } else if (!transcript) {
           throw new Error('Either transcript or audioBlob must be provided');
         }
 
         // Call Gemini API for evaluation (this is the slow part)
-        await job.updateProgress(40); // 40% - Starting evaluation
+        await safeUpdateProgress(job, 40); // 40% - Starting evaluation
         await safePublish(channel, JSON.stringify({ status: 'active', progress: 40 }));
 
         const result = await geminiService.evaluateResponse(
@@ -205,7 +218,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           fluencyAnalysis
         );
 
-        await job.updateProgress(80); // 80% - Evaluation complete
+        await safeUpdateProgress(job, 80); // 80% - Evaluation complete
         await safePublish(channel, JSON.stringify({ status: 'active', progress: 80 }));
 
         // Determine resultType and module
@@ -329,8 +342,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           }
         }
 
-        await job.updateProgress(100); // 100% - Complete
-        
+        await safeUpdateProgress(job, 100); // 100% - Complete
+
         // Publish completion event (no-op if Redis closed)
         await safePublish(channel, JSON.stringify({
           status: 'completed',
