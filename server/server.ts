@@ -19,6 +19,8 @@ import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
+import { subscriptionService } from './services/subscriptionService';
+import { d2cConfigService } from './services/d2cConfigService';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,7 +28,13 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
+// Stripe webhooks need raw body for signature verification
+// MUST be mounted BEFORE express.json() middleware
+import stripeWebhooksRouter from './routes/stripeWebhooks';
+app.use('/api/stripe-webhooks', express.raw({ type: 'application/json' }), stripeWebhooksRouter);
+
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
+// This must come AFTER the webhook route to avoid parsing webhook bodies as JSON
 app.use(express.json({ limit: '10mb' }));
 
 declare global {
@@ -78,7 +86,10 @@ if (!clerkSecretKey) {
   try {
     await connectDB();
     await createIndexes();
-    
+    // Ensure default data exists (subscription tiers + D2C config) so fresh DB works without manual migrations
+    await subscriptionService.initializeSubscriptionTiers();
+    await d2cConfigService.ensureDefaultConfig();
+
     if (process.env.RUN_WORKER === 'true') {
       const { startWorker } = await import('./workers/evaluationWorker');
       startWorker();
@@ -167,57 +178,35 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`Health check available at http://${HOST}:${PORT}/api/health`);
 });
 
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  
-  server.close(async () => {
-    try {
-      const { stopWorker } = await import('./workers/evaluationWorker');
-      await stopWorker();
-    } catch (error) {
-      // Worker not running
-    }
-    try {
-      const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
-      await stopQuestionGenerationWorker();
-    } catch (error) {
-      // Worker not running
-    }
-    
-    await closeDB();
-    process.exit(0);
-  });
-  
-  setTimeout(() => {
-    console.error('Forced shutdown after timeout');
-    process.exit(1);
-  }, 30000);
-});
+/** Run graceful shutdown once (SIGINT and SIGTERM can both fire). */
+async function gracefulShutdown(signal: string): Promise<void> {
+  if ((gracefulShutdown as any).running) return;
+  (gracefulShutdown as any).running = true;
+  console.log(`${signal} received, shutting down gracefully...`);
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  
   server.close(async () => {
     try {
       const { stopWorker } = await import('./workers/evaluationWorker');
       await stopWorker();
-    } catch (error) {
+    } catch {
       // Worker not running
     }
     try {
       const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
       await stopQuestionGenerationWorker();
-    } catch (error) {
+    } catch {
       // Worker not running
     }
-    
     await closeDB();
     process.exit(0);
   });
-  
+
   setTimeout(() => {
     console.error('Forced shutdown after timeout');
     process.exit(1);
   }, 30000);
-});
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 

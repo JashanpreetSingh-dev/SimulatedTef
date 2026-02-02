@@ -10,9 +10,55 @@ import { resultsService } from '../services/resultsService';
 import * as taskService from '../services/taskService';
 import { generateTaskId, TaskType } from '../../types/task';
 import { SavedResult, OralExpressionData, WrittenExpressionData } from '../../types';
-import { closeDB } from '../db/connection';
+import { connectDB } from '../db/connection';
 
 let worker: Worker<EvaluationJobData, EvaluationJobResult> | null = null;
+
+/** Call job.updateProgress without failing the job if Redis job key is missing (e.g. after connection close). */
+async function safeUpdateProgress(job: { id?: string; updateProgress: (p: number) => Promise<void> }, percent: number): Promise<void> {
+  try {
+    await job.updateProgress(percent);
+  } catch (err: any) {
+    if (err?.message?.includes('Missing key') || err?.code === -1) {
+      // Job key gone in Redis (e.g. subscriber closed); continue without progress updates
+      return;
+    }
+    throw err;
+  }
+}
+
+/** Publish to Redis; if main connection is closed, use a one-off connection so events still get through. */
+async function safePublish(channel: string, message: string): Promise<void> {
+  const tryPublish = async (client: { publish: (ch: string, msg: string) => Promise<number> }) => {
+    await client.publish(channel, message);
+  };
+
+  if (redis.status === 'ready') {
+    try {
+      await tryPublish(redis);
+      return;
+    } catch (err: any) {
+      if (!err.message?.includes('Connection is closed')) {
+        console.warn('Redis publish failed:', err.message);
+        return;
+      }
+      // Fall through to one-off connection
+    }
+  }
+
+  // Main connection closed or failed – open a temporary connection to deliver the event
+  const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+  try {
+    const Redis = (await import('ioredis')).default;
+    const tempRedis = new Redis(redisUrl, { maxRetriesPerRequest: 1 });
+    await tryPublish(tempRedis);
+    tempRedis.disconnect();
+  } catch (err: any) {
+    if (!err.message?.includes('Connection is closed')) {
+      console.warn('Redis publish (fallback) failed:', err.message);
+    }
+  }
+}
 
 /**
  * Start the evaluation worker
@@ -45,17 +91,12 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
       } = job.data;
 
       try {
-        // Update job progress
-        await job.updateProgress(5); // 5% - Starting
-        
-        // Publish progress event to Redis for SSE clients
+        // Update job progress (no-op if Redis job key missing)
+        await safeUpdateProgress(job, 5); // 5% - Starting
+
+        // Publish progress event to Redis for SSE clients (no-op if Redis closed)
         const channel = `evaluation:${job.id}:progress`;
-        try {
-          await redis.publish(channel, JSON.stringify({ status: 'active', progress: 5 }));
-        } catch (pubError) {
-          console.warn(`Failed to publish progress event for job ${job.id}:`, pubError);
-          // Continue processing even if publish fails
-        }
+        await safePublish(channel, JSON.stringify({ status: 'active', progress: 5 }));
 
         console.log(`Processing evaluation job ${job.id} for user ${userId}`);
 
@@ -64,12 +105,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
         // For OralExpression: transcribe audio if audioBlob is provided and transcript is not
         if (section === 'OralExpression' && audioBlob && !transcript) {
-          await job.updateProgress(15); // 15% - Transcribing
-          try {
-            await redis.publish(channel, JSON.stringify({ status: 'active', progress: 15 }));
-          } catch (pubError) {
-            console.warn(`Failed to publish progress event for job ${job.id}:`, pubError);
-          }
+          await safeUpdateProgress(job, 15); // 15% - Transcribing
+          await safePublish(channel, JSON.stringify({ status: 'active', progress: 15 }));
 
           console.log(`Transcribing audio for job ${job.id}...`);
           
@@ -157,24 +194,16 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           
           console.log(`✅ Transcription completed for job ${job.id}, transcript length: ${transcript.length}`);
           
-          await job.updateProgress(30); // 30% - Transcription complete
-          try {
-            await redis.publish(channel, JSON.stringify({ status: 'active', progress: 30 }));
-          } catch (pubError) {
-            console.warn(`Failed to publish progress event for job ${job.id}:`, pubError);
-          }
+          await safeUpdateProgress(job, 30); // 30% - Transcription complete
+          await safePublish(channel, JSON.stringify({ status: 'active', progress: 30 }));
         } else if (!transcript) {
           throw new Error('Either transcript or audioBlob must be provided');
         }
 
         // Call Gemini API for evaluation (this is the slow part)
-        await job.updateProgress(40); // 40% - Starting evaluation
-        try {
-          await redis.publish(channel, JSON.stringify({ status: 'active', progress: 40 }));
-        } catch (pubError) {
-          console.warn(`Failed to publish progress event for job ${job.id}:`, pubError);
-        }
-        
+        await safeUpdateProgress(job, 40); // 40% - Starting evaluation
+        await safePublish(channel, JSON.stringify({ status: 'active', progress: 40 }));
+
         const result = await geminiService.evaluateResponse(
           section,
           prompt,
@@ -189,12 +218,8 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           fluencyAnalysis
         );
 
-        await job.updateProgress(80); // 80% - Evaluation complete
-        try {
-          await redis.publish(channel, JSON.stringify({ status: 'active', progress: 80 }));
-        } catch (pubError) {
-          console.warn(`Failed to publish progress event for job ${job.id}:`, pubError);
-        }
+        await safeUpdateProgress(job, 80); // 80% - Evaluation complete
+        await safePublish(channel, JSON.stringify({ status: 'active', progress: 80 }));
 
         // Determine resultType and module
         const resultType: 'practice' | 'mockExam' = job.data.mockExamId ? 'mockExam' : 'practice';
@@ -274,19 +299,57 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           savedResult = await resultsService.create(resultToSave);
         }
 
-        await job.updateProgress(100); // 100% - Complete
-        
-        // Publish completion event
-        try {
-          await redis.publish(channel, JSON.stringify({ 
-            status: 'completed', 
-            progress: 100,
-            resultId: savedResult._id as string
-          }));
-        } catch (pubError) {
-          console.warn(`Failed to publish completion event for job ${job.id}:`, pubError);
-          // Continue even if publish fails - job is still completed
+        // Track usage for written expression (non-mock exam practice) - D2C users only
+        // D2C users can only do guided learning (partA or partB), not full exams
+        if (module === 'writtenExpression' && !job.data.mockExamId) {
+          const { getTodayUTC } = await import('../models/usage');
+          const today = getTodayUTC();
+          const db = await connectDB();
+
+          // Check if user is D2C (no orgId) by checking existing usage records or results
+          // If user has orgId in any usage record, they're B2B and we don't track written expression usage
+          const existingUsage = await db.collection('usage').findOne({ userId });
+          const hasOrgId = existingUsage?.orgId !== null && existingUsage?.orgId !== undefined;
+          
+          // Only track usage for D2C users (no orgId)
+          if (!hasOrgId) {
+            // Track based on mode: partA increments Section A, partB increments Section B
+            // Full mode should not be allowed for D2C users, but if it happens, track both
+            const updateFields: any = {
+              $set: { updatedAt: new Date().toISOString() },
+              $setOnInsert: { createdAt: new Date().toISOString() }
+            };
+            
+            if (mode === 'partA') {
+              updateFields.$inc = { writtenExpressionSectionAUsed: 1 };
+            } else if (mode === 'partB') {
+              updateFields.$inc = { writtenExpressionSectionBUsed: 1 };
+            } else if (mode === 'full') {
+              // Full mode should not be allowed for D2C, but if it happens, track both sections
+              updateFields.$inc = { 
+                writtenExpressionSectionAUsed: 1,
+                writtenExpressionSectionBUsed: 1
+              };
+            }
+            
+            if (updateFields.$inc) {
+              await db.collection('usage').updateOne(
+                { userId, date: today },
+                updateFields,
+                { upsert: true }
+              );
+            }
+          }
         }
+
+        await safeUpdateProgress(job, 100); // 100% - Complete
+
+        // Publish completion event (no-op if Redis closed)
+        await safePublish(channel, JSON.stringify({
+          status: 'completed',
+          progress: 100,
+          resultId: savedResult._id as string
+        }));
 
         console.log(`Evaluation job ${job.id} completed, result ID: ${savedResult._id}`);
 
@@ -298,17 +361,12 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
       } catch (error: any) {
         console.error(`Evaluation job ${job.id} failed:`, error);
         
-        // Publish failure event
+        // Publish failure event (no-op if Redis closed)
         const channel = `evaluation:${job.id}:progress`;
-        try {
-          await redis.publish(channel, JSON.stringify({ 
-            status: 'failed', 
-            error: error.message || 'Evaluation failed'
-          }));
-        } catch (pubError) {
-          console.warn(`Failed to publish failure event for job ${job.id}:`, pubError);
-          // Continue even if publish fails
-        }
+        await safePublish(channel, JSON.stringify({
+          status: 'failed',
+          error: error.message || 'Evaluation failed'
+        }));
         
         // Job failed - will be retried automatically by BullMQ
         throw error;
@@ -351,17 +409,15 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 }
 
 /**
- * Stop the evaluation worker gracefully
+ * Stop the evaluation worker gracefully.
+ * DB is closed by the server on shutdown; workers only stop themselves.
  */
 export async function stopWorker(): Promise<void> {
-  if (worker) {
-    console.log('Stopping evaluation worker...');
-    await worker.close();
-    worker = null;
-    console.log('Evaluation worker stopped');
-  }
-  // Close database connection
-  await closeDB();
+  if (!worker) return;
+  console.log('Stopping evaluation worker...');
+  await worker.close();
+  worker = null;
+  console.log('Evaluation worker stopped');
 }
 
 // If this file is run directly, start the worker

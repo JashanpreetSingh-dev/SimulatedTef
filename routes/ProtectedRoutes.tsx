@@ -18,6 +18,8 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AdminUsageView } from '../pages/AdminUsageView';
 import { AdminVoteAnalyticsView } from '../pages/AdminVoteAnalyticsView';
 import { AdminOrgConfigView } from '../pages/AdminOrgConfigView';
+import { AdminD2CConfigView } from '../pages/AdminD2CConfigView';
+import { SubscriptionView } from '../pages/SubscriptionView';
 
 /**
  * Protected routes - only accessible when signed in
@@ -52,6 +54,8 @@ export function ProtectedRoutes() {
       <Route path="/admin/usage" element={<AdminUsageView />} />
       <Route path="/admin/vote-analytics" element={<AdminVoteAnalyticsView />} />
       <Route path="/admin/org-config" element={<AdminOrgConfigView />} />
+      <Route path="/admin/d2c-config" element={<AdminD2CConfigView />} />
+      <Route path="/subscription" element={<SubscriptionView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

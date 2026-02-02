@@ -261,6 +261,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionB': 'Section B guidée',
     'practice.guidedSectionADescription': 'Fait divers avec retour en temps réel',
     'practice.guidedSectionBDescription': 'Argumentation avec retour en temps réel',
+    'practice.limitReached': 'Limite atteinte',
     'practice.standardPractice': 'Pratique standard',
     
     // Errors
@@ -275,6 +276,7 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionALimitReached': 'Limite quotidienne de Section A atteinte et aucun crédit de pack disponible',
     'errors.sectionBLimitReached': 'Limite quotidienne de Section B atteinte et aucun crédit de pack disponible',
     'errors.examSessionExpired': 'Cette session d\'examen a expiré. L\'utilisation a déjà été consommée lorsque l\'examen a commencé.',
+    'errors.writtenExpressionLimitReached': 'Limite mensuelle d\'expression écrite atteinte. Passez à un forfait supérieur pour continuer.',
     
     // Subscription Management
     'subscription.title': 'Gestion de l\'abonnement',
@@ -758,6 +760,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionB': 'Guided Section B',
     'practice.guidedSectionADescription': 'News story with real-time feedback',
     'practice.guidedSectionBDescription': 'Argumentation with real-time feedback',
+    'practice.limitReached': 'Limit reached',
     'practice.standardPractice': 'Standard Practice',
     
     // Errors
@@ -772,6 +775,7 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionALimitReached': 'Daily Section A limit reached and no pack credits available',
     'errors.sectionBLimitReached': 'Daily Section B limit reached and no pack credits available',
     'errors.examSessionExpired': 'This exam session has expired. Usage was already consumed when the exam started.',
+    'errors.writtenExpressionLimitReached': 'Monthly written expression limit reached. Upgrade to continue.',
     
     // Subscription Management
     'subscription.title': 'Subscription Management',
