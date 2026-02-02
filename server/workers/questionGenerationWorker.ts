@@ -6,7 +6,6 @@ import { Worker } from 'bullmq';
 import { connection } from '../config/redis';
 import { QuestionGenerationJobData, QuestionGenerationJobResult } from '../jobs/jobTypes';
 import { assignmentService } from '../services/assignmentService';
-import { closeDB } from '../db/connection';
 
 let worker: Worker<QuestionGenerationJobData, QuestionGenerationJobResult> | null = null;
 
@@ -95,17 +94,15 @@ export function startQuestionGenerationWorker(): Worker<QuestionGenerationJobDat
 }
 
 /**
- * Stop the question generation worker gracefully
+ * Stop the question generation worker gracefully.
+ * DB is closed by the server on shutdown; workers only stop themselves.
  */
 export async function stopQuestionGenerationWorker(): Promise<void> {
-  if (worker) {
-    console.log('Stopping question generation worker...');
-    await worker.close();
-    worker = null;
-    console.log('Question generation worker stopped');
-  }
-  // Close database connection
-  await closeDB();
+  if (!worker) return;
+  console.log('Stopping question generation worker...');
+  await worker.close();
+  worker = null;
+  console.log('Question generation worker stopped');
 }
 
 // If this file is run directly, start the worker

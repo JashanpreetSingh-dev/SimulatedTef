@@ -80,19 +80,20 @@ export async function connectDB(): Promise<Db> {
 }
 
 /**
- * Close MongoDB connection gracefully
+ * Close MongoDB connection gracefully.
+ * Idempotent: safe to call multiple times; only closes and logs once.
  */
 export async function closeDB(): Promise<void> {
-  if (client) {
-    try {
-      await client.close();
-      console.log('MongoDB connection closed');
-      client = null;
-      isConnected = false;
-    } catch (error: any) {
-      console.error('Error closing MongoDB connection:', error.message);
-      throw error;
-    }
+  const toClose = client;
+  client = null;
+  isConnected = false;
+  if (!toClose) return;
+  try {
+    await toClose.close();
+    console.log('MongoDB connection closed');
+  } catch (error: any) {
+    console.error('Error closing MongoDB connection:', error.message);
+    throw error;
   }
 }
 

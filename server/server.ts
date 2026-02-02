@@ -178,57 +178,35 @@ const server = app.listen(PORT, HOST, () => {
   console.log(`Health check available at http://${HOST}:${PORT}/api/health`);
 });
 
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM received, shutting down gracefully...');
-  
-  server.close(async () => {
-    try {
-      const { stopWorker } = await import('./workers/evaluationWorker');
-      await stopWorker();
-    } catch (error) {
-      // Worker not running
-    }
-    try {
-      const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
-      await stopQuestionGenerationWorker();
-    } catch (error) {
-      // Worker not running
-    }
-    
-    await closeDB();
-    process.exit(0);
-  });
-  
-  setTimeout(() => {
-    console.error('Forced shutdown after timeout');
-    process.exit(1);
-  }, 30000);
-});
+/** Run graceful shutdown once (SIGINT and SIGTERM can both fire). */
+async function gracefulShutdown(signal: string): Promise<void> {
+  if ((gracefulShutdown as any).running) return;
+  (gracefulShutdown as any).running = true;
+  console.log(`${signal} received, shutting down gracefully...`);
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT received, shutting down gracefully...');
-  
   server.close(async () => {
     try {
       const { stopWorker } = await import('./workers/evaluationWorker');
       await stopWorker();
-    } catch (error) {
+    } catch {
       // Worker not running
     }
     try {
       const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
       await stopQuestionGenerationWorker();
-    } catch (error) {
+    } catch {
       // Worker not running
     }
-    
     await closeDB();
     process.exit(0);
   });
-  
+
   setTimeout(() => {
     console.error('Forced shutdown after timeout');
     process.exit(1);
   }, 30000);
-});
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
