@@ -278,7 +278,7 @@ export function SubscriptionView() {
                     <div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Written Expression</p>
                       <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {tier.limits.writtenExpressionLimit === -1 ? 'Unlimited' : tier.limits.writtenExpressionLimit}
+                        {(tier.limits.writtenExpressionSectionALimit ?? 1) === -1 ? 'Unlimited' : `${tier.limits.writtenExpressionSectionALimit ?? 1} Section A + ${tier.limits.writtenExpressionSectionBLimit ?? 1} Section B / month`}
                       </p>
                     </div>
                   </div>

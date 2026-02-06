@@ -27,7 +27,8 @@ export interface SubscriptionTier {
   limits: {
     sectionALimit: number;
     sectionBLimit: number;
-    writtenExpressionLimit: number;
+    writtenExpressionSectionALimit?: number;
+    writtenExpressionSectionBLimit?: number;
     mockExamLimit?: number;
   };
   stripePriceId?: string;
@@ -117,15 +118,18 @@ export const subscriptionService = {
       sectionAUsed: number;
       sectionBUsed: number;
       mockExamsUsed: number;
-      writtenExpressionUsed: number;
+      writtenExpressionSectionAUsed?: number;
+      writtenExpressionSectionBUsed?: number;
     };
     limits: {
       sectionALimit: number;
       sectionBLimit: number;
-      writtenExpressionLimit: number;
+      writtenExpressionSectionALimit?: number;
+      writtenExpressionSectionBLimit?: number;
       mockExamLimit: number;
     };
-    currentMonth: string;
+    currentMonth?: string;
+    currentPeriod?: string;
     resetDate: string;
     daysUntilReset: number;
   }> {

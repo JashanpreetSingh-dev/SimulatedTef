@@ -53,6 +53,25 @@ Audio files (user recordings and listening exam audio) are stored in AWS S3.
 4. Generate access keys for the IAM user
 5. Add the credentials to your environment variables
 
+## Stripe Configuration (D2C Subscriptions)
+
+Required for D2C checkout, customer portal, and webhook handling.
+
+- **`STRIPE_SECRET_KEY`** - Stripe secret key (`sk_test_...` for test mode, `sk_live_...` for production)
+- **`STRIPE_WEBHOOK_SECRET`** - Webhook signing secret (`whsec_...`) for subscription events (checkout, subscription created/updated/deleted, invoice payment succeeded/failed)
+- **`STRIPE_PRICE_ID_BASIC`** - Stripe Price ID for Basic tier monthly subscription
+- **`STRIPE_PRICE_ID_PREMIUM`** - Stripe Price ID for Premium tier monthly subscription
+
+### Local Webhook Testing
+
+For local development, use Stripe CLI to forward webhooks:
+
+```bash
+stripe listen --forward-to localhost:3001/api/stripe-webhooks
+```
+
+Copy the webhook signing secret from the CLI output and set it as `STRIPE_WEBHOOK_SECRET` in your `.env`.
+
 ## Frontend Variables
 
 - **`VITE_BACKEND_URL`** - Backend API URL (default: `http://localhost:3001`)
@@ -103,6 +122,12 @@ AWS_S3_BUCKET=your-bucket-name
 TTS_PROVIDER=gcp
 GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account",...}
 
+# Stripe (D2C subscriptions)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID_BASIC=price_...
+STRIPE_PRICE_ID_PREMIUM=price_...
+
 # OR TTS - Gemini (alternative)
 # TTS_PROVIDER=gemini
 # GEMINI_API_KEY=your_key_here
@@ -125,6 +150,13 @@ AWS_S3_BUCKET=your-bucket-name
 
 TTS_PROVIDER=gcp
 GOOGLE_APPLICATION_CREDENTIALS={"type":"service_account",...}
+
+# Stripe (D2C subscriptions)
+STRIPE_SECRET_KEY=sk_live_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_ID_BASIC=price_...
+STRIPE_PRICE_ID_PREMIUM=price_...
+
 NODE_ENV=production
 RUN_WORKER=false
 ```
@@ -163,5 +195,6 @@ This outputs the correctly formatted line for your `.env` file.
 - [ ] `CLERK_SECRET_KEY` (production)
 - [ ] `REDIS_URL` (for job queue)
 - [ ] `AWS_REGION` + `AWS_ACCESS_KEY_ID` + `AWS_SECRET_ACCESS_KEY` + `AWS_S3_BUCKET` (audio storage)
+- [ ] `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` + `STRIPE_PRICE_ID_BASIC` + `STRIPE_PRICE_ID_PREMIUM` (D2C subscriptions)
 - [ ] `TTS_PROVIDER=gcp` + `GOOGLE_APPLICATION_CREDENTIALS` (recommended)
 - [ ] OR `TTS_PROVIDER=gemini` + `GEMINI_API_KEY` (alternative)
