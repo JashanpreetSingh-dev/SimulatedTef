@@ -24,6 +24,25 @@ const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
 
 const router = Router();
 
+/** Base URL for Stripe redirects (success/cancel/return). Prefer body/FRONTEND_URL, then request origin. */
+function getRedirectBaseUrl(req: Request): string {
+  const fromBody = (req.body as { returnBaseUrl?: string })?.returnBaseUrl;
+  if (fromBody && typeof fromBody === 'string' && fromBody.startsWith('http')) return fromBody.replace(/\/$/, '');
+  if (process.env.FRONTEND_URL) return process.env.FRONTEND_URL.replace(/\/$/, '');
+  const origin = req.get('Origin');
+  if (origin && origin.startsWith('http')) return origin;
+  const referer = req.get('Referer');
+  if (referer) {
+    try {
+      const u = new URL(referer);
+      return u.origin;
+    } catch {
+      // ignore
+    }
+  }
+  return 'http://localhost:5173';
+}
+
 // GET /api/subscriptions/me - Get current user's subscription
 router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
@@ -126,10 +145,11 @@ router.post('/checkout', requireAuth, asyncHandler(async (req: Request, res: Res
     }
   }
 
-  // Create checkout session
-  const successUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/subscription?success=true`;
-  const cancelUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/subscription?canceled=true`;
-  
+  // Create checkout session (redirect back to frontend that initiated checkout)
+  const baseUrl = getRedirectBaseUrl(req);
+  const successUrl = `${baseUrl}/subscription?success=true`;
+  const cancelUrl = `${baseUrl}/subscription?canceled=true`;
+
   try {
     const checkoutUrl = await stripeService.createCheckoutSession(
       customerId,
@@ -195,7 +215,8 @@ router.post('/portal', requireAuth, asyncHandler(async (req: Request, res: Respo
     return res.status(404).json({ error: 'No active subscription found' });
   }
 
-  const returnUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/subscription`;
+  const baseUrl = getRedirectBaseUrl(req);
+  const returnUrl = `${baseUrl}/subscription`;
   const portalUrl = await stripeService.createPortalSession(subscription.stripeCustomerId, returnUrl);
 
   res.json({ url: portalUrl });

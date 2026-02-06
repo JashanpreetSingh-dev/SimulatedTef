@@ -56,10 +56,11 @@ export const subscriptionService = {
     tierId?: 'free' | 'basic' | 'premium'
   ): Promise<{ url: string }> {
     const url = `${BACKEND_URL}/api/subscriptions/checkout`;
+    const returnBaseUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
     return authenticatedFetchJSON<{ url: string }>(url, {
       method: 'POST',
       getToken: getToken,
-      body: JSON.stringify({ priceId, tierId }),
+      body: JSON.stringify({ priceId, tierId, returnBaseUrl }),
     });
   },
 
@@ -70,9 +71,11 @@ export const subscriptionService = {
     getToken: () => Promise<string | null>
   ): Promise<{ url: string }> {
     const url = `${BACKEND_URL}/api/subscriptions/portal`;
+    const returnBaseUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
     return authenticatedFetchJSON<{ url: string }>(url, {
       method: 'POST',
       getToken: getToken,
+      body: JSON.stringify({ returnBaseUrl }),
     });
   },
 
