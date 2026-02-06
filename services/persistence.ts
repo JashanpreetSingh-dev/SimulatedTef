@@ -2,7 +2,6 @@
 import { EvaluationResult, SavedResult, ResultListItem } from '../types';
 import { TaskReference, TaskType, NormalizedTask } from '../types/task';
 import { TEFTask, WrittenTask, ReadingTask, ListeningTask } from '../types';
-import { mongoDBService } from './mongodb';
 import { authenticatedFetch, authenticatedFetchJSON, authenticatedFetchFormData } from './authenticatedFetch';
 
 const STORAGE_KEY = 'tef_master_results';
@@ -550,10 +549,6 @@ export const persistenceService = {
   },
 
   async clearHistory(userId: string = 'guest'): Promise<void> {
-    if (mongoDBService.isConfigured()) {
-      // In production, you'd likely soft-delete or batch delete
-      console.warn('Remote deletion not implemented in this proxy for safety.');
-    }
     localStorage.removeItem(STORAGE_KEY);
   },
 
