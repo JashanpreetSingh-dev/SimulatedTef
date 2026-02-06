@@ -84,6 +84,22 @@ export async function updateSubscription(
 }
 
 /**
+ * Ensure D2C free tier has a persisted signup anchor for monthly reset (used by usage route and userUsageService).
+ */
+export async function ensureFreeTierPeriodStart(userId: string, signupAnchor: Date): Promise<void> {
+  const subscription = await getUserSubscription(userId);
+  const anchorIso = signupAnchor.toISOString();
+  if (subscription) {
+    if (!subscription.freeTierPeriodStart) {
+      await updateSubscription(userId, { freeTierPeriodStart: anchorIso } as Partial<Subscription>);
+    }
+  } else {
+    await createSubscriptionRecord(userId, 'free');
+    await updateSubscription(userId, { freeTierPeriodStart: anchorIso } as Partial<Subscription>);
+  }
+}
+
+/**
  * Cancel subscription
  */
 export async function cancelSubscription(
@@ -235,6 +251,7 @@ export const subscriptionService = {
   getUserSubscription,
   createSubscriptionRecord,
   updateSubscription,
+  ensureFreeTierPeriodStart,
   cancelSubscription,
   getSubscriptionLimits,
   syncWithStripe,

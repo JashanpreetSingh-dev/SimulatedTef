@@ -6,6 +6,7 @@ import { connectDB } from '../db/connection';
 import { getDefaultConfig } from '../models/OrganizationConfig';
 import { organizationConfigService } from './organizationConfigService';
 import { d2cConfigService } from './d2cConfigService';
+import { getFreeTierPeriodFromSignup } from '../utils/periodUtils';
 
 export interface MonthlyUsage {
   sectionAUsed: number;
@@ -231,6 +232,16 @@ async function getD2CLimits(userId: string): Promise<{
   };
 }
 
+/** Get current period for D2C free tier from persisted freeTierPeriodStart, or null to use calendar month. */
+async function getD2CFreeTierPeriod(userId: string): Promise<{ periodStart: string; periodEnd: string } | null> {
+  const db = await connectDB();
+  const subscription = await db.collection('subscriptions').findOne({ userId });
+  const anchor = subscription?.freeTierPeriodStart;
+  if (!anchor) return null;
+  const { periodStart, periodEnd } = getFreeTierPeriodFromSignup(new Date(anchor));
+  return { periodStart: periodStart.toISOString(), periodEnd: periodEnd.toISOString() };
+}
+
 /**
  * Check if user can start a specific section (A or B)
  * @param userId - User ID
@@ -253,7 +264,7 @@ export async function checkCanStartSection(
     const config = await organizationConfigService.getConfig(orgId);
     limit = section === 'A' ? config.sectionALimit : config.sectionBLimit;
   } else {
-    // D2C user - check subscription billing cycle or calendar month for free tier
+    // D2C user - subscription billing cycle or signup-anchored month for free tier
     const db = await connectDB();
     const subscription = await db.collection('subscriptions').findOne({
       userId,
@@ -268,9 +279,14 @@ export async function checkCanStartSection(
         subscription.currentPeriodEnd
       );
     } else {
-      // Free tier - use calendar month
-      const currentMonth = getCurrentMonth();
-      usage = await getUserMonthlyUsage(userId, currentMonth);
+      // Free tier - signup-anchored month if we have it, else calendar month
+      const freePeriod = await getD2CFreeTierPeriod(userId);
+      if (freePeriod) {
+        usage = await getUserUsageInRange(userId, freePeriod.periodStart, freePeriod.periodEnd);
+      } else {
+        const currentMonth = getCurrentMonth();
+        usage = await getUserMonthlyUsage(userId, currentMonth);
+      }
     }
     
     // Get limits
@@ -512,12 +528,21 @@ export async function checkCanStartWrittenExpression(
         );
       }
     } else {
-      // Free tier - use calendar month
-      const currentMonth = getCurrentMonth();
-      if (section === 'A') {
-        currentUsage = await getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
+      // Free tier - signup-anchored month if we have it, else calendar month
+      const freePeriod = await getD2CFreeTierPeriod(userId);
+      if (freePeriod) {
+        if (section === 'A') {
+          currentUsage = await getUserWrittenExpressionSectionAUsageInRange(userId, freePeriod.periodStart, freePeriod.periodEnd);
+        } else {
+          currentUsage = await getUserWrittenExpressionSectionBUsageInRange(userId, freePeriod.periodStart, freePeriod.periodEnd);
+        }
       } else {
-        currentUsage = await getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
+        const currentMonth = getCurrentMonth();
+        if (section === 'A') {
+          currentUsage = await getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
+        } else {
+          currentUsage = await getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
+        }
       }
     }
     
@@ -663,9 +688,14 @@ export async function checkCanStartMockExam(
         subscription.currentPeriodEnd
       );
     } else {
-      // Free tier - use calendar month
-      const currentMonth = getCurrentMonth();
-      currentUsage = await getUserMonthlyMockExamUsage(userId, currentMonth);
+      // Free tier - signup-anchored month if we have it, else calendar month
+      const freePeriod = await getD2CFreeTierPeriod(userId);
+      if (freePeriod) {
+        currentUsage = await getUserMockExamUsageInRange(userId, freePeriod.periodStart, freePeriod.periodEnd);
+      } else {
+        const currentMonth = getCurrentMonth();
+        currentUsage = await getUserMonthlyMockExamUsage(userId, currentMonth);
+      }
     }
     
     // Get limits

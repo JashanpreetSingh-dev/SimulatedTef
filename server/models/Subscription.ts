@@ -16,6 +16,8 @@ export const SubscriptionSchema = z.object({
   cancelAtPeriodEnd: z.boolean().default(false),
   createdAt: z.string(), // ISO date
   updatedAt: z.string(), // ISO date
+  /** D2C free tier: anchor for monthly reset (signup date). */
+  freeTierPeriodStart: z.string().optional(), // ISO date
 });
 
 export type Subscription = z.infer<typeof SubscriptionSchema> & {

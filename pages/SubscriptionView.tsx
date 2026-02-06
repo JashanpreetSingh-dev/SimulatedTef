@@ -263,8 +263,10 @@ export function SubscriptionView() {
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Speaking Practice</p>
                       <p className="text-lg font-semibold text-gray-900 dark:text-white">
                         {tier.limits.sectionALimit === 1 && tier.limits.sectionBLimit === 1 && tier.id === 'free'
-                          ? '1 Section A + 1 Section B (total)'
-                          : `${tier.limits.sectionALimit} Section A + ${tier.limits.sectionBLimit} Section B / month`}
+                          ? '1 session (total)'
+                          : tier.limits.sectionALimit === tier.limits.sectionBLimit
+                            ? `${tier.limits.sectionALimit} sessions / month`
+                            : `${tier.limits.sectionALimit} Part A, ${tier.limits.sectionBLimit} Part B / month`}
                       </p>
                     </div>
                     <div>
@@ -278,7 +280,11 @@ export function SubscriptionView() {
                     <div>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Written Expression</p>
                       <p className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {(tier.limits.writtenExpressionSectionALimit ?? 1) === -1 ? 'Unlimited' : `${tier.limits.writtenExpressionSectionALimit ?? 1} Section A + ${tier.limits.writtenExpressionSectionBLimit ?? 1} Section B / month`}
+                        {(tier.limits.writtenExpressionSectionALimit ?? 1) === -1
+                          ? 'Unlimited'
+                          : (tier.limits.writtenExpressionSectionALimit ?? 1) === (tier.limits.writtenExpressionSectionBLimit ?? 1)
+                            ? `${tier.limits.writtenExpressionSectionALimit ?? 1} sessions / month`
+                            : `${tier.limits.writtenExpressionSectionALimit ?? 1} Part A, ${tier.limits.writtenExpressionSectionBLimit ?? 1} Part B / month`}
                       </p>
                     </div>
                   </div>

@@ -87,8 +87,10 @@ export function ChangePlanModal({
             <ul className="text-sm text-indigo-800 dark:text-indigo-300 space-y-1 list-disc list-inside">
               <li>
                 {targetTier.limits.sectionALimit === 1 && targetTier.limits.sectionBLimit === 1 && targetTier.id === 'free'
-                  ? '1 Section A + 1 Section B (total)'
-                  : `${targetTier.limits.sectionALimit} Section A + ${targetTier.limits.sectionBLimit} Section B per month`}
+                  ? '1 speaking session (total)'
+                  : targetTier.limits.sectionALimit === targetTier.limits.sectionBLimit
+                    ? `${targetTier.limits.sectionALimit} speaking sessions per month`
+                    : `${targetTier.limits.sectionALimit} Part A, ${targetTier.limits.sectionBLimit} Part B per month`}
               </li>
               <li>
                 {targetTier.id === 'free'
@@ -96,7 +98,11 @@ export function ChangePlanModal({
                   : `${targetTier.limits.mockExamLimit} Mock Exams per month`}
               </li>
               <li>
-                Written Expression: {(targetTier.limits.writtenExpressionSectionALimit ?? 1) === -1 ? 'Unlimited' : `${targetTier.limits.writtenExpressionSectionALimit ?? 1} Section A + ${targetTier.limits.writtenExpressionSectionBLimit ?? 1} Section B per month`}
+                Written Expression: {(targetTier.limits.writtenExpressionSectionALimit ?? 1) === -1
+                  ? 'Unlimited'
+                  : (targetTier.limits.writtenExpressionSectionALimit ?? 1) === (targetTier.limits.writtenExpressionSectionBLimit ?? 1)
+                    ? `${targetTier.limits.writtenExpressionSectionALimit ?? 1} sessions per month`
+                    : `${targetTier.limits.writtenExpressionSectionALimit ?? 1} Part A, ${targetTier.limits.writtenExpressionSectionBLimit ?? 1} Part B per month`}
               </li>
             </ul>
           </div>

@@ -9,10 +9,10 @@ import { validateBody, z } from '../middleware/validate';
 import { Request, Response } from 'express';
 import { subscriptionService } from '../services/subscriptionService';
 import { stripeService } from '../services/stripeService';
-import { connectDB } from '../db/connection';
 import { createClerkClient } from '@clerk/backend';
 import { userUsageService } from '../services/userUsageService';
 import { d2cConfigService } from '../services/d2cConfigService';
+import { getFreeTierPeriodFromSignup } from '../utils/periodUtils';
 import Stripe from 'stripe';
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY || '';
@@ -309,15 +309,6 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
       mockExamLimit: -1, // Unlimited for B2B
     };
     
-    // B2B users don't track written expression usage
-    usage = {
-      sectionAUsed: monthlyUsage.sectionAUsed,
-      sectionBUsed: monthlyUsage.sectionBUsed,
-      writtenExpressionSectionAUsed: 0,
-      writtenExpressionSectionBUsed: 0,
-      mockExamsUsed: mockExamUsage,
-    };
-    
     // Calculate reset date (first day of next month)
     const now = new Date();
     resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -377,21 +368,56 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
       resetDate = new Date(subscription.currentPeriodEnd);
       currentPeriod = `${new Date(subscription.currentPeriodStart).toISOString().split('T')[0]} to ${new Date(subscription.currentPeriodEnd).toISOString().split('T')[0]}`;
     } else {
-      // Free tier - use calendar month
-      const currentMonth = userUsageService.getCurrentMonth();
-      const monthlyUsage = await userUsageService.getUserMonthlyUsage(userId, currentMonth);
-      const mockExamUsage = await userUsageService.getUserMonthlyMockExamUsage(userId, currentMonth);
-      
-      const writtenExpressionSectionAUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
-      const writtenExpressionSectionBUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
-      usage = {
-        sectionAUsed: monthlyUsage.sectionAUsed,
-        sectionBUsed: monthlyUsage.sectionBUsed,
-        writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
-        writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
-        mockExamsUsed: mockExamUsage,
-      };
-      
+      // Free tier - reset monthly from signup date (same as paid: anniversary-based)
+      let periodStart: string;
+      let periodEnd: string;
+      let signupAnchor: Date | null = null;
+      if (clerkClient) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
+          if (clerkUser.createdAt) signupAnchor = new Date(clerkUser.createdAt);
+        } catch {
+          // ignore
+        }
+      }
+      if (signupAnchor) {
+        await subscriptionService.ensureFreeTierPeriodStart(userId, signupAnchor);
+        const { periodStart: start, periodEnd: end } = getFreeTierPeriodFromSignup(signupAnchor);
+        periodStart = start.toISOString();
+        periodEnd = end.toISOString();
+        const periodUsage = await userUsageService.getUserUsageInRange(userId, periodStart, periodEnd);
+        const mockExamUsage = await userUsageService.getUserMockExamUsageInRange(userId, periodStart, periodEnd);
+        const writtenExpressionSectionAUsage = await userUsageService.getUserWrittenExpressionSectionAUsageInRange(userId, periodStart, periodEnd);
+        const writtenExpressionSectionBUsage = await userUsageService.getUserWrittenExpressionSectionBUsageInRange(userId, periodStart, periodEnd);
+        usage = {
+          sectionAUsed: periodUsage.sectionAUsed,
+          sectionBUsed: periodUsage.sectionBUsed,
+          writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
+          writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
+          mockExamsUsed: mockExamUsage,
+        };
+        // Reset is the first day of the next period (day after periodEnd)
+        resetDate = new Date(end);
+        resetDate.setDate(resetDate.getDate() + 1);
+        currentPeriod = `${periodStart.split('T')[0]} to ${periodEnd.split('T')[0]}`;
+      } else {
+        // Fallback: calendar month if we can't get signup (e.g. Clerk unavailable)
+        const currentMonth = userUsageService.getCurrentMonth();
+        const monthlyUsage = await userUsageService.getUserMonthlyUsage(userId, currentMonth);
+        const mockExamUsage = await userUsageService.getUserMonthlyMockExamUsage(userId, currentMonth);
+        const writtenExpressionSectionAUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
+        const writtenExpressionSectionBUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
+        usage = {
+          sectionAUsed: monthlyUsage.sectionAUsed,
+          sectionBUsed: monthlyUsage.sectionBUsed,
+          writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
+          writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
+          mockExamsUsed: mockExamUsage,
+        };
+        const now = new Date();
+        resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        currentPeriod = currentMonth;
+      }
       // No active subscription - use D2C config (Free tier)
       const d2cConfig = await d2cConfigService.getConfig();
       limits = {
@@ -401,11 +427,6 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
         writtenExpressionSectionBLimit: d2cConfig.writtenExpressionSectionBLimit,
         mockExamLimit: d2cConfig.mockExamLimit,
       };
-      
-      // Calculate reset date (first day of next month)
-      const now = new Date();
-      resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      currentPeriod = currentMonth;
     }
   }
 
