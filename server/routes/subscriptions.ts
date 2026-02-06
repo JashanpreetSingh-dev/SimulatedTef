@@ -5,6 +5,7 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
+import { validateBody, z } from '../middleware/validate';
 import { Request, Response } from 'express';
 import { subscriptionService } from '../services/subscriptionService';
 import { stripeService } from '../services/stripeService';
@@ -43,6 +44,9 @@ function getRedirectBaseUrl(req: Request): string {
   return 'http://localhost:5173';
 }
 
+// Throttle Stripe sync for GET /me: only sync if last update was more than 5 minutes ago
+const STRIPE_SYNC_THROTTLE_MS = 5 * 60 * 1000;
+
 // GET /api/subscriptions/me - Get current user's subscription
 router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
@@ -52,9 +56,12 @@ router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) 
 
   let subscription = await subscriptionService.getUserSubscription(userId);
   
-  // If subscription exists and has Stripe ID, sync with Stripe
+  // If subscription exists and has Stripe ID, sync with Stripe only if stale (throttle to avoid rate limits)
   if (subscription && subscription.stripeSubscriptionId) {
-    subscription = await subscriptionService.syncWithStripe(userId);
+    const updatedAt = subscription.updatedAt ? new Date(subscription.updatedAt).getTime() : 0;
+    if (Date.now() - updatedAt > STRIPE_SYNC_THROTTLE_MS) {
+      subscription = await subscriptionService.syncWithStripe(userId);
+    }
   }
 
   // If no subscription, return free tier
@@ -71,8 +78,17 @@ router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) 
   res.json(subscription);
 }));
 
+const checkoutSchema = z.object({
+  priceId: z.string().optional(),
+  tierId: z.string().optional(),
+  returnBaseUrl: z.string().optional(),
+}).refine((data) => data.priceId || data.tierId, {
+  message: 'Price ID or Tier ID is required',
+  path: ['priceId'],
+});
+
 // POST /api/subscriptions/checkout - Create Stripe checkout session
-router.post('/checkout', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+router.post('/checkout', requireAuth, validateBody(checkoutSchema), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -93,9 +109,9 @@ router.post('/checkout', requireAuth, asyncHandler(async (req: Request, res: Res
   }
 
   if (!finalPriceId) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Price ID or Tier ID is required',
-      details: 'Unable to create checkout session. Please contact support.'
+      details: 'Unable to create checkout session. Please contact support.',
     });
   }
 

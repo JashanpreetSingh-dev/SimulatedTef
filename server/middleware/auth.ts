@@ -108,16 +108,17 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
         req.userRoles = [];
       }
     } else {
-      // If we have orgId from token, still fetch all memberships to get all roles
-      if (userId && req.orgId) {
+      // If we have orgId and org_role in the token, skip Clerk API call for performance
+      if (req.orgId != null && req.userRole != null) {
+        req.userRoles = [req.userRole];
+      } else if (userId && req.orgId != null) {
+        // orgId in token but no role - fetch memberships to get role
         try {
           const memberships = await clerkClient.users.getOrganizationMembershipList({
             userId,
           });
           req.userRoles = memberships.data.map((m) => m.role);
-          // Ensure userRole is set if we have orgId from token
           if (!req.userRole && req.userRoles.length > 0) {
-            // Find role for the active org
             const activeMembership = memberships.data.find(m => m.organization.id === req.orgId);
             if (activeMembership) {
               req.userRole = activeMembership.role;
@@ -134,8 +135,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
           req.userRoles = req.userRole ? [req.userRole] : [];
         }
       } else {
-        // No orgId and no userId to fetch memberships - D2C user
-        req.orgId = null;
+        req.orgId = req.orgId ?? null;
         req.userRoles = req.userRole ? [req.userRole] : [];
       }
     }

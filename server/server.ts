@@ -35,7 +35,7 @@ app.use('/api/stripe-webhooks', express.raw({ type: 'application/json' }), strip
 
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
 // This must come AFTER the webhook route to avoid parsing webhook bodies as JSON
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '20mb' }));
 
 declare global {
   namespace Express {
@@ -125,7 +125,8 @@ if (!clerkSecretKey) {
 })();
 
 import apiRouter from './routes';
-app.use('/api', apiRouter);
+import { generalApiLimiter } from './middleware/rateLimiter';
+app.use('/api', generalApiLimiter, apiRouter);
 
 app.patch('/api/user/profile/:userId', requireAuth, async (req, res) => {
   try {

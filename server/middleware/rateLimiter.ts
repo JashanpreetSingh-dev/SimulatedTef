@@ -19,6 +19,20 @@ const keyGenerator = (req: Request): string => {
 };
 
 /**
+ * General API rate limiter - applied to all /api routes.
+ * Keys by IP (auth runs per-route, so userId not set at this layer).
+ * Limit: 200 requests per minute per IP.
+ */
+export const generalApiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 200,
+  message: 'Too many requests. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req: Request) => ipKeyGenerator(req as any),
+});
+
+/**
  * Rate limiter for task selection endpoints
  * Limit: 10 requests per minute per user
  */

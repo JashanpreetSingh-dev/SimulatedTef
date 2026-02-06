@@ -372,6 +372,53 @@ export async function createIndexes(): Promise<void> {
     );
     console.log(' Created index: batchAssignments.batchAssignmentId_idx');
     
+    // Assignments collection indexes
+    const assignmentsCollection = db.collection('assignments');
+    
+    // Unique index for primary lookup by assignmentId
+    await assignmentsCollection.createIndex(
+      { assignmentId: 1 },
+      { name: 'assignmentId_idx', unique: true }
+    );
+    console.log(' Created index: assignments.assignmentId_idx');
+    
+    // Compound index for creator list sorted by createdAt
+    await assignmentsCollection.createIndex(
+      { createdBy: 1, createdAt: -1 },
+      { name: 'createdBy_createdAt_idx' }
+    );
+    console.log(' Created index: assignments.createdBy_createdAt_idx');
+    
+    // Compound index for org list sorted by createdAt
+    await assignmentsCollection.createIndex(
+      { orgId: 1, createdAt: -1 },
+      { name: 'orgId_createdAt_idx' }
+    );
+    console.log(' Created index: assignments.orgId_createdAt_idx');
+    
+    // Compound index for published list (status, type, orgId, createdAt)
+    await assignmentsCollection.createIndex(
+      { status: 1, type: 1, orgId: 1, createdAt: -1 },
+      { name: 'status_type_orgId_createdAt_idx' }
+    );
+    console.log(' Created index: assignments.status_type_orgId_createdAt_idx');
+    
+    // Seed assignments counter if it does not exist (for existing DBs before counter was introduced)
+    const countersCollection = db.collection<{ _id: string; seq: number }>('counters');
+    const existingCounter = await countersCollection.findOne({ _id: 'assignments' });
+    if (!existingCounter) {
+      const assignmentDocs = await assignmentsCollection
+        .find({ assignmentId: { $regex: /^assignment_\d+$/ } })
+        .toArray();
+      let maxNum = 0;
+      for (const doc of assignmentDocs as any[]) {
+        const match = doc.assignmentId?.match(/^assignment_(\d+)$/);
+        if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
+      }
+      await countersCollection.insertOne({ _id: 'assignments', seq: maxNum });
+      console.log(` Seeded assignments counter at seq=${maxNum}`);
+    }
+    
     // Conversation Logs collection indexes
     const conversationLogsCollection = db.collection('conversationLogs');
     
