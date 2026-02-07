@@ -238,10 +238,56 @@ router.post('/portal', requireAuth, asyncHandler(async (req: Request, res: Respo
   res.json({ url: portalUrl });
 }));
 
-// GET /api/subscriptions/tiers - Get available subscription tiers
+/** Format Stripe price for display (public and auth tier responses) */
+function formatPriceForDisplay(amount: number, currency: string): string {
+  const n = amount % 1 === 0 ? amount : Math.round(amount * 100) / 100;
+  if (currency === 'usd') return `$${n}`;
+  if (currency === 'cad') return `CA$${n}`;
+  if (currency === 'eur') return `€${n}`;
+  return `${currency.toUpperCase()} ${n}`;
+}
+
+// GET /api/subscriptions/tiers/public - Public pricing for landing page (no auth)
+router.get('/tiers/public', asyncHandler(async (req: Request, res: Response) => {
+  const tiers = await subscriptionService.getSubscriptionTiers();
+  const publicTiers = await Promise.all(
+    tiers.map(async (tier) => {
+      if (tier.id === 'free') {
+        return { id: tier.id, name: tier.name, price: '$0', priceSubtext: 'Forever' };
+      }
+      const priceId = tier.stripePriceId || process.env[`STRIPE_PRICE_ID_${tier.id.toUpperCase()}`];
+      if (!priceId) {
+        return { id: tier.id, name: tier.name, price: null as string | null, priceSubtext: 'per month' };
+      }
+      const stripePrice = await stripeService.getPriceDetails(priceId);
+      if (!stripePrice) {
+        return { id: tier.id, name: tier.name, price: null as string | null, priceSubtext: 'per month' };
+      }
+      return {
+        id: tier.id,
+        name: tier.name,
+        price: formatPriceForDisplay(stripePrice.amount, stripePrice.currency),
+        priceSubtext: stripePrice.interval === 'year' ? 'per year' : 'per month',
+      };
+    })
+  );
+  res.json({ tiers: publicTiers });
+}));
+
+// GET /api/subscriptions/tiers - Get available subscription tiers (with Stripe price for paid tiers)
 router.get('/tiers', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const tiers = await subscriptionService.getSubscriptionTiers();
-  res.json(tiers);
+  const enriched = await Promise.all(
+    tiers.map(async (tier) => {
+      const priceId = tier.stripePriceId || (tier.id !== 'free' ? process.env[`STRIPE_PRICE_ID_${tier.id.toUpperCase()}`] : undefined);
+      if (!priceId) {
+        return { ...tier, stripePrice: null };
+      }
+      const stripePrice = await stripeService.getPriceDetails(priceId);
+      return { ...tier, stripePrice };
+    })
+  );
+  res.json(enriched);
 }));
 
 // GET /api/subscriptions/usage - Get current billing period usage and limits (subscription-based for D2C paid users, calendar month for free/B2B)

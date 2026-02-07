@@ -314,6 +314,30 @@ export async function calculateProration(
   };
 }
 
+/**
+ * Get human-readable price details for display (e.g. on pricing cards)
+ */
+export async function getPriceDetails(priceId: string): Promise<{
+  amount: number;
+  currency: string;
+  interval: 'month' | 'year';
+} | null> {
+  if (!stripe) {
+    return null;
+  }
+  try {
+    const price = await stripe.prices.retrieve(priceId);
+    const interval = price.recurring?.interval === 'year' ? 'year' : 'month';
+    return {
+      amount: (price.unit_amount || 0) / 100,
+      currency: (price.currency || 'usd').toLowerCase(),
+      interval,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export const stripeService = {
   createCustomer,
   createCheckoutSession,
@@ -324,4 +348,5 @@ export const stripeService = {
   getInvoices,
   getPaymentMethod,
   calculateProration,
+  getPriceDetails,
 };

@@ -17,13 +17,84 @@ interface UsageData {
     writtenExpressionSectionALimit?: number;
     writtenExpressionSectionBLimit?: number;
   };
-  currentMonth: string;
+  currentPeriod?: string;
   resetDate: string;
   daysUntilReset: number;
 }
 
 interface UsageDashboardProps {
-  refreshKey?: number; // Key to force refresh
+  refreshKey?: number;
+}
+
+function displayUsed(used: number, limit: number): number {
+  return limit === -1 ? used : Math.min(used, limit);
+}
+
+function getUsagePercentage(used: number, limit: number): number {
+  if (limit === -1) return 0;
+  if (limit === 0) return 100;
+  return Math.min((used / limit) * 100, 100);
+}
+
+function getUsageVariant(used: number, limit: number): 'success' | 'warning' | 'danger' | 'unlimited' {
+  if (limit === -1) return 'unlimited';
+  const pct = getUsagePercentage(used, limit);
+  if (pct >= 100) return 'danger';
+  if (pct >= 80) return 'warning';
+  return 'success';
+}
+
+function formatResetDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+interface UsageRowProps {
+  label: string;
+  used: number;
+  limit: number;
+  icon: React.ReactNode;
+}
+
+function UsageRow({ label, used, limit, icon }: UsageRowProps) {
+  const displayLimit = limit === -1 ? '∞' : limit;
+  const variant = getUsageVariant(used, limit);
+  const pct = getUsagePercentage(used, limit);
+  const atLimit = limit !== -1 && used >= limit;
+
+  const barBg =
+    variant === 'danger'
+      ? 'bg-red-500 dark:bg-red-500'
+      : variant === 'warning'
+        ? 'bg-amber-500 dark:bg-amber-500'
+        : 'bg-emerald-500 dark:bg-emerald-500';
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400" aria-hidden>
+            {icon}
+          </span>
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400 truncate">{label}</span>
+        </div>
+        <span className={`text-xs font-semibold tabular-nums shrink-0 ${atLimit ? 'text-red-600 dark:text-red-400' : 'text-slate-900 dark:text-white'}`}>
+          {displayUsed(used, limit)}/{displayLimit}
+          {atLimit && <span className="ml-0.5 text-[10px] font-normal">· limit</span>}
+        </span>
+      </div>
+      <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-300 ease-out ${barBg}`}
+          style={{ width: variant === 'unlimited' ? '100%' : `${pct}%` }}
+          role="progressbar"
+          aria-valuenow={used}
+          aria-valuemin={0}
+          aria-valuemax={limit === -1 ? undefined : limit}
+          aria-label={`${label}: ${used} of ${displayLimit} used`}
+        />
+      </div>
+    </div>
+  );
 }
 
 export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
@@ -34,7 +105,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
 
   useEffect(() => {
     loadUsage();
-  }, [refreshKey]); // Reload when refreshKey changes
+  }, [refreshKey]);
 
   const loadUsage = async () => {
     try {
@@ -42,9 +113,9 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
       setError(null);
       const data = await subscriptionService.getUsage(getToken);
       setUsageData(data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load usage:', err);
-      setError(err.message || 'Failed to load usage data');
+      setError(err instanceof Error ? err.message : 'Failed to load usage data');
     } finally {
       setLoading(false);
     }
@@ -52,10 +123,21 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+      <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+        <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24 animate-pulse" />
+          <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-20 animate-pulse" />
+        </div>
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="space-y-1">
+              <div className="flex justify-between">
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-16 animate-pulse" />
+                <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-10 animate-pulse" />
+              </div>
+              <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -63,173 +145,44 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
 
   if (error || !usageData) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-red-200 dark:border-red-800 p-6">
-        <p className="text-red-600 dark:text-red-400">{error || 'Failed to load usage data'}</p>
+      <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20 px-4 py-3">
+        <p className="text-red-700 dark:text-red-300 text-sm mb-2">{error || 'Failed to load usage data'}</p>
+        <button
+          type="button"
+          onClick={loadUsage}
+          className="text-xs font-semibold text-red-700 dark:text-red-300 hover:underline focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+        >
+          Try again
+        </button>
       </div>
     );
   }
 
   const { usage, limits, daysUntilReset, resetDate } = usageData;
+  const iconClass = 'h-3 w-3';
 
-  /** Display usage capped at limit so we don't show e.g. 36/1 after downgrade to free */
-  const displayUsed = (used: number, limit: number): number =>
-    limit === -1 ? used : Math.min(used, limit);
-
-  const getUsagePercentage = (used: number, limit: number): number => {
-    if (limit === -1) return 0; // Unlimited
-    if (limit === 0) return 100; // No limit but used
-    return Math.min((used / limit) * 100, 100);
-  };
-
-  const getUsageColor = (used: number, limit: number): string => {
-    if (limit === -1) return 'bg-emerald-500'; // Unlimited
-    const percentage = getUsagePercentage(used, limit);
-    if (percentage >= 100) return 'bg-red-500';
-    if (percentage >= 80) return 'bg-yellow-500';
-    return 'bg-emerald-500';
-  };
-
-  const formatResetDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  };
+  const rows: Array<{ label: string; used: number; limit: number; icon: React.ReactNode }> = [
+    { label: 'Speaking A', used: usage.sectionAUsed, limit: limits.sectionALimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0V8m0 0V4a2 2 0 012-2h2a2 2 0 012 2v4z" /></svg> },
+    { label: 'Speaking B', used: usage.sectionBUsed, limit: limits.sectionBLimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0V8m0 0V4a2 2 0 012-2h2a2 2 0 012 2v4z" /></svg> },
+    { label: 'Mock exams', used: usage.mockExamsUsed, limit: limits.mockExamLimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
+    { label: 'Written A', used: usage.writtenExpressionSectionAUsed ?? 0, limit: limits.writtenExpressionSectionALimit ?? 1, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg> },
+    { label: 'Written B', used: usage.writtenExpressionSectionBUsed ?? 0, limit: limits.writtenExpressionSectionBLimit ?? 1, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg> },
+  ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Usage This Month
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden shadow-sm">
+      <div className="px-4 py-2.5 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+          Usage
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Limits reset on {formatResetDate(resetDate)} ({daysUntilReset} {daysUntilReset === 1 ? 'day' : 'days'} remaining)
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Resets {formatResetDate(resetDate)} · <span className="tabular-nums font-medium text-slate-700 dark:text-slate-300">{daysUntilReset}</span> {daysUntilReset === 1 ? 'day' : 'days'} left
         </p>
       </div>
-
-      <div className="space-y-6">
-        {/* Section A Usage */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Section A Speaking Practice
-            </span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {displayUsed(usage.sectionAUsed, limits.sectionALimit)} / {limits.sectionALimit === -1 ? '∞' : limits.sectionALimit}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${getUsageColor(usage.sectionAUsed, limits.sectionALimit)}`}
-              style={{
-                width: `${getUsagePercentage(usage.sectionAUsed, limits.sectionALimit)}%`,
-              }}
-            />
-          </div>
-          {limits.sectionALimit !== -1 && usage.sectionAUsed >= limits.sectionALimit && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Limit reached. Upgrade to continue practicing.
-            </p>
-          )}
-        </div>
-
-        {/* Section B Usage */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Section B Speaking Practice
-            </span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {displayUsed(usage.sectionBUsed, limits.sectionBLimit)} / {limits.sectionBLimit === -1 ? '∞' : limits.sectionBLimit}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${getUsageColor(usage.sectionBUsed, limits.sectionBLimit)}`}
-              style={{
-                width: `${getUsagePercentage(usage.sectionBUsed, limits.sectionBLimit)}%`,
-              }}
-            />
-          </div>
-          {limits.sectionBLimit !== -1 && usage.sectionBUsed >= limits.sectionBLimit && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Limit reached. Upgrade to continue practicing.
-            </p>
-          )}
-        </div>
-
-        {/* Mock Exam Usage */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Mock Exams
-            </span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {displayUsed(usage.mockExamsUsed, limits.mockExamLimit)} / {limits.mockExamLimit === -1 ? '∞' : limits.mockExamLimit}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${getUsageColor(usage.mockExamsUsed, limits.mockExamLimit)}`}
-              style={{
-                width: `${getUsagePercentage(usage.mockExamsUsed, limits.mockExamLimit)}%`,
-              }}
-            />
-          </div>
-          {limits.mockExamLimit !== -1 && usage.mockExamsUsed >= limits.mockExamLimit && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Limit reached. Upgrade to continue practicing.
-            </p>
-          )}
-        </div>
-
-        {/* Written Expression Section A */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Written Expression (Section A)
-            </span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {displayUsed(usage.writtenExpressionSectionAUsed ?? 0, limits.writtenExpressionSectionALimit ?? 1)} / {limits.writtenExpressionSectionALimit === -1 ? '∞' : (limits.writtenExpressionSectionALimit ?? 1)}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${getUsageColor(usage.writtenExpressionSectionAUsed ?? 0, limits.writtenExpressionSectionALimit ?? 1)}`}
-              style={{
-                width: `${getUsagePercentage(usage.writtenExpressionSectionAUsed ?? 0, limits.writtenExpressionSectionALimit ?? 1)}%`,
-              }}
-            />
-          </div>
-          {(limits.writtenExpressionSectionALimit ?? 1) !== -1 && (usage.writtenExpressionSectionAUsed ?? 0) >= (limits.writtenExpressionSectionALimit ?? 1) && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Limit reached. Upgrade to continue practicing.
-            </p>
-          )}
-        </div>
-
-        {/* Written Expression Section B */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              Written Expression (Section B)
-            </span>
-            <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {displayUsed(usage.writtenExpressionSectionBUsed ?? 0, limits.writtenExpressionSectionBLimit ?? 1)} / {limits.writtenExpressionSectionBLimit === -1 ? '∞' : (limits.writtenExpressionSectionBLimit ?? 1)}
-            </span>
-          </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
-            <div
-              className={`h-full transition-all duration-300 ${getUsageColor(usage.writtenExpressionSectionBUsed ?? 0, limits.writtenExpressionSectionBLimit ?? 1)}`}
-              style={{
-                width: `${getUsagePercentage(usage.writtenExpressionSectionBUsed ?? 0, limits.writtenExpressionSectionBLimit ?? 1)}%`,
-              }}
-            />
-          </div>
-          {(limits.writtenExpressionSectionBLimit ?? 1) !== -1 && (usage.writtenExpressionSectionBUsed ?? 0) >= (limits.writtenExpressionSectionBLimit ?? 1) && (
-            <p className="text-xs text-red-600 dark:text-red-400 mt-1">
-              Limit reached. Upgrade to continue practicing.
-            </p>
-          )}
-        </div>
+      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+        {rows.map((r) => (
+          <UsageRow key={r.label} label={r.label} used={r.used} limit={r.limit} icon={r.icon} />
+        ))}
       </div>
     </div>
   );

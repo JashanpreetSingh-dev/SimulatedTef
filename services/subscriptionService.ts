@@ -6,6 +6,14 @@ import { authenticatedFetchJSON } from './authenticatedFetch';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
+/** Public tier pricing (for landing page, no auth) */
+export interface PublicTierPricing {
+  id: 'free' | 'basic' | 'premium';
+  name: string;
+  price: string | null;
+  priceSubtext: string;
+}
+
 export interface Subscription {
   _id?: string;
   userId: string;
@@ -32,9 +40,25 @@ export interface SubscriptionTier {
     mockExamLimit?: number;
   };
   stripePriceId?: string;
+  /** Fetched from Stripe for paid tiers (amount in dollars, currency, interval) */
+  stripePrice?: {
+    amount: number;
+    currency: string;
+    interval: 'month' | 'year';
+  } | null;
 }
 
 export const subscriptionService = {
+  /**
+   * Get public tier pricing for landing page (no auth). Uses Stripe prices when available.
+   */
+  async getPublicTiers(): Promise<{ tiers: PublicTierPricing[] }> {
+    const url = `${BACKEND_URL}/api/subscriptions/tiers/public`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to load pricing');
+    return res.json();
+  },
+
   /**
    * Get current user's subscription
    */
