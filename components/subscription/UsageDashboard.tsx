@@ -71,6 +71,10 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
 
   const { usage, limits, daysUntilReset, resetDate } = usageData;
 
+  /** Display usage capped at limit so we don't show e.g. 36/1 after downgrade to free */
+  const displayUsed = (used: number, limit: number): number =>
+    limit === -1 ? used : Math.min(used, limit);
+
   const getUsagePercentage = (used: number, limit: number): number => {
     if (limit === -1) return 0; // Unlimited
     if (limit === 0) return 100; // No limit but used
@@ -109,7 +113,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
               Section A Speaking Practice
             </span>
             <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {usage.sectionAUsed} / {limits.sectionALimit === -1 ? '∞' : limits.sectionALimit}
+              {displayUsed(usage.sectionAUsed, limits.sectionALimit)} / {limits.sectionALimit === -1 ? '∞' : limits.sectionALimit}
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -134,7 +138,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
               Section B Speaking Practice
             </span>
             <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {usage.sectionBUsed} / {limits.sectionBLimit === -1 ? '∞' : limits.sectionBLimit}
+              {displayUsed(usage.sectionBUsed, limits.sectionBLimit)} / {limits.sectionBLimit === -1 ? '∞' : limits.sectionBLimit}
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -159,7 +163,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
               Mock Exams
             </span>
             <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {usage.mockExamsUsed} / {limits.mockExamLimit === -1 ? '∞' : limits.mockExamLimit}
+              {displayUsed(usage.mockExamsUsed, limits.mockExamLimit)} / {limits.mockExamLimit === -1 ? '∞' : limits.mockExamLimit}
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -184,7 +188,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
               Written Expression (Section A)
             </span>
             <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {usage.writtenExpressionSectionAUsed ?? 0} / {limits.writtenExpressionSectionALimit === -1 ? '∞' : (limits.writtenExpressionSectionALimit ?? 1)}
+              {displayUsed(usage.writtenExpressionSectionAUsed ?? 0, limits.writtenExpressionSectionALimit ?? 1)} / {limits.writtenExpressionSectionALimit === -1 ? '∞' : (limits.writtenExpressionSectionALimit ?? 1)}
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -209,7 +213,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
               Written Expression (Section B)
             </span>
             <span className="text-sm font-bold text-gray-900 dark:text-white">
-              {usage.writtenExpressionSectionBUsed ?? 0} / {limits.writtenExpressionSectionBLimit === -1 ? '∞' : (limits.writtenExpressionSectionBLimit ?? 1)}
+              {displayUsed(usage.writtenExpressionSectionBUsed ?? 0, limits.writtenExpressionSectionBLimit ?? 1)} / {limits.writtenExpressionSectionBLimit === -1 ? '∞' : (limits.writtenExpressionSectionBLimit ?? 1)}
             </span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">

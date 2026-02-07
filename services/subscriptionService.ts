@@ -81,21 +81,6 @@ export const subscriptionService = {
   },
 
   /**
-   * Cancel subscription
-   */
-  async cancelSubscription(
-    getToken: () => Promise<string | null>,
-    cancelAtPeriodEnd: boolean = true
-  ): Promise<Subscription> {
-    const url = `${BACKEND_URL}/api/subscriptions/cancel`;
-    return authenticatedFetchJSON<Subscription>(url, {
-      method: 'POST',
-      getToken: getToken,
-      body: JSON.stringify({ cancelAtPeriodEnd }),
-    });
-  },
-
-  /**
    * Get available subscription tiers
    */
   async getSubscriptionTiers(

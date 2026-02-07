@@ -238,19 +238,6 @@ router.post('/portal', requireAuth, asyncHandler(async (req: Request, res: Respo
   res.json({ url: portalUrl });
 }));
 
-// POST /api/subscriptions/cancel - Cancel subscription
-router.post('/cancel', requireAuth, asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.userId;
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const { cancelAtPeriodEnd = true } = req.body;
-
-  const subscription = await subscriptionService.cancelSubscription(userId, cancelAtPeriodEnd);
-  res.json(subscription);
-}));
-
 // GET /api/subscriptions/tiers - Get available subscription tiers
 router.get('/tiers', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const tiers = await subscriptionService.getSubscriptionTiers();
@@ -315,11 +302,23 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
     currentPeriod = currentMonth;
   } else {
     // D2C user - check subscription billing cycle or calendar month for free tier
-    const subscription = await subscriptionService.getUserSubscription(userId);
-    
-    if (subscription && (subscription.status === 'active' || subscription.status === 'trialing') 
+    let subscription = await subscriptionService.getUserSubscription(userId);
+
+    // Auto-renew period: if paid subscription period has ended, sync with Stripe so we have the new billing period (e.g. after renewal invoice; webhook may not have been received in simulation)
+    const now = new Date();
+    if (
+      subscription &&
+      subscription.stripeSubscriptionId &&
+      (subscription.status === 'active' || subscription.status === 'trialing') &&
+      subscription.currentPeriodEnd &&
+      now > new Date(subscription.currentPeriodEnd)
+    ) {
+      subscription = await subscriptionService.syncWithStripe(userId) ?? subscription;
+    }
+
+    if (subscription && (subscription.status === 'active' || subscription.status === 'trialing')
         && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle
+      // Paid subscription - use billing cycle (usage auto-renews by querying this period; we don't report usage to Stripe)
       const periodUsage = await userUsageService.getUserUsageInRange(
         userId,
         subscription.currentPeriodStart,

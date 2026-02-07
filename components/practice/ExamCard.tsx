@@ -65,10 +65,11 @@ export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpressio
 
   const isDisabled = atLimit || usageLoading;
   const showUsage = used !== undefined && limit !== undefined && limit !== -1;
+  const displayUsed = limit === -1 ? (used ?? 0) : Math.min(used ?? 0, limit);
   const usageBadge = usageLoading
     ? '…'
     : showUsage
-      ? (atLimit ? t('practice.limitReached') : `${used} / ${limit}`)
+      ? (atLimit ? t('practice.limitReached') : `${displayUsed} / ${limit}`)
       : null;
 
   const wrapperClass = isDisabled

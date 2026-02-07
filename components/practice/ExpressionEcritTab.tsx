@@ -160,7 +160,7 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
                 <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 animate-pulse">…</span>
               ) : writtenLimits && (
                 <span className={`text-xs font-semibold ${atLimitA ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {atLimitA ? t('practice.limitReached') : `${writtenLimits.sectionA.used} / ${writtenLimits.sectionA.limit === -1 ? '∞' : writtenLimits.sectionA.limit}`}
+                  {atLimitA ? t('practice.limitReached') : `${writtenLimits.sectionA.limit === -1 ? writtenLimits.sectionA.used : Math.min(writtenLimits.sectionA.used, writtenLimits.sectionA.limit)} / ${writtenLimits.sectionA.limit === -1 ? '∞' : writtenLimits.sectionA.limit}`}
                 </span>
               ))}
             </div>
@@ -188,7 +188,7 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
                 <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 animate-pulse">…</span>
               ) : writtenLimits && (
                 <span className={`text-xs font-semibold ${atLimitB ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {atLimitB ? t('practice.limitReached') : `${writtenLimits.sectionB.used} / ${writtenLimits.sectionB.limit === -1 ? '∞' : writtenLimits.sectionB.limit}`}
+                  {atLimitB ? t('practice.limitReached') : `${writtenLimits.sectionB.limit === -1 ? writtenLimits.sectionB.used : Math.min(writtenLimits.sectionB.used, writtenLimits.sectionB.limit)} / ${writtenLimits.sectionB.limit === -1 ? '∞' : writtenLimits.sectionB.limit}`}
                 </span>
               ))}
             </div>
@@ -220,7 +220,7 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
                 <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 animate-pulse">…</span>
               ) : writtenLimits && (
                 <span className={`text-xs font-semibold ${atLimitA ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {atLimitA ? t('practice.limitReached') : `${writtenLimits.sectionA.used} / ${writtenLimits.sectionA.limit === -1 ? '∞' : writtenLimits.sectionA.limit}`}
+                  {atLimitA ? t('practice.limitReached') : `${writtenLimits.sectionA.limit === -1 ? writtenLimits.sectionA.used : Math.min(writtenLimits.sectionA.used, writtenLimits.sectionA.limit)} / ${writtenLimits.sectionA.limit === -1 ? '∞' : writtenLimits.sectionA.limit}`}
                 </span>
               ))}
             </div>
@@ -248,7 +248,7 @@ export function ExpressionEcritTab({ onStartExam }: ExpressionEcritTabProps) {
                 <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 animate-pulse">…</span>
               ) : writtenLimits && (
                 <span className={`text-xs font-semibold ${atLimitB ? 'text-red-600 dark:text-red-400' : 'text-purple-600 dark:text-purple-400'}`}>
-                  {atLimitB ? t('practice.limitReached') : `${writtenLimits.sectionB.used} / ${writtenLimits.sectionB.limit === -1 ? '∞' : writtenLimits.sectionB.limit}`}
+                  {atLimitB ? t('practice.limitReached') : `${writtenLimits.sectionB.limit === -1 ? writtenLimits.sectionB.used : Math.min(writtenLimits.sectionB.used, writtenLimits.sectionB.limit)} / ${writtenLimits.sectionB.limit === -1 ? '∞' : writtenLimits.sectionB.limit}`}
                 </span>
               ))}
             </div>

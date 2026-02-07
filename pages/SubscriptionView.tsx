@@ -7,7 +7,6 @@ import { useIsD2C } from '../utils/userType';
 import { UsageDashboard } from '../components/subscription/UsageDashboard';
 import { SubscriptionOverview } from '../components/subscription/SubscriptionOverview';
 import { BillingHistory } from '../components/subscription/BillingHistory';
-import { CancelSubscriptionModal } from '../components/subscription/CancelSubscriptionModal';
 import { ChangePlanModal } from '../components/subscription/ChangePlanModal';
 
 export function SubscriptionView() {
@@ -21,7 +20,6 @@ export function SubscriptionView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
   const [changePlanTier, setChangePlanTier] = useState<SubscriptionTier | null>(null);
   const [usageRefreshKey, setUsageRefreshKey] = useState(0);
 
@@ -156,11 +154,6 @@ export function SubscriptionView() {
     setChangePlanTier(null);
   };
 
-  const handleSubscriptionCanceled = async () => {
-    await loadSubscription();
-    setShowCancelModal(false);
-  };
-
   if (!isD2C) {
     return null;
   }
@@ -210,7 +203,6 @@ export function SubscriptionView() {
           subscription={subscription}
           currentTier={currentTierData}
           onSubscriptionUpdate={loadSubscription}
-          onCancelClick={() => setShowCancelModal(true)}
         />
 
                {/* Usage Dashboard */}
@@ -338,7 +330,7 @@ export function SubscriptionView() {
             Need Help?
           </h3>
           <p className="text-sm text-indigo-800 dark:text-indigo-300 mb-4">
-            For billing questions or to update your payment method, use the "Manage Billing" button above to access your Stripe customer portal.
+            For billing questions, to update your payment method, or to cancel your subscription, use the "Manage Billing" button above to access your Stripe customer portal.
           </p>
           <ul className="text-sm text-indigo-800 dark:text-indigo-300 space-y-1 list-disc list-inside">
             <li>All plans include access to all 4 TEF Canada modules</li>
@@ -347,16 +339,6 @@ export function SubscriptionView() {
             <li>No credit card required for the free plan</li>
           </ul>
         </div>
-
-        {/* Cancel Subscription Modal */}
-        {subscription && (
-          <CancelSubscriptionModal
-            subscription={subscription}
-            isOpen={showCancelModal}
-            onClose={() => setShowCancelModal(false)}
-            onCanceled={handleSubscriptionCanceled}
-          />
-        )}
 
         {/* Change Plan Modal */}
         {changePlanTier && (

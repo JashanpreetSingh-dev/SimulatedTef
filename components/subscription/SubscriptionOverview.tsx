@@ -7,10 +7,9 @@ interface SubscriptionOverviewProps {
   subscription: Subscription | null;
   currentTier: SubscriptionTier | undefined;
   onSubscriptionUpdate: () => void;
-  onCancelClick?: () => void;
 }
 
-export function SubscriptionOverview({ subscription, currentTier, onSubscriptionUpdate, onCancelClick }: SubscriptionOverviewProps) {
+export function SubscriptionOverview({ subscription, currentTier, onSubscriptionUpdate }: SubscriptionOverviewProps) {
   const { getToken } = useAuth();
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,14 +107,6 @@ export function SubscriptionOverview({ subscription, currentTier, onSubscription
               >
                 {processing ? 'Loading...' : 'Manage Billing'}
               </button>
-              {onCancelClick && (
-                <button
-                  onClick={onCancelClick}
-                  className="px-6 py-2 border-2 border-red-300 dark:border-red-600 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-semibold"
-                >
-                  Cancel Subscription
-                </button>
-              )}
             </>
           )}
           {isFreeTier && (
