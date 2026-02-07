@@ -126,36 +126,6 @@ export const subscriptionService = {
   },
 
   /**
-   * Get billing history (invoices and payment method)
-   */
-  async getBillingHistory(
-    getToken: () => Promise<string | null>
-  ): Promise<{
-    invoices: Array<{
-      id: string;
-      number: string | null;
-      amount: number;
-      currency: string;
-      status: string;
-      date: string;
-      hostedInvoiceUrl: string | null;
-      invoicePdf: string | null;
-    }>;
-    paymentMethod: {
-      last4?: string;
-      brand?: string;
-      expMonth?: number;
-      expYear?: number;
-    } | null;
-  }> {
-    const url = `${BACKEND_URL}/api/subscriptions/billing-history`;
-    return authenticatedFetchJSON(url, {
-      method: 'GET',
-      getToken: getToken,
-    });
-  },
-
-  /**
    * Change subscription plan
    */
   async changePlan(

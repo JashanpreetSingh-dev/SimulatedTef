@@ -6,7 +6,6 @@ import { subscriptionService, Subscription, SubscriptionTier } from '../services
 import { useIsD2C } from '../utils/userType';
 import { UsageDashboard } from '../components/subscription/UsageDashboard';
 import { SubscriptionOverview } from '../components/subscription/SubscriptionOverview';
-import { BillingHistory } from '../components/subscription/BillingHistory';
 import { ChangePlanModal } from '../components/subscription/ChangePlanModal';
 
 export function SubscriptionView() {
@@ -317,11 +316,6 @@ export function SubscriptionView() {
               );
             })}
           </div>
-        </div>
-
-        {/* Billing History */}
-        <div className="mb-8">
-          <BillingHistory />
         </div>
 
         {/* Info Section */}

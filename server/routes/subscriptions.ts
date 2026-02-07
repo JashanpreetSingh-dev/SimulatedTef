@@ -447,54 +447,6 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
   });
 }));
 
-// GET /api/subscriptions/billing-history - Get invoices from Stripe
-router.get('/billing-history', requireAuth, asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.userId;
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const subscription = await subscriptionService.getUserSubscription(userId);
-  if (!subscription || !subscription.stripeCustomerId) {
-    return res.json({ invoices: [], paymentMethod: null });
-  }
-
-  try {
-    const invoices = await stripeService.getInvoices(subscription.stripeCustomerId, 20);
-    const paymentMethod = await stripeService.getPaymentMethod(subscription.stripeCustomerId);
-
-    // Format invoices for frontend
-    const formattedInvoices = invoices.map(invoice => ({
-      id: invoice.id,
-      number: invoice.number,
-      amount: invoice.amount_paid / 100, // Convert from cents
-      currency: invoice.currency.toUpperCase(),
-      status: invoice.status,
-      date: new Date(invoice.created * 1000).toISOString(),
-      hostedInvoiceUrl: invoice.hosted_invoice_url,
-      invoicePdf: invoice.invoice_pdf,
-    }));
-
-    res.json({
-      invoices: formattedInvoices,
-      paymentMethod: paymentMethod ? {
-        last4: paymentMethod.last4,
-        brand: paymentMethod.brand,
-        expMonth: paymentMethod.expMonth,
-        expYear: paymentMethod.expYear,
-      } : null,
-    });
-  } catch (error: any) {
-    // If customer doesn't exist in Stripe (e.g., created in different environment), return empty
-    if (error.code === 'resource_missing' && error.message?.includes('customer')) {
-      console.warn(`Customer ${subscription.stripeCustomerId} not found in Stripe - returning empty billing history`);
-      return res.json({ invoices: [], paymentMethod: null });
-    }
-    console.error('Error fetching billing history:', error);
-    res.status(500).json({ error: error.message || 'Failed to fetch billing history' });
-  }
-}));
-
 // GET /api/subscriptions/payment-method - Get payment method info
 router.get('/payment-method', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
