@@ -7,6 +7,7 @@ import Stripe from 'stripe';
 import type { Document } from 'mongodb';
 import { asyncHandler } from '../middleware/errorHandler';
 import { subscriptionService } from '../services/subscriptionService';
+import { stripeService, type SubWithItems } from '../services/stripeService';
 import { connectDB } from '../db/connection';
 import { createWebhookEvent } from '../models/webhookEvent';
 
@@ -205,14 +206,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     status = 'incomplete';
   }
   
-  // Validate and convert period dates (Stripe timestamps are in seconds)
-  const periodStart = stripeSubscription.current_period_start != null
-    ? new Date(stripeSubscription.current_period_start * 1000).toISOString()
+  // Period: API 2025+ has current_period_* on items.data[0]; use shared helper
+  const periodFromStripe = stripeService.getBillingPeriodFromSubscriptionObject(stripeSubscription as SubWithItems);
+  const periodStart = periodFromStripe
+    ? `${periodFromStripe.periodStartStr}T00:00:00.000Z`
     : new Date().toISOString();
-  const periodEnd = stripeSubscription.current_period_end != null
-    ? new Date(stripeSubscription.current_period_end * 1000).toISOString()
-    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // Default to 30 days if missing
-  
+  const periodEnd = periodFromStripe
+    ? `${periodFromStripe.periodEndStr}T00:00:00.000Z`
+    : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+
   if (existing) {
     await subscriptionService.updateSubscription(userId, {
       tier: tier.id,
@@ -224,16 +226,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end || false,
     });
   } else {
-    // Create new subscription record
+    // Create with Stripe period in one step so we never persist 30-day default (fixes "30 days left" for new subs)
     await subscriptionService.createSubscriptionRecord(userId, tier.id, {
       customerId: session.customer as string,
       subscriptionId: subscriptionId,
+      period: { start: periodStart, end: periodEnd },
     });
-    // Update with correct status and period dates from Stripe
     await subscriptionService.updateSubscription(userId, {
       status,
-      currentPeriodStart: periodStart,
-      currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end || false,
     });
   }
@@ -293,18 +293,19 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
     status = 'incomplete';
   }
 
-  // Validate and convert period dates (Stripe timestamps are in seconds)
-  const periodStart = subscription.current_period_start != null
-    ? new Date(subscription.current_period_start * 1000).toISOString()
+  // Period: API 2025+ has current_period_* on items.data[0]; use shared helper
+  const periodFromStripe = stripeService.getBillingPeriodFromSubscriptionObject(subscription as SubWithItems);
+  const periodStart = periodFromStripe
+    ? `${periodFromStripe.periodStartStr}T00:00:00.000Z`
     : new Date().toISOString();
-  const periodEnd = subscription.current_period_end != null
-    ? new Date(subscription.current_period_end * 1000).toISOString()
+  const periodEnd = periodFromStripe
+    ? `${periodFromStripe.periodEndStr}T00:00:00.000Z`
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Usage resets on upgrade: count from period start so usage on the first day is visible
   const usageCountingFromDate = periodStart.split('T')[0];
-
   const existing = await subscriptionService.getUserSubscription(userId);
+  const isResubscribe = !!(existing as { downgradedToFreeAt?: string } | null)?.downgradedToFreeAt;
+  const usageCountingFromTime = isResubscribe ? periodStart : undefined;
   if (existing) {
     await subscriptionService.updateSubscription(userId, {
       tier: tier.id,
@@ -315,18 +316,22 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
       usageCountingFromDate,
+      usageCountingFromTime,
+      downgradedToFreeAt: undefined,
     });
   } else {
+    // Create with Stripe period in one step so we never persist 30-day default (fixes "30 days left" for new subs)
     await subscriptionService.createSubscriptionRecord(userId, tier.id, {
       customerId: customerId,
       subscriptionId: subscription.id,
+      period: { start: periodStart, end: periodEnd },
     });
     await subscriptionService.updateSubscription(userId, {
       status,
-      currentPeriodStart: periodStart,
-      currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
       usageCountingFromDate,
+      usageCountingFromTime: undefined,
+      downgradedToFreeAt: undefined,
     });
   }
   console.log(`✅ Subscription created for user ${userId}, tier ${tier.id}, status ${status}`);
@@ -370,20 +375,27 @@ async function handleSubscriptionUpdated(subscription: SubscriptionWithPeriod) {
     status = 'incomplete';
   }
 
-  // Validate and convert period dates (Stripe timestamps are in seconds)
-  const periodStart = subscription.current_period_start != null
-    ? new Date(subscription.current_period_start * 1000).toISOString()
+  // Period: API 2025+ has current_period_* on items.data[0]; use shared helper
+  const periodFromStripe = stripeService.getBillingPeriodFromSubscriptionObject(subscription as SubWithItems);
+  const periodStart = periodFromStripe
+    ? `${periodFromStripe.periodStartStr}T00:00:00.000Z`
     : new Date().toISOString();
-  const periodEnd = subscription.current_period_end != null
-    ? new Date(subscription.current_period_end * 1000).toISOString()
+  const periodEnd = periodFromStripe
+    ? `${periodFromStripe.periodEndStr}T00:00:00.000Z`
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
+  const usageCountingFromDate = periodStart.split('T')[0];
+  const isResubscribe = !!(userSubscription as { downgradedToFreeAt?: string }).downgradedToFreeAt;
+  const usageCountingFromTime = isResubscribe ? periodStart : undefined;
   await subscriptionService.updateSubscription(userSubscription.userId, {
     tier: tier?.id || userSubscription.tier,
     status,
     currentPeriodStart: periodStart,
     currentPeriodEnd: periodEnd,
     cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+    usageCountingFromDate,
+    usageCountingFromTime,
+    downgradedToFreeAt: undefined,
   });
 }
 
@@ -403,11 +415,20 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     return;
   }
 
-  // Downgrade to free tier
+  // Downgrade to free tier: record when they went free so free-tier usage only counts from this date,
+  // and clear usageCountingFromDate so a future resubscribe gets a fresh usage period
+  const now = new Date().toISOString();
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/2bfb38eb-3761-41c7-8a6d-6153bb8601f3', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'stripeWebhooks.ts:handleSubscriptionDeleted', message: 'Subscription deleted', data: { userId: userSubscription.userId, downgradedToFreeAt: now, stripeSubId: subscription.id }, timestamp: Date.now(), hypothesisId: 'H1-H5' }) }).catch(() => {});
+  // #endregion
   await subscriptionService.updateSubscription(userSubscription.userId, {
     tier: 'free',
     status: 'canceled',
     cancelAtPeriodEnd: false,
+    downgradedToFreeAt: now,
+    usageCountingFromDate: undefined,
+    usageCountingFromTime: undefined,
+    stripeSubscriptionId: undefined,
   });
 }
 

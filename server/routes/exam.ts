@@ -43,6 +43,13 @@ async function createExamSession(userId: string, examType: string) {
     },
     { upsert: true }
   );
+  if (examType === 'full') {
+    await userUsageService.recordUsageEvent(userId, today, 'sectionA');
+    await userUsageService.recordUsageEvent(userId, today, 'sectionB');
+  } else {
+    const eventType = examType === 'partA' ? 'sectionA' : 'sectionB';
+    await userUsageService.recordUsageEvent(userId, today, eventType);
+  }
 
   return sessionId;
 }
@@ -98,6 +105,7 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
       },
       { upsert: true }
     );
+    await userUsageService.recordUsageEvent(userId, today, 'mockExam');
 
     return res.json({
       sessionId: sessionResult.sessionId,

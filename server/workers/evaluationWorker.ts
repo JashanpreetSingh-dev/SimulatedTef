@@ -338,6 +338,15 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
                 updateFields,
                 { upsert: true }
               );
+              const { userUsageService } = await import('../services/userUsageService');
+              if (mode === 'partA') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionA');
+              } else if (mode === 'partB') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionB');
+              } else if (mode === 'full') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionA');
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionB');
+              }
             }
           }
         }

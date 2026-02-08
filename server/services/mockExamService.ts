@@ -325,6 +325,8 @@ export const mockExamService = {
             },
             { session, upsert: true }
           );
+          const { userUsageService } = await import('./userUsageService');
+          await userUsageService.recordUsageEvent(userId, today, 'mockExam');
 
           // Create mock exam session
           const examSession = createExamSession(userId, "mock", {

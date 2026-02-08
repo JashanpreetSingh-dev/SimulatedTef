@@ -115,6 +115,14 @@ export async function createIndexes(): Promise<void> {
       { name: 'userId_date_idx', unique: true }
     );
     console.log('Created index: usage.userId_date_idx');
+
+    // Usage events collection (time-boundary for resubscribe same day)
+    const usageEventsCollection = db.collection('usageEvents');
+    await usageEventsCollection.createIndex(
+      { userId: 1, date: 1, createdAt: 1 },
+      { name: 'userId_date_createdAt_idx' }
+    );
+    console.log('Created index: usageEvents.userId_date_createdAt_idx');
     
     // Exam sessions collection indexes
     const examSessionsCollection = db.collection('examSessions');

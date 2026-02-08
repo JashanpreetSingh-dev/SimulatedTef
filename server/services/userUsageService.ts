@@ -3,10 +3,10 @@
  */
 
 import { connectDB } from '../db/connection';
-import { getDefaultConfig } from '../models/OrganizationConfig';
 import { organizationConfigService } from './organizationConfigService';
 import { d2cConfigService } from './d2cConfigService';
 import { getFreeTierPeriodFromSignup } from '../utils/periodUtils';
+import { createUsageEvent, type UsageEventType } from '../models/usageEvent';
 
 export interface MonthlyUsage {
   sectionAUsed: number;
@@ -21,6 +21,21 @@ export interface CanStartResult {
   reason?: string;
   currentUsage: number;
   limit: number;
+}
+
+/**
+ * Record a single usage event (for time-boundary queries on resubscribe same day).
+ * Call in addition to existing usage doc updates.
+ */
+export async function recordUsageEvent(
+  userId: string,
+  date: string,
+  type: UsageEventType
+): Promise<void> {
+  const db = await connectDB();
+  const event = createUsageEvent(userId, date, type);
+  const { _id, ...doc } = event;
+  await db.collection('usageEvents').insertOne(doc as Record<string, unknown>);
 }
 
 /**
@@ -48,6 +63,9 @@ function getEffectivePeriodForSubscription(subscription: {
   if (effectiveStartStr > periodStartStr) {
     effectiveStartStr = periodStartStr;
   }
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/2bfb38eb-3761-41c7-8a6d-6153bb8601f3', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'userUsageService.ts:getEffectivePeriodForSubscription', message: 'Effective period', data: { periodStartStr, periodEndStr, usageCountingFromDate: subscription.usageCountingFromDate, effectiveStartStr }, timestamp: Date.now(), hypothesisId: 'H2-H4' }) }).catch(() => {});
+  // #endregion
   return { effectiveStartStr, periodEndStr };
 }
 
@@ -91,50 +109,107 @@ export async function getUserMonthlyUsage(
 }
 
 /**
- * Get user's usage within a date range (for subscription billing cycle)
- * @param userId - User ID
- * @param startDate - Start date (ISO string or YYYY-MM-DD)
- * @param endDate - End date (ISO string or YYYY-MM-DD)
- * @returns Usage totals for Section A, Section B, and mock exams
+ * Sum usage events for one day from a minimum timestamp (for resubscribe same-day boundary).
+ */
+async function getUsageEventsForDay(
+  userId: string,
+  dateStr: string,
+  createdAtMin: string
+): Promise<{ sectionAUsed: number; sectionBUsed: number; writtenExpressionSectionAUsed: number; writtenExpressionSectionBUsed: number; mockExamsUsed: number }> {
+  const db = await connectDB();
+  const events = await db
+    .collection('usageEvents')
+    .find({
+      userId,
+      date: dateStr,
+      createdAt: { $gte: createdAtMin },
+    })
+    .toArray();
+  const out = {
+    sectionAUsed: 0,
+    sectionBUsed: 0,
+    writtenExpressionSectionAUsed: 0,
+    writtenExpressionSectionBUsed: 0,
+    mockExamsUsed: 0,
+  };
+  for (const e of events) {
+    const t = (e as unknown as { type: string }).type;
+    if (t === 'sectionA') out.sectionAUsed++;
+    else if (t === 'sectionB') out.sectionBUsed++;
+    else if (t === 'writtenExpressionSectionA') out.writtenExpressionSectionAUsed++;
+    else if (t === 'writtenExpressionSectionB') out.writtenExpressionSectionBUsed++;
+    else if (t === 'mockExam') out.mockExamsUsed++;
+    else if (t === 'fullExam') {
+      out.sectionAUsed++;
+      out.sectionBUsed++;
+    }
+  }
+  return out;
+}
+
+/**
+ * Get user's usage within a date range (for subscription billing cycle).
+ * When startDateTimeMin is set (resubscribe), usage on the start day is counted only if createdAt >= startDateTimeMin (from usageEvents).
  */
 export async function getUserUsageInRange(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  startDateTimeMin?: string
 ): Promise<MonthlyUsage> {
   const db = await connectDB();
-  
-  // Convert ISO dates to YYYY-MM-DD format if needed
-  const startDateStr = startDate.includes('T') 
-    ? startDate.split('T')[0] 
-    : startDate;
-  const endDateStr = endDate.includes('T') 
-    ? endDate.split('T')[0] 
-    : endDate;
-  
-  // Query all daily usage records for the user within the date range
-  const usageRecords = await db
+  const startDateStr = startDate.includes('T') ? startDate.split('T')[0] : startDate;
+  const endDateStr = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+
+  if (startDateTimeMin && startDateStr === endDateStr) {
+    return getUsageEventsForDay(userId, startDateStr, startDateTimeMin);
+  }
+
+  if (!startDateTimeMin) {
+    const usageRecords = await db
+      .collection('usage')
+      .find({
+        userId,
+        date: { $gte: startDateStr, $lte: endDateStr },
+      })
+      .toArray();
+    return usageRecords.reduce(
+      (acc: MonthlyUsage, record: Record<string, number>) => ({
+        sectionAUsed: acc.sectionAUsed + (record.sectionAUsed || 0),
+        sectionBUsed: acc.sectionBUsed + (record.sectionBUsed || 0),
+        writtenExpressionSectionAUsed: (acc.writtenExpressionSectionAUsed || 0) + (record.writtenExpressionSectionAUsed || 0),
+        writtenExpressionSectionBUsed: (acc.writtenExpressionSectionBUsed || 0) + (record.writtenExpressionSectionBUsed || 0),
+        mockExamsUsed: acc.mockExamsUsed + (record.mockExamsUsed || 0),
+      }),
+      { sectionAUsed: 0, sectionBUsed: 0, writtenExpressionSectionAUsed: 0, writtenExpressionSectionBUsed: 0, mockExamsUsed: 0 }
+    );
+  }
+
+  const startDayUsage = await getUsageEventsForDay(userId, startDateStr, startDateTimeMin);
+  const restRecords = await db
     .collection('usage')
     .find({
       userId,
-      date: { $gte: startDateStr, $lte: endDateStr },
+      date: { $gt: startDateStr, $lte: endDateStr },
     })
     .toArray();
-
-  // Sum sectionAUsed, sectionBUsed, writtenExpressionUsed, and mockExamsUsed across all daily records
-  const totals = usageRecords.reduce(
-    (acc, record) => {
-      return {
-        sectionAUsed: acc.sectionAUsed + (record.sectionAUsed || 0),
-        sectionBUsed: acc.sectionBUsed + (record.sectionBUsed || 0),
-        writtenExpressionUsed: (acc.writtenExpressionUsed || 0) + (record.writtenExpressionUsed || 0),
-        mockExamsUsed: (acc.mockExamsUsed || 0) + (record.mockExamsUsed || 0),
-      };
-    },
-    { sectionAUsed: 0, sectionBUsed: 0, writtenExpressionUsed: 0, mockExamsUsed: 0 }
+  const rest = restRecords.reduce(
+    (acc: MonthlyUsage, record: Record<string, number>) => ({
+      sectionAUsed: acc.sectionAUsed + (record.sectionAUsed || 0),
+      sectionBUsed: acc.sectionBUsed + (record.sectionBUsed || 0),
+      writtenExpressionSectionAUsed: (acc.writtenExpressionSectionAUsed || 0) + (record.writtenExpressionSectionAUsed || 0),
+      writtenExpressionSectionBUsed: (acc.writtenExpressionSectionBUsed || 0) + (record.writtenExpressionSectionBUsed || 0),
+      mockExamsUsed: acc.mockExamsUsed + (record.mockExamsUsed || 0),
+    }),
+    { sectionAUsed: 0, sectionBUsed: 0, writtenExpressionSectionAUsed: 0, writtenExpressionSectionBUsed: 0, mockExamsUsed: 0 }
   );
-
-  return totals;
+  return {
+    sectionAUsed: startDayUsage.sectionAUsed + rest.sectionAUsed,
+    sectionBUsed: startDayUsage.sectionBUsed + rest.sectionBUsed,
+    writtenExpressionSectionAUsed: startDayUsage.writtenExpressionSectionAUsed + (rest.writtenExpressionSectionAUsed || 0),
+    writtenExpressionSectionBUsed: startDayUsage.writtenExpressionSectionBUsed + (rest.writtenExpressionSectionBUsed || 0),
+    mockExamsUsed: startDayUsage.mockExamsUsed + rest.mockExamsUsed,
+  };
 }
 
 /**
@@ -250,14 +325,24 @@ async function getD2CLimits(userId: string): Promise<{
   };
 }
 
-/** Get current period for D2C free tier from persisted freeTierPeriodStart, or null to use calendar month. */
+/** Get current period for D2C free tier from persisted freeTierPeriodStart, or null to use calendar month.
+ * If downgradedToFreeAt is set, usage is only counted from that date (so paid-period usage doesn't count against free limit). */
 async function getD2CFreeTierPeriod(userId: string): Promise<{ periodStart: string; periodEnd: string } | null> {
   const db = await connectDB();
-  const subscription = await db.collection('subscriptions').findOne({ userId });
+  const subscription = await db.collection('subscriptions').findOne({ userId }) as { freeTierPeriodStart?: string; downgradedToFreeAt?: string } | null;
   const anchor = subscription?.freeTierPeriodStart;
   if (!anchor) return null;
   const { periodStart, periodEnd } = getFreeTierPeriodFromSignup(new Date(anchor));
-  return { periodStart: periodStart.toISOString(), periodEnd: periodEnd.toISOString() };
+  let periodStartStr = periodStart.toISOString().split('T')[0];
+  const periodEndStr = periodEnd.toISOString().split('T')[0];
+  const downgradedAt = subscription?.downgradedToFreeAt;
+  if (downgradedAt) {
+    const downgradedDateStr = downgradedAt.split('T')[0];
+    if (downgradedDateStr > periodStartStr) {
+      periodStartStr = downgradedDateStr;
+    }
+  }
+  return { periodStart: periodStartStr, periodEnd: periodEndStr };
 }
 
 /**
@@ -290,13 +375,13 @@ export async function checkCanStartSection(
     });
     
     if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle (effective start resets usage on upgrade)
       const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
         currentPeriodStart: subscription.currentPeriodStart,
         currentPeriodEnd: subscription.currentPeriodEnd,
         usageCountingFromDate: subscription.usageCountingFromDate,
       });
-      usage = await getUserUsageInRange(userId, effectiveStartStr, periodEndStr);
+      const timeMin = (subscription as { usageCountingFromTime?: string }).usageCountingFromTime;
+      usage = await getUserUsageInRange(userId, effectiveStartStr, periodEndStr, timeMin);
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
       const freePeriod = await getD2CFreeTierPeriod(userId);
@@ -363,83 +448,65 @@ export async function checkCanStartFullExam(
 }
 
 /**
- * Get user's written expression Section A usage within a date range (for subscription billing cycle)
- * @param userId - User ID
- * @param startDate - Start date (ISO string or YYYY-MM-DD)
- * @param endDate - End date (ISO string or YYYY-MM-DD)
- * @returns Written expression Section A usage count
+ * Get user's written expression Section A usage within a date range.
+ * When startDateTimeMin is set, usage on the start day is from events (createdAt >= startDateTimeMin).
  */
 export async function getUserWrittenExpressionSectionAUsageInRange(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  startDateTimeMin?: string
 ): Promise<number> {
-  const db = await connectDB();
-  
-  // Convert ISO dates to YYYY-MM-DD format if needed
-  const startDateStr = startDate.includes('T') 
-    ? startDate.split('T')[0] 
-    : startDate;
-  const endDateStr = endDate.includes('T') 
-    ? endDate.split('T')[0] 
-    : endDate;
-  
-  // Query all daily usage records for the user within the date range
-  const usageRecords = await db
-    .collection('usage')
-    .find({
+  const startDateStr = startDate.includes('T') ? startDate.split('T')[0] : startDate;
+  const endDateStr = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+  if (startDateTimeMin) {
+    const startDay = await getUsageEventsForDay(userId, startDateStr, startDateTimeMin);
+    if (startDateStr === endDateStr) return startDay.writtenExpressionSectionAUsed;
+    const db = await connectDB();
+    const rest = await db.collection('usage').find({
       userId,
-      date: { $gte: startDateStr, $lte: endDateStr },
-    })
-    .toArray();
-
-  // Sum writtenExpressionSectionAUsed across all daily records
-  const total = usageRecords.reduce(
-    (acc, record) => acc + (record.writtenExpressionSectionAUsed || 0),
-    0
-  );
-
-  return total;
+      date: { $gt: startDateStr, $lte: endDateStr },
+    }).toArray();
+    const restTotal = (rest as { writtenExpressionSectionAUsed?: number }[]).reduce((acc, r) => acc + (r.writtenExpressionSectionAUsed || 0), 0);
+    return startDay.writtenExpressionSectionAUsed + restTotal;
+  }
+  const db = await connectDB();
+  const usageRecords = await db.collection('usage').find({
+    userId,
+    date: { $gte: startDateStr, $lte: endDateStr },
+  }).toArray();
+  return (usageRecords as { writtenExpressionSectionAUsed?: number }[]).reduce((acc, r) => acc + (r.writtenExpressionSectionAUsed || 0), 0);
 }
 
 /**
- * Get user's written expression Section B usage within a date range (for subscription billing cycle)
- * @param userId - User ID
- * @param startDate - Start date (ISO string or YYYY-MM-DD)
- * @param endDate - End date (ISO string or YYYY-MM-DD)
- * @returns Written expression Section B usage count
+ * Get user's written expression Section B usage within a date range.
+ * When startDateTimeMin is set, usage on the start day is from events (createdAt >= startDateTimeMin).
  */
 export async function getUserWrittenExpressionSectionBUsageInRange(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  startDateTimeMin?: string
 ): Promise<number> {
-  const db = await connectDB();
-  
-  // Convert ISO dates to YYYY-MM-DD format if needed
-  const startDateStr = startDate.includes('T') 
-    ? startDate.split('T')[0] 
-    : startDate;
-  const endDateStr = endDate.includes('T') 
-    ? endDate.split('T')[0] 
-    : endDate;
-  
-  // Query all daily usage records for the user within the date range
-  const usageRecords = await db
-    .collection('usage')
-    .find({
+  const startDateStr = startDate.includes('T') ? startDate.split('T')[0] : startDate;
+  const endDateStr = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+  if (startDateTimeMin) {
+    const startDay = await getUsageEventsForDay(userId, startDateStr, startDateTimeMin);
+    if (startDateStr === endDateStr) return startDay.writtenExpressionSectionBUsed;
+    const db = await connectDB();
+    const rest = await db.collection('usage').find({
       userId,
-      date: { $gte: startDateStr, $lte: endDateStr },
-    })
-    .toArray();
-
-  // Sum writtenExpressionSectionBUsed across all daily records
-  const total = usageRecords.reduce(
-    (acc, record) => acc + (record.writtenExpressionSectionBUsed || 0),
-    0
-  );
-
-  return total;
+      date: { $gt: startDateStr, $lte: endDateStr },
+    }).toArray();
+    const restTotal = (rest as { writtenExpressionSectionBUsed?: number }[]).reduce((acc, r) => acc + (r.writtenExpressionSectionBUsed || 0), 0);
+    return startDay.writtenExpressionSectionBUsed + restTotal;
+  }
+  const db = await connectDB();
+  const usageRecords = await db.collection('usage').find({
+    userId,
+    date: { $gte: startDateStr, $lte: endDateStr },
+  }).toArray();
+  return (usageRecords as { writtenExpressionSectionBUsed?: number }[]).reduce((acc, r) => acc + (r.writtenExpressionSectionBUsed || 0), 0);
 }
 
 /**
@@ -538,10 +605,11 @@ export async function checkCanStartWrittenExpression(
         currentPeriodEnd: subscription.currentPeriodEnd,
         usageCountingFromDate: subscription.usageCountingFromDate,
       });
+      const timeMin = (subscription as { usageCountingFromTime?: string }).usageCountingFromTime;
       if (section === 'A') {
-        currentUsage = await getUserWrittenExpressionSectionAUsageInRange(userId, effectiveStartStr, periodEndStr);
+        currentUsage = await getUserWrittenExpressionSectionAUsageInRange(userId, effectiveStartStr, periodEndStr, timeMin);
       } else {
-        currentUsage = await getUserWrittenExpressionSectionBUsageInRange(userId, effectiveStartStr, periodEndStr);
+        currentUsage = await getUserWrittenExpressionSectionBUsageInRange(userId, effectiveStartStr, periodEndStr, timeMin);
       }
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
@@ -593,43 +661,34 @@ export async function checkCanStartWrittenExpression(
 }
 
 /**
- * Get user's mock exam usage within a date range (for subscription billing cycle)
- * @param userId - User ID
- * @param startDate - Start date (ISO string or YYYY-MM-DD)
- * @param endDate - End date (ISO string or YYYY-MM-DD)
- * @returns Mock exam usage count
+ * Get user's mock exam usage within a date range (for subscription billing cycle).
+ * When startDateTimeMin is set, usage on the start day is from events (createdAt >= startDateTimeMin).
  */
 export async function getUserMockExamUsageInRange(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  startDateTimeMin?: string
 ): Promise<number> {
-  const db = await connectDB();
-  
-  // Convert ISO dates to YYYY-MM-DD format if needed
-  const startDateStr = startDate.includes('T') 
-    ? startDate.split('T')[0] 
-    : startDate;
-  const endDateStr = endDate.includes('T') 
-    ? endDate.split('T')[0] 
-    : endDate;
-  
-  // Query all daily usage records for the user within the date range
-  const usageRecords = await db
-    .collection('usage')
-    .find({
+  const startDateStr = startDate.includes('T') ? startDate.split('T')[0] : startDate;
+  const endDateStr = endDate.includes('T') ? endDate.split('T')[0] : endDate;
+  if (startDateTimeMin) {
+    const startDay = await getUsageEventsForDay(userId, startDateStr, startDateTimeMin);
+    if (startDateStr === endDateStr) return startDay.mockExamsUsed;
+    const db = await connectDB();
+    const rest = await db.collection('usage').find({
       userId,
-      date: { $gte: startDateStr, $lte: endDateStr },
-    })
-    .toArray();
-
-  // Sum mockExamsUsed across all daily records
-  const total = usageRecords.reduce(
-    (acc, record) => acc + (record.mockExamsUsed || 0),
-    0
-  );
-
-  return total;
+      date: { $gt: startDateStr, $lte: endDateStr },
+    }).toArray();
+    const restTotal = (rest as { mockExamsUsed?: number }[]).reduce((acc, r) => acc + (r.mockExamsUsed || 0), 0);
+    return startDay.mockExamsUsed + restTotal;
+  }
+  const db = await connectDB();
+  const usageRecords = await db.collection('usage').find({
+    userId,
+    date: { $gte: startDateStr, $lte: endDateStr },
+  }).toArray();
+  return (usageRecords as { mockExamsUsed?: number }[]).reduce((acc, r) => acc + (r.mockExamsUsed || 0), 0);
 }
 
 /**
@@ -703,7 +762,8 @@ export async function checkCanStartMockExam(
         currentPeriodEnd: subscription.currentPeriodEnd,
         usageCountingFromDate: subscription.usageCountingFromDate,
       });
-      currentUsage = await getUserMockExamUsageInRange(userId, effectiveStartStr, periodEndStr);
+      const timeMin = (subscription as { usageCountingFromTime?: string }).usageCountingFromTime;
+      currentUsage = await getUserMockExamUsageInRange(userId, effectiveStartStr, periodEndStr, timeMin);
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
       const freePeriod = await getD2CFreeTierPeriod(userId);
@@ -761,4 +821,5 @@ export const userUsageService = {
   checkCanStartFullExam,
   checkCanStartWrittenExpression,
   checkCanStartMockExam,
+  recordUsageEvent,
 };

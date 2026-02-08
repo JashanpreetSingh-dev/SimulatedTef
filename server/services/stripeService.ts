@@ -59,6 +59,8 @@ export async function createCheckoutSession(
       ],
       mode: 'subscription',
       allow_promotion_codes: true,
+      automatic_tax: { enabled: true },
+      customer_update: { address: 'auto' },
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
@@ -123,6 +125,50 @@ export async function getSubscription(subscriptionId: string): Promise<Stripe.Su
     return await stripe.subscriptions.retrieve(subscriptionId);
   } catch (error) {
     console.error('Error retrieving subscription:', error);
+    return null;
+  }
+}
+
+/** Subscription or item with period fields (API 2025+ has period on items.data[0], not top-level). Export for webhooks/sync. */
+type WithPeriod = { current_period_start?: number; current_period_end?: number };
+export type SubWithItems = WithPeriod & { items?: { data?: Array<WithPeriod> } };
+
+/**
+ * Extract billing period (YYYY-MM-DD UTC) from a Stripe subscription object.
+ * In API version 2025+, current_period_start/end are on subscription.items.data[0], not the root.
+ * Use this for webhooks and sync so they persist the correct period.
+ */
+export function getBillingPeriodFromSubscriptionObject(sub: SubWithItems): { periodStartStr: string; periodEndStr: string } | null {
+  let start = sub.current_period_start;
+  let end = sub.current_period_end;
+  if ((start == null || end == null) && sub.items?.data?.[0]) {
+    const item = sub.items.data[0];
+    start = start ?? item.current_period_start;
+    end = end ?? item.current_period_end;
+  }
+  if (start == null || end == null) return null;
+  return {
+    periodStartStr: new Date(start * 1000).toISOString().split('T')[0],
+    periodEndStr: new Date(end * 1000).toISOString().split('T')[0],
+  };
+}
+
+/**
+ * Get billing period (YYYY-MM-DD UTC) from Stripe for a subscription by ID.
+ * Single source of truth for "next billing date" and "days left" so UI matches Stripe portal.
+ */
+export async function getBillingPeriodFromStripe(subscriptionId: string): Promise<{ periodStartStr: string; periodEndStr: string } | null> {
+  if (!stripe) return null;
+  try {
+    const sub = await stripe.subscriptions.retrieve(subscriptionId) as SubWithItems;
+    const period = getBillingPeriodFromSubscriptionObject(sub);
+    if (!period) {
+      console.warn('Stripe subscription missing period fields', { subscriptionId });
+      return null;
+    }
+    return period;
+  } catch (error) {
+    console.error('Error fetching billing period from Stripe:', error);
     return null;
   }
 }
@@ -288,17 +334,20 @@ export async function calculateProration(
     throw new Error('Stripe is not configured');
   }
 
-  const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as Stripe.Subscription & { current_period_end?: number };
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId) as SubWithItems;
   const newPrice = await stripe.prices.retrieve(newPriceId);
 
-  // Calculate remaining days in current period
+  // Calculate remaining days in current period (API 2025+ has period on items.data[0])
   const now = Math.floor(Date.now() / 1000);
-  const periodEnd = subscription.current_period_end ?? now;
+  const periodFromStripe = getBillingPeriodFromSubscriptionObject(subscription);
+  const periodEnd = periodFromStripe
+    ? Math.floor(new Date(periodFromStripe.periodEndStr + 'T00:00:00.000Z').getTime() / 1000)
+    : (subscription.current_period_end ?? subscription.items?.data?.[0]?.current_period_end ?? now);
   const remainingSeconds = periodEnd - now;
   const remainingDays = Math.ceil(remainingSeconds / (24 * 60 * 60));
 
   // Calculate proration
-  const currentPrice = subscription.items.data[0]?.price;
+  const currentPrice = (subscription as Stripe.Subscription).items.data[0]?.price;
   if (!currentPrice) {
     throw new Error('Current price not found');
   }
@@ -344,6 +393,8 @@ export const stripeService = {
   createCheckoutSession,
   createPortalSession,
   getSubscription,
+  getBillingPeriodFromStripe,
+  getBillingPeriodFromSubscriptionObject,
   cancelSubscription,
   updateSubscription,
   getInvoices,

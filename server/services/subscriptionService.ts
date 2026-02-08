@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 import { connectDB } from '../db/connection';
 import { Subscription, createSubscription, validateSubscription } from '../models/Subscription';
 import { SubscriptionTier, validateSubscriptionTier, DEFAULT_SUBSCRIPTION_TIERS } from '../models/SubscriptionTier';
-import { stripeService } from './stripeService';
+import { stripeService, type SubWithItems } from './stripeService';
 
 /** Stripe subscription with period fields (SDK type may omit these in some API versions) */
 type StripeSubscriptionWithPeriod = Stripe.Subscription & { current_period_start?: number; current_period_end?: number };
@@ -34,6 +34,8 @@ export async function createSubscriptionRecord(
   stripeData?: {
     customerId?: string;
     subscriptionId?: string;
+    /** When provided (e.g. from Stripe webhook), subscription is created with this period so UI shows correct "days left". */
+    period?: { start: string; end: string };
   }
 ): Promise<Subscription> {
   const db = await connectDB();
@@ -64,15 +66,22 @@ export async function updateSubscription(
 ): Promise<Subscription> {
   const db = await connectDB();
   const now = new Date().toISOString();
-  
+  const setPayload: Record<string, unknown> = { updatedAt: now };
+  const unsetPayload: Record<string, 1> = {};
+  for (const [key, value] of Object.entries(updates)) {
+    if (value === undefined) {
+      unsetPayload[key] = 1;
+    } else {
+      setPayload[key] = value;
+    }
+  }
+  const updateOp: Record<string, unknown> = { $set: setPayload };
+  if (Object.keys(unsetPayload).length > 0) {
+    updateOp.$unset = unsetPayload;
+  }
   await db.collection('subscriptions').updateOne(
     { userId },
-    {
-      $set: {
-        ...updates,
-        updatedAt: now,
-      },
-    }
+    updateOp
   );
   
   const updated = await db.collection('subscriptions').findOne({ userId });
@@ -205,12 +214,13 @@ export async function syncWithStripe(userId: string): Promise<Subscription | nul
       status = 'incomplete';
     }
 
-    // Validate and convert period dates (Stripe timestamps are in seconds)
-    const periodStart = stripeSubscription.current_period_start != null
-      ? new Date(stripeSubscription.current_period_start * 1000).toISOString()
+    // Period: API 2025+ has current_period_* on items.data[0]; use shared helper
+    const periodFromStripe = stripeService.getBillingPeriodFromSubscriptionObject(stripeSubscription as SubWithItems);
+    const periodStart = periodFromStripe
+      ? `${periodFromStripe.periodStartStr}T00:00:00.000Z`
       : subscription.currentPeriodStart || new Date().toISOString();
-    const periodEnd = stripeSubscription.current_period_end != null
-      ? new Date(stripeSubscription.current_period_end * 1000).toISOString()
+    const periodEnd = periodFromStripe
+      ? `${periodFromStripe.periodEndStr}T00:00:00.000Z`
       : subscription.currentPeriodEnd || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
     // Update subscription in database

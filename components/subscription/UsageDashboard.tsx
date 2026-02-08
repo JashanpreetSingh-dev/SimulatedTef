@@ -45,8 +45,15 @@ function getUsageVariant(used: number, limit: number): 'success' | 'warning' | '
   return 'success';
 }
 
+/** Format reset/next-billing date in UTC to match Stripe Customer Portal (Stripe uses UTC). */
 function formatResetDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const d = new Date(dateString);
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 interface UsageRowProps {

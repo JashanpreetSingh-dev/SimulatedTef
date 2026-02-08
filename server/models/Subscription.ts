@@ -20,6 +20,10 @@ export const SubscriptionSchema = z.object({
   freeTierPeriodStart: z.string().optional(), // ISO date
   /** D2C paid: first calendar day to count usage (YYYY-MM-DD). Set on new subscription so upgrade day is excluded. */
   usageCountingFromDate: z.string().optional(), // YYYY-MM-DD
+  /** When subscription was downgraded to free (ISO date). Used so free-tier usage only counts from this date. */
+  downgradedToFreeAt: z.string().optional(), // ISO date
+  /** When set (resubscribe), usage on start day is only counted if createdAt >= this time (ISO). */
+  usageCountingFromTime: z.string().optional(), // ISO
 });
 
 export type Subscription = z.infer<typeof SubscriptionSchema> & {
@@ -34,7 +38,8 @@ export function validateSubscription(data: unknown): Subscription {
 }
 
 /**
- * Create a new subscription document
+ * Create a new subscription document.
+ * When stripeData.period is provided (e.g. from Stripe webhook), use it so we never persist the 30-day default for paid subs.
  */
 export function createSubscription(
   userId: string,
@@ -42,12 +47,13 @@ export function createSubscription(
   stripeData?: {
     customerId?: string;
     subscriptionId?: string;
+    /** If set, use these instead of default 30-day period (avoids "30 days left" for new paid subs). */
+    period?: { start: string; end: string };
   }
 ): Subscription {
   const now = new Date().toISOString();
-  const periodStart = now;
-  // Default to 30 days from now for period end
-  const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+  const periodStart = stripeData?.period?.start ?? now;
+  const periodEnd = stripeData?.period?.end ?? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
   return {
     userId,
