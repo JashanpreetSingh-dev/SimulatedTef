@@ -256,6 +256,12 @@ export async function initializeSubscriptionTiers(): Promise<void> {
         createdAt: now,
         updatedAt: now,
       });
+    } else {
+      // Update limits so DB stays in sync with DEFAULT_SUBSCRIPTION_TIERS (e.g. mockExamLimit changes)
+      await db.collection('subscriptionTiers').updateOne(
+        { id: tier.id },
+        { $set: { limits: tier.limits, updatedAt: now } }
+      );
     }
   }
 }
