@@ -73,6 +73,19 @@ export const subscriptionService = {
   },
 
   /**
+   * Sync subscription from Stripe and return updated subscription (e.g. after portal return).
+   */
+  async syncSubscription(
+    getToken: () => Promise<string | null>
+  ): Promise<Subscription> {
+    const url = `${BACKEND_URL}/api/subscriptions/sync`;
+    return authenticatedFetchJSON<Subscription>(url, {
+      method: 'POST',
+      getToken: getToken,
+    });
+  },
+
+  /**
    * Create Stripe checkout session
    */
   async createCheckoutSession(
@@ -141,6 +154,7 @@ export const subscriptionService = {
     currentPeriod?: string;
     resetDate: string;
     daysUntilReset: number;
+    cancelAtPeriodEnd?: boolean;
   }> {
     const url = `${BACKEND_URL}/api/subscriptions/usage`;
     return authenticatedFetchJSON(url, {

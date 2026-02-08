@@ -18,6 +18,8 @@ export const SubscriptionSchema = z.object({
   updatedAt: z.string(), // ISO date
   /** D2C free tier: anchor for monthly reset (signup date). */
   freeTierPeriodStart: z.string().optional(), // ISO date
+  /** D2C paid: first calendar day to count usage (YYYY-MM-DD). Set on new subscription so upgrade day is excluded. */
+  usageCountingFromDate: z.string().optional(), // YYYY-MM-DD
 });
 
 export type Subscription = z.infer<typeof SubscriptionSchema> & {

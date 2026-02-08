@@ -34,6 +34,24 @@ export function getCurrentMonth(): string {
 }
 
 /**
+ * Effective usage period for a paid D2C subscription (resets on upgrade via usageCountingFromDate).
+ */
+function getEffectivePeriodForSubscription(subscription: {
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  usageCountingFromDate?: string;
+}): { effectiveStartStr: string; periodEndStr: string } {
+  const periodStartStr = subscription.currentPeriodStart.split('T')[0];
+  const periodEndStr = subscription.currentPeriodEnd.split('T')[0];
+  let effectiveStartStr = subscription.usageCountingFromDate || periodStartStr;
+  // Never start after period start so usage on the first day of the period is always included
+  if (effectiveStartStr > periodStartStr) {
+    effectiveStartStr = periodStartStr;
+  }
+  return { effectiveStartStr, periodEndStr };
+}
+
+/**
  * Get user's total usage for a specific month
  * @param userId - User ID
  * @param yearMonth - Month in YYYY-MM format (e.g., "2024-01")
@@ -272,12 +290,13 @@ export async function checkCanStartSection(
     });
     
     if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle
-      usage = await getUserUsageInRange(
-        userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
-      );
+      // Paid subscription - use billing cycle (effective start resets usage on upgrade)
+      const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
+        currentPeriodStart: subscription.currentPeriodStart,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        usageCountingFromDate: subscription.usageCountingFromDate,
+      });
+      usage = await getUserUsageInRange(userId, effectiveStartStr, periodEndStr);
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
       const freePeriod = await getD2CFreeTierPeriod(userId);
@@ -513,19 +532,16 @@ export async function checkCanStartWrittenExpression(
     });
     
     if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle
+      // Paid subscription - use billing cycle (effective start resets usage on upgrade)
+      const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
+        currentPeriodStart: subscription.currentPeriodStart,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        usageCountingFromDate: subscription.usageCountingFromDate,
+      });
       if (section === 'A') {
-        currentUsage = await getUserWrittenExpressionSectionAUsageInRange(
-          userId,
-          subscription.currentPeriodStart,
-          subscription.currentPeriodEnd
-        );
+        currentUsage = await getUserWrittenExpressionSectionAUsageInRange(userId, effectiveStartStr, periodEndStr);
       } else {
-        currentUsage = await getUserWrittenExpressionSectionBUsageInRange(
-          userId,
-          subscription.currentPeriodStart,
-          subscription.currentPeriodEnd
-        );
+        currentUsage = await getUserWrittenExpressionSectionBUsageInRange(userId, effectiveStartStr, periodEndStr);
       }
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
@@ -681,12 +697,13 @@ export async function checkCanStartMockExam(
     });
     
     if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle
-      currentUsage = await getUserMockExamUsageInRange(
-        userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
-      );
+      // Paid subscription - use billing cycle (effective start resets usage on upgrade)
+      const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
+        currentPeriodStart: subscription.currentPeriodStart,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        usageCountingFromDate: subscription.usageCountingFromDate,
+      });
+      currentUsage = await getUserMockExamUsageInRange(userId, effectiveStartStr, periodEndStr);
     } else {
       // Free tier - signup-anchored month if we have it, else calendar month
       const freePeriod = await getD2CFreeTierPeriod(userId);

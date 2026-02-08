@@ -20,6 +20,7 @@ interface UsageData {
   currentPeriod?: string;
   resetDate: string;
   daysUntilReset: number;
+  cancelAtPeriodEnd?: boolean;
 }
 
 interface UsageDashboardProps {
@@ -158,7 +159,7 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
     );
   }
 
-  const { usage, limits, daysUntilReset, resetDate } = usageData;
+  const { usage, limits, daysUntilReset, resetDate, cancelAtPeriodEnd } = usageData;
   const iconClass = 'h-3 w-3';
 
   const rows: Array<{ label: string; used: number; limit: number; icon: React.ReactNode }> = [
@@ -176,7 +177,9 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
           Usage
         </h2>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Resets {formatResetDate(resetDate)} · <span className="tabular-nums font-medium text-slate-700 dark:text-slate-300">{daysUntilReset}</span> {daysUntilReset === 1 ? 'day' : 'days'} left
+          {cancelAtPeriodEnd
+            ? <>Subscription ends {formatResetDate(resetDate)} · <span className="tabular-nums font-medium text-slate-700 dark:text-slate-300">{daysUntilReset}</span> {daysUntilReset === 1 ? 'day' : 'days'} left</>
+            : <>Resets {formatResetDate(resetDate)} · <span className="tabular-nums font-medium text-slate-700 dark:text-slate-300">{daysUntilReset}</span> {daysUntilReset === 1 ? 'day' : 'days'} left</>}
         </p>
       </div>
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">

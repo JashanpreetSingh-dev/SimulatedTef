@@ -22,33 +22,49 @@ export function SubscriptionView() {
   const [changePlanTier, setChangePlanTier] = useState<SubscriptionTier | null>(null);
   const [usageRefreshKey, setUsageRefreshKey] = useState(0);
 
-  // Check for success/cancel from Stripe redirect
+  // Check for success/cancel from Stripe redirect, or return from customer portal
   useEffect(() => {
     const success = searchParams.get('success');
     const canceled = searchParams.get('canceled');
-    
+    const portalReturn = searchParams.get('portal_return');
+
     if (success === 'true') {
       // Async function to handle post-checkout logic
       const handleSuccess = async () => {
         // Wait a moment for webhook to process (Stripe webhooks are usually fast but async)
         await new Promise(resolve => setTimeout(resolve, 2000));
-        
+
         // Reload subscription after successful payment
         await loadSubscription();
         // Reload all data to refresh usage limits
         await loadData();
         // Refresh usage dashboard
-        setUsageRefreshKey(prev => prev + 1);
+        setUsageRefreshKey((prev) => prev + 1);
         // Clean URL
         navigate('/subscription', { replace: true });
       };
-      
+
       handleSuccess();
     } else if (canceled === 'true') {
       // Show user-friendly message when checkout is canceled
       setError('Payment process was canceled. You can try again or choose another plan.');
       // Clean URL
       navigate('/subscription', { replace: true });
+    } else if (portalReturn === 'true') {
+      // User returned from Stripe customer portal (e.g. after canceling) — sync and refresh UI
+      const handlePortalReturn = async () => {
+        try {
+          const updated = await subscriptionService.syncSubscription(getToken);
+          setSubscription(updated);
+          await loadData();
+          setUsageRefreshKey((prev) => prev + 1);
+        } catch (err) {
+          console.error('Failed to sync after portal return:', err);
+          await loadData();
+        }
+        navigate('/subscription', { replace: true });
+      };
+      handlePortalReturn();
     }
   }, [searchParams, navigate]);
 

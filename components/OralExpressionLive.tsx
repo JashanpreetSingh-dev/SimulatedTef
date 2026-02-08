@@ -77,6 +77,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const hasSent60ControlRef = useRef(false);
   const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  /** Prevents running evaluation twice when WebSocket closes unexpectedly (e.g. 1008) */
+  const hasUnexpectedCloseRecoveryRef = useRef(false);
   
   // Real-time MediaRecorder for conversation recording
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -84,6 +86,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const audioDestinationRef = useRef<MediaStreamAudioDestinationNode | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
   const recordedChunksPartARef = useRef<Blob[]>([]); // Store Part A audio chunks separately for full exam mode
+  /** AudioWorklet node and mic source for live send (replaces deprecated ScriptProcessorNode) */
+  const micWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
+  const micSourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
   // Helper function to stop MediaRecorder and wait for final chunks
   const stopMediaRecorderAndWait = async (): Promise<void> => {
@@ -167,6 +172,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       } catch (e) {
         console.debug("MediaRecorder already stopped", e);
       }
+    }
+    // Disconnect AudioWorklet mic pipeline
+    if (micWorkletNodeRef.current) {
+      try {
+        micWorkletNodeRef.current.disconnect();
+        micWorkletNodeRef.current.port.onmessage = null;
+      } catch (e) {
+        console.debug("Mic worklet node already disconnected", e);
+      }
+      micWorkletNodeRef.current = null;
+    }
+    if (micSourceNodeRef.current) {
+      try {
+        micSourceNodeRef.current.disconnect();
+      } catch (e) {
+        console.debug("Mic source already disconnected", e);
+      }
+      micSourceNodeRef.current = null;
     }
     // Reset MediaRecorder and audio destination refs so a fresh one can be created
     mediaRecorderRef.current = null;
@@ -318,6 +341,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Initialize timer with current task's time limit
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
+      hasUnexpectedCloseRecoveryRef.current = false;
       hasSent60ControlRef.current = false;
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
       // Clear recorded chunks when starting Part A or when not in full mode
@@ -373,7 +397,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       }, 10000); // 10 second timeout - can be adjusted via LIVE_API_CONFIG.connectionTimeout
       
       const sessionPromise = geminiService.connectLive({
-        onopen: () => {
+        onopen: async () => {
           clearTimeout(connectionTimeout);
           if (!isMountedRef.current || !isLiveRef.current) {
             stopSession();
@@ -522,28 +546,31 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               console.warn('⚠️ Web Speech API not available - transcriptions will not be captured');
             }
             
-            const source = inputAudioCtxRef.current.createMediaStreamSource(stream);
-            const scriptProcessor = inputAudioCtxRef.current.createScriptProcessor(2048, 1, 1);
-            
-            scriptProcessor.onaudioprocess = (e) => {
+            // AudioWorklet for mic → Gemini (replaces deprecated ScriptProcessorNode)
+            const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
+            const workletUrl = new URL(`${base}mic-processor.js`, window.location.href).href;
+            await inputAudioCtxRef.current.audioWorklet.addModule(workletUrl);
+            const liveMicSource = inputAudioCtxRef.current.createMediaStreamSource(stream);
+            const workletNode = new AudioWorkletNode(inputAudioCtxRef.current, 'mic-processor', { numberOfInputs: 1, numberOfOutputs: 1 });
+            micSourceNodeRef.current = liveMicSource;
+            micWorkletNodeRef.current = workletNode;
+
+            workletNode.port.onmessage = (e: MessageEvent<{ samples: Float32Array }>) => {
               if (!isLiveRef.current || !sessionRef.current) return;
-              const inputData = e.inputBuffer.getChannelData(0);
-              
+              const inputData = e.data.samples;
+              if (!inputData || inputData.length === 0) return;
+
               // Note: Microphone is already being recorded via MediaRecorder (connected to audioDestinationRef above)
-              
               const volume = inputData.reduce((acc, val) => acc + Math.abs(val), 0) / inputData.length;
               const wasUserSpeaking = isUserSpeaking;
               if (isMountedRef.current) {
                 setIsUserSpeaking(volume > 0.01);
-                
+
                 // Detect when user stops speaking
                 if (wasUserSpeaking && volume <= 0.01) {
-                  // Clear any existing timeout
                   if (userSilenceTimeoutRef.current) {
                     clearTimeout(userSilenceTimeoutRef.current);
                   }
-                  
-                  // Inject time remaining if critical (< 60s) for Section B
                   if (currentPart === 'B' && sessionRef.current && timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
                     hasSentTimeUpdateRef.current = timeLeft;
                     try {
@@ -551,20 +578,16 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                         text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`
                       });
                       console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
-                    } catch (e) {
-                      console.debug('Failed to send time update', e);
+                    } catch (err) {
+                      console.debug('Failed to send time update', err);
                     }
                   }
-                  
-                  // After brief silence, show "thinking" indicator
                   userSilenceTimeoutRef.current = setTimeout(() => {
                     if (!isModelSpeaking && !isUserSpeaking && isMountedRef.current) {
                       setIsAiThinking(true);
                     }
-                  }, 500); // Show thinking after 500ms of silence
+                  }, 500);
                 }
-                
-                // Clear thinking state when user starts speaking again
                 if (volume > 0.01 && isAiThinking) {
                   setIsAiThinking(false);
                   if (userSilenceTimeoutRef.current) {
@@ -575,22 +598,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               }
 
               const pcmBlob = createPcmBlob(inputData, inputAudioCtxRef.current!.sampleRate);
-              // CRITICAL: Solely rely on sessionPromise resolves and then call `session.sendRealtimeInput`, do not add other condition checks.
-              // Send as `audio` (not generic media) to match live API expectations; sending under media causes silent closes.
               sessionPromise.then(session => {
                 if (!isLiveRef.current || !session) return;
                 try {
                   session.sendRealtimeInput({ audio: pcmBlob });
-                } catch (e) {
-                  console.debug("Failed to send audio frame", e);
+                } catch (err) {
+                  console.debug("Failed to send audio frame", err);
                 }
               }).catch(err => {
                 console.debug("Session promise error in audio processing", err);
               });
             };
-            
-            source.connect(scriptProcessor);
-            scriptProcessor.connect(inputAudioCtxRef.current.destination);
+
+            liveMicSource.connect(workletNode);
+            workletNode.connect(inputAudioCtxRef.current.destination);
+            console.log('✅ AudioWorklet (mic) started for live send');
           } catch (audioError) {
             console.error("Error setting up audio processing:", audioError);
             stopSession();
@@ -835,6 +857,28 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             console.error('6. Check key length: Should be a long string (typically 39+ characters)');
           }
           
+          // Recovery: if the server closed the connection unexpectedly (e.g. 1008 "Operation not implemented"),
+          // we still have recorded chunks — run evaluation so the user gets feedback instead of losing the recording.
+          const wasActive = isLiveRef.current;
+          const hasChunks = recordedChunksRef.current.length > 0;
+          const recorderStillRunning = mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive';
+          const unexpectedClose = event?.code !== 1000 && event?.code !== undefined; // 1000 = normal close
+          const shouldRecover = wasActive && !hasUnexpectedCloseRecoveryRef.current && (hasChunks || recorderStillRunning) && unexpectedClose;
+
+          if (shouldRecover) {
+            hasUnexpectedCloseRecoveryRef.current = true;
+            console.warn(
+              "WebSocket closed unexpectedly (code " + event?.code + (event?.reason ? ", reason: " + event.reason : "") + "). " +
+              "Submitting recording for evaluation so you don't lose your work."
+            );
+            handleNextOrFinish()
+              .finally(() => {
+                stopSession();
+                if (isMountedRef.current) setStatus('idle');
+              });
+            return;
+          }
+
           stopSession();
           if (isMountedRef.current) {
             setStatus('idle');

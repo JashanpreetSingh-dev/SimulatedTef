@@ -383,6 +383,9 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         max: 20, // Max 20 jobs per second (increased from 10)
         duration: 1000, // 1 second (rate limiting)
       },
+      // Long-running transcription can exceed default lock; use longer duration and frequent renewal
+      lockDuration: 600000,   // 10 minutes (transcription of large audio can take several minutes)
+      lockRenewTime: 15000,   // Renew lock every 15s so job is not considered stalled
     }
   );
 

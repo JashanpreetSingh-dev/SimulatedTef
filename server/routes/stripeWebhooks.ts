@@ -301,6 +301,9 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
     ? new Date(subscription.current_period_end * 1000).toISOString()
     : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
 
+  // Usage resets on upgrade: count from period start so usage on the first day is visible
+  const usageCountingFromDate = periodStart.split('T')[0];
+
   const existing = await subscriptionService.getUserSubscription(userId);
   if (existing) {
     await subscriptionService.updateSubscription(userId, {
@@ -311,6 +314,7 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       currentPeriodStart: periodStart,
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+      usageCountingFromDate,
     });
   } else {
     await subscriptionService.createSubscriptionRecord(userId, tier.id, {
@@ -322,6 +326,7 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       currentPeriodStart: periodStart,
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
+      usageCountingFromDate,
     });
   }
   console.log(`✅ Subscription created for user ${userId}, tier ${tier.id}, status ${status}`);

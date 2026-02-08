@@ -78,6 +78,28 @@ router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) 
   res.json(subscription);
 }));
 
+// POST /api/subscriptions/sync - Force sync with Stripe (e.g. after returning from portal)
+router.post('/sync', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  let subscription = await subscriptionService.syncWithStripe(userId);
+
+  if (!subscription) {
+    return res.json({
+      tier: 'free',
+      status: 'active',
+      currentPeriodStart: new Date().toISOString(),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      cancelAtPeriodEnd: false,
+    });
+  }
+
+  res.json(subscription);
+}));
+
 const checkoutSchema = z.object({
   priceId: z.string().optional(),
   tierId: z.string().optional(),
@@ -232,7 +254,7 @@ router.post('/portal', requireAuth, asyncHandler(async (req: Request, res: Respo
   }
 
   const baseUrl = getRedirectBaseUrl(req);
-  const returnUrl = `${baseUrl}/subscription`;
+  const returnUrl = `${baseUrl}/subscription?portal_return=true`;
   const portalUrl = await stripeService.createPortalSession(subscription.stripeCustomerId, returnUrl);
 
   res.json({ url: portalUrl });
@@ -316,6 +338,7 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
   };
   let resetDate: Date;
   let currentPeriod: string; // For display purposes
+  let cancelAtPeriodEnd = false;
 
   if (orgId) {
     // B2B user - use org config and calendar month
@@ -350,41 +373,47 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
     // D2C user - check subscription billing cycle or calendar month for free tier
     let subscription = await subscriptionService.getUserSubscription(userId);
 
-    // Auto-renew period: if paid subscription period has ended, sync with Stripe so we have the new billing period (e.g. after renewal invoice; webhook may not have been received in simulation)
+    // For paid users, sync with Stripe so period and reset date are always from Stripe (handles renewal and keeps reset date authoritative)
     const now = new Date();
     if (
       subscription &&
       subscription.stripeSubscriptionId &&
-      (subscription.status === 'active' || subscription.status === 'trialing') &&
-      subscription.currentPeriodEnd &&
-      now > new Date(subscription.currentPeriodEnd)
+      (subscription.status === 'active' || subscription.status === 'trialing')
     ) {
       subscription = await subscriptionService.syncWithStripe(userId) ?? subscription;
     }
 
     if (subscription && (subscription.status === 'active' || subscription.status === 'trialing')
         && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle (usage auto-renews by querying this period; we don't report usage to Stripe)
+      // Paid subscription - billing cycle and reset date from Stripe; effective start resets usage on upgrade (usageCountingFromDate)
+      const periodStartStr = subscription.currentPeriodStart.split('T')[0];
+      const periodEndStr = subscription.currentPeriodEnd.split('T')[0];
+      let effectiveStartStr = subscription.usageCountingFromDate || periodStartStr;
+      // Include period-start day so usage on upgrade day is visible (same clamp as userUsageService.getEffectivePeriodForSubscription)
+      if (effectiveStartStr > periodStartStr) {
+        effectiveStartStr = periodStartStr;
+      }
+
       const periodUsage = await userUsageService.getUserUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr
       );
       const mockExamUsage = await userUsageService.getUserMockExamUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr
       );
-      
+
       const writtenExpressionSectionAUsage = await userUsageService.getUserWrittenExpressionSectionAUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr
       );
       const writtenExpressionSectionBUsage = await userUsageService.getUserWrittenExpressionSectionBUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr
       );
       usage = {
         sectionAUsed: periodUsage.sectionAUsed,
@@ -409,9 +438,10 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
         };
       }
       
-      // Reset date is the end of the current billing period
+      // Reset date = Stripe current period end (we synced above)
       resetDate = new Date(subscription.currentPeriodEnd);
       currentPeriod = `${new Date(subscription.currentPeriodStart).toISOString().split('T')[0]} to ${new Date(subscription.currentPeriodEnd).toISOString().split('T')[0]}`;
+      cancelAtPeriodEnd = subscription.cancelAtPeriodEnd ?? false;
     } else {
       // Free tier - reset monthly from signup date (same as paid: anniversary-based)
       let periodStart: string;
@@ -490,6 +520,7 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
     currentPeriod,
     resetDate: resetDate.toISOString(),
     daysUntilReset,
+    cancelAtPeriodEnd,
   });
 }));
 

@@ -94,7 +94,20 @@ export async function ensureFreeTierPeriodStart(userId: string, signupAnchor: Da
       await updateSubscription(userId, { freeTierPeriodStart: anchorIso } as Partial<Subscription>);
     }
   } else {
-    await createSubscriptionRecord(userId, 'free');
+    try {
+      await createSubscriptionRecord(userId, 'free');
+    } catch (err: unknown) {
+      const mongoErr = err as { code?: number };
+      if (mongoErr.code === 11000) {
+        // Duplicate key: subscription was created by another request (e.g. concurrent GET /usage)
+        const existing = await getUserSubscription(userId);
+        if (existing && !existing.freeTierPeriodStart) {
+          await updateSubscription(userId, { freeTierPeriodStart: anchorIso } as Partial<Subscription>);
+        }
+        return;
+      }
+      throw err;
+    }
     await updateSubscription(userId, { freeTierPeriodStart: anchorIso } as Partial<Subscription>);
   }
 }
