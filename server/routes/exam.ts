@@ -43,6 +43,13 @@ async function createExamSession(userId: string, examType: string) {
     },
     { upsert: true }
   );
+  if (examType === 'full') {
+    await userUsageService.recordUsageEvent(userId, today, 'sectionA');
+    await userUsageService.recordUsageEvent(userId, today, 'sectionB');
+  } else {
+    const eventType = examType === 'partA' ? 'sectionA' : 'sectionB';
+    await userUsageService.recordUsageEvent(userId, today, eventType);
+  }
 
   return sessionId;
 }
@@ -78,26 +85,11 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
       return res.status(403).json({ error: 'Cannot start mock exam' });
     }
 
-    // Create mock exam session and track usage
+    // Create mock exam session (usage is counted when all 4 modules are completed, not on start)
     const sessionResult = await mockExamService.createMockExamSession(userId, mockExamId);
     if (!sessionResult.success) {
       return res.status(400).json({ error: sessionResult.error || 'Failed to create mock exam session' });
     }
-
-    // Track mock exam usage
-    const db = await connectDB();
-    const today = getTodayUTC();
-    await db.collection('usage').updateOne(
-      { userId, date: today },
-      {
-        $inc: {
-          mockExamsUsed: 1,
-        },
-        $set: { updatedAt: new Date().toISOString() },
-        $setOnInsert: { createdAt: new Date().toISOString() }
-      },
-      { upsert: true }
-    );
 
     return res.json({
       sessionId: sessionResult.sessionId,
@@ -198,15 +190,16 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
 
 // ===== Mock Exam Endpoints =====
 
-// GET /api/exam/mock-exams - List available mock exams for user
+// GET /api/exam/mock-exams - List available mock exams for user (monthly rotating pool, tier-based visibility)
 router.get('/mock-exams', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const orgId = req.orgId ?? null;
   const { mockExamService } = await import('../services/mockExamService');
-  const mockExams = await mockExamService.listAvailableMockExams(userId);
+  const mockExams = await mockExamService.listAvailableMockExams(userId, orgId);
   res.json(mockExams);
 }));
 
@@ -228,14 +221,26 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
     });
 
     if (activeMockExam) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'You have an incomplete mock exam. Complete it first or abandon it.',
-        activeMockExamId: activeMockExam.mockExamId 
+        activeMockExamId: activeMockExam.mockExamId
+      });
+    }
+
+    // Enforce subscription mock exam limit (same as POST /exam/start)
+    const orgId = req.orgId ?? null;
+    const limitCheck = await userUsageService.checkCanStartMockExam(userId, orgId);
+    if (!limitCheck.canStart) {
+      return res.status(403).json({
+        error: limitCheck.reason ?? 'Monthly limit reached',
+        canStart: false,
+        currentUsage: limitCheck.currentUsage,
+        limit: limitCheck.limit,
       });
     }
 
     const { predefinedMockExamId } = req.body;
-    
+
     const { mockExamService } = await import('../services/mockExamService');
     const result = await mockExamService.selectMockExam(userId, predefinedMockExamId);
     

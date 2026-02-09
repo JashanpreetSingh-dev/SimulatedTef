@@ -15,6 +15,7 @@
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",
     "clear-mock-data": "tsx server/scripts/clearMockData.ts",
+    "clear-failed-jobs": "tsx server/scripts/clearFailedEvaluationJobs.ts",
     "migrate-org-id": "tsx server/scripts/migrateOrgId.ts",
     "migrate-d2c-config": "tsx scripts/migrate-init-d2c-config.js",
     "migrate-subscriptions": "tsx scripts/migrate-init-subscriptions.js",

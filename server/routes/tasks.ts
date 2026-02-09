@@ -78,7 +78,7 @@ router.get('/:taskId/with-questions', requireAuth, taskSelectionLimiter, asyncHa
     return res.status(404).json({ error: 'Task not found' });
   }
   
-  // Fetch questions
+  // Fetch questions (optionImageS3Keys resolved to presigned URLs in questionService)
   const questions = await questionService.getQuestionsByTaskId(taskId);
   
   if (questions.length === 0) {

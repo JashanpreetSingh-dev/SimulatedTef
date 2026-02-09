@@ -5,13 +5,14 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
+import { validateBody, z } from '../middleware/validate';
 import { Request, Response } from 'express';
 import { subscriptionService } from '../services/subscriptionService';
 import { stripeService } from '../services/stripeService';
-import { connectDB } from '../db/connection';
 import { createClerkClient } from '@clerk/backend';
 import { userUsageService } from '../services/userUsageService';
 import { d2cConfigService } from '../services/d2cConfigService';
+import { getFreeTierPeriodFromSignup } from '../utils/periodUtils';
 import Stripe from 'stripe';
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY || '';
@@ -43,6 +44,9 @@ function getRedirectBaseUrl(req: Request): string {
   return 'http://localhost:5173';
 }
 
+// Throttle Stripe sync for GET /me: only sync if last update was more than 5 minutes ago
+const STRIPE_SYNC_THROTTLE_MS = 5 * 60 * 1000;
+
 // GET /api/subscriptions/me - Get current user's subscription
 router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
@@ -51,13 +55,62 @@ router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) 
   }
 
   let subscription = await subscriptionService.getUserSubscription(userId);
-  
-  // If subscription exists and has Stripe ID, sync with Stripe
+  let didSync = false;
+
+  // If subscription exists and has Stripe ID, sync with Stripe only if stale (throttle to avoid rate limits)
   if (subscription && subscription.stripeSubscriptionId) {
-    subscription = await subscriptionService.syncWithStripe(userId);
+    const updatedAt = subscription.updatedAt ? new Date(subscription.updatedAt).getTime() : 0;
+    if (Date.now() - updatedAt > STRIPE_SYNC_THROTTLE_MS) {
+      subscription = await subscriptionService.syncWithStripe(userId) ?? subscription;
+      didSync = true;
+    }
   }
 
-  // If no subscription, return free tier
+  // If no subscription, return minimal free tier (no fake "next billing" date)
+  if (!subscription) {
+    const nowIso = new Date().toISOString();
+    return res.json({
+      tier: 'free',
+      status: 'active',
+      currentPeriodStart: nowIso,
+      currentPeriodEnd: nowIso,
+      cancelAtPeriodEnd: false,
+    });
+  }
+
+  // For paid users, overwrite period in response so Billing card matches portal (use synced DB when we just synced to avoid extra Stripe call)
+  const isPaidWithStripe = subscription.stripeSubscriptionId && (subscription.status === 'active' || subscription.status === 'trialing');
+  if (isPaidWithStripe && subscription.stripeSubscriptionId) {
+    let period: { periodStartStr: string; periodEndStr: string } | null = null;
+    if (didSync && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+      period = {
+        periodStartStr: subscription.currentPeriodStart.split('T')[0],
+        periodEndStr: subscription.currentPeriodEnd.split('T')[0],
+      };
+    }
+    if (!period) {
+      period = await stripeService.getBillingPeriodFromStripe(subscription.stripeSubscriptionId);
+    }
+    if (period) {
+      const response = { ...subscription };
+      response.currentPeriodStart = period.periodStartStr + 'T00:00:00.000Z';
+      response.currentPeriodEnd = period.periodEndStr + 'T00:00:00.000Z';
+      return res.json(response);
+    }
+  }
+
+  res.json(subscription);
+}));
+
+// POST /api/subscriptions/sync - Force sync with Stripe (e.g. after returning from portal)
+router.post('/sync', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  let subscription = await subscriptionService.syncWithStripe(userId);
+
   if (!subscription) {
     return res.json({
       tier: 'free',
@@ -71,8 +124,17 @@ router.get('/me', requireAuth, asyncHandler(async (req: Request, res: Response) 
   res.json(subscription);
 }));
 
+const checkoutSchema = z.object({
+  priceId: z.string().optional(),
+  tierId: z.string().optional(),
+  returnBaseUrl: z.string().optional(),
+}).refine((data) => data.priceId || data.tierId, {
+  message: 'Price ID or Tier ID is required',
+  path: ['priceId'],
+});
+
 // POST /api/subscriptions/checkout - Create Stripe checkout session
-router.post('/checkout', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+router.post('/checkout', requireAuth, validateBody(checkoutSchema), asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -93,9 +155,9 @@ router.post('/checkout', requireAuth, asyncHandler(async (req: Request, res: Res
   }
 
   if (!finalPriceId) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Price ID or Tier ID is required',
-      details: 'Unable to create checkout session. Please contact support.'
+      details: 'Unable to create checkout session. Please contact support.',
     });
   }
 
@@ -216,29 +278,62 @@ router.post('/portal', requireAuth, asyncHandler(async (req: Request, res: Respo
   }
 
   const baseUrl = getRedirectBaseUrl(req);
-  const returnUrl = `${baseUrl}/subscription`;
+  const returnUrl = `${baseUrl}/subscription?portal_return=true`;
   const portalUrl = await stripeService.createPortalSession(subscription.stripeCustomerId, returnUrl);
 
   res.json({ url: portalUrl });
 }));
 
-// POST /api/subscriptions/cancel - Cancel subscription
-router.post('/cancel', requireAuth, asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.userId;
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
+/** Format Stripe price for display (public and auth tier responses) */
+function formatPriceForDisplay(amount: number, currency: string): string {
+  const n = amount % 1 === 0 ? amount : Math.round(amount * 100) / 100;
+  if (currency === 'usd') return `$${n}`;
+  if (currency === 'cad') return `CA$${n}`;
+  if (currency === 'eur') return `€${n}`;
+  return `${currency.toUpperCase()} ${n}`;
+}
 
-  const { cancelAtPeriodEnd = true } = req.body;
-
-  const subscription = await subscriptionService.cancelSubscription(userId, cancelAtPeriodEnd);
-  res.json(subscription);
+// GET /api/subscriptions/tiers/public - Public pricing for landing page (no auth)
+router.get('/tiers/public', asyncHandler(async (req: Request, res: Response) => {
+  const tiers = await subscriptionService.getSubscriptionTiers();
+  const publicTiers = await Promise.all(
+    tiers.map(async (tier) => {
+      if (tier.id === 'free') {
+        return { id: tier.id, name: tier.name, price: '$0', priceSubtext: 'Forever' };
+      }
+      const priceId = tier.stripePriceId || process.env[`STRIPE_PRICE_ID_${tier.id.toUpperCase()}`];
+      if (!priceId) {
+        return { id: tier.id, name: tier.name, price: null as string | null, priceSubtext: 'per month' };
+      }
+      const stripePrice = await stripeService.getPriceDetails(priceId);
+      if (!stripePrice) {
+        return { id: tier.id, name: tier.name, price: null as string | null, priceSubtext: 'per month' };
+      }
+      return {
+        id: tier.id,
+        name: tier.name,
+        price: formatPriceForDisplay(stripePrice.amount, stripePrice.currency),
+        priceSubtext: stripePrice.interval === 'year' ? 'per year' : 'per month',
+      };
+    })
+  );
+  res.json({ tiers: publicTiers });
 }));
 
-// GET /api/subscriptions/tiers - Get available subscription tiers
+// GET /api/subscriptions/tiers - Get available subscription tiers (with Stripe price for paid tiers)
 router.get('/tiers', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const tiers = await subscriptionService.getSubscriptionTiers();
-  res.json(tiers);
+  const enriched = await Promise.all(
+    tiers.map(async (tier) => {
+      const priceId = tier.stripePriceId || (tier.id !== 'free' ? process.env[`STRIPE_PRICE_ID_${tier.id.toUpperCase()}`] : undefined);
+      if (!priceId) {
+        return { ...tier, stripePrice: null };
+      }
+      const stripePrice = await stripeService.getPriceDetails(priceId);
+      return { ...tier, stripePrice };
+    })
+  );
+  res.json(enriched);
 }));
 
 // GET /api/subscriptions/usage - Get current billing period usage and limits (subscription-based for D2C paid users, calendar month for free/B2B)
@@ -267,6 +362,7 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
   };
   let resetDate: Date;
   let currentPeriod: string; // For display purposes
+  let cancelAtPeriodEnd = false;
 
   if (orgId) {
     // B2B user - use org config and calendar month
@@ -293,46 +389,77 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
       mockExamLimit: -1, // Unlimited for B2B
     };
     
-    // B2B users don't track written expression usage
-    usage = {
-      sectionAUsed: monthlyUsage.sectionAUsed,
-      sectionBUsed: monthlyUsage.sectionBUsed,
-      writtenExpressionSectionAUsed: 0,
-      writtenExpressionSectionBUsed: 0,
-      mockExamsUsed: mockExamUsage,
-    };
-    
     // Calculate reset date (first day of next month)
     const now = new Date();
     resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     currentPeriod = currentMonth;
   } else {
     // D2C user - check subscription billing cycle or calendar month for free tier
-    const subscription = await subscriptionService.getUserSubscription(userId);
-    
-    if (subscription && (subscription.status === 'active' || subscription.status === 'trialing') 
-        && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
-      // Paid subscription - use billing cycle
+    let subscription = await subscriptionService.getUserSubscription(userId);
+
+    // For paid users, sync DB with Stripe and use Stripe as source of truth for period/reset so UI matches portal
+    const now = new Date();
+    if (
+      subscription &&
+      subscription.stripeSubscriptionId &&
+      (subscription.status === 'active' || subscription.status === 'trialing')
+    ) {
+      subscription = await subscriptionService.syncWithStripe(userId) ?? subscription;
+    }
+
+    // Use period from synced subscription when present (avoids duplicate Stripe retrieve); else fetch from Stripe with retry
+    let periodStartStr: string | null = subscription?.currentPeriodStart ? subscription.currentPeriodStart.split('T')[0] : null;
+    let periodEndStr: string | null = subscription?.currentPeriodEnd ? subscription.currentPeriodEnd.split('T')[0] : null;
+    if (subscription?.stripeSubscriptionId && (!periodStartStr || !periodEndStr)) {
+      let period = await stripeService.getBillingPeriodFromStripe(subscription.stripeSubscriptionId);
+      if (!period) {
+        await new Promise((r) => setTimeout(r, 500));
+        period = await stripeService.getBillingPeriodFromStripe(subscription.stripeSubscriptionId);
+      }
+      if (period) {
+        periodStartStr = period.periodStartStr;
+        periodEndStr = period.periodEndStr;
+      }
+      if (!periodStartStr || !periodEndStr) {
+        console.warn('Stripe billing period unavailable, using DB fallback', { userId, subscriptionId: subscription.stripeSubscriptionId });
+        if (subscription.currentPeriodStart) periodStartStr = subscription.currentPeriodStart.split('T')[0];
+        if (subscription.currentPeriodEnd) periodEndStr = subscription.currentPeriodEnd.split('T')[0];
+      }
+    }
+
+    if (subscription && (subscription.status === 'active' || subscription.status === 'trialing')
+        && periodStartStr && periodEndStr) {
+      // Paid subscription - billing cycle and reset date from Stripe; effective start resets usage on upgrade (usageCountingFromDate)
+      let effectiveStartStr = subscription.usageCountingFromDate || periodStartStr;
+      // Include period-start day so usage on upgrade day is visible (same clamp as userUsageService.getEffectivePeriodForSubscription)
+      if (effectiveStartStr > periodStartStr) {
+        effectiveStartStr = periodStartStr;
+      }
+
+      const usageCountingFromTime = (subscription as { usageCountingFromTime?: string }).usageCountingFromTime;
       const periodUsage = await userUsageService.getUserUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr,
+        usageCountingFromTime
       );
       const mockExamUsage = await userUsageService.getUserMockExamUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr,
+        usageCountingFromTime
       );
-      
       const writtenExpressionSectionAUsage = await userUsageService.getUserWrittenExpressionSectionAUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr,
+        usageCountingFromTime
       );
       const writtenExpressionSectionBUsage = await userUsageService.getUserWrittenExpressionSectionBUsageInRange(
         userId,
-        subscription.currentPeriodStart,
-        subscription.currentPeriodEnd
+        effectiveStartStr,
+        periodEndStr,
+        usageCountingFromTime
       );
       usage = {
         sectionAUsed: periodUsage.sectionAUsed,
@@ -341,7 +468,6 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
         writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
         mockExamsUsed: mockExamUsage,
       };
-      
       const subscriptionLimits = await subscriptionService.getSubscriptionLimits(userId);
       if (subscriptionLimits) {
         limits = subscriptionLimits;
@@ -357,25 +483,68 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
         };
       }
       
-      // Reset date is the end of the current billing period
-      resetDate = new Date(subscription.currentPeriodEnd);
-      currentPeriod = `${new Date(subscription.currentPeriodStart).toISOString().split('T')[0]} to ${new Date(subscription.currentPeriodEnd).toISOString().split('T')[0]}`;
+      // Reset date = Stripe current period end (date only, UTC) so it matches Stripe portal exactly
+      resetDate = new Date(periodEndStr + 'T00:00:00.000Z');
+      currentPeriod = `${periodStartStr} to ${periodEndStr}`;
+      cancelAtPeriodEnd = subscription.cancelAtPeriodEnd ?? false;
     } else {
-      // Free tier - use calendar month
-      const currentMonth = userUsageService.getCurrentMonth();
-      const monthlyUsage = await userUsageService.getUserMonthlyUsage(userId, currentMonth);
-      const mockExamUsage = await userUsageService.getUserMonthlyMockExamUsage(userId, currentMonth);
-      
-      const writtenExpressionSectionAUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
-      const writtenExpressionSectionBUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
-      usage = {
-        sectionAUsed: monthlyUsage.sectionAUsed,
-        sectionBUsed: monthlyUsage.sectionBUsed,
-        writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
-        writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
-        mockExamsUsed: mockExamUsage,
-      };
-      
+      // Free tier - reset monthly from signup date (same as paid: anniversary-based)
+      let periodStart: string;
+      let periodEnd: string;
+      let signupAnchor: Date | null = null;
+      if (clerkClient) {
+        try {
+          const clerkUser = await clerkClient.users.getUser(userId);
+          if (clerkUser.createdAt) signupAnchor = new Date(clerkUser.createdAt);
+        } catch {
+          // ignore
+        }
+      }
+      if (signupAnchor) {
+        await subscriptionService.ensureFreeTierPeriodStart(userId, signupAnchor);
+        const { periodStart: start, periodEnd: end } = getFreeTierPeriodFromSignup(signupAnchor);
+        periodStart = start.toISOString();
+        periodEnd = end.toISOString();
+        const periodStartStr = periodStart.split('T')[0];
+        const periodEndStr = periodEnd.split('T')[0];
+        const sub = await subscriptionService.getUserSubscription(userId);
+        const downgradedAt = (sub as { downgradedToFreeAt?: string } | null)?.downgradedToFreeAt;
+        const effectiveStartStr = downgradedAt
+          ? (downgradedAt.split('T')[0] > periodStartStr ? downgradedAt.split('T')[0] : periodStartStr)
+          : periodStartStr;
+        const periodUsage = await userUsageService.getUserUsageInRange(userId, effectiveStartStr, periodEndStr);
+        const mockExamUsage = await userUsageService.getUserMockExamUsageInRange(userId, effectiveStartStr, periodEndStr);
+        const writtenExpressionSectionAUsage = await userUsageService.getUserWrittenExpressionSectionAUsageInRange(userId, effectiveStartStr, periodEndStr);
+        const writtenExpressionSectionBUsage = await userUsageService.getUserWrittenExpressionSectionBUsageInRange(userId, effectiveStartStr, periodEndStr);
+        usage = {
+          sectionAUsed: periodUsage.sectionAUsed,
+          sectionBUsed: periodUsage.sectionBUsed,
+          writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
+          writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
+          mockExamsUsed: mockExamUsage,
+        };
+        // Reset is the first day of the next period (day after periodEnd)
+        resetDate = new Date(end);
+        resetDate.setDate(resetDate.getDate() + 1);
+        currentPeriod = `${effectiveStartStr} to ${periodEndStr}`;
+      } else {
+        // Fallback: calendar month if we can't get signup (e.g. Clerk unavailable)
+        const currentMonth = userUsageService.getCurrentMonth();
+        const monthlyUsage = await userUsageService.getUserMonthlyUsage(userId, currentMonth);
+        const mockExamUsage = await userUsageService.getUserMonthlyMockExamUsage(userId, currentMonth);
+        const writtenExpressionSectionAUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionAUsage(userId, currentMonth);
+        const writtenExpressionSectionBUsage = await userUsageService.getUserMonthlyWrittenExpressionSectionBUsage(userId, currentMonth);
+        usage = {
+          sectionAUsed: monthlyUsage.sectionAUsed,
+          sectionBUsed: monthlyUsage.sectionBUsed,
+          writtenExpressionSectionAUsed: writtenExpressionSectionAUsage,
+          writtenExpressionSectionBUsed: writtenExpressionSectionBUsage,
+          mockExamsUsed: mockExamUsage,
+        };
+        const now = new Date();
+        resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        currentPeriod = currentMonth;
+      }
       // No active subscription - use D2C config (Free tier)
       const d2cConfig = await d2cConfigService.getConfig();
       limits = {
@@ -385,16 +554,13 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
         writtenExpressionSectionBLimit: d2cConfig.writtenExpressionSectionBLimit,
         mockExamLimit: d2cConfig.mockExamLimit,
       };
-      
-      // Calculate reset date (first day of next month)
-      const now = new Date();
-      resetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-      currentPeriod = currentMonth;
     }
   }
 
   const now = new Date();
-  const daysUntilReset = Math.ceil((resetDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  // Use UTC date for "today" so day count matches Stripe portal regardless of server timezone
+  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const daysUntilReset = Math.ceil((resetDate.getTime() - todayUTC.getTime()) / (1000 * 60 * 60 * 24));
 
   res.json({
     usage: {
@@ -408,55 +574,8 @@ router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Respons
     currentPeriod,
     resetDate: resetDate.toISOString(),
     daysUntilReset,
+    cancelAtPeriodEnd,
   });
-}));
-
-// GET /api/subscriptions/billing-history - Get invoices from Stripe
-router.get('/billing-history', requireAuth, asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.userId;
-  if (!userId) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-
-  const subscription = await subscriptionService.getUserSubscription(userId);
-  if (!subscription || !subscription.stripeCustomerId) {
-    return res.json({ invoices: [], paymentMethod: null });
-  }
-
-  try {
-    const invoices = await stripeService.getInvoices(subscription.stripeCustomerId, 20);
-    const paymentMethod = await stripeService.getPaymentMethod(subscription.stripeCustomerId);
-
-    // Format invoices for frontend
-    const formattedInvoices = invoices.map(invoice => ({
-      id: invoice.id,
-      number: invoice.number,
-      amount: invoice.amount_paid / 100, // Convert from cents
-      currency: invoice.currency.toUpperCase(),
-      status: invoice.status,
-      date: new Date(invoice.created * 1000).toISOString(),
-      hostedInvoiceUrl: invoice.hosted_invoice_url,
-      invoicePdf: invoice.invoice_pdf,
-    }));
-
-    res.json({
-      invoices: formattedInvoices,
-      paymentMethod: paymentMethod ? {
-        last4: paymentMethod.last4,
-        brand: paymentMethod.brand,
-        expMonth: paymentMethod.expMonth,
-        expYear: paymentMethod.expYear,
-      } : null,
-    });
-  } catch (error: any) {
-    // If customer doesn't exist in Stripe (e.g., created in different environment), return empty
-    if (error.code === 'resource_missing' && error.message?.includes('customer')) {
-      console.warn(`Customer ${subscription.stripeCustomerId} not found in Stripe - returning empty billing history`);
-      return res.json({ invoices: [], paymentMethod: null });
-    }
-    console.error('Error fetching billing history:', error);
-    res.status(500).json({ error: error.message || 'Failed to fetch billing history' });
-  }
 }));
 
 // GET /api/subscriptions/payment-method - Get payment method info

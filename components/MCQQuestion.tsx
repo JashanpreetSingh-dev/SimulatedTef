@@ -6,6 +6,8 @@ export interface MCQQuestionData {
   question: string;
   questionText?: string; // Optional: Question-specific text/passage (for reading questions)
   options: string[];
+  /** When length 4, UI renders options as images (e.g. listening Section 1 "quel dessin"). Order = A,B,C,D. */
+  optionImageUrls?: string[];
   correctAnswer?: number; // Only provided in results view
   userAnswer?: number; // Only provided in results view
   explanation?: string; // Only provided in results view
@@ -31,7 +33,8 @@ export const MCQQuestion: React.FC<MCQQuestionProps> = ({
   className = '',
 }) => {
   const { theme } = useTheme();
-  const { questionId, question: questionText, questionText: questionPassage, options, correctAnswer, userAnswer, explanation } = question;
+  const { questionId, question: questionText, questionText: questionPassage, options, optionImageUrls, correctAnswer, userAnswer, explanation } = question;
+  const showAsImages = optionImageUrls && optionImageUrls.length === 4;
 
   const isCorrect = showResult && userAnswer !== undefined && correctAnswer !== undefined 
     ? userAnswer === correctAnswer 
@@ -128,16 +131,17 @@ export const MCQQuestion: React.FC<MCQQuestionProps> = ({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div className={`grid gap-3 ${showAsImages ? 'grid-cols-2 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
         {options.map((option, index) => (
-          <div key={index} className="relative min-h-[80px] flex">
+          <div key={index} className={`relative flex ${showAsImages ? 'min-h-[220px] sm:min-h-[260px]' : 'min-h-[80px]'}`}>
             <button
               type="button"
               onClick={() => !disabled && onAnswerSelect(index)}
               disabled={disabled}
-              className={`${getOptionStyle(index)} w-full h-full flex items-start`}
+              className={`${getOptionStyle(index)} w-full h-full flex ${showAsImages ? 'flex-col items-center p-4' : 'items-start'}`}
+              aria-label={option}
             >
-              <div className="flex items-start gap-2">
+              <div className={showAsImages ? 'flex flex-col items-center w-full flex-1' : 'flex items-start gap-2 w-full'}>
                 {/* Option Label */}
                 <div className={`
                   flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center font-semibold text-xs
@@ -161,10 +165,29 @@ export const MCQQuestion: React.FC<MCQQuestionProps> = ({
                   {getOptionLabel(index)}
                 </div>
 
-                {/* Option Text */}
-                <div className="flex-1 text-left">
-                  {option}
-                </div>
+                {/* Option content: image or text */}
+                {showAsImages && optionImageUrls?.[index] ? (
+                  <div className="flex-1 w-full min-h-[180px] sm:min-h-[220px] flex items-center justify-center mt-2 overflow-hidden rounded relative">
+                    <img
+                      src={optionImageUrls[index]}
+                      alt={option}
+                      className="max-h-[200px] sm:max-h-[240px] w-auto object-contain"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        target.style.display = 'none';
+                        const fallback = target.parentElement?.querySelector('.option-image-fallback');
+                        if (fallback) (fallback as HTMLElement).classList.remove('hidden');
+                      }}
+                    />
+                    <span className="option-image-fallback hidden text-sm text-center p-2" aria-hidden="true">
+                      Image unavailable. {option}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex-1 text-left">
+                    {option}
+                  </div>
+                )}
 
                 {/* Result Indicator */}
                 {showResult && index === correctAnswer && (

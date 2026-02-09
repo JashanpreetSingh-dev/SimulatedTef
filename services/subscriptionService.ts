@@ -6,6 +6,14 @@ import { authenticatedFetchJSON } from './authenticatedFetch';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
+/** Public tier pricing (for landing page, no auth) */
+export interface PublicTierPricing {
+  id: 'free' | 'basic' | 'premium';
+  name: string;
+  price: string | null;
+  priceSubtext: string;
+}
+
 export interface Subscription {
   _id?: string;
   userId: string;
@@ -27,13 +35,30 @@ export interface SubscriptionTier {
   limits: {
     sectionALimit: number;
     sectionBLimit: number;
-    writtenExpressionLimit: number;
+    writtenExpressionSectionALimit?: number;
+    writtenExpressionSectionBLimit?: number;
     mockExamLimit?: number;
   };
   stripePriceId?: string;
+  /** Fetched from Stripe for paid tiers (amount in dollars, currency, interval) */
+  stripePrice?: {
+    amount: number;
+    currency: string;
+    interval: 'month' | 'year';
+  } | null;
 }
 
 export const subscriptionService = {
+  /**
+   * Get public tier pricing for landing page (no auth). Uses Stripe prices when available.
+   */
+  async getPublicTiers(): Promise<{ tiers: PublicTierPricing[] }> {
+    const url = `${BACKEND_URL}/api/subscriptions/tiers/public`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Failed to load pricing');
+    return res.json();
+  },
+
   /**
    * Get current user's subscription
    */
@@ -43,6 +68,19 @@ export const subscriptionService = {
     const url = `${BACKEND_URL}/api/subscriptions/me`;
     return authenticatedFetchJSON<Subscription>(url, {
       method: 'GET',
+      getToken: getToken,
+    });
+  },
+
+  /**
+   * Sync subscription from Stripe and return updated subscription (e.g. after portal return).
+   */
+  async syncSubscription(
+    getToken: () => Promise<string | null>
+  ): Promise<Subscription> {
+    const url = `${BACKEND_URL}/api/subscriptions/sync`;
+    return authenticatedFetchJSON<Subscription>(url, {
+      method: 'POST',
       getToken: getToken,
     });
   },
@@ -80,21 +118,6 @@ export const subscriptionService = {
   },
 
   /**
-   * Cancel subscription
-   */
-  async cancelSubscription(
-    getToken: () => Promise<string | null>,
-    cancelAtPeriodEnd: boolean = true
-  ): Promise<Subscription> {
-    const url = `${BACKEND_URL}/api/subscriptions/cancel`;
-    return authenticatedFetchJSON<Subscription>(url, {
-      method: 'POST',
-      getToken: getToken,
-      body: JSON.stringify({ cancelAtPeriodEnd }),
-    });
-  },
-
-  /**
    * Get available subscription tiers
    */
   async getSubscriptionTiers(
@@ -117,49 +140,23 @@ export const subscriptionService = {
       sectionAUsed: number;
       sectionBUsed: number;
       mockExamsUsed: number;
-      writtenExpressionUsed: number;
+      writtenExpressionSectionAUsed?: number;
+      writtenExpressionSectionBUsed?: number;
     };
     limits: {
       sectionALimit: number;
       sectionBLimit: number;
-      writtenExpressionLimit: number;
+      writtenExpressionSectionALimit?: number;
+      writtenExpressionSectionBLimit?: number;
       mockExamLimit: number;
     };
-    currentMonth: string;
+    currentMonth?: string;
+    currentPeriod?: string;
     resetDate: string;
     daysUntilReset: number;
+    cancelAtPeriodEnd?: boolean;
   }> {
     const url = `${BACKEND_URL}/api/subscriptions/usage`;
-    return authenticatedFetchJSON(url, {
-      method: 'GET',
-      getToken: getToken,
-    });
-  },
-
-  /**
-   * Get billing history (invoices and payment method)
-   */
-  async getBillingHistory(
-    getToken: () => Promise<string | null>
-  ): Promise<{
-    invoices: Array<{
-      id: string;
-      number: string | null;
-      amount: number;
-      currency: string;
-      status: string;
-      date: string;
-      hostedInvoiceUrl: string | null;
-      invoicePdf: string | null;
-    }>;
-    paymentMethod: {
-      last4?: string;
-      brand?: string;
-      expMonth?: number;
-      expYear?: number;
-    } | null;
-  }> {
-    const url = `${BACKEND_URL}/api/subscriptions/billing-history`;
     return authenticatedFetchJSON(url, {
       method: 'GET',
       getToken: getToken,

@@ -172,7 +172,7 @@ export const adminService = {
    */
   async updateD2CConfig(
     getToken: () => Promise<string | null>,
-    limits: { sectionALimit: number; sectionBLimit: number; writtenExpressionLimit: number; mockExamLimit: number }
+    limits: { sectionALimit: number; sectionBLimit: number; writtenExpressionSectionALimit: number; writtenExpressionSectionBLimit: number; mockExamLimit: number }
   ): Promise<D2CConfig> {
     const params = new URLSearchParams();
     params.append('_t', String(Date.now()));
@@ -193,7 +193,8 @@ export interface OrgConfig {
 export interface D2CConfig {
   sectionALimit: number;
   sectionBLimit: number;
-  writtenExpressionLimit: number; // -1 for unlimited
+  writtenExpressionSectionALimit: number;
+  writtenExpressionSectionBLimit: number;
   mockExamLimit: number;
 }
 

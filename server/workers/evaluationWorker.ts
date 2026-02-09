@@ -338,6 +338,15 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
                 updateFields,
                 { upsert: true }
               );
+              const { userUsageService } = await import('../services/userUsageService');
+              if (mode === 'partA') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionA');
+              } else if (mode === 'partB') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionB');
+              } else if (mode === 'full') {
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionA');
+                await userUsageService.recordUsageEvent(userId, today, 'writtenExpressionSectionB');
+              }
             }
           }
         }
@@ -383,6 +392,9 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         max: 20, // Max 20 jobs per second (increased from 10)
         duration: 1000, // 1 second (rate limiting)
       },
+      // Long-running transcription can exceed default lock; use longer duration and frequent renewal
+      lockDuration: 600000,   // 10 minutes (transcription of large audio can take several minutes)
+      lockRenewTime: 15000,   // Renew lock every 15s so job is not considered stalled
     }
   );
 

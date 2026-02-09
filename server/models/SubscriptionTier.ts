@@ -47,7 +47,7 @@ export const DEFAULT_SUBSCRIPTION_TIERS: Omit<SubscriptionTier, '_id' | 'created
       sectionBLimit: 10,
       writtenExpressionSectionALimit: 10, // Same as speaking
       writtenExpressionSectionBLimit: 10, // Same as speaking
-      mockExamLimit: 5,
+      mockExamLimit: 2,
     },
   },
   {
@@ -58,7 +58,7 @@ export const DEFAULT_SUBSCRIPTION_TIERS: Omit<SubscriptionTier, '_id' | 'created
       sectionBLimit: 30,
       writtenExpressionSectionALimit: 30, // Same as speaking
       writtenExpressionSectionBLimit: 30, // Same as speaking
-      mockExamLimit: 10,
+      mockExamLimit: 5,
     },
   },
 ];

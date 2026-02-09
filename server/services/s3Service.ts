@@ -30,16 +30,16 @@ export function isS3Configured(): boolean {
 }
 
 /**
- * Upload audio file to S3
- * @param buffer - Audio file buffer
- * @param key - S3 object key (e.g., 'recordings/userId/timestamp_uuid.wav')
- * @param contentType - MIME type (e.g., 'audio/wav')
+ * Upload a file (audio or image) to S3
+ * @param buffer - File buffer
+ * @param key - S3 object key
+ * @param contentType - MIME type (e.g., 'audio/wav', 'image/png')
  * @returns The S3 key of the uploaded file
  */
-export async function uploadAudio(
+export async function uploadFile(
   buffer: Buffer,
   key: string,
-  contentType: string = 'audio/wav'
+  contentType: string
 ): Promise<string> {
   if (!bucket) {
     throw new Error('AWS_S3_BUCKET environment variable is not set');
@@ -53,9 +53,17 @@ export async function uploadAudio(
   });
 
   await s3Client.send(command);
-  console.log(`✅ Uploaded audio to S3: ${key} (${(buffer.length / 1024).toFixed(2)} KB)`);
-  
+  console.log(`✅ Uploaded to S3: ${key} (${(buffer.length / 1024).toFixed(2)} KB)`);
   return key;
+}
+
+/** @deprecated Use uploadFile. Upload audio file to S3. */
+export async function uploadAudio(
+  buffer: Buffer,
+  key: string,
+  contentType: string = 'audio/wav'
+): Promise<string> {
+  return uploadFile(buffer, key, contentType);
 }
 
 /**
@@ -122,11 +130,24 @@ export function generateAudioItemKey(taskId: string, audioId: string, extension:
   return `audio/${taskId}/${audioId}.${extension}`;
 }
 
+/**
+ * Generate S3 key for listening Section 1 option images ("quel dessin")
+ * @param taskId - Task ID
+ * @param questionNumber - Question number (1–40)
+ * @param letter - Option letter A, B, C, or D
+ * @returns S3 key in format: images/listening_section1/{taskId}/{taskId}_q{questionNumber}_{letter}.png
+ */
+export function generateSection1ImageKey(taskId: string, questionNumber: number, letter: string): string {
+  return `images/listening_section1/${taskId}/${taskId}_q${questionNumber}_${letter}.png`;
+}
+
 export const s3Service = {
   isS3Configured,
+  uploadFile,
   uploadAudio,
   getPresignedUrl,
   deleteAudio,
   generateRecordingKey,
   generateAudioItemKey,
+  generateSection1ImageKey,
 };

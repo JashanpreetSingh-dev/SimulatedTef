@@ -39,7 +39,8 @@ async function migrate() {
       _id: 'default',
       sectionALimit: 1,
       sectionBLimit: 1,
-      writtenExpressionLimit: -1, // Unlimited
+      writtenExpressionSectionALimit: 1,
+      writtenExpressionSectionBLimit: 1,
       mockExamLimit: 1,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -49,7 +50,8 @@ async function migrate() {
     console.log('✅ D2C config initialized with default values:');
     console.log('  - Section A: 1/month');
     console.log('  - Section B: 1/month');
-    console.log('  - Written Expression: Unlimited');
+    console.log('  - Written Expression Section A: 1/month');
+    console.log('  - Written Expression Section B: 1/month');
     console.log('  - Mock Exams: 1/month');
     
   } catch (error) {

@@ -86,16 +86,15 @@ export const assignmentService = {
       finalTitle = await generateTitleFromPrompt(prompt);
     }
 
-    // Generate assignment ID
+    // Generate assignment ID using counter collection (O(1), safe under concurrency)
     const assignmentsCollection = db.collection('assignments');
-    const existingAssignments = await assignmentsCollection.find({}).toArray();
-    const assignmentNumbers = existingAssignments
-      .map((a: any) => {
-        const match = a.assignmentId?.match(/^assignment_(\d+)$/);
-        return match ? parseInt(match[1]) : 0;
-      })
-      .filter((n: number) => n > 0);
-    const nextNumber = assignmentNumbers.length > 0 ? Math.max(...assignmentNumbers) + 1 : 1;
+    const countersCollection = db.collection<{ _id: string; seq: number }>('counters');
+    const counterResult = await countersCollection.findOneAndUpdate(
+      { _id: 'assignments' },
+      { $inc: { seq: 1 } },
+      { upsert: true, returnDocument: 'after' }
+    );
+    const nextNumber = (counterResult?.seq ?? 1) as number;
     const assignmentId = `assignment_${nextNumber}`;
 
     // Create assignment
@@ -314,6 +313,23 @@ export const assignmentService = {
       questions: questions || undefined,
       task: task || undefined
     };
+  },
+
+  /**
+   * Get multiple assignments by IDs (summary only, no questions/task populated).
+   * Used for batch list views to avoid N+1 queries.
+   */
+  async getAssignmentsByIds(assignmentIds: string[]): Promise<Assignment[]> {
+    if (assignmentIds.length === 0) {
+      return [];
+    }
+    const db = await connectDB();
+    const assignmentsCollection = db.collection('assignments');
+    const assignments = await assignmentsCollection
+      .find({ assignmentId: { $in: assignmentIds } })
+      .toArray();
+    const byId = new Map((assignments as unknown as Assignment[]).map((a) => [a.assignmentId, a]));
+    return assignmentIds.map((id) => byId.get(id)).filter(Boolean) as Assignment[];
   },
 
   /**

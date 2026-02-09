@@ -17,10 +17,10 @@ export function AdminD2CConfigView() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   
-  // Form state
+  // Form state - writtenExpressionLimit applies to both Section A and B (same value)
   const [sectionALimit, setSectionALimit] = useState<number>(1);
   const [sectionBLimit, setSectionBLimit] = useState<number>(1);
-  const [writtenExpressionLimit, setWrittenExpressionLimit] = useState<number>(-1);
+  const [writtenExpressionLimit, setWrittenExpressionLimit] = useState<number>(1);
   const [mockExamLimit, setMockExamLimit] = useState<number>(1);
   const [validationErrors, setValidationErrors] = useState<{
     sectionALimit?: string;
@@ -52,7 +52,7 @@ export function AdminD2CConfigView() {
       setConfig(data);
       setSectionALimit(data.sectionALimit);
       setSectionBLimit(data.sectionBLimit);
-      setWrittenExpressionLimit(data.writtenExpressionLimit);
+      setWrittenExpressionLimit(data.writtenExpressionSectionALimit ?? data.writtenExpressionSectionBLimit ?? 1);
       setMockExamLimit(data.mockExamLimit);
     } catch (err: any) {
       console.error('❌ Failed to fetch D2C config:', err);
@@ -105,7 +105,8 @@ export function AdminD2CConfigView() {
       const updated = await adminService.updateD2CConfig(getToken, {
         sectionALimit,
         sectionBLimit,
-        writtenExpressionLimit,
+        writtenExpressionSectionALimit: writtenExpressionLimit,
+        writtenExpressionSectionBLimit: writtenExpressionLimit,
         mockExamLimit,
       });
 
@@ -210,7 +211,7 @@ export function AdminD2CConfigView() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Written Expression Limit (per month)
+                Written Expression Limit (per month, applies to both Section A and B)
               </label>
               <input
                 type="number"
@@ -227,7 +228,7 @@ export function AdminD2CConfigView() {
                 </p>
               )}
               <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Use -1 for unlimited. Written expression is unlimited for all D2C users by default.
+                Use -1 for unlimited. This value applies to both Written Expression Section A and Section B.
               </p>
             </div>
 
