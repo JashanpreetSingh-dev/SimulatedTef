@@ -84,6 +84,38 @@ Should return: `maxmemory-policy noeviction`
 - **Monitoring:** Monitor your Redis memory usage to ensure you have enough capacity
 - **Railway:** If using Railway Redis plugin, check if eviction policy is configurable in the plugin settings
 
+## "not enough memory" (Lua script errors)
+
+If you see **`ERR Error running script ... not enough memory`** from Bull/BullMQ (evaluation or question-generation workers), Redis is out of memory when running queue scripts.
+
+**Fix:**
+
+1. **Increase Redis memory**
+   - **Local Redis:**  
+     `redis-cli CONFIG SET maxmemory 256mb`  
+     (or higher, e.g. `512mb` if you run many jobs.)
+   - **Cloud (Railway / Redis Cloud / Upstash):** In the dashboard, raise the memory/cache size for the Redis instance (e.g. 256 MB or more).
+2. **Restart Redis** after changing `maxmemory` if your setup requires it.
+3. **Optional:** Clear old Bull keys if you don’t need history:  
+   `redis-cli KEYS "bull:*"` then delete completed/failed queues you no longer need.
+
+**Why:** Bull/BullMQ use Lua scripts for job moves. If Redis is near its limit or `maxmemory` is very low, script execution can fail with "not enough memory".
+
+## Switching Redis URL (e.g. to local Docker)
+
+When you change `REDIS_URL` (e.g. from cloud to local Docker), the app connects to a **new** Redis instance. That new instance is empty:
+
+- **Old failed jobs** stay on the old Redis; the app no longer sees them. You don’t need to do anything about them.
+- **New evaluations** run on the new Redis. If you still see a “failed” message in the UI, it’s from a previous session (old job ID); refresh or start a new evaluation.
+
+To clear failed (and old completed) jobs on the **current** Redis (e.g. after fixing memory and wanting a clean queue), run:
+
+```bash
+npm run clear-failed-jobs
+```
+
+---
+
 ## If Policy Cannot Be Changed
 
 Some managed Redis services don't allow changing the eviction policy. In that case:

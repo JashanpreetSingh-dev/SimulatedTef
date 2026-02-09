@@ -8,7 +8,7 @@
 
 ### Optional
 - **`MONGODB_DB_NAME`** - Database name (default: `tef_master`)
-- **`REDIS_URL`** - Redis connection (required for job queue)
+- **`REDIS_URL`** - Redis connection (required for job queue). If Bull workers fail with "not enough memory", increase Redis `maxmemory` (e.g. 256mb). See [REDIS_CLOUD_SETUP.md](REDIS_CLOUD_SETUP.md).
 - **`PORT`** - Server port (default: `3001`)
 - **`HOST`** - Server host (default: `0.0.0.0`)
 - **`NODE_ENV`** - Environment mode (`development` or `production`)

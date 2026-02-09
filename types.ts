@@ -19,6 +19,8 @@ export interface ReadingListeningQuestion {
   question: string; // Question text
   questionText?: string; // Optional: Question-specific text/passage (for reading questions that reference specific parts)
   options: string[]; // Array of exactly 4 answer options
+  /** Length 4 when present; order = A,B,C,D. When set, UI shows options as images (e.g. listening Section 1 "quel dessin"). */
+  optionImageUrls?: string[];
   correctAnswer: number; // Index 0-3 indicating correct option
   explanation: string; // Explanation of why the correct answer is right
   audioId?: string; // Optional: Reference to AudioItem for listening questions

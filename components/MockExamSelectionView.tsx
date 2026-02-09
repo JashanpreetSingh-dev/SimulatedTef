@@ -49,6 +49,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
   const [completedMockExamIds, setCompletedMockExamIds] = useState<string[]>([]);
   const [checkingStatus, setCheckingStatus] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('mock-test');
+  const [mockExamQuota, setMockExamQuota] = useState<{ used: number; limit: number } | null>(null);
 
   // Load mock exams and check status
   useEffect(() => {
@@ -71,6 +72,19 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
 
         // Check for active mock exam
         await checkExistingMockExam();
+
+        // Fetch mock exam quota for this period (D2C: used/limit; B2B: unlimited, no banner)
+        try {
+          const quota = await authenticatedFetchJSON<{ canStart: boolean; currentUsage: number; limit: number }>(
+            `${BACKEND_URL}/api/usage/check-mock-exam`,
+            { method: 'POST', getToken, body: JSON.stringify({}) }
+          );
+          if (quota && typeof quota.limit === 'number' && quota.limit !== -1) {
+            setMockExamQuota({ used: quota.currentUsage ?? 0, limit: quota.limit });
+          }
+        } catch {
+          // Non-blocking: quota is optional for display
+        }
       } catch (error) {
         console.error('Failed to load mock exams:', error);
         setError('Failed to load mock exams. Please try again.');
@@ -139,6 +153,18 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
       );
 
       onMockExamSelected(mockExamId, response.sessionId);
+      // Refresh quota so "X of Y" updates if user returns to this view
+      try {
+        const quota = await authenticatedFetchJSON<{ canStart: boolean; currentUsage: number; limit: number }>(
+          `${BACKEND_URL}/api/usage/check-mock-exam`,
+          { method: 'POST', getToken, body: JSON.stringify({}) }
+        );
+        if (quota && typeof quota.limit === 'number' && quota.limit !== -1) {
+          setMockExamQuota({ used: quota.currentUsage ?? 0, limit: quota.limit });
+        }
+      } catch {
+        // ignore
+      }
     } catch (error: any) {
       console.error('Failed to start mock exam:', error);
       let displayError = t('errors.startFailed');
@@ -279,6 +305,14 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
             `}>
                     Mock Exams
             </h2>
+            {mockExamQuota != null && (
+              <p className={`
+                text-sm mb-2 flex-shrink-0
+                ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}
+              `}>
+                You&apos;ve used {mockExamQuota.used} of {mockExamQuota.limit} mock exam{mockExamQuota.limit !== 1 ? 's' : ''} this period.
+              </p>
+            )}
                   {mockExams
                     // Filter out completed mock exams - they should only appear in the "Terminée" tab
                     .filter((exam) => !completedMockExamIds.includes(exam.mockExamId))

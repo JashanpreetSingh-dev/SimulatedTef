@@ -716,5 +716,106 @@ export function registerListeningCommands(yargsInstance: ReturnType<typeof yargs
             });
         }, fillMissingAudioCommand)
         .demandCommand(1, 'You need at least one command after questions');
-    });
+    })
+    .command('section1-images', 'Generate and save Section 1 (quel dessin) option images using Gemini image model', (yargs) => {
+      return yargs
+        .option('task-id', { type: 'string', demandOption: true, describe: 'Listening task ID (e.g. listening_1)', alias: 't' })
+        .option('public-dir', { type: 'string', describe: 'Path to public directory (default: ./public)', default: './public' });
+    }, section1ImagesCommand)
+    .command('fill-missing-section1-images', 'Generate Section 1 option images for tasks that are missing them (redo existing)', (yargs) => {
+      return yargs
+        .option('task-id', { type: 'string', describe: 'Optional: only process this task (default: all tasks missing Section 1 images)', alias: 't' })
+        .option('public-dir', { type: 'string', describe: 'Path to public directory (default: ./public)', default: './public' });
+    }, fillMissingSection1ImagesCommand);
+}
+
+/**
+ * Generate Section 1 option images: Gemini text -> 4 English prompts, Gemini image model -> 4 images, save to public/listening_section1/.
+ */
+async function section1ImagesCommand(argv: any) {
+  const { closeDatabase } = await import('../utils/db');
+  const { generateAndSaveSection1Images } = await import('../services/listeningSection1Images');
+  const { join } = await import('path');
+
+  try {
+    const taskId = argv.taskId || argv['task-id'];
+    const publicDir = argv.publicDir || argv['public-dir'] || join(process.cwd(), 'public');
+    const apiKey = (process.env.GEMINI_API_KEY || process.env.API_KEY || '').trim();
+    if (!apiKey) {
+      console.error('❌ GEMINI_API_KEY (or API_KEY) is required. Set it in .env or environment.');
+      process.exit(1);
+    }
+
+    console.log(`\n📷 Section 1 images for task: ${taskId}`);
+    console.log(`   Output directory: ${publicDir}/listening_section1\n`);
+
+    const { questionsProcessed, filesWritten } = await generateAndSaveSection1Images(taskId, publicDir, apiKey);
+
+    console.log(`\n✅ Done. Questions processed: ${questionsProcessed}, files written: ${filesWritten}`);
+    await closeDatabase();
+    process.exit(0);
+  } catch (error: any) {
+    console.error('❌ Error:', error.message);
+    if (error.stack) console.error(error.stack);
+    await closeDatabase().catch(() => {});
+    process.exit(1);
+  }
+}
+
+/**
+ * Generate Section 1 option images for tasks that are missing them (redo for existing tasks).
+ */
+async function fillMissingSection1ImagesCommand(argv: any) {
+  const { closeDatabase, getDB } = await import('../utils/db');
+  const { generateAndSaveSection1Images, getTaskIdsMissingSection1Images } = await import('../services/listeningSection1Images');
+  const { join } = await import('path');
+
+  try {
+    const taskId = argv.taskId || argv['task-id'];
+    const publicDir = argv.publicDir || argv['public-dir'] || join(process.cwd(), 'public');
+    const apiKey = (process.env.GEMINI_API_KEY || process.env.API_KEY || '').trim();
+    if (!apiKey) {
+      console.error('❌ GEMINI_API_KEY (or API_KEY) is required. Set it in .env or environment.');
+      process.exit(1);
+    }
+
+    let taskIds: string[];
+    if (taskId) {
+      const db = await getDB();
+      const audioItems = await db.collection('audioItems').find({ taskId, sectionId: 1 }).limit(1).toArray();
+      if (audioItems.length === 0) {
+        console.error(`❌ Task ${taskId} has no Section 1 questions, or task not found.`);
+        await closeDatabase();
+        process.exit(1);
+      }
+      taskIds = [taskId];
+      console.log(`\n📷 Fill Section 1 images for task: ${taskId}`);
+    } else {
+      taskIds = await getTaskIdsMissingSection1Images();
+      if (taskIds.length === 0) {
+        console.log('\n✅ No tasks missing Section 1 images.');
+        await closeDatabase();
+        process.exit(0);
+      }
+      console.log(`\n📷 Fill Section 1 images for ${taskIds.length} task(s): ${taskIds.join(', ')}`);
+    }
+    console.log(`   Output directory: ${publicDir}/listening_section1\n`);
+
+    let totalQuestions = 0;
+    let totalFiles = 0;
+    for (const tid of taskIds) {
+      const result = await generateAndSaveSection1Images(tid, publicDir, apiKey);
+      totalQuestions += result.questionsProcessed;
+      totalFiles += result.filesWritten;
+    }
+
+    console.log(`\n✅ Done. Tasks: ${taskIds.length}, questions processed: ${totalQuestions}, files written: ${totalFiles}`);
+    await closeDatabase();
+    process.exit(0);
+  } catch (error: any) {
+    console.error('❌ Error:', error.message);
+    if (error.stack) console.error(error.stack);
+    await closeDatabase().catch(() => {});
+    process.exit(1);
+  }
 }

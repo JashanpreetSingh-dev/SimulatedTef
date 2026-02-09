@@ -85,27 +85,11 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
       return res.status(403).json({ error: 'Cannot start mock exam' });
     }
 
-    // Create mock exam session and track usage
+    // Create mock exam session (usage is counted when all 4 modules are completed, not on start)
     const sessionResult = await mockExamService.createMockExamSession(userId, mockExamId);
     if (!sessionResult.success) {
       return res.status(400).json({ error: sessionResult.error || 'Failed to create mock exam session' });
     }
-
-    // Track mock exam usage
-    const db = await connectDB();
-    const today = getTodayUTC();
-    await db.collection('usage').updateOne(
-      { userId, date: today },
-      {
-        $inc: {
-          mockExamsUsed: 1,
-        },
-        $set: { updatedAt: new Date().toISOString() },
-        $setOnInsert: { createdAt: new Date().toISOString() }
-      },
-      { upsert: true }
-    );
-    await userUsageService.recordUsageEvent(userId, today, 'mockExam');
 
     return res.json({
       sessionId: sessionResult.sessionId,
@@ -206,15 +190,16 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
 
 // ===== Mock Exam Endpoints =====
 
-// GET /api/exam/mock-exams - List available mock exams for user
+// GET /api/exam/mock-exams - List available mock exams for user (monthly rotating pool, tier-based visibility)
 router.get('/mock-exams', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const orgId = req.orgId ?? null;
   const { mockExamService } = await import('../services/mockExamService');
-  const mockExams = await mockExamService.listAvailableMockExams(userId);
+  const mockExams = await mockExamService.listAvailableMockExams(userId, orgId);
   res.json(mockExams);
 }));
 

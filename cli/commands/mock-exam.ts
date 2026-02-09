@@ -12,6 +12,8 @@ import { createListeningTask } from '../../server/models/ListeningTask';
 import { generateQuestions, validateGeneratedQuestions } from '../services/questionGenerator';
 import { generateListeningQuestions, validateGeneratedListeningQuestions } from '../services/listeningQuestionGenerator';
 import { generateAudioForTask } from '../services/ttsGenerator';
+import { generateAndSaveSection1Images } from '../services/listeningSection1Images';
+import { join } from 'path';
 
 /**
  * Create a new mock exam
@@ -456,6 +458,7 @@ export async function generateMockExamCommand(argv: any) {
       oralB, 
       readingTheme,
       skipAudio,
+      skipSection1Images,
       active 
     } = argv;
 
@@ -465,10 +468,11 @@ export async function generateMockExamCommand(argv: any) {
     console.log('  • Listening task with questions and audio');
     console.log('  • Reading task with questions');
     console.log('  • Mock exam linking everything');
+    console.log('  • Section 1 (quel dessin) option images (unless skipped)');
     console.log('═'.repeat(60));
 
     // Connect to database
-    console.log('\n[1/8] Connecting to database...');
+    console.log('\n[1/9] Connecting to database...');
     let db = await getDB();
     let mockExamsCollection = db.collection('mockExams');
     let readingTasksCollection = db.collection('readingTasks');
@@ -480,7 +484,7 @@ export async function generateMockExamCommand(argv: any) {
     // Auto-generate mock exam ID
     let finalMockExamId = mockExamId;
     if (!finalMockExamId) {
-      console.log('\n[2/8] Generating mock exam ID...');
+      console.log('\n[2/9] Generating mock exam ID...');
       const existingExams = await mockExamsCollection.find({}).toArray();
       const examNumbers = existingExams
         .map((exam: any) => {
@@ -502,7 +506,7 @@ export async function generateMockExamCommand(argv: any) {
     }
 
     // Auto-generate listening task ID
-    console.log('\n[3/8] Generating listening task ID...');
+    console.log('\n[3/9] Generating listening task ID...');
     const existingListeningTasks = await listeningTasksCollection.find({}).toArray();
     const listeningNumbers = existingListeningTasks
       .map((task: any) => {
@@ -515,7 +519,7 @@ export async function generateMockExamCommand(argv: any) {
     console.log(`   ✅ Generated: ${finalListening}`);
 
     // Auto-generate reading task ID
-    console.log('\n[4/8] Generating reading task ID...');
+    console.log('\n[4/9] Generating reading task ID...');
     const existingReadingTasks = await readingTasksCollection.find({}).toArray();
     const readingNumbers = existingReadingTasks
       .map((task: any) => {
@@ -547,10 +551,11 @@ export async function generateMockExamCommand(argv: any) {
       console.log(`🎨 Theme: ${readingTheme}`);
     }
     console.log(`🎵 Audio generation: ${skipAudio ? 'Skipped' : 'Enabled'}`);
+    console.log(`📷 Section 1 images: ${skipSection1Images ? 'Skipped' : 'Enabled'}`);
     console.log('═'.repeat(60));
 
     // Create listening task
-    console.log(`\n[5/8] Creating listening task with questions and audio...`);
+    console.log(`\n[5/9] Creating listening task with questions and audio...`);
     const listeningPrompt = "Écoutez attentivement les enregistrements audio et répondez aux 40 questions qui suivent. Chaque question sera lue deux fois avec un temps de réflexion entre les lectures. Vous avez 40 minutes pour compléter cette section.";
     
     const listeningTask = createListeningTask(
@@ -602,7 +607,7 @@ export async function generateMockExamCommand(argv: any) {
     }
 
     // Create reading task
-    console.log(`\n[6/8] Creating reading task with questions...`);
+    console.log(`\n[6/9] Creating reading task with questions...`);
     const defaultReadingPrompt = "Lisez attentivement les textes et répondez aux questions. Vous avez 60 minutes pour compléter cette section.";
     const defaultReadingContent = readingTheme 
       ? `Reading comprehension task ${finalReading} - Questions generated using AI with theme: ${readingTheme}.`
@@ -642,7 +647,7 @@ export async function generateMockExamCommand(argv: any) {
     console.log(`   ✅ Saved ${readingQuestions.length} reading questions`);
 
     // Validate oral tasks exist (just format check)
-    console.log(`\n[7/8] Validating oral task references...`);
+    console.log(`\n[7/9] Validating oral task references...`);
     if (!validateTaskId(finalOralA, 'oral')) {
       console.error(`   ❌ Invalid Oral A format: ${finalOralA}`);
       await closeDatabase();
@@ -656,7 +661,7 @@ export async function generateMockExamCommand(argv: any) {
     console.log(`   ✅ Oral tasks format valid`);
 
     // Create mock exam
-    console.log(`\n[8/8] Creating mock exam...`);
+    console.log(`\n[8/9] Creating mock exam...`);
     const mockExam = createMockExam(
       finalMockExamId,
       finalName,
@@ -670,9 +675,28 @@ export async function generateMockExamCommand(argv: any) {
     }
   );
 
-  await mockExamsCollection.insertOne(mockExam as any);
-  
-  const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+    await mockExamsCollection.insertOne(mockExam as any);
+
+    // Generate Section 1 (quel dessin) option images for listening task
+    if (!skipSection1Images) {
+      console.log(`\n[9/9] Generating Section 1 option images (Gemini image model)...`);
+      const apiKey = (process.env.GEMINI_API_KEY || process.env.API_KEY || '').trim();
+      if (apiKey) {
+        try {
+          const publicDir = join(process.cwd(), 'public');
+          const { questionsProcessed, filesWritten } = await generateAndSaveSection1Images(finalListening, publicDir, apiKey);
+          console.log(`   ✅ Section 1 images: ${questionsProcessed} questions, ${filesWritten} files`);
+        } catch (section1Err: any) {
+          console.warn(`   ⚠️  Section 1 images failed (mock exam still created):`, section1Err.message);
+        }
+      } else {
+        console.warn(`   ⚠️  GEMINI_API_KEY not set; skipping Section 1 images. Run later: npm run cli listening section1-images --task-id ${finalListening}`);
+      }
+    } else {
+      console.log(`\n[9/9] Section 1 images skipped`);
+    }
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
     
     console.log('\n' + '═'.repeat(60));
     console.log('✅ Complete Mock Exam Generated Successfully!');
@@ -686,6 +710,10 @@ export async function generateMockExamCommand(argv: any) {
     if (skipAudio) {
       console.log(`\n💡 Audio generation was skipped. Run this to generate audio:`);
       console.log(`   npm run cli listening questions generate-audio --task-id ${finalListening}`);
+    }
+    if (skipSection1Images) {
+      console.log(`\n💡 Section 1 images were skipped. Run this to generate them:`);
+      console.log(`   npm run cli listening section1-images --task-id ${finalListening}`);
     }
     console.log(`\n⏱️  Total time: ${duration}s`);
     console.log('═'.repeat(60));
@@ -714,6 +742,7 @@ export function registerMockExamCommands(yargsInstance: ReturnType<typeof yargs>
         .option('oral-b', { type: 'string', describe: 'Oral B task ID (default: oralB_1)' })
         .option('reading-theme', { type: 'string', describe: 'Optional theme for reading question generation (e.g., "Télétravail", "Immigration")' })
         .option('skip-audio', { type: 'boolean', default: false, describe: 'Skip audio generation for listening task (generate later)' })
+        .option('skip-section1-images', { type: 'boolean', default: false, describe: 'Skip Section 1 (quel dessin) option image generation (Gemini image model)' })
         .option('active', { type: 'boolean', default: true, describe: 'Whether exam is active' });
     }, generateMockExamCommand)
     .command('create', 'Create a new mock exam (all parameters optional - auto-generates everything)', (yargs) => {

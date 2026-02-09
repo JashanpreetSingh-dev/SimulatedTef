@@ -151,6 +151,15 @@ export async function transformToDatabaseFormat(
           q.options.D
         ];
 
+        // Section 1 (Images / "quel dessin"): set optionImageUrls so UI shows image options.
+        // Paths follow convention; CLI script (listening-section1-images) will generate and save images to public/listening_section1/.
+        const optionImageUrls =
+          audioItem.section_id === 1
+            ? ['A', 'B', 'C', 'D'].map(
+                (letter) => `/listening_section1/${taskId}_q${globalQuestionNumber}_${letter}.png`
+              )
+            : undefined;
+
         // Create question
         const questionDoc = createQuestion(
           `${taskId}_q${globalQuestionNumber}`,
@@ -163,7 +172,8 @@ export async function transformToDatabaseFormat(
           `La réponse correcte est ${q.options[q.correct_answer]}.`,
           true,
           undefined, // questionText not used for listening
-          audioItem.audio_id // audioId reference
+          audioItem.audio_id, // audioId reference
+          optionImageUrls
         );
         questions.push(questionDoc);
         globalQuestionNumber++;

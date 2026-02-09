@@ -24,6 +24,7 @@ interface EnrichedQuestionResult extends NormalizedQuestionResult {
   question: string;
   questionText?: string;
   options: string[];
+  optionImageUrls?: string[]; // For listening Section 1 "quel dessin"
   correctAnswer: number;
   explanation: string;
   audioId?: string; // Add audioId for listening questions
@@ -85,7 +86,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
     if (isOldFormat) {
       // Old format: convert to enriched format directly
       const enriched = result.questionResults.map(q => {
-        const oldFormatQ = q as NormalizedQuestionResult & { question: string; questionText?: string; options: string[]; correctAnswer: number; explanation: string; audioId?: string };
+        const oldFormatQ = q as NormalizedQuestionResult & { question: string; questionText?: string; options: string[]; optionImageUrls?: string[]; correctAnswer: number; explanation: string; audioId?: string };
         return {
           questionId: oldFormatQ.questionId,
           userAnswer: oldFormatQ.userAnswer,
@@ -93,9 +94,10 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
           question: oldFormatQ.question,
           questionText: oldFormatQ.questionText,
           options: oldFormatQ.options,
+          optionImageUrls: oldFormatQ.optionImageUrls,
           correctAnswer: oldFormatQ.correctAnswer,
           explanation: oldFormatQ.explanation,
-          audioId: oldFormatQ.audioId, // Include audioId if present
+          audioId: oldFormatQ.audioId,
         };
       });
       setEnrichedResults(enriched);
@@ -151,11 +153,12 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
               question: question.question,
               questionText: question.questionText,
               options: question.options,
+              optionImageUrls: question.optionImageUrls,
               correctAnswer: question.correctAnswer,
               explanation: question.explanation,
-              audioId: question.audioId, // Include audioId for listening questions
+              audioId: question.audioId,
             };
-          }).filter((q): q is EnrichedQuestionResult => q !== null);
+          }).filter((q): q is NonNullable<typeof q> => q !== null);
 
           setEnrichedResults(enriched);
         } else {
@@ -187,10 +190,11 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
               question: question.question,
               questionText: question.questionText,
               options: question.options,
+              optionImageUrls: question.optionImageUrls,
               correctAnswer: question.correctAnswer,
               explanation: question.explanation,
             };
-          }).filter((q): q is EnrichedQuestionResult => q !== null);
+          }).filter((q): q is NonNullable<typeof q> => q !== null);
 
           setEnrichedResults(enriched);
         }
@@ -427,6 +431,7 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
             question: question.question,
             questionText: question.questionText,
             options: question.options,
+            optionImageUrls: question.optionImageUrls,
             correctAnswer: question.correctAnswer,
             userAnswer: question.userAnswer,
             explanation: question.explanation,
