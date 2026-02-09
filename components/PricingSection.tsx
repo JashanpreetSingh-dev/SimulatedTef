@@ -24,7 +24,7 @@ export const PricingSection: React.FC = () => {
               <span className="text-xl text-slate-500 dark:text-slate-400">/student/month</span>
             </div>
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Flexible billing • No minimum commitment • Cancel anytime
+              No minimum commitment • Cancel anytime
             </p>
           </div>
 

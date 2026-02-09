@@ -7,6 +7,7 @@ import { z } from 'zod';
 // Zod schema for conversation log validation
 export const ConversationLogSchema = z.object({
   userId: z.string().min(1),
+  orgId: z.string().optional(), // Organization ID (optional for backward compatibility)
   sessionId: z.string().min(1), // Links to examSession
   examType: z.enum(['partA', 'partB']), // Only partA or partB (no 'full')
   module: z.literal('oralExpression'), // Always oralExpression

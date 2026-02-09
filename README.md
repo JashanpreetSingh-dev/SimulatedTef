@@ -76,7 +76,11 @@ This will open your browser to authenticate with your Stripe account.
 
 **3. Forward webhooks to your local server:**
 ```bash
-stripe listen --forward-to localhost:3001/api/subscription/webhook
+stripe listen --forward-to localhost:3001/api/stripe-webhooks
+```
+Or use the npm script (uses `PORT` from env, default 3001):
+```bash
+npm run stripe:listen
 ```
 
 **4. Copy the webhook signing secret:**

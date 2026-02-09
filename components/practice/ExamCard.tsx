@@ -6,9 +6,16 @@ interface ExamCardProps {
   onStart: (mode: 'partA' | 'partB' | 'full') => void;
   variant?: 'mobile' | 'desktop';
   isWrittenExpression?: boolean;
+  /** When true, card is disabled and shows "Limit reached" (D2C usage wall) */
+  atLimit?: boolean;
+  /** When true, card is disabled and usage badge shows loading (e.g. "...") */
+  usageLoading?: boolean;
+  /** Show usage badge e.g. "1 / 1" (optional) */
+  used?: number;
+  limit?: number;
 }
 
-export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpression = false }: ExamCardProps) {
+export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpression = false, atLimit = false, usageLoading = false, used, limit }: ExamCardProps) {
   const { t } = useLanguage();
 
   const config = {
@@ -56,23 +63,46 @@ export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpressio
   const sectionMargin = isWrittenExpression ? 'mb-1.5' : 'mb-3';
   const buttonMargin = isWrittenExpression ? 'mt-1.5' : 'mt-3';
 
+  const isDisabled = atLimit || usageLoading;
+  const showUsage = used !== undefined && limit !== undefined && limit !== -1;
+  const displayUsed = limit === -1 ? (used ?? 0) : Math.min(used ?? 0, limit);
+  const usageBadge = usageLoading
+    ? '…'
+    : showUsage
+      ? (atLimit ? t('practice.limitReached') : `${displayUsed} / ${limit}`)
+      : null;
+
+  const wrapperClass = isDisabled
+    ? `bg-slate-100 dark:bg-slate-800/50 border-slate-300 dark:border-slate-600 opacity-75 cursor-not-allowed ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? 'border' : ''} shadow-sm transition-all group`
+    : `${cardConfig.bgColor} ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`;
+
+  const handleClick = () => {
+    if (!isDisabled) onStart(mode);
+  };
+
   if (variant === 'mobile') {
     return (
-      <div 
-        className={`${cardConfig.bgColor} ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
-        onClick={() => onStart(mode)}
+      <div
+        className={wrapperClass}
+        onClick={handleClick}
+        aria-disabled={isDisabled}
       >
         <div className={`flex items-start justify-between ${sectionMargin}`}>
-          <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} group-hover:scale-110 transition-transform`}>
+          <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} ${!isDisabled ? 'group-hover:scale-110 transition-transform' : ''}`}>
             {cardConfig.icon}
           </div>
+          {usageBadge !== null && (
+            <span className={`text-xs font-semibold ${atLimit ? 'text-red-600 dark:text-red-400' : usageLoading ? 'text-slate-400 dark:text-slate-500 animate-pulse' : cardConfig.textColor}`}>
+              {usageBadge}
+            </span>
+          )}
         </div>
         <h3 className={`${titleSize} font-bold ${cardConfig.titleColor} ${titleMargin}`}>{cardConfig.title}</h3>
         <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed ${descriptionMargin}`}>
           {cardConfig.description}
         </p>
         <div className={`flex items-center ${cardConfig.textColor} font-bold text-xs`}>
-          {t('common.commencer')} <span className="ml-1">→</span>
+          {isDisabled ? (atLimit ? t('practice.limitReached') : '…') : <>{t('common.commencer')} <span className="ml-1">→</span></>}
         </div>
       </div>
     );
@@ -80,21 +110,27 @@ export function ExamCard({ mode, onStart, variant = 'mobile', isWrittenExpressio
 
   // Desktop variant
   return (
-    <div 
-      className={`${cardConfig.bgColor} ${cardRounded} ${cardPadding} ${cardConfig.borderColor ? `border ${cardConfig.borderColor}` : ''} shadow-sm hover:shadow-md transition-all group cursor-pointer`}
-      onClick={() => onStart(mode)}
+    <div
+      className={wrapperClass}
+      onClick={handleClick}
+      aria-disabled={atLimit}
     >
       <div className={`flex items-start justify-between ${sectionMargin}`}>
-        <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} group-hover:scale-110 transition-transform`}>
+        <div className={`${iconSize} ${cardConfig.iconBg} rounded-lg flex items-center justify-center ${iconTextSize} ${!isDisabled ? 'group-hover:scale-110 transition-transform' : ''}`}>
           {cardConfig.icon}
         </div>
+        {usageBadge !== null && (
+          <span className={`text-xs font-semibold ${atLimit ? 'text-red-600 dark:text-red-400' : usageLoading ? 'text-slate-400 dark:text-slate-500 animate-pulse' : cardConfig.textColor}`}>
+            {usageBadge}
+          </span>
+        )}
       </div>
       <h3 className={`${titleSize} font-bold ${cardConfig.titleColor} ${titleMargin}`}>{cardConfig.title}</h3>
       <p className={`${mode === 'full' ? 'text-indigo-100' : 'text-slate-500 dark:text-slate-400'} text-xs leading-relaxed`}>
         {cardConfig.description}
       </p>
       <div className={`${buttonMargin} flex items-center ${cardConfig.textColor} font-bold text-xs`}>
-        {t('common.commencer')} <span className="ml-1.5">→</span>
+        {isDisabled ? (atLimit ? t('practice.limitReached') : '…') : <>{t('common.commencer')} <span className="ml-1.5">→</span></>}
       </div>
     </div>
   );

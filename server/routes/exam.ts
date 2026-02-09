@@ -1,5 +1,5 @@
 /**
- * Exam session API routes - B2B mode (tracking only, no limits)
+ * Exam session API routes - enforces monthly usage limits
  */
 
 import { Router } from 'express';
@@ -10,6 +10,7 @@ import { Request, Response } from 'express';
 import { connectDB } from '../db/connection';
 import { getTodayUTC } from '../models/usage';
 import { ObjectId } from 'mongodb';
+import { userUsageService } from '../services/userUsageService';
 
 const router = Router();
 
@@ -27,20 +28,28 @@ async function createExamSession(userId: string, examType: string) {
     status: 'active'
   });
 
-  // Track usage for B2B analytics
+  // Track usage for monthly limits
+  // Full exams count as 1 Section A + 1 Section B usage
   await db.collection('usage').updateOne(
     { userId, date: today },
     {
       $inc: {
         fullTestsUsed: examType === 'full' ? 1 : 0,
-        sectionAUsed: examType === 'partA' ? 1 : 0,
-        sectionBUsed: examType === 'partB' ? 1 : 0,
+        sectionAUsed: examType === 'partA' || examType === 'full' ? 1 : 0,
+        sectionBUsed: examType === 'partB' || examType === 'full' ? 1 : 0,
       },
       $set: { updatedAt: new Date().toISOString() },
       $setOnInsert: { createdAt: new Date().toISOString() }
     },
     { upsert: true }
   );
+  if (examType === 'full') {
+    await userUsageService.recordUsageEvent(userId, today, 'sectionA');
+    await userUsageService.recordUsageEvent(userId, today, 'sectionB');
+  } else {
+    const eventType = examType === 'partA' ? 'sectionA' : 'sectionB';
+    await userUsageService.recordUsageEvent(userId, today, eventType);
+  }
 
   return sessionId;
 }
@@ -57,14 +66,26 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
   // Handle mock exam start
   if (mockExamId) {
     const { mockExamService } = await import('../services/mockExamService');
+    const orgId = req.orgId || null;
 
-    // Check if user can start this mock exam
+    // Check monthly usage limits before creating session
+    const limitCheck = await userUsageService.checkCanStartMockExam(userId, orgId);
+    if (!limitCheck.canStart) {
+      return res.status(403).json({
+        error: limitCheck.reason || 'Monthly limit reached',
+        canStart: false,
+        currentUsage: limitCheck.currentUsage,
+        limit: limitCheck.limit,
+      });
+    }
+
+    // Check if user can start this specific mock exam (not already completed, etc.)
     const canStart = await mockExamService.canStartMockExam(userId, mockExamId);
     if (!canStart) {
       return res.status(403).json({ error: 'Cannot start mock exam' });
     }
 
-    // Create mock exam session
+    // Create mock exam session (usage is counted when all 4 modules are completed, not on start)
     const sessionResult = await mockExamService.createMockExamSession(userId, mockExamId);
     if (!sessionResult.success) {
       return res.status(400).json({ error: sessionResult.error || 'Failed to create mock exam session' });
@@ -81,7 +102,30 @@ router.post('/start', requireAuth, asyncHandler(async (req: Request, res: Respon
     return res.status(400).json({ error: 'Invalid exam type' });
   }
 
-  // B2B mode: Always allow, just track usage
+  // Check monthly usage limits before creating session
+  const orgId = req.orgId || null;
+  let limitCheck;
+  
+  if (examType === 'partA') {
+    limitCheck = await userUsageService.checkCanStartSection(userId, orgId, 'A');
+  } else if (examType === 'partB') {
+    limitCheck = await userUsageService.checkCanStartSection(userId, orgId, 'B');
+  } else if (examType === 'full') {
+    limitCheck = await userUsageService.checkCanStartFullExam(userId, orgId);
+  } else {
+    return res.status(400).json({ error: 'Invalid exam type' });
+  }
+
+  if (!limitCheck.canStart) {
+    return res.status(403).json({
+      error: limitCheck.reason || 'Monthly limit reached',
+      canStart: false,
+      currentUsage: limitCheck.currentUsage,
+      limit: limitCheck.limit,
+    });
+  }
+
+  // Create session and track usage only if within limits
   const sessionId = await createExamSession(userId, examType);
   res.json({ sessionId, canStart: true });
 }));
@@ -146,15 +190,16 @@ router.post('/complete', requireAuth, asyncHandler(async (req: Request, res: Res
 
 // ===== Mock Exam Endpoints =====
 
-// GET /api/exam/mock-exams - List available mock exams for user
+// GET /api/exam/mock-exams - List available mock exams for user (monthly rotating pool, tier-based visibility)
 router.get('/mock-exams', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
+  const orgId = req.orgId ?? null;
   const { mockExamService } = await import('../services/mockExamService');
-  const mockExams = await mockExamService.listAvailableMockExams(userId);
+  const mockExams = await mockExamService.listAvailableMockExams(userId, orgId);
   res.json(mockExams);
 }));
 
@@ -176,14 +221,26 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
     });
 
     if (activeMockExam) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'You have an incomplete mock exam. Complete it first or abandon it.',
-        activeMockExamId: activeMockExam.mockExamId 
+        activeMockExamId: activeMockExam.mockExamId
+      });
+    }
+
+    // Enforce subscription mock exam limit (same as POST /exam/start)
+    const orgId = req.orgId ?? null;
+    const limitCheck = await userUsageService.checkCanStartMockExam(userId, orgId);
+    if (!limitCheck.canStart) {
+      return res.status(403).json({
+        error: limitCheck.reason ?? 'Monthly limit reached',
+        canStart: false,
+        currentUsage: limitCheck.currentUsage,
+        limit: limitCheck.limit,
       });
     }
 
     const { predefinedMockExamId } = req.body;
-    
+
     const { mockExamService } = await import('../services/mockExamService');
     const result = await mockExamService.selectMockExam(userId, predefinedMockExamId);
     

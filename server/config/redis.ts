@@ -44,6 +44,27 @@ redis.on('connect', async () => {
     } else {
       console.log('Redis eviction policy is correctly set to "noeviction"');
     }
+    
+    // Check memory usage
+    try {
+      const info = await redis.info('memory');
+      const maxmemoryMatch = info.match(/maxmemory:(\d+)/);
+      const usedMemoryMatch = info.match(/used_memory:(\d+)/);
+      
+      if (maxmemoryMatch && usedMemoryMatch) {
+        const maxMemory = parseInt(maxmemoryMatch[1]);
+        const usedMemory = parseInt(usedMemoryMatch[1]);
+        const usagePercent = ((usedMemory / maxMemory) * 100).toFixed(1);
+        
+        console.log(`📊 Redis memory: ${(usedMemory / 1024 / 1024).toFixed(2)} MB / ${(maxMemory / 1024 / 1024).toFixed(2)} MB (${usagePercent}%)`);
+        
+        if (parseFloat(usagePercent) > 80) {
+          console.warn(`⚠️  Redis memory usage is high (${usagePercent}%). Consider cleaning up old jobs or increasing Redis memory.`);
+        }
+      }
+    } catch (error) {
+      // Ignore if info command fails
+    }
   } catch (error) {
     // Ignore if config command fails (might not have permissions)
     console.warn('Could not check Redis eviction policy (may need admin permissions)');

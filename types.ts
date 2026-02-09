@@ -19,6 +19,8 @@ export interface ReadingListeningQuestion {
   question: string; // Question text
   questionText?: string; // Optional: Question-specific text/passage (for reading questions that reference specific parts)
   options: string[]; // Array of exactly 4 answer options
+  /** Length 4 when present; order = A,B,C,D. When set, UI shows options as images (e.g. listening Section 1 "quel dessin"). */
+  optionImageUrls?: string[];
   correctAnswer: number; // Index 0-3 indicating correct option
   explanation: string; // Explanation of why the correct answer is right
   audioId?: string; // Optional: Reference to AudioItem for listening questions
@@ -180,16 +182,10 @@ export type { TaskReference, TaskType, NormalizedTask };
 // Module-specific data structures
 export interface OralExpressionData {
   type: 'oralExpression';
-  // For complete exams or mock exams: both sections
-  sectionA?: {
-    text: string;
-    result?: EvaluationResult;
-  };
-  sectionB?: {
-    text: string;
-    result?: EvaluationResult;
-  };
-  // For practice partA/partB: only relevant section
+  // Note: Transcript is stored at top-level (result.transcript), not duplicated here
+  // Evaluation is stored at top-level (result.evaluation), not duplicated here
+  // For full mode, transcript contains both sections separated by "Section B" marker
+  // No need for sectionA/sectionB - use top-level transcript and evaluation instead
 }
 
 export interface WrittenExpressionData {
@@ -222,6 +218,114 @@ export interface MCQData {
 
 export type ModuleData = OralExpressionData | WrittenExpressionData | MCQData;
 
+// ============================================================================
+// LIST VIEW RESPONSE TYPES - Flat structures for list endpoints
+// Avoid nested fields, only include what's needed for display
+// ============================================================================
+
+/**
+ * Result list item - flat structure for list views
+ * All evaluation data is flattened to top level (no nested evaluationSummary/evaluation)
+ */
+export interface ResultListItem {
+  // Core identification
+  _id: string;
+  resultType: 'practice' | 'mockExam' | 'assignment';
+  mode: 'partA' | 'partB' | 'full';
+  module: 'oralExpression' | 'writtenExpression' | 'reading' | 'listening';
+  
+  // Display fields
+  title: string;
+  timestamp: number;
+  createdAt: string;
+  
+  // Task references (for task numbers display)
+  taskReferences: {
+    taskA?: { taskId: string; type: string };
+    taskB?: { taskId: string; type: string };
+  };
+  
+  // Evaluation data (flattened from evaluationSummary or evaluation)
+  score?: number; // Flattened from evaluationSummary.score or evaluation.score
+  clbLevel?: string; // Flattened from evaluationSummary.clbLevel or evaluation.clbLevel
+  cecrLevel?: string; // Flattened from evaluationSummary.cecrLevel or evaluation.cecrLevel
+  
+  // MCQ-specific (for reading/listening, flattened from moduleData)
+  mcqScore?: number; // Flattened from moduleData.score
+  mcqTotalQuestions?: number; // Flattened from moduleData.totalQuestions
+  
+  // Optional references
+  assignmentId?: string;
+  recordingId?: string; // For audio icon display
+  isLoading?: boolean;
+}
+
+/**
+ * Assignment list item - flat structure for list views
+ * Avoids nested fields like settings.numberOfQuestions -> numberOfQuestions
+ */
+export interface AssignmentListItem {
+  assignmentId: string;
+  title: string;
+  type: 'reading' | 'listening';
+  status: 'draft' | 'published';
+  prompt: string; // Truncated to 200 chars for list view
+  numberOfQuestions: number; // Flattened from settings.numberOfQuestions
+  questionCount?: number; // Flattened from questionIds.length
+  createdAt: string;
+  creatorName?: string;
+  isOwner?: boolean; // Computed on backend
+}
+
+/**
+ * Batch list item - flat structure for list views
+ * Avoids nested arrays like studentIds (uses studentCount instead)
+ */
+export interface BatchListItem {
+  batchId: string;
+  name: string;
+  studentCount: number; // Computed from studentIds.length (not the array itself)
+  createdAt: string;
+  assignmentCount?: number; // From separate query/aggregation
+}
+
+/**
+ * Batch assignment list item - flat structure for list views
+ * Includes minimal assignment info without full assignment object
+ */
+export interface BatchAssignmentListItem {
+  batchAssignmentId: string;
+  batchId: string;
+  assignmentId: string;
+  assignedAt: string;
+  // Flattened assignment fields (from joined assignment)
+  assignmentTitle?: string;
+  assignmentType?: 'reading' | 'listening';
+  assignmentStatus?: 'draft' | 'published';
+}
+
+// Voting types for Speaking results
+export type VoteType = 'upvote' | 'downvote';
+export type DownvoteReason = 'inaccurate_score' | 'poor_feedback' | 'technical_issue';
+
+export interface UserVote {
+  userId: string;
+  vote: VoteType;
+  reason?: DownvoteReason;
+  timestamp: string;
+}
+
+export interface ResultVotes {
+  upvotes: number;
+  downvotes: number;
+  downvoteReasons: {
+    inaccurate_score: number;
+    poor_feedback: number;
+    technical_issue: number;
+  };
+  userVotes: UserVote[];
+}
+
 export interface SavedResult extends MongoDocument {
   // Core identification
   resultType: 'practice' | 'mockExam' | 'assignment';
@@ -242,12 +346,18 @@ export interface SavedResult extends MongoDocument {
   evaluation: EvaluationResult;
   
   // Module-specific data (discriminated union)
-  moduleData: ModuleData;
+  // For oral expression: not needed (transcript/evaluation at top level)
+  // For written expression: contains sectionA/sectionB.text (written responses)
+  // For MCQ: contains answers and question results
+  moduleData?: ModuleData;
   
   // Common optional fields
   recordingId?: string;
   transcript?: string;
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
+  
+  // Voting (for oral expression results)
+  votes?: ResultVotes; // Vote scope determined by result.mode (full, partA, partB)
   
   // Legacy fields (deprecated, kept for backward compatibility during transition)
   taskPartA?: TEFTask;

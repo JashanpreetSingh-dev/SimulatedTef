@@ -14,6 +14,8 @@ export const QuestionSchema = z.object({
   question: z.string().min(1),
   questionText: z.string().optional(), // Optional: Question-specific text/passage
   options: z.array(z.string()).length(4), // Must have exactly 4 options
+  optionImageUrls: z.array(z.string().min(1)).length(4).optional(), // Optional: 4 image URLs/paths for listening Section 1 (static or presigned)
+  optionImageS3Keys: z.array(z.string().min(1)).length(4).optional(), // Optional: 4 S3 keys for listening Section 1 (resolved to presigned URLs in API)
   correctAnswer: z.number().int().min(0).max(3), // Must be 0, 1, 2, or 3
   explanation: z.string().min(1), // Required explanation
   audioId: z.string().optional(), // Optional: Reference to AudioItem for listening questions
@@ -47,11 +49,15 @@ export function createQuestion(
   explanation: string,
   isActive: boolean = true,
   questionText?: string, // Optional: Question-specific text/passage
-  audioId?: string // Optional: Reference to AudioItem for listening questions
+  audioId?: string, // Optional: Reference to AudioItem for listening questions
+  optionImageUrls?: string[] // Optional: 4 image URLs/paths for listening Section 1 "quel dessin"
 ): ReadingListeningQuestion {
   // Validate options array has exactly 4 items
   if (options.length !== 4) {
     throw new Error(`Question must have exactly 4 options, got ${options.length}`);
+  }
+  if (optionImageUrls !== undefined && optionImageUrls.length !== 4) {
+    throw new Error(`optionImageUrls must have exactly 4 items when provided, got ${optionImageUrls.length}`);
   }
   
   // Validate correctAnswer is 0-3
@@ -76,6 +82,7 @@ export function createQuestion(
     correctAnswer,
     explanation,
     audioId,
+    optionImageUrls,
     isActive,
     createdAt: now,
     updatedAt: now,

@@ -185,13 +185,13 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
     <div className={`audio-player ${className}`}>
       <audio ref={audioRef} src={src} preload="auto" />
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 sm:gap-4 flex-wrap">
         {/* Play/Pause Button */}
         <button
           onClick={togglePlayPause}
           disabled={isLoading}
           className={`
-            p-2 rounded-full transition-colors
+            p-2 rounded-full transition-colors flex-shrink-0
             ${theme === 'dark' 
               ? 'bg-slate-700 hover:bg-slate-600 text-slate-100' 
               : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'
@@ -215,17 +215,22 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
           )}
         </button>
 
-        {/* Progress Bar */}
-        <div className="flex-1 flex items-center gap-2">
-          <span className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+        {/* Progress Bar - Ensure it's visible and has minimum width */}
+        <div className="flex-1 flex items-center gap-2 min-w-[200px] sm:min-w-[250px]">
+          <span className={`text-xs sm:text-sm flex-shrink-0 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
             {formatTime(currentTime)}
           </span>
           <div
             onClick={handleSeek}
             className={`
-              flex-1 h-2 rounded-full cursor-pointer relative
+              flex-1 h-3 rounded-full cursor-pointer relative min-w-[100px]
               ${theme === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}
             `}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={duration || 100}
+            aria-valuenow={currentTime}
+            title={`Seek to position: ${formatTime(currentTime)} / ${formatTime(duration)}`}
           >
             <div
               className={`
@@ -235,7 +240,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
-          <span className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
+          <span className={`text-xs sm:text-sm flex-shrink-0 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-600'}`}>
             {formatTime(duration)}
           </span>
         </div>

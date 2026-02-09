@@ -261,6 +261,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionB': 'Section B guidée',
     'practice.guidedSectionADescription': 'Fait divers avec retour en temps réel',
     'practice.guidedSectionBDescription': 'Argumentation avec retour en temps réel',
+    'practice.limitReached': 'Limite atteinte',
     'practice.standardPractice': 'Pratique standard',
     
     // Errors
@@ -275,6 +276,7 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionALimitReached': 'Limite quotidienne de Section A atteinte et aucun crédit de pack disponible',
     'errors.sectionBLimitReached': 'Limite quotidienne de Section B atteinte et aucun crédit de pack disponible',
     'errors.examSessionExpired': 'Cette session d\'examen a expiré. L\'utilisation a déjà été consommée lorsque l\'examen a commencé.',
+    'errors.writtenExpressionLimitReached': 'Limite mensuelle d\'expression écrite atteinte. Passez à un forfait supérieur pour continuer.',
     
     // Subscription Management
     'subscription.title': 'Gestion de l\'abonnement',
@@ -464,6 +466,49 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.totalBilled': 'Total Billed',
     'admin.allTurns': '(All turns)',
     'admin.totalCostLabel': 'Total Cost',
+    
+    // Voting
+    'voting.title': 'Cette évaluation vous a-t-elle été utile ?',
+    'voting.totalVotes': 'votes au total',
+    'voting.yourReason': 'Votre raison',
+    'voting.selectReason': 'Pourquoi votez-vous contre ce résultat ?',
+    'voting.reason.inaccurateScore': 'Score/niveau inexact',
+    'voting.reason.poorFeedback': 'Retour médiocre ou peu utile',
+    'voting.reason.technicalIssue': 'Problème technique',
+    
+    // Admin Vote Analytics
+    'admin.voteAnalytics': 'Analytique des Votes',
+    'admin.voteAnalyticsSubtitle': 'Analytique des votes pour les résultats d\'expression orale',
+    'admin.loadingAnalytics': 'Chargement de l\'analytique...',
+    'admin.failedToLoad': 'Échec du chargement de l\'analytique',
+    'admin.totalVotes': 'Total des Votes',
+    'admin.upvotePercentage': '% de Votes Positifs',
+    'admin.downvotePercentage': '% de Votes Négatifs',
+    'admin.totalResults': 'Total des Résultats',
+    'admin.breakdownByMode': 'Répartition par Mode d\'Examen',
+    'admin.downvoteReasons': 'Raisons des Votes Négatifs',
+    'admin.topDownvotedResults': 'Résultats les Plus Désapprouvés',
+    'admin.orgConfig': 'Paramètres de l\'Organisation',
+    'admin.orgConfigTitle': 'Paramètres de l\'Organisation',
+    'admin.orgConfigSubtitle': 'Configurez les limites d\'utilisation mensuelles pour les tentatives d\'expression orale Section A et Section B',
+    'admin.currentOrganization': 'Organisation:',
+    'admin.selectOrganization': 'Sélectionner l\'Organisation',
+    'admin.loadingConfig': 'Chargement de la configuration...',
+    'admin.configSaved': 'Configuration enregistrée avec succès !',
+    'admin.sectionALimit': 'Limite Mensuelle Section A',
+    'admin.sectionALimitDesc': 'Nombre maximum de tentatives d\'expression orale Section A par utilisateur par mois',
+    'admin.sectionBLimit': 'Limite Mensuelle Section B',
+    'admin.sectionBLimitDesc': 'Nombre maximum de tentatives d\'expression orale Section B par utilisateur par mois',
+    'admin.saving': 'Enregistrement...',
+    'admin.save': 'Enregistrer les Modifications',
+    'admin.aboutLimits': 'À Propos des Limites Mensuelles',
+    'admin.limitInfo1': 'Les limites s\'appliquent par utilisateur, pas par organisation',
+    'admin.limitInfo2': 'Les compteurs se réinitialisent automatiquement au début de chaque mois calendaire',
+    'admin.limitInfo3': 'Les examens complets comptent comme 1 Section A + 1 Section B',
+    'admin.limitInfo4': 'Les utilisateurs ne peuvent pas dépasser leur limite mensuelle',
+    
+    // Common
+    'common.cancel': 'Annuler',
   },
   en: {
     // Navigation
@@ -715,6 +760,7 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionB': 'Guided Section B',
     'practice.guidedSectionADescription': 'News story with real-time feedback',
     'practice.guidedSectionBDescription': 'Argumentation with real-time feedback',
+    'practice.limitReached': 'Limit reached',
     'practice.standardPractice': 'Standard Practice',
     
     // Errors
@@ -729,6 +775,7 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionALimitReached': 'Daily Section A limit reached and no pack credits available',
     'errors.sectionBLimitReached': 'Daily Section B limit reached and no pack credits available',
     'errors.examSessionExpired': 'This exam session has expired. Usage was already consumed when the exam started.',
+    'errors.writtenExpressionLimitReached': 'Monthly written expression limit reached. Upgrade to continue.',
     
     // Subscription Management
     'subscription.title': 'Subscription Management',
@@ -918,6 +965,49 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.totalBilled': 'Total Billed',
     'admin.allTurns': '(All turns)',
     'admin.totalCostLabel': 'Total Cost',
+    
+    // Voting
+    'voting.title': 'Was this evaluation helpful?',
+    'voting.totalVotes': 'total votes',
+    'voting.yourReason': 'Your reason',
+    'voting.selectReason': 'Why are you downvoting this result?',
+    'voting.reason.inaccurateScore': 'Inaccurate score/level',
+    'voting.reason.poorFeedback': 'Poor or unhelpful feedback',
+    'voting.reason.technicalIssue': 'Technical issue',
+    
+    // Admin Vote Analytics
+    'admin.voteAnalytics': 'Vote Analytics',
+    'admin.voteAnalyticsSubtitle': 'Analytics for Speaking results voting',
+    'admin.loadingAnalytics': 'Loading analytics...',
+    'admin.failedToLoad': 'Failed to load analytics',
+    'admin.totalVotes': 'Total Votes',
+    'admin.upvotePercentage': 'Upvote %',
+    'admin.downvotePercentage': 'Downvote %',
+    'admin.totalResults': 'Total Results',
+    'admin.breakdownByMode': 'Breakdown by Exam Mode',
+    'admin.downvoteReasons': 'Downvote Reasons',
+    'admin.topDownvotedResults': 'Top Downvoted Results',
+    'admin.orgConfig': 'Organization Settings',
+    'admin.orgConfigTitle': 'Organization Settings',
+    'admin.orgConfigSubtitle': 'Configure monthly usage limits for Section A and Section B speaking attempts',
+    'admin.currentOrganization': 'Organization:',
+    'admin.selectOrganization': 'Select Organization',
+    'admin.loadingConfig': 'Loading configuration...',
+    'admin.configSaved': 'Configuration saved successfully!',
+    'admin.sectionALimit': 'Section A Monthly Limit',
+    'admin.sectionALimitDesc': 'Maximum number of Section A speaking attempts per user per month',
+    'admin.sectionBLimit': 'Section B Monthly Limit',
+    'admin.sectionBLimitDesc': 'Maximum number of Section B speaking attempts per user per month',
+    'admin.saving': 'Saving...',
+    'admin.save': 'Save Changes',
+    'admin.aboutLimits': 'About Monthly Limits',
+    'admin.limitInfo1': 'Limits apply per user, not per organization',
+    'admin.limitInfo2': 'Counters reset automatically at the start of each calendar month',
+    'admin.limitInfo3': 'Full exams count as 1 Section A + 1 Section B usage',
+    'admin.limitInfo4': 'Users cannot exceed their monthly limit',
+    
+    // Common
+    'common.cancel': 'Cancel',
   },
 };
 

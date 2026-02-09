@@ -447,7 +447,7 @@ export const geminiService = {
     }
 
     return ai.live.connect({
-      model: 'gemini-2.5-flash-native-audio-preview-12-2025',
+      model: 'gemini-2.5-flash-native-audio-latest',
       callbacks,
       config,
     });
@@ -496,7 +496,7 @@ export const geminiService = {
     fluencyAnalysis?: any
   ): Promise<EvaluationResult> {
     const isFullExam = mode === 'full' && taskPartA && taskPartB;
-    const systemPrompt = buildRubricSystemPrompt(section, isFullExam);
+    const systemPrompt = buildRubricSystemPrompt(section, isFullExam, mode);
     const userMessage = buildEvaluationUserMessage(
       section,
       scenarioId || 0,
@@ -508,7 +508,8 @@ export const geminiService = {
       taskPartA,
       taskPartB,
       eo2RemainingSeconds,
-      fluencyAnalysis
+      fluencyAnalysis,
+      mode
     );
 
     // Use gemini-2.5-flash for better quota availability (free tier friendly)

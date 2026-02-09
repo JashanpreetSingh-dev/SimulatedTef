@@ -15,12 +15,16 @@ import {
   getRandomSectionATask,
   getRandomSectionBTask,
 } from "../../services/tasks";
+import { subscriptionService } from "./subscriptionService";
+import { d2cConfigService } from "./d2cConfigService";
 
 export const mockExamService = {
   /**
-   * List all available mock exams
+   * List available mock exams for the user.
+   * - Each month we show the next L mocks in rotation: Free 1, Basic 2, Premium 5. Next month = next 1/2/5.
+   * - Completed mocks (all 4 modules) are excluded (no retakes).
    */
-  async listAvailableMockExams(userId: string): Promise<
+  async listAvailableMockExams(userId: string, orgId?: string | null): Promise<
     Array<{
       mockExamId: string;
       name: string;
@@ -30,45 +34,54 @@ export const mockExamService = {
   > {
     const db = await connectDB();
 
-    // Get all active mock exams
-    const allMockExams = await db
+    // Get all active mock exams, sorted by createdAt for stable rotation
+    const allMockExams = (await db
       .collection("mockExams")
       .find({ isActive: true })
       .sort({ createdAt: 1 })
-      .toArray();
+      .toArray()) as any[];
 
-    // Get completed mock exam IDs for this user - only those with all 4 modules completed
+    const totalMocks = allMockExams.length;
+    if (totalMocks === 0) return [];
+
+    // How many mocks this user sees this month (by plan)
+    let visibilityLimit: number;
+    if (orgId) {
+      visibilityLimit = 50; // B2B: show many
+    } else {
+      const limits = await subscriptionService.getSubscriptionLimits(userId);
+      if (limits) {
+        visibilityLimit = limits.mockExamLimit;
+      } else {
+        const d2cConfig = await d2cConfigService.getConfig();
+        visibilityLimit = d2cConfig.mockExamLimit;
+      }
+    }
+
+    // This month's batch: L mocks starting at monthIndex. Next month = next L in sequence (Premium next 5, Basic next 2, Free next 1).
+    const now = new Date();
+    const monthsSinceEpoch = now.getFullYear() * 12 + now.getMonth();
+    const monthIndex = (monthsSinceEpoch * visibilityLimit) % totalMocks;
+    const pool: typeof allMockExams = [];
+    for (let i = 0; i < visibilityLimit; i++) {
+      pool.push(allMockExams[(monthIndex + i) % totalMocks]);
+    }
+
+    // Exclude completed (all 4 modules done)
     const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
-    
     const completedMockExamAggregation = await db
       .collection("results")
       .aggregate([
         { $match: { userId, mockExamId: { $exists: true, $ne: null } } },
-        { 
-          $group: { 
-            _id: '$mockExamId', 
-            completedModules: { $addToSet: '$module' } 
-          } 
-        },
-        { 
-          $match: { 
-            // Only include mock exams where all 4 modules are completed
-            $expr: { 
-              $setEquals: ['$completedModules', ALL_MODULES] 
-            } 
-          } 
-        }
+        { $group: { _id: '$mockExamId', completedModules: { $addToSet: '$module' } } },
+        { $match: { $expr: { $setEquals: ['$completedModules', ALL_MODULES] } } },
       ])
       .toArray();
-    
-    const completedMockExamIds = completedMockExamAggregation.map((r: any) => r._id);
+    const completedMockExamIds = new Set(completedMockExamAggregation.map((r: any) => r._id));
 
-    // Filter out completed exams
-    const availableMockExams = allMockExams.filter(
-      (exam: any) => !completedMockExamIds.includes(exam.mockExamId)
-    );
+    const visible = pool.filter((exam: any) => !completedMockExamIds.has(exam.mockExamId));
 
-    return availableMockExams.map((exam: any) => ({
+    return visible.map((exam: any) => ({
       mockExamId: exam.mockExamId,
       name: exam.name,
       description: exam.description,
@@ -316,15 +329,7 @@ export const mockExamService = {
         let sessionId: string;
 
         await session.withTransaction(async () => {
-          // Track usage for B2B analytics (no limits enforced)
-          await db.collection("usage").updateOne(
-            { userId, date: today },
-            {
-              $inc: { fullTestsUsed: 1 },
-              $set: { updatedAt: new Date().toISOString() },
-            },
-            { session, upsert: true }
-          );
+          // Usage is counted when all 4 modules are completed (in completeModule), not on start
 
           // Create mock exam session
           const examSession = createExamSession(userId, "mock", {
@@ -1025,8 +1030,24 @@ export const mockExamService = {
             },
             { upsert: true, session }
           );
+
+          // Count as "used" only when all 4 modules are finished (for D2C period limit)
+          const today = getTodayUTC();
+          await db.collection("usage").updateOne(
+            { userId, date: today },
+            {
+              $inc: { mockExamsUsed: 1 },
+              $set: { updatedAt: new Date().toISOString() },
+            },
+            { upsert: true, session }
+          );
         }
       });
+
+      if (allModulesCompleted) {
+        const { userUsageService } = await import("./userUsageService");
+        await userUsageService.recordUsageEvent(userId, getTodayUTC(), "mockExam");
+      }
 
       return {
         success: true,

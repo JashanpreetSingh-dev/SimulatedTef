@@ -98,18 +98,18 @@ export const batchAssignmentService = {
       .sort({ assignedAt: -1 })
       .toArray() as unknown as BatchAssignment[];
 
-    // Populate assignment details
-    const assignmentsWithDetails = await Promise.all(
-      batchAssignments.map(async (ba) => {
-        const assignment = await assignmentService.getAssignmentById(ba.assignmentId);
-        return {
-          ...ba,
-          assignment: assignment || undefined,
-        };
-      })
-    );
+    if (batchAssignments.length === 0) {
+      return [];
+    }
 
-    return assignmentsWithDetails;
+    const assignmentIds = [...new Set(batchAssignments.map((ba) => ba.assignmentId))];
+    const assignments = await assignmentService.getAssignmentsByIds(assignmentIds);
+    const assignmentMap = new Map(assignments.map((a) => [a.assignmentId, a]));
+
+    return batchAssignments.map((ba) => ({
+      ...ba,
+      assignment: assignmentMap.get(ba.assignmentId),
+    }));
   },
 
   /**

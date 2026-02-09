@@ -15,6 +15,13 @@
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",
     "clear-mock-data": "tsx server/scripts/clearMockData.ts",
+    "clear-failed-jobs": "tsx server/scripts/clearFailedEvaluationJobs.ts",
+    "migrate-org-id": "tsx server/scripts/migrateOrgId.ts",
+    "migrate-d2c-config": "tsx scripts/migrate-init-d2c-config.js",
+    "migrate-subscriptions": "tsx scripts/migrate-init-subscriptions.js",
+    "migrate-cleanup-stripe-customers": "tsx scripts/migrate-cleanup-invalid-stripe-customers.js",
+    "stripe:listen": "stripe listen --forward-to localhost:3001/api/stripe-webhooks",
+    "clear-db": "tsx scripts/clear-database.js",
     "cli": "tsx cli/index.ts",
     "convert-service-account": "tsx scripts/convert-service-account-to-env.ts"
   },

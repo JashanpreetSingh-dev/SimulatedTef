@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useUser, useClerk, UserButton } from '@clerk/clerk-react';
+import { useUser, useClerk, UserButton, OrganizationSwitcher } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Footer } from '../components/Footer';
+import { useIsD2C } from '../utils/userType';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -24,6 +25,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isProfessor = user?.organizationMemberships?.some(
     (membership) => membership.role === 'org:professor' || membership.role === 'org:admin'
   ) ?? false;
+
+  // Check if user is D2C (no organization membership)
+  const isD2CUser = useIsD2C();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -49,7 +53,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               Akseli
             </span>
           </div>
-          <div className="hidden md:flex gap-4 text-sm font-bold">
+          <div className="hidden md:flex gap-4 text-sm font-bold items-center">
+            {isAdmin && (
+              <div className="flex items-center">
+                <OrganizationSwitcher 
+                  hidePersonal={true}
+                  appearance={{
+                    elements: {
+                      organizationSwitcherTrigger: "text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200",
+                      organizationSwitcherPopoverCard: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700",
+                    }
+                  }}
+                />
+              </div>
+            )}
             <button 
               onClick={() => navigate('/dashboard')}
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
@@ -69,12 +86,36 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </button>
               </>
             )}
-            {isAdmin && (
+            {isD2CUser && (
               <button 
-                onClick={() => navigate('/admin/usage')}
-                className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-                {t('admin.usageGlobal')}
+                onClick={() => navigate('/subscription')}
+                className={isActive('/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                Subscription
               </button>
+            )}
+            {isAdmin && (
+              <>
+                <button 
+                  onClick={() => navigate('/admin/usage')}
+                  className={isActive('/admin/usage') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.usageGlobal')}
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/vote-analytics')}
+                  className={isActive('/admin/vote-analytics') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.voteAnalytics') || 'Vote Analytics'}
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/org-config')}
+                  className={isActive('/admin/org-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  {t('admin.orgConfig') || 'Organization Settings'}
+                </button>
+                <button 
+                  onClick={() => navigate('/admin/d2c-config')}
+                  className={isActive('/admin/d2c-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  D2C Settings
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -158,6 +199,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Menu Panel */}
           <div className="fixed top-[57px] left-0 right-0 bg-indigo-100 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 z-40 md:hidden shadow-lg transition-colors duration-300">
             <div className="px-4 py-3 space-y-1">
+              {isAdmin && (
+                <div className="px-4 py-3 mb-2">
+                  <OrganizationSwitcher 
+                    hidePersonal={true}
+                    appearance={{
+                      elements: {
+                        organizationSwitcherTrigger: "text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200",
+                        organizationSwitcherPopoverCard: "bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700",
+                      }
+                    }}
+                  />
+                </div>
+              )}
               <button 
                 onClick={() => handleNavigate('/dashboard')}
                 className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
@@ -192,17 +246,51 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </button>
                 </>
               )}
-              {isAdmin && (
+              {isD2CUser && (
                 <button 
-                  onClick={() => handleNavigate('/admin/usage')}
+                  onClick={() => handleNavigate('/subscription')}
                   className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                    isActive('/admin/usage')
+                    isActive('/subscription')
                       ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
                       : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {t('admin.usageGlobal')}
+                  Subscription
                 </button>
+              )}
+              {isAdmin && (
+                <>
+                  <button 
+                    onClick={() => handleNavigate('/admin/usage')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/usage')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {t('admin.usageGlobal')}
+                  </button>
+                  <button 
+                    onClick={() => handleNavigate('/admin/vote-analytics')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/vote-analytics')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {t('admin.voteAnalytics') || 'Vote Analytics'}
+                  </button>
+                  <button 
+                    onClick={() => handleNavigate('/admin/d2c-config')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/admin/d2c-config')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    D2C Settings
+                  </button>
+                </>
               )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
               <button 

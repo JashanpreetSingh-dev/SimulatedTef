@@ -4,7 +4,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 interface PracticeTabNavigationProps {
   activeTab: 'practice' | 'history';
   onTabChange: (tab: 'practice' | 'history') => void;
-  module: 'oral' | 'written';
+  module: 'oral' | 'written' | 'reading' | 'listening';
 }
 
 export function PracticeTabNavigation({ activeTab, onTabChange, module }: PracticeTabNavigationProps) {

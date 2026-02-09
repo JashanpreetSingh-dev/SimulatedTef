@@ -17,9 +17,27 @@ export interface AuthenticatedFetchOptions extends RequestInit {
    */
   maxRetries?: number;
   /**
+   * Maximum number of retries on 429 rate limit errors (default: 2)
+   */
+  maxRateLimitRetries?: number;
+  /**
    * Request timeout in milliseconds (default: 30000)
    */
   timeout?: number;
+}
+
+/**
+ * Custom error class for rate limit errors
+ */
+export class RateLimitError extends Error {
+  constructor(
+    message: string,
+    public retryAfter?: number,
+    public statusCode: number = 429
+  ) {
+    super(message);
+    this.name = 'RateLimitError';
+  }
 }
 
 /**
@@ -33,9 +51,10 @@ export async function authenticatedFetch(
   url: string,
   options: AuthenticatedFetchOptions
 ): Promise<Response> {
-  const { getToken, maxRetries = 1, timeout = 30000, ...fetchOptions } = options;
+  const { getToken, maxRetries = 1, maxRateLimitRetries = 2, timeout = 30000, ...fetchOptions } = options;
   
   let lastError: Error | null = null;
+  let rateLimitAttempt = 0;
   
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
@@ -60,6 +79,10 @@ export async function authenticatedFetch(
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
+      // Prevent caching for admin endpoints (org switching needs fresh data)
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      headers.set('Pragma', 'no-cache');
+      headers.set('Expires', '0');
       
       // Create abort controller for timeout
       const controller = new AbortController();
@@ -78,6 +101,38 @@ export async function authenticatedFetch(
         // If successful, return response immediately
         if (response.ok) {
           return response;
+        }
+        
+        // Handle 429 Rate Limit errors with retry logic
+        if (response.status === 429) {
+          // Get retry-after header if available (in seconds)
+          const retryAfterHeader = response.headers.get('Retry-After');
+          const retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : undefined;
+          
+          // Calculate wait time: use retry-after header if available, otherwise exponential backoff
+          const waitTime = retryAfter 
+            ? retryAfter * 1000 // Convert seconds to milliseconds
+            : Math.min(Math.pow(2, rateLimitAttempt) * 1000, 60000); // Max 60 seconds
+          
+          if (rateLimitAttempt < maxRateLimitRetries) {
+            if (isDev) {
+              console.log(`⏳ Rate limit hit (429), retrying in ${waitTime}ms... (attempt ${rateLimitAttempt + 1}/${maxRateLimitRetries})`);
+            }
+            
+            rateLimitAttempt++;
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            
+            // Continue to retry - reset attempt counter for 401 retries
+            continue;
+          } else {
+            // Out of retries, throw rate limit error
+            const errorText = await response.text().catch(() => 'Too many requests');
+            throw new RateLimitError(
+              errorText || 'Too many requests. Please wait a moment and try again.',
+              retryAfter,
+              429
+            );
+          }
         }
         
         // If 401 and we have retries left, wait a bit and retry with fresh token
@@ -99,6 +154,11 @@ export async function authenticatedFetch(
       } catch (fetchError: any) {
         clearTimeout(timeoutId);
         
+        // Re-throw RateLimitError as-is
+        if (fetchError instanceof RateLimitError) {
+          throw fetchError;
+        }
+        
         // Handle abort (timeout)
         if (fetchError.name === 'AbortError') {
           throw new Error(`Request timeout after ${timeout}ms`);
@@ -108,6 +168,11 @@ export async function authenticatedFetch(
       }
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Re-throw RateLimitError as-is
+      if (lastError instanceof RateLimitError) {
+        throw lastError;
+      }
       
       // Don't retry on token fetch errors or non-network errors
       if (lastError.message.includes('authentication token') || lastError.message.includes('timeout')) {
@@ -136,20 +201,40 @@ export async function authenticatedFetchJSON<T = any>(
   url: string,
   options: AuthenticatedFetchOptions
 ): Promise<T> {
-  const response = await authenticatedFetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-  
-  if (!response.ok) {
-    const errorText = await response.text().catch(() => 'Unknown error');
-    throw new Error(`Request failed: ${response.status} ${errorText}`);
+  try {
+    const response = await authenticatedFetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unknown error');
+      
+      // Handle 429 with better error message
+      if (response.status === 429) {
+        const retryAfter = response.headers.get('Retry-After');
+        throw new RateLimitError(
+          errorText || 'Too many requests. Please wait a moment and try again.',
+          retryAfter ? parseInt(retryAfter, 10) : undefined,
+          429
+        );
+      }
+      
+      throw new Error(`Request failed: ${response.status} ${errorText}`);
+    }
+    
+    return response.json();
+  } catch (error) {
+    // Re-throw RateLimitError as-is
+    if (error instanceof RateLimitError) {
+      throw error;
+    }
+    // Re-throw other errors
+    throw error;
   }
-  
-  return response.json();
 }
 
 /**

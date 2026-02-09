@@ -6,7 +6,7 @@ import { DetailedResultView } from '../components/results';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { SavedResult } from '../types';
 import { persistenceService } from '../services/persistence';
-import { authenticatedFetchJSON } from '../services/authenticatedFetch';
+import { authenticatedFetchJSON, RateLimitError } from '../services/authenticatedFetch';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -51,6 +51,16 @@ export function ResultView() {
           }
           setLoading(false);
         } catch (fetchError: any) {
+          // Handle rate limit errors with user-friendly message
+          if (fetchError instanceof RateLimitError) {
+            const waitTime = fetchError.retryAfter 
+              ? `${fetchError.retryAfter} seconds`
+              : 'a moment';
+            setError(`Too many requests. Please wait ${waitTime} and try again.`);
+            setLoading(false);
+            return;
+          }
+          
           // If backend fetch fails, fallback to localStorage
           if (fetchError?.status === 404) {
             setError('Result not found');

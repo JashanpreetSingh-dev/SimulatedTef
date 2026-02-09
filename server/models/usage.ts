@@ -7,10 +7,14 @@ import { z } from 'zod';
 // Zod schema for usage validation
 export const UsageSchema = z.object({
   userId: z.string().min(1),
+  orgId: z.string().optional(), // Organization ID (optional for backward compatibility)
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), // YYYY-MM-DD format
   fullTestsUsed: z.number().min(0).default(0),
   sectionAUsed: z.number().min(0).default(0),
   sectionBUsed: z.number().min(0).default(0),
+  writtenExpressionSectionAUsed: z.number().min(0).default(0),
+  writtenExpressionSectionBUsed: z.number().min(0).default(0),
+  mockExamsUsed: z.number().min(0).default(0),
   createdAt: z.string(),
   updatedAt: z.string(),
   // Mock exam tracking
@@ -37,7 +41,7 @@ export function validateUsage(data: unknown): Usage {
 export function createUsage(
   userId: string,
   date: string, // YYYY-MM-DD format
-  initialUsage?: { fullTestsUsed?: number; sectionAUsed?: number; sectionBUsed?: number }
+  initialUsage?: { fullTestsUsed?: number; sectionAUsed?: number; sectionBUsed?: number; writtenExpressionSectionAUsed?: number; writtenExpressionSectionBUsed?: number; mockExamsUsed?: number }
 ): Usage {
   const now = new Date().toISOString();
   return {
@@ -46,6 +50,9 @@ export function createUsage(
     fullTestsUsed: initialUsage?.fullTestsUsed ?? 0,
     sectionAUsed: initialUsage?.sectionAUsed ?? 0,
     sectionBUsed: initialUsage?.sectionBUsed ?? 0,
+    writtenExpressionSectionAUsed: initialUsage?.writtenExpressionSectionAUsed ?? 0,
+    writtenExpressionSectionBUsed: initialUsage?.writtenExpressionSectionBUsed ?? 0,
+    mockExamsUsed: initialUsage?.mockExamsUsed ?? 0,
     createdAt: now,
     updatedAt: now,
   };

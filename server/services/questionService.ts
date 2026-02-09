@@ -4,16 +4,34 @@
 
 import { connectDB } from '../db/connection';
 import { ReadingListeningQuestion } from '../../types';
+import { s3Service } from './s3Service';
+
+/** Resolve optionImageS3Keys to presigned URLs and return question without S3 keys. */
+async function resolveQuestionForResponse(q: any): Promise<ReadingListeningQuestion> {
+  const keys = q.optionImageS3Keys as string[] | undefined;
+  if (keys?.length === 4 && s3Service.isS3Configured()) {
+    try {
+      const urls = await Promise.all(keys.map((key) => s3Service.getPresignedUrl(key)));
+      const { optionImageS3Keys: _, ...rest } = q;
+      return { ...rest, optionImageUrls: urls };
+    } catch (err) {
+      console.warn('Failed to resolve optionImageS3Keys to presigned URLs:', err);
+    }
+  }
+  const { optionImageS3Keys: _, ...rest } = q;
+  return rest;
+}
 
 export const questionService = {
   /**
    * Get all questions for a specific task
-   * Questions are sorted by questionNumber (1-40)
+   * Questions are sorted by questionNumber (1-40).
+   * If questions have optionImageS3Keys, they are resolved to presigned optionImageUrls.
    */
   async getQuestionsByTaskId(taskId: string): Promise<ReadingListeningQuestion[]> {
     const db = await connectDB();
     
-    const questions = await db.collection('questions')
+    const raw = await db.collection('questions')
       .find({ 
         taskId,
         isActive: true 
@@ -21,7 +39,8 @@ export const questionService = {
       .sort({ questionNumber: 1 }) // Sort by questionNumber ascending (1-40)
       .toArray();
     
-    return questions as unknown as ReadingListeningQuestion[];
+    const questions = await Promise.all((raw as any[]).map(resolveQuestionForResponse));
+    return questions;
   },
   
   /**
@@ -30,13 +49,14 @@ export const questionService = {
   async getQuestionById(questionId: string): Promise<ReadingListeningQuestion | null> {
     const db = await connectDB();
     
-    const question = await db.collection('questions')
+    const raw = await db.collection('questions')
       .findOne({ 
         questionId,
         isActive: true 
       });
     
-    return question as unknown as ReadingListeningQuestion | null;
+    if (!raw) return null;
+    return resolveQuestionForResponse(raw as any);
   },
   
   /**
@@ -68,7 +88,7 @@ export const questionService = {
   ): Promise<ReadingListeningQuestion[]> {
     const db = await connectDB();
     
-    const questions = await db.collection('questions')
+    const raw = await db.collection('questions')
       .find({ 
         taskId,
         questionNumber: { $in: questionNumbers },
@@ -77,6 +97,6 @@ export const questionService = {
       .sort({ questionNumber: 1 })
       .toArray();
     
-    return questions as unknown as ReadingListeningQuestion[];
+    return Promise.all((raw as any[]).map(resolveQuestionForResponse));
   },
 };
