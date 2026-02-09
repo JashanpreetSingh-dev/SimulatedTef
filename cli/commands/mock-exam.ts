@@ -237,9 +237,9 @@ export async function createMockExamCommand(argv: any) {
   );
 
   await mockExamsCollection.insertOne(mockExam as any);
-  
+
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    
+
     console.log('\n' + '═'.repeat(60));
     console.log('✅ Mock Exam Created Successfully!');
     console.log('═'.repeat(60));
