@@ -151,6 +151,14 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
           if (jsonMatch) {
             const data = JSON.parse(jsonMatch[0]);
             if (data.error && typeof data.error === 'string') displayError = data.error;
+            // Show clear limit message when API returns usage/limit (403 limit reached)
+            if (
+              typeof data.currentUsage === 'number' &&
+              typeof data.limit === 'number' &&
+              data.limit !== -1
+            ) {
+              displayError = `You've used ${data.currentUsage} of ${data.limit} mock exams this period. Upgrade or wait until reset.`;
+            }
           }
         } catch {
           // use default

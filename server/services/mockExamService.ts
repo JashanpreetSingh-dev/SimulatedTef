@@ -18,7 +18,8 @@ import {
 
 export const mockExamService = {
   /**
-   * List all available mock exams
+   * List all available mock exams for the user.
+   * Product rule: no retakes — completed mocks (all 4 modules) are excluded.
    */
   async listAvailableMockExams(userId: string): Promise<
     Array<{
@@ -316,11 +317,11 @@ export const mockExamService = {
         let sessionId: string;
 
         await session.withTransaction(async () => {
-          // Track usage for B2B analytics (no limits enforced)
+          // Track mock exam usage (counts toward subscription limit; same as POST /exam/start)
           await db.collection("usage").updateOne(
             { userId, date: today },
             {
-              $inc: { fullTestsUsed: 1 },
+              $inc: { mockExamsUsed: 1 },
               $set: { updatedAt: new Date().toISOString() },
             },
             { session, upsert: true }

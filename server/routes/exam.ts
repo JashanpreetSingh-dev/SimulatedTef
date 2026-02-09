@@ -236,14 +236,26 @@ router.post('/select-mock', requireAuth, asyncHandler(async (req: Request, res: 
     });
 
     if (activeMockExam) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'You have an incomplete mock exam. Complete it first or abandon it.',
-        activeMockExamId: activeMockExam.mockExamId 
+        activeMockExamId: activeMockExam.mockExamId
+      });
+    }
+
+    // Enforce subscription mock exam limit (same as POST /exam/start)
+    const orgId = req.orgId ?? null;
+    const limitCheck = await userUsageService.checkCanStartMockExam(userId, orgId);
+    if (!limitCheck.canStart) {
+      return res.status(403).json({
+        error: limitCheck.reason ?? 'Monthly limit reached',
+        canStart: false,
+        currentUsage: limitCheck.currentUsage,
+        limit: limitCheck.limit,
       });
     }
 
     const { predefinedMockExamId } = req.body;
-    
+
     const { mockExamService } = await import('../services/mockExamService');
     const result = await mockExamService.selectMockExam(userId, predefinedMockExamId);
     
