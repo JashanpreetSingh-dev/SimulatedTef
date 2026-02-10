@@ -729,6 +729,129 @@ export async function generateMockExamCommand(argv: any) {
 }
 
 /**
+ * Infer reading and listening task IDs from mock exam ID when the mock exam doc is missing.
+ * Convention: mock_8 -> reading_8, listening_8; mock_1 -> reading_1, listening_1.
+ */
+function inferTaskIdsFromMockExamId(mockExamId: string): { readingTaskId: string; listeningTaskId: string } {
+  const match = mockExamId.match(/^mock_(.+)$/);
+  const suffix = match ? match[1] : mockExamId;
+  return { readingTaskId: `reading_${suffix}`, listeningTaskId: `listening_${suffix}` };
+}
+
+/**
+ * Delete reading/listening tasks, their questions, and listening audio items. Does not delete oral tasks (often shared).
+ */
+async function deleteRelatedTasksAndQuestions(
+  db: Awaited<ReturnType<typeof getDB>>,
+  readingTaskId: string,
+  listeningTaskId: string
+): Promise<void> {
+  const questionsCollection = db.collection('questions');
+  const readingTasksCollection = db.collection('readingTasks');
+  const listeningTasksCollection = db.collection('listeningTasks');
+  const audioItemsCollection = db.collection('audioItems');
+
+  for (const taskId of [readingTaskId, listeningTaskId]) {
+    const qDeleted = await questionsCollection.deleteMany({ taskId });
+    if (qDeleted.deletedCount > 0) {
+      console.log(`   ✅ Deleted questions for ${taskId}: ${qDeleted.deletedCount}`);
+    }
+  }
+
+  // Listening tasks have audio items; delete them before deleting the task
+  const audioItemsDeleted = await audioItemsCollection.deleteMany({ taskId: listeningTaskId });
+  if (audioItemsDeleted.deletedCount > 0) {
+    console.log(`   ✅ Deleted audio items for ${listeningTaskId}: ${audioItemsDeleted.deletedCount}`);
+  }
+
+  const readingDeleted = await readingTasksCollection.deleteOne({ taskId: readingTaskId });
+  if (readingDeleted.deletedCount > 0) {
+    console.log(`   ✅ Deleted reading task: ${readingTaskId}`);
+  }
+
+  const listeningDeleted = await listeningTasksCollection.deleteOne({ taskId: listeningTaskId });
+  if (listeningDeleted.deletedCount > 0) {
+    console.log(`   ✅ Deleted listening task: ${listeningTaskId}`);
+  }
+}
+
+/**
+ * Remove a mock exam and all data for it: mock exam doc, sessions, results, usage refs, recordings,
+ * and related reading/listening tasks and their questions. If the mock exam document is not found,
+ * still deletes related tasks and questions by convention (mock_8 -> reading_8, listening_8).
+ */
+export async function removeMockExamCommand(argv: any) {
+  try {
+    const { mockExamId } = argv;
+
+    const db = await getDB();
+    const mockExamsCollection = db.collection('mockExams');
+
+    const exam = await mockExamsCollection.findOne({ mockExamId }) as any;
+    let readingTaskId: string;
+    let listeningTaskId: string;
+
+    if (exam) {
+      readingTaskId = exam.readingTaskId ?? inferTaskIdsFromMockExamId(mockExamId).readingTaskId;
+      listeningTaskId = exam.listeningTaskId ?? inferTaskIdsFromMockExamId(mockExamId).listeningTaskId;
+      console.log(`\n🗑️  Removing mock exam: ${mockExamId} (${exam.name})`);
+    } else {
+      const inferred = inferTaskIdsFromMockExamId(mockExamId);
+      readingTaskId = inferred.readingTaskId;
+      listeningTaskId = inferred.listeningTaskId;
+      console.log(`\n🗑️  Mock exam "${mockExamId}" not found; removing related tasks/questions if present (${readingTaskId}, ${listeningTaskId})`);
+    }
+
+    console.log('═'.repeat(50));
+
+    if (exam) {
+      // 1. Delete mock exam document
+      const mockDeleted = await mockExamsCollection.deleteOne({ mockExamId });
+      console.log(`   ✅ Deleted mock exam document: ${mockDeleted.deletedCount}`);
+
+      // 2. Delete exam sessions for this mock exam
+      const sessionsDeleted = await db.collection('examSessions').deleteMany({ mockExamId });
+      console.log(`   ✅ Deleted exam sessions: ${sessionsDeleted.deletedCount}`);
+
+      // 3. Delete results for this mock exam
+      const resultsDeleted = await db.collection('results').deleteMany({ mockExamId });
+      console.log(`   ✅ Deleted results: ${resultsDeleted.deletedCount}`);
+
+      // 4. Clear from usage: active exam and completed list
+      const usageActive = await db.collection('usage').updateMany(
+        { activeMockExamId: mockExamId },
+        { $unset: { activeMockExamId: '', activeMockExamSessionId: '' } }
+      );
+      const usageCompleted = await db.collection('usage').updateMany(
+        { completedMockExamIds: mockExamId },
+        { $pull: { completedMockExamIds: mockExamId } } as Record<string, unknown>
+      );
+      console.log(`   ✅ Usage: cleared active (${usageActive.modifiedCount}), pulled from completed (${usageCompleted.modifiedCount})`);
+
+      // 5. Delete recordings for this mock exam
+      const recordingsDeleted = await db.collection('recordings').deleteMany({
+        'metadata.mockExamId': mockExamId,
+      });
+      console.log(`   ✅ Deleted recordings: ${recordingsDeleted.deletedCount}`);
+    }
+
+    // 6. Delete related reading/listening tasks and their questions (whether or not mock exam was found)
+    console.log(`   Cleaning related tasks: ${readingTaskId}, ${listeningTaskId}`);
+    await deleteRelatedTasksAndQuestions(db, readingTaskId, listeningTaskId);
+
+    console.log('═'.repeat(50));
+    console.log(`✅ Mock exam "${mockExamId}" and related data removed.\n`);
+    await closeDatabase();
+    process.exit(0);
+  } catch (error: any) {
+    console.error('\n❌ Error removing mock exam:', error.message);
+    console.error(error.stack);
+    await closeDatabase().catch(() => {});
+    process.exit(1);
+  }
+}
+
+/**
  * Register mock exam commands with yargs
  */
 export function registerMockExamCommands(yargsInstance: ReturnType<typeof yargs>) {
@@ -769,5 +892,9 @@ export function registerMockExamCommands(yargsInstance: ReturnType<typeof yargs>
     .command('validate <mockExamId>', 'Validate mock exam task references', (yargs) => {
       return yargs
         .positional('mockExamId', { type: 'string', demandOption: true, describe: 'Mock exam ID to validate' });
-    }, validateMockExamCommand);
+    }, validateMockExamCommand)
+    .command('remove <mockExamId>', 'Remove a mock exam and all its data (sessions, results, usage refs, recordings)', (yargs) => {
+      return yargs
+        .positional('mockExamId', { type: 'string', demandOption: true, describe: 'Mock exam ID to remove (e.g. mock_1)' });
+    }, removeMockExamCommand);
 }

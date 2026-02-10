@@ -21,7 +21,8 @@ import { d2cConfigService } from "./d2cConfigService";
 export const mockExamService = {
   /**
    * List available mock exams for the user.
-   * - Each month we show the next L mocks in rotation: Free 1, Basic 2, Premium 5. Next month = next 1/2/5.
+   * - Each month shows a contiguous block in catalog order: Premium 1-5, 6-10, ...; Basic 1-2, 3-4, ...; Free 1, 2, ...
+   * - If the block extends past the catalog (e.g. only 6 exams, next month 6-10), only existing exams are shown (no wrap).
    * - Completed mocks (all 4 modules) are excluded (no retakes).
    */
   async listAvailableMockExams(userId: string, orgId?: string | null): Promise<
@@ -34,7 +35,7 @@ export const mockExamService = {
   > {
     const db = await connectDB();
 
-    // Get all active mock exams, sorted by createdAt for stable rotation
+    // Get all active mock exams, sorted by createdAt for stable catalog order (1, 2, 3, ...)
     const allMockExams = (await db
       .collection("mockExams")
       .find({ isActive: true })
@@ -44,7 +45,7 @@ export const mockExamService = {
     const totalMocks = allMockExams.length;
     if (totalMocks === 0) return [];
 
-    // How many mocks this user sees this month (by plan)
+    // How many mocks this user sees per month (by plan)
     let visibilityLimit: number;
     if (orgId) {
       visibilityLimit = 50; // B2B: show many
@@ -58,14 +59,13 @@ export const mockExamService = {
       }
     }
 
-    // This month's batch: L mocks starting at monthIndex. Next month = next L in sequence (Premium next 5, Basic next 2, Free next 1).
+    // This month's block: contiguous L exams in order. Month 0 → 1..L, month 1 → L+1..2L, etc. No wrap.
     const now = new Date();
     const monthsSinceEpoch = now.getFullYear() * 12 + now.getMonth();
-    const monthIndex = (monthsSinceEpoch * visibilityLimit) % totalMocks;
-    const pool: typeof allMockExams = [];
-    for (let i = 0; i < visibilityLimit; i++) {
-      pool.push(allMockExams[(monthIndex + i) % totalMocks]);
-    }
+    const startIndex = monthsSinceEpoch * visibilityLimit;
+    const pool = startIndex < totalMocks
+      ? allMockExams.slice(startIndex, Math.min(startIndex + visibilityLimit, totalMocks))
+      : [];
 
     // Exclude completed (all 4 modules done)
     const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
