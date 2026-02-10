@@ -74,6 +74,11 @@ export function LandingPage() {
                   </svg>
                 )}
               </button>
+              <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard" signInFallbackRedirectUrl="/dashboard">
+                <button className="px-4 sm:px-6 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white font-semibold text-sm sm:text-base hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 border border-indigo-400 dark:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/30">
+                  Sign up
+                </button>
+              </SignUpButton>
               <SignInButton mode="modal">
                 <button className="px-4 sm:px-6 py-2 rounded-full bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-sm sm:text-base hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600">
                   Sign in
