@@ -61,7 +61,8 @@ const cli = yargs(hideBin(process.argv))
   .example('$0 mock-exam generate --skip-section1-images', 'Generate mock exam but skip Section 1 option images (Gemini image model)')
   .example('$0 mock-exam create', 'Create a mock exam with auto-generated IDs (uses existing listening task)')
   .example('$0 mock-exam create --reading-theme "Télétravail"', 'Create a mock exam with a specific theme')
-  .example('$0 mock-exam list', 'List all mock exams');
+  .example('$0 mock-exam list', 'List all mock exams')
+  .example('$0 mock-exam remove mock_1', 'Remove mock exam mock_1 and all its data');
 
 // Parse and execute
 cli.parse();
