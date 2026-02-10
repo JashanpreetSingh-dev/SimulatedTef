@@ -149,6 +149,20 @@ export async function cancelSubscription(
 }
 
 /**
+ * Get the calendar month (year*12+month) used as epoch for mock exam rotation for this user.
+ * Paid: month of currentPeriodStart. Free: month of freeTierPeriodStart. Returns null if no anchor (use global epoch).
+ */
+export async function getMockExamRotationEpochMonth(userId: string): Promise<number | null> {
+  const subscription = await getUserSubscription(userId);
+  if (!subscription) return null;
+  const dateStr = subscription.currentPeriodStart ?? subscription.freeTierPeriodStart ?? null;
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.getUTCFullYear() * 12 + d.getUTCMonth();
+}
+
+/**
  * Get subscription limits for a user
  */
 export async function getSubscriptionLimits(userId: string): Promise<{
@@ -282,6 +296,7 @@ export const subscriptionService = {
   updateSubscription,
   ensureFreeTierPeriodStart,
   cancelSubscription,
+  getMockExamRotationEpochMonth,
   getSubscriptionLimits,
   syncWithStripe,
   getSubscriptionTiers,
