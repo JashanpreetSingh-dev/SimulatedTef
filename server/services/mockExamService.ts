@@ -21,8 +21,8 @@ import { d2cConfigService } from "./d2cConfigService";
 export const mockExamService = {
   /**
    * List available mock exams for the user.
-   * - Each month shows a contiguous block in catalog order: Premium 1-5, 6-10, ...; Basic 1-2, 3-4, ...; Free 1, 2, ...
-   * - If the block extends past the catalog (e.g. only 6 exams, next month 6-10), only existing exams are shown (no wrap).
+   * - Each month shows a block of L exams (Premium 5, Basic 2, Free 1) from the catalog, rotating by month.
+   * - When the block would extend past the catalog we wrap so the list is never empty (e.g. 7 exams → month 0: 1-5, month 1: 6,7,1,2,3, etc.).
    * - Completed mocks (all 4 modules) are excluded (no retakes).
    */
   async listAvailableMockExams(userId: string, orgId?: string | null): Promise<
@@ -59,13 +59,21 @@ export const mockExamService = {
       }
     }
 
-    // This month's block: contiguous L exams in order. Month 0 → 1..L, month 1 → L+1..2L, etc. No wrap.
+    // This month's block in catalog order. "Month" is months since the user's period start so the first month = exams 1..L (per user).
     const now = new Date();
-    const monthsSinceEpoch = now.getFullYear() * 12 + now.getMonth();
+    const currentMonth = now.getUTCFullYear() * 12 + now.getUTCMonth();
+    const globalEpochMonth = 2025 * 12 + 0; // fallback when user has no period anchor
+    const epochMonth = orgId != null
+      ? globalEpochMonth
+      : (await subscriptionService.getMockExamRotationEpochMonth(userId)) ?? globalEpochMonth;
+    const monthsSinceEpoch = Math.max(0, currentMonth - epochMonth);
     const startIndex = monthsSinceEpoch * visibilityLimit;
-    const pool = startIndex < totalMocks
-      ? allMockExams.slice(startIndex, Math.min(startIndex + visibilityLimit, totalMocks))
-      : [];
+    const effectiveStart = startIndex % totalMocks;
+    const take = Math.min(visibilityLimit, totalMocks);
+    const pool: typeof allMockExams = [];
+    for (let i = 0; i < take; i++) {
+      pool.push(allMockExams[(effectiveStart + i) % totalMocks]);
+    }
 
     // Exclude completed (all 4 modules done)
     const ALL_MODULES = ['oralExpression', 'writtenExpression', 'reading', 'listening'];
