@@ -11,6 +11,7 @@ import { hideBin } from 'yargs/helpers';
 import { registerReadingCommands } from './commands/reading';
 import { registerListeningCommands } from './commands/listening';
 import { registerMockExamCommands } from './commands/mock-exam';
+import { registerEmailCommands } from './commands/email';
 
 // Main CLI setup
 const cli = yargs(hideBin(process.argv))
@@ -38,6 +39,10 @@ const cli = yargs(hideBin(process.argv))
     return registerMockExamCommands(yargs)
       .demandCommand(1, 'You need at least one command after mock-exam');
   })
+  .command('email', 'Send notification emails manually', (yargs) => {
+    return registerEmailCommands(yargs)
+      .demandCommand(1, 'You need at least one command after email');
+  })
   .demandCommand(1, 'You need at least one command before moving on')
   .strict()
   .recommendCommands()
@@ -62,7 +67,9 @@ const cli = yargs(hideBin(process.argv))
   .example('$0 mock-exam create', 'Create a mock exam with auto-generated IDs (uses existing listening task)')
   .example('$0 mock-exam create --reading-theme "Télétravail"', 'Create a mock exam with a specific theme')
   .example('$0 mock-exam list', 'List all mock exams')
-  .example('$0 mock-exam remove mock_1', 'Remove mock exam mock_1 and all its data');
+  .example('$0 mock-exam remove mock_1', 'Remove mock exam mock_1 and all its data')
+  .example('$0 email send-welcome --user-id user_123', 'Enqueue a welcome email for a specific user')
+  .example('$0 email send-subscription-congrats --user-id user_123 --tier-id basic', 'Enqueue a subscription congratulations email for a specific user and tier');
 
 // Parse and execute
 cli.parse();

@@ -8,6 +8,8 @@ import type { Document } from 'mongodb';
 import { asyncHandler } from '../middleware/errorHandler';
 import { subscriptionService } from '../services/subscriptionService';
 import { stripeService, type SubWithItems } from '../services/stripeService';
+import { notificationService } from '../services/notificationService';
+import { enqueueEmailJob } from '../jobs/emailQueue';
 import { connectDB } from '../db/connection';
 import { createWebhookEvent } from '../models/webhookEvent';
 
@@ -225,6 +227,22 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       currentPeriodEnd: periodEnd,
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end || false,
     });
+    // Enqueue subscription congrats if we've never sent it (e.g. user had subscription from previous test)
+    if (!(await notificationService.hasSubscriptionCongratsBeenSent(userId))) {
+      try {
+        await enqueueEmailJob({
+          templateKind: 'subscription_congrats',
+          userId,
+          tierId: tier.id,
+          tierName: (tier as any).name,
+          periodStart,
+          periodEnd,
+        });
+        console.log(`📧 Enqueued subscription congrats email for user ${userId} (existing sub)`);
+      } catch (error: any) {
+        console.error('Failed to enqueue subscription congrats email:', error?.message || error);
+      }
+    }
   } else {
     // Create with Stripe period in one step so we never persist 30-day default (fixes "30 days left" for new subs)
     await subscriptionService.createSubscriptionRecord(userId, tier.id, {
@@ -236,8 +254,23 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       status,
       cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end || false,
     });
+
+    // Send subscription congrats email (checkout runs before subscription.created, so we enqueue here for new subs)
+    try {
+      await enqueueEmailJob({
+        templateKind: 'subscription_congrats',
+        userId,
+        tierId: tier.id,
+        tierName: (tier as any).name,
+        periodStart,
+        periodEnd,
+      });
+      console.log(`📧 Enqueued subscription congrats email for user ${userId}`);
+    } catch (error: any) {
+      console.error('Failed to enqueue subscription congrats email:', error?.message || error);
+    }
   }
-  
+
   console.log(`✅ Checkout completed for user ${userId}, tier ${tier.id}, status ${status}`);
 }
 
@@ -319,6 +352,22 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       usageCountingFromTime,
       downgradedToFreeAt: undefined,
     });
+    // Enqueue subscription congrats if we've never sent it (e.g. subscription.created ran after checkout)
+    if (!(await notificationService.hasSubscriptionCongratsBeenSent(userId))) {
+      try {
+        await enqueueEmailJob({
+          templateKind: 'subscription_congrats',
+          userId,
+          tierId: tier.id,
+          tierName: (tier as any).name,
+          periodStart,
+          periodEnd,
+        });
+        console.log(`📧 Enqueued subscription congrats email for user ${userId} (existing sub)`);
+      } catch (error: any) {
+        console.error('Failed to enqueue subscription congrats email:', error?.message || error);
+      }
+    }
   } else {
     // Create with Stripe period in one step so we never persist 30-day default (fixes "30 days left" for new subs)
     await subscriptionService.createSubscriptionRecord(userId, tier.id, {
@@ -333,6 +382,21 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       usageCountingFromTime: undefined,
       downgradedToFreeAt: undefined,
     });
+
+    // Fire a single subscription congratulations email on first creation (background job)
+    try {
+      await enqueueEmailJob({
+        templateKind: 'subscription_congrats',
+        userId,
+        tierId: tier.id,
+        tierName: (tier as any).name,
+        periodStart,
+        periodEnd,
+      });
+      console.log(`📧 Enqueued subscription congrats email for user ${userId}`);
+    } catch (error: any) {
+      console.error('Failed to enqueue subscription congrats email:', error?.message || error);
+    }
   }
   console.log(`✅ Subscription created for user ${userId}, tier ${tier.id}, status ${status}`);
 }
