@@ -17,6 +17,7 @@
  * s3Service – S3 upload/download for audio
  * stripeService – Stripe customers, checkout, subscriptions
  * subscriptionService – subscriptions in DB + Stripe sync
+ * notificationService – transactional emails (welcome, subscriptions)
  * taskService – generic task fetching (reading/listening)
  * userUsageService – usage limits, can-start checks
  * voteAnalyticsService – vote analytics for admin
@@ -39,6 +40,7 @@ export { resultsService } from './resultsService';
 export { s3Service } from './s3Service';
 export { stripeService } from './stripeService';
 export { subscriptionService } from './subscriptionService';
+export { notificationService } from './notificationService';
 export * as taskService from './taskService';
 export { userUsageService } from './userUsageService';
 export { voteAnalyticsService } from './voteAnalyticsService';

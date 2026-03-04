@@ -70,3 +70,21 @@ export interface QuestionGenerationJobResult {
   success: boolean;
   error?: string;
 }
+
+export type EmailTemplateKind = 'welcome' | 'subscription_congrats';
+
+export interface EmailJobData {
+  templateKind: EmailTemplateKind;
+  userId: string;
+  email?: string;
+  firstName?: string;
+  tierId?: string;
+  tierName?: string;
+  periodStart?: string;
+  periodEnd?: string;
+}
+
+export interface EmailJobResult {
+  success: boolean;
+  error?: string;
+}

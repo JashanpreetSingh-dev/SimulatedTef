@@ -28,10 +28,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-// Stripe webhooks need raw body for signature verification
+// Webhooks need raw body for signature verification
 // MUST be mounted BEFORE express.json() middleware
 import stripeWebhooksRouter from './routes/stripeWebhooks';
+import clerkWebhooksRouter from './routes/clerkWebhooks';
 app.use('/api/stripe-webhooks', express.raw({ type: 'application/json' }), stripeWebhooksRouter);
+app.use('/api/clerk-webhooks', express.raw({ type: 'application/json' }), clerkWebhooksRouter);
 
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
 // This must come AFTER the webhook route to avoid parsing webhook bodies as JSON
@@ -95,6 +97,8 @@ if (!clerkSecretKey) {
       startWorker();
       const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
       startQuestionGenerationWorker();
+      const { startEmailWorker } = await import('./workers/emailWorker');
+      startEmailWorker();
       console.log('Workers started in same process (RUN_WORKER=true)');
       
       // Set up periodic cleanup of old jobs to prevent Redis memory issues
@@ -108,6 +112,8 @@ if (!clerkSecretKey) {
         startWorker();
         const { startQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
         startQuestionGenerationWorker();
+        const { startEmailWorker } = await import('./workers/emailWorker');
+        startEmailWorker();
         console.log('Workers started in same process (development mode)');
         
         // Set up periodic cleanup of old jobs to prevent Redis memory issues
@@ -195,6 +201,12 @@ async function gracefulShutdown(signal: string): Promise<void> {
     try {
       const { stopQuestionGenerationWorker } = await import('./workers/questionGenerationWorker');
       await stopQuestionGenerationWorker();
+    } catch {
+      // Worker not running
+    }
+    try {
+      const { stopEmailWorker } = await import('./workers/emailWorker');
+      await stopEmailWorker();
     } catch {
       // Worker not running
     }

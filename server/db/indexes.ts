@@ -457,6 +457,14 @@ export async function createIndexes(): Promise<void> {
       { name: 'userId_part_startedAt_idx' }
     );
     console.log(' Created index: conversationLogs.userId_part_startedAt_idx');
+
+    // userNotifications: unique on userId+type for atomic "claim" (prevents duplicate subscription congrats)
+    const userNotificationsCollection = db.collection('userNotifications');
+    await userNotificationsCollection.createIndex(
+      { userId: 1, type: 1 },
+      { unique: true, name: 'userId_type_idx' }
+    );
+    console.log('Created index: userNotifications.userId_type_idx');
     
     console.log(' All database indexes created successfully');
   } catch (error: any) {
