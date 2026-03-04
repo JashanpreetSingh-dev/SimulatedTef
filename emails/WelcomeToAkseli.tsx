@@ -217,6 +217,13 @@ export const WelcomeToAkseliEmail = ({
             de bord.
           </Text>
           <Text style={footerText}>
+            Vous pouvez aussi nous écrire à{' '}
+            <a href="mailto:support@akseli.ca" style={link}>
+              support@akseli.ca
+            </a>
+            .
+          </Text>
+          <Text style={footerText}>
             Suivez-nous sur{' '}
             <a href={instagramUrl} style={link} title="Instagram">
               <Img

@@ -124,8 +124,15 @@ export const SubscriptionCongratsEmail = ({
 
           <Section style={footerSection} className="email-footer">
             <Text style={footerText}>
-              Besoin d&apos;aide ? Répondez à cet email ou contactez-nous depuis votre tableau
-              de bord.
+              Besoin d&apos;aide ? Répondez à cet email ou contactez-nous depuis votre tableau de
+              bord.
+            </Text>
+            <Text style={footerText}>
+              Vous pouvez aussi nous écrire à{' '}
+              <a href="mailto:support@akseli.ca" style={link}>
+                support@akseli.ca
+              </a>
+              .
             </Text>
             <Text style={footerText}>
               Suivez-nous sur{' '}
