@@ -8,6 +8,8 @@ import yargs from 'yargs';
 import { connectDB, closeDB } from '../../server/db/connection';
 import { enqueueEmailJob } from '../../server/jobs/emailQueue';
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 async function ensureDb(): Promise<void> {
   try {
     await connectDB();
@@ -120,6 +122,11 @@ export async function sendSubscriptionCongratsAllCommand(argv: any): Promise<voi
 
     let count = 0;
     for (const sub of subscriptions) {
+      // Simple rate limiting: sleep 2 seconds between enqueues
+      if (count > 0) {
+        await sleep(2000);
+      }
+
       await enqueueEmailJob({
         templateKind: 'subscription_congrats',
         userId: sub.userId,
