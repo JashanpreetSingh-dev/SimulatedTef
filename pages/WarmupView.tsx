@@ -14,7 +14,7 @@ export function WarmupView() {
   const [sessionConfig, setSessionConfig] = useState<{
     systemPrompt: string;
     topic: string;
-    keywords: string[];
+    phrases: string[];
     sessionId?: string;
     userLevel: string;
     streak: number;
@@ -50,7 +50,7 @@ export function WarmupView() {
         {view === 'session' && sessionConfig && (
           <WarmupSession
             systemPrompt={sessionConfig.systemPrompt}
-            keywords={sessionConfig.keywords}
+            phrases={sessionConfig.phrases}
             sessionId={sessionConfig.sessionId || localDate}
             onComplete={async (transcript, durationSeconds) => {
               setView('completing');

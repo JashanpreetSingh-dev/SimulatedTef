@@ -4,7 +4,7 @@ import { geminiService, decodeAudio, decodeAudioData, createPcmBlob, LIVE_API_CO
 
 interface Props {
   systemPrompt: string;
-  keywords: string[];
+  phrases: string[];
   sessionId: string;
   onComplete: (transcript: string, durationSeconds: number) => void;
 }
@@ -16,7 +16,7 @@ type TranscriptLine = {
 
 export const WarmupSession: React.FC<Props> = ({
   systemPrompt,
-  keywords,
+  phrases,
   sessionId,
   onComplete,
 }) => {
@@ -345,17 +345,24 @@ export const WarmupSession: React.FC<Props> = ({
 
   return (
     <div className="space-y-6">
-      {/* Keyword chips */}
-      <div className="flex flex-wrap gap-2">
-        {keywords.map((k) => (
-          <span
-            key={k}
-            className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200"
-          >
-            {k}
-          </span>
-        ))}
-      </div>
+      {/* Phrases utiles */}
+      {phrases.length > 0 && (
+        <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-900/10 overflow-hidden">
+          <div className="px-4 pt-3 pb-1 text-[10px] font-mono text-amber-700 dark:text-amber-400 uppercase tracking-[0.2em]">
+            Phrases utiles
+          </div>
+          <ul className="max-h-36 overflow-y-auto divide-y divide-amber-100 dark:divide-amber-800/30">
+            {phrases.map((phrase) => (
+              <li
+                key={phrase}
+                className="px-4 py-2 text-sm text-slate-700 dark:text-slate-200 border-l-2 border-amber-400"
+              >
+                {phrase}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* AI transcript aid */}
       {status === 'active' && aiTranscript && (

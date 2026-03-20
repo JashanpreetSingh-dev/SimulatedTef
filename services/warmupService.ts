@@ -5,15 +5,17 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export interface WarmupConfigResponse {
   systemPrompt: string;
-  keywords: string[];
+  phrases: string[];
   userLevel: string;
   streak: number;
 }
 
 export const warmupService = {
-  async getConfig(localDate: string, topicLabel: string, getToken: () => Promise<string | null>): Promise<WarmupConfigResponse> {
+  async getConfig(localDate: string, topicLabel: string, getToken: () => Promise<string | null>, topicId?: string): Promise<WarmupConfigResponse> {
+    const params = new URLSearchParams({ localDate, topic: topicLabel });
+    if (topicId) params.set('topicId', topicId);
     return authenticatedFetchJSON<WarmupConfigResponse>(
-      `${BACKEND_URL}/api/warmup/config?localDate=${encodeURIComponent(localDate)}&topic=${encodeURIComponent(topicLabel)}`,
+      `${BACKEND_URL}/api/warmup/config?${params.toString()}`,
       { method: 'GET', getToken },
     );
   },

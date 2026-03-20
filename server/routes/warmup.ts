@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { connectDB } from '../db/connection';
-import { warmupService } from '../services/warmupService';
+import { warmupService, getTopicPhrases } from '../services/warmupService';
 import { enqueueWarmupProfileJob } from '../jobs/warmupQueue';
 import { WarmupSession } from '../models/WarmupSession';
 
@@ -41,6 +41,7 @@ router.get(
 
     const localDate = String(req.query.localDate || '').trim();
     const topicLabel = String(req.query.topic || '').trim();
+    const topicId = String(req.query.topicId || '').trim();
 
     if (!localDate || !isDateWithinOneDayOfServer(localDate)) {
       return res.status(400).json({ error: 'Invalid localDate' });
@@ -52,13 +53,13 @@ router.get(
     await warmupService.markAbandonedIfStale(userId, localDate);
 
     const profile = await warmupService.getOrCreateProfile(userId);
-    const keywords = await warmupService.generateKeywords(topicLabel, profile.levelEstimate);
+    const phrases = getTopicPhrases(topicId);
     const streak = await warmupService.computeStreak(userId, localDate);
-    const systemPrompt = warmupService.buildSystemPrompt(profile, topicLabel, keywords);
+    const systemPrompt = warmupService.buildSystemPrompt(profile, topicLabel, phrases);
 
     res.json({
       systemPrompt,
-      keywords,
+      phrases,
       userLevel: profile.levelEstimate,
       streak,
     });

@@ -3,6 +3,45 @@ import { WarmupUserProfile } from '../models/WarmupUserProfile';
 import { WarmupSession } from '../models/WarmupSession';
 import { geminiService } from '../../services/gemini';
 
+// Static phrase library mirroring constants/warmupTopics.ts
+// Keep in sync when topics are added or phrases are edited.
+const TOPIC_PHRASES: Record<string, string[]> = {
+  'se-presenter': ["Je m'appelle… et je viens de…", "J'habite à… depuis… ans.", "Dans ma vie quotidienne, je travaille comme…", "Ce qui me définit le mieux, c'est…", "En dehors du travail, j'aime surtout…", "Mon plus grand défi en ce moment, c'est…"],
+  'routine-quotidienne': ["Je commence généralement ma journée par…", "Le matin, j'ai l'habitude de…", "Ce qui structure ma semaine, c'est…", "Le soir, je consacre du temps à…", "Ce que j'essaie de ne jamais sauter, c'est…", "Ma routine a changé depuis que…"],
+  'famille': ["Dans ma famille, nous sommes… personnes.", "Je m'entends très bien avec… parce que…", "Ce qui unit notre famille, c'est surtout…", "Quand on se retrouve tous ensemble, on aime…", "La personne qui m'a le plus influencé, c'est…", "Pour moi, la famille signifie avant tout…"],
+  'logement': ["J'habite dans un appartement / une maison situé(e)…", "Ce que j'apprécie le plus chez moi, c'est…", "Mon loyer s'élève à… par mois.", "Ce qui manque à mon logement actuel, c'est…", "Le quartier où je vis est plutôt…", "Idéalement, j'aimerais un logement qui…"],
+  'repas-cuisine': ["En semaine, je mange plutôt…", "Le plat que je prépare le plus souvent, c'est…", "Ce que j'aime dans la cuisine, c'est…", "Je fais mes courses généralement…", "Un repas en famille, ça ressemble à…", "La cuisine que je préfère au restaurant, c'est…"],
+  'loisirs': ["Pendant mon temps libre, je préfère…", "Ma passion depuis longtemps, c'est…", "Je consacre environ… heures par semaine à…", "Ce qui me détend vraiment, c'est…", "J'ai commencé à… il y a… ans et depuis…", "Ce que j'aimerais explorer comme nouveau loisir, c'est…"],
+  'animaux': ["J'ai un(e)… qui s'appelle… depuis…", "Ce que j'aime le plus chez mon animal, c'est…", "Prendre soin d'un animal, ça demande…", "Avoir un animal de compagnie m'apporte…", "Pour moi, les animaux jouent un rôle important parce que…", "Si je pouvais adopter un autre animal, ce serait…"],
+  'amis': ["Je me retrouve souvent avec mes amis pour…", "Mon ami(e) le/la plus proche, c'est… parce que…", "Quand je veux sortir, je propose généralement…", "Ce qui est important pour moi dans une amitié, c'est…", "Depuis mon arrivée au Canada, j'ai rencontré…", "Je garde le contact avec mes amis d'enfance en…"],
+  'achats-commerces': ["Je fais mes courses principalement à…", "Ce que j'achète en ligne plutôt qu'en magasin, c'est…", "Quand je cherche un bon prix, je…", "Mon budget mensuel pour les achats courants est environ…", "Ce que je n'achète jamais sans comparer les prix, c'est…", "Le marché / l'épicerie que je préfère, c'est… parce que…"],
+  'transports': ["Pour aller au travail, je prends généralement…", "Le trajet que je fais le plus souvent dure environ…", "Ce que j'apprécie dans les transports en commun, c'est…", "En hiver, se déplacer au Canada, c'est…", "Je préfère le métro / l'autobus parce que…", "Depuis que j'utilise…, mes déplacements sont…"],
+  'meteo-saisons': ["La saison que je préfère au Canada, c'est… parce que…", "En hiver, les températures peuvent descendre jusqu'à…", "Ce qui m'a surpris dans le climat canadien, c'est…", "Quand il fait froid, j'aime surtout…", "Pour m'adapter aux hivers canadiens, j'ai appris à…", "L'été à Montréal / Ottawa / Toronto, c'est…"],
+  'travail-ambitions': ["Dans mon domaine, ce qui me motive le plus c'est…", "À moyen terme, j'aimerais évoluer vers un poste de…", "Ce que je cherche dans un environnement de travail, c'est…", "L'expérience professionnelle qui m'a le plus formé(e), c'est…", "Pour atteindre mes objectifs, je compte…", "Ce qui distingue le marché du travail canadien, à mon avis, c'est…"],
+  'etudes-formation': ["J'ai étudié… pendant… ans à…", "La formation qui m'a le plus apporté professionnellement, c'est…", "Au Québec / au Canada, le système scolaire fonctionne…", "Ce que j'aurais fait différemment dans mon parcours, c'est…", "Pour se reconvertir au Canada, il est souvent nécessaire de…", "La formation continue est importante pour moi parce que…"],
+  'recherche-emploi': ["Lors de ma recherche d'emploi, j'ai constaté que…", "Le plus grand défi pour trouver un emploi au Canada, c'est…", "Pour préparer un entretien, je…", "Mon CV a été adapté au marché canadien en…", "Les compétences les plus recherchées dans mon domaine sont…", "Grâce à mon réseau professionnel, j'ai pu…"],
+  'vie-bureau': ["Dans mon équipe, l'ambiance est plutôt…", "Ce qui me plaît dans la culture de travail au Canada, c'est…", "En réunion, j'essaie toujours de…", "Le télétravail a changé ma façon de travailler en…", "Quand il y a un conflit au bureau, je préfère…", "L'équilibre travail-vie personnelle ici, c'est…"],
+  'immigration-integration': ["Ce qui m'a poussé(e) à immigrer au Canada, c'est…", "Les premières semaines après mon arrivée ont été…", "S'intégrer dans une nouvelle société, ça passe par…", "La langue française a été pour moi un atout parce que…", "Ce que j'aurais aimé savoir avant d'immigrer, c'est…", "L'aspect culturel qui m'a demandé le plus d'adaptation, c'est…"],
+  'logement-canada': ["Trouver un logement à… n'est pas facile parce que…", "Le coût de la vie dans les grandes villes canadiennes…", "Pour louer un appartement, il faut généralement fournir…", "La différence entre un bail au Québec et ailleurs, c'est…", "Les droits des locataires au Canada incluent…", "Pour trouver mon logement actuel, j'ai utilisé…"],
+  'systeme-sante-canada': ["Au Canada, les soins de santé sont couverts par…", "Pour avoir accès à la carte d'assurance maladie, il faut…", "Ce qui distingue le système de santé canadien, c'est…", "L'accès à un médecin de famille peut prendre…", "En cas d'urgence, on peut se rendre à…", "Les médicaments et les soins dentaires sont…"],
+  'culture-canadienne': ["Ce qui m'a le plus frappé(e) dans la culture canadienne, c'est…", "Au Québec, la culture francophone se manifeste par…", "Les fêtes et traditions canadiennes que j'apprécie le plus…", "La diversité culturelle au Canada se ressent dans…", "Ce que les Canadiens valorisent beaucoup, c'est…", "Comparer la culture canadienne à la mienne, je dirais que…"],
+  'environnement-ecologie': ["Pour réduire mon empreinte écologique, j'essaie de…", "Le changement climatique se ressent déjà dans…", "Les politiques environnementales au Canada…", "Ce que les individus peuvent faire concrètement, c'est…", "La question du recyclage au Québec est particulière parce que…", "Si on ne change pas nos habitudes, dans 20 ans…"],
+  'vie-ville-campagne': ["Vivre en ville offre l'avantage de…", "La campagne attire ceux qui recherchent…", "Depuis la pandémie, beaucoup de gens ont décidé de…", "Le coût de la vie en région est souvent…", "Ce que je ne pourrais pas sacrifier en quittant la ville, c'est…", "Pour les familles avec enfants, la campagne présente…"],
+  'benevolat': ["Je fais du bénévolat auprès de… parce que…", "S'engager dans sa communauté permet de…", "Le bénévolat m'a appris à…", "Les organismes communautaires au Canada jouent un rôle…", "Ce qui motive les bénévoles, c'est souvent…", "Pour quelqu'un qui arrive au Canada, le bénévolat est utile car…"],
+  'medias-reseaux-sociaux': ["Je m'informe principalement via…", "Les réseaux sociaux ont changé la façon dont…", "Ce qui me préoccupe dans la désinformation, c'est…", "Je passe environ… heures par jour sur les réseaux sociaux.", "La liberté de la presse est importante parce que…", "Pour distinguer une vraie information d'une fausse, je…"],
+  'education-enfants': ["Le système scolaire québécois / canadien fonctionne…", "Ce que j'apprécie dans l'éducation ici, c'est…", "Les parents jouent un rôle essentiel en…", "Les activités parascolaires permettent aux enfants de…", "Comparer l'éducation ici et dans mon pays d'origine, je dirais…", "Pour préparer un enfant à réussir, il est important de…"],
+  'sante-habitudes': ["Pour rester en bonne santé, je fais attention à…", "Une alimentation équilibrée, pour moi, ça veut dire…", "Depuis que j'ai changé mon mode de vie, je…", "Le sommeil est crucial parce que…", "Ce que les Canadiens font bien en matière de santé publique, c'est…", "La prévention est plus importante que le traitement parce que…"],
+  'sport-activites': ["Je pratique… régulièrement depuis…", "Le sport que j'aimerais apprendre au Canada, c'est…", "Faire de l'exercice m'aide à…", "L'hiver ne m'empêche pas de faire du sport parce que…", "Les activités sportives en famille, ça nous permet de…", "Pour rester motivé(e), j'ai besoin de…"],
+  'bien-etre-stress': ["Quand je me sens stressé(e), j'ai tendance à…", "Ce qui m'aide le plus à décompresser, c'est…", "La santé mentale est un sujet qui…", "Depuis mon immigration, les sources de stress ont changé : maintenant…", "Pour trouver un équilibre entre vie pro et perso, je…", "Prendre soin de soi, pour moi, ça se traduit par…"],
+  'voyages-destinations': ["Le voyage qui m'a le plus marqué(e), c'est…", "Ce que je recherche quand je voyage, c'est…", "Au Canada, j'aimerais encore visiter…", "Voyager permet de…", "La différence entre voyager en touriste et s'installer, c'est…", "Avant de partir en voyage, je prépare toujours…"],
+  'technologie-quotidien': ["La technologie a simplifié ma vie en…", "L'outil numérique que j'utilise le plus, c'est…", "Ce qui m'inquiète dans notre dépendance à la technologie, c'est…", "L'intelligence artificielle va probablement changer…", "La protection des données personnelles est importante parce que…", "Pour les démarches administratives au Canada, la technologie permet de…"],
+  'argent-budget': ["Pour gérer mon budget, j'utilise…", "Les dépenses qui ont le plus changé depuis mon arrivée, c'est…", "Le coût de la vie au Canada m'a surpris parce que…", "Pour économiser, j'ai pris l'habitude de…", "La différence entre le système bancaire canadien et celui de mon pays…", "Avoir un fonds d'urgence est essentiel parce que…"],
+};
+
+export function getTopicPhrases(topicId: string): string[] {
+  return TOPIC_PHRASES[topicId] ?? [];
+}
+
 const WARMUP_PROFILE_COLLECTION = 'warmupUserProfiles';
 const WARMUP_SESSIONS_COLLECTION = 'warmupSessions';
 
@@ -78,7 +117,7 @@ export const warmupService = {
   buildSystemPrompt(
     profile: WarmupUserProfile,
     topic: string,
-    keywords: string[],
+    phrases: string[],
   ): string {
     const level = profile.levelEstimate || 'A2';
     const strengths = profile.strengths || [];
@@ -107,62 +146,19 @@ export const warmupService = {
         : 'Peu de sujets précédents — considère cette séance comme un premier échauffement.',
       '',
       `Sujet du jour: ${topic}.`,
-      `Mots-clés suggérés: ${keywords.join(', ')}.`,
+      phrases.length
+        ? `Phrases d'amorce suggérées au candidat: ${phrases.join(' / ')}.`
+        : '',
       '',
       "Style de conversation:",
       "- chaleureux, coach bienveillant, jamais examinateur;",
       "- encourage beaucoup, reformule, donne le temps de parler;",
-      "- pose des questions ouvertes en lien avec le sujet et les mots-clés;",
+      "- pose des questions ouvertes en lien avec le sujet;",
       "- adapte le niveau de langue au niveau estimé du candidat.",
       weaknessHint,
       '',
       "À 60 secondes de la fin, si tu reçois une note interne t'indiquant qu'il reste une minute, commence à conclure doucement, à résumer et à encourager la personne pour la prochaine séance.",
     ].join('\n');
-  },
-
-  async generateKeywords(topic: string, level: string): Promise<string[]> {
-    try {
-      const prompt = [
-        'Tu génères des mots-clés pour une séance de mise en route orale en français (TEF Canada).',
-        '',
-        `Sujet: ${topic}`,
-        `Niveau approximatif: ${level}`,
-        '',
-        'Objectif:',
-        '- Proposer 4 à 5 mots-clés ou mini-expressions utiles pour parler de ce sujet à ce niveau.',
-        '- Mélanger vocabulaire concret et quelques connecteurs simples.',
-        '',
-        'Contraintes:',
-        '- Réponds UNIQUEMENT en JSON, sans texte autour.',
-        '- Format: { "keywords": ["...", "...", ...] }',
-        '- Chaque entrée doit être une courte expression (1 à 3 mots).',
-      ].join('\n');
-
-      const raw = await geminiService.generateText(prompt);
-
-      if (typeof raw === 'string' && raw.trim()) {
-        try {
-          const text = raw.replace(/```json\n?|\n?```/g, '').trim();
-          const parsed = JSON.parse(text);
-          if (Array.isArray(parsed.keywords)) {
-            return parsed.keywords.map((k: any) => String(k)).slice(0, 5);
-          }
-        } catch {
-          const parts = raw
-            .split(/[\n,]/)
-            .map((s) => s.trim())
-            .filter(Boolean);
-          if (parts.length) {
-            return parts.slice(0, 5);
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error generating warmup keywords:', error);
-    }
-
-    // Fallback: static keywords if Gemini fails
-    return ['conversation', 'quotidien', 'travail', 'famille', 'projets'];
   },
 
   async markAbandonedIfStale(userId: string, localDate: string): Promise<void> {

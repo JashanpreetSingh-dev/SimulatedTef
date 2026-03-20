@@ -9,7 +9,7 @@ interface Props {
   onStart: (config: {
     systemPrompt: string;
     topic: string;
-    keywords: string[];
+    phrases: string[];
     sessionId?: string;
     userLevel: string;
     streak: number;
@@ -37,13 +37,13 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
     setError(null);
     try {
       const [config, { sessionId }] = await Promise.all([
-        warmupService.getConfig(localDate, selectedTopic.label, getToken),
+        warmupService.getConfig(localDate, selectedTopic.label, getToken, selectedTopic.id),
         warmupService.startSession(localDate, selectedTopic.id, selectedTopic.label, getToken),
       ]);
       onStart({
         systemPrompt: config.systemPrompt,
         topic: selectedTopic.label,
-        keywords: config.keywords,
+        phrases: config.phrases,
         sessionId,
         userLevel: config.userLevel,
         streak: config.streak,
