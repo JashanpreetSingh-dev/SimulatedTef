@@ -6,6 +6,12 @@ export interface WarmupSessionFeedback {
   levelNote: string;
 }
 
+export interface WarmupCorrection {
+  original: string;
+  corrected: string;
+  explanation: string;
+}
+
 export interface WarmupSession {
   userId: string;
   /**
@@ -29,6 +35,8 @@ export interface WarmupSession {
    */
   streak?: number;
   feedback?: WarmupSessionFeedback;
+  corrections?: WarmupCorrection[];
+  topicId?: string;
   createdAt: Date;
 }
 

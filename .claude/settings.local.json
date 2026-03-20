@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd:*)",
+      "Bash(grep:*)",
+      "Bash(openspec list:*)",
+      "Bash(openspec status:*)",
+      "Bash(openspec archive:*)",
+      "Bash(openspec new:*)",
+      "Bash(openspec instructions:*)",
+      "Bash(gh pr:*)",
+      "Bash(where gh:*)",
+      "Bash(winget list:*)",
+      "Bash(winget install:*)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version 2>&1)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status 2>&1)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo view)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo view --json defaultBranchRef)",
+      "Bash(\"/c/Program Files/GitHub:*)",
+      "Bash(claude config:*)",
+      "Skill(update-config)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub:*)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d[''''outputPath'''']\\); print\\(d[''''instruction''''][:300]\\)\")",
+      "Bash(mkdir -p openspec/changes/warmup-speaking-aids/specs/warmup-session-transcript)",
+      "Bash(mkdir -p openspec/changes/warmup-speaking-aids/specs/warmup-feedback-card)",
+      "Bash(find /c/Users/jasha/Downloads/tef-canada-master/components/dashboard -type f -name *.tsx)",
+      "Bash(ls:*)",
+      "Bash(mkdir -p openspec/changes/archive)",
+      "Bash(mv openspec/changes/warmup-enhancements \"openspec/changes/archive/2026-03-19-warmup-enhancements\")",
+      "Bash(cp -r openspec/changes/warmup-enhancements \"openspec/changes/archive/2026-03-19-warmup-enhancements\")",
+      "Bash(rm -rf openspec/changes/warmup-enhancements)"
+    ]
+  }
+}

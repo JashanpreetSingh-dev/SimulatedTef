@@ -1,6 +1,12 @@
 import React from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
+interface Correction {
+  original: string;
+  corrected: string;
+  explanation: string;
+}
+
 interface Props {
   streak: number;
   feedback: {
@@ -10,6 +16,7 @@ interface Props {
   };
   topicsCovered: string[];
   durationSeconds: number;
+  corrections: Correction[];
   onBackToDashboard: () => void;
 }
 
@@ -17,6 +24,7 @@ export const WarmupComplete: React.FC<Props> = ({
   streak,
   feedback,
   durationSeconds,
+  corrections,
   onBackToDashboard,
 }) => {
   const { t } = useLanguage();
@@ -52,6 +60,7 @@ export const WarmupComplete: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* Feedback rows */}
       <div className="space-y-3">
         {feedback.wentWell && (
           <div className="flex items-start gap-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 py-3 border border-emerald-100 dark:border-emerald-800">
@@ -79,6 +88,41 @@ export const WarmupComplete: React.FC<Props> = ({
         )}
       </div>
 
+      {/* Corrections */}
+      {corrections.length > 0 && (
+        <div className="space-y-3">
+          <div className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.25em]">
+            {t('warmup.correctionsTitle')}
+          </div>
+          {corrections.map((c, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
+            >
+              {/* Original — red-tinted */}
+              <div className="flex items-start gap-2 bg-rose-50 dark:bg-rose-900/20 px-4 py-2.5">
+                <span className="text-rose-400 shrink-0 text-xs mt-0.5 font-mono">✕</span>
+                <p className="text-xs text-rose-700 dark:text-rose-300 leading-relaxed line-through">
+                  {c.original}
+                </p>
+              </div>
+              {/* Corrected — green-tinted */}
+              <div className="flex items-start gap-2 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2.5 border-t border-slate-200 dark:border-slate-700">
+                <span className="text-emerald-500 shrink-0 text-xs mt-0.5 font-mono">✓</span>
+                <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-200 leading-relaxed">
+                  {c.corrected}
+                </p>
+              </div>
+              {/* Explanation */}
+              <div className="bg-white dark:bg-slate-900 px-4 py-2.5 border-t border-slate-100 dark:border-slate-800">
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {c.explanation}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

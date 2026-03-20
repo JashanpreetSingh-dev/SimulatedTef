@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -39,83 +40,27 @@ router.get(
     }
 
     const localDate = String(req.query.localDate || '').trim();
+    const topicLabel = String(req.query.topic || '').trim();
+
     if (!localDate || !isDateWithinOneDayOfServer(localDate)) {
       return res.status(400).json({ error: 'Invalid localDate' });
+    }
+    if (!topicLabel) {
+      return res.status(400).json({ error: 'topic is required' });
     }
 
     await warmupService.markAbandonedIfStale(userId, localDate);
 
-    const db = await connectDB();
-    const sessionsCollection = db.collection<WarmupSession>('warmupSessions');
-
-    let session = await sessionsCollection.findOne({
-      userId,
-      date: localDate,
-    });
-
     const profile = await warmupService.getOrCreateProfile(userId);
-
-    const keywordsLookValid = (kws: string[] | undefined) =>
-      Array.isArray(kws) &&
-      kws.length > 0 &&
-      kws.every((k) => k.length < 60 && !k.toLowerCase().includes('transcript'));
-
-    if (session && session.topic && keywordsLookValid(session.keywords)) {
-      const streak = await warmupService.computeStreak(userId, localDate);
-      const systemPrompt = warmupService.buildSystemPrompt(
-        profile,
-        session.topic,
-        session.keywords,
-      );
-
-      return res.json({
-        systemPrompt,
-        topic: session.topic,
-        keywords: session.keywords,
-        userLevel: profile.levelEstimate,
-        streak,
-      });
-    }
-
-    const topic = warmupService.selectTopic(profile);
-    const keywords = await warmupService.generateKeywords(
-      topic,
-      profile.levelEstimate,
-    );
-
-    const now = new Date();
-
-    const upsertResult = await sessionsCollection.findOneAndUpdate(
-      { userId, date: localDate },
-      {
-        $setOnInsert: {
-          userId,
-          date: localDate,
-          status: 'active' as const,
-          createdAt: now,
-        },
-        $set: {
-          topic,
-          keywords,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    );
-
-    session = upsertResult.value as WarmupSession;
+    const keywords = await warmupService.generateKeywords(topicLabel, profile.levelEstimate);
     const streak = await warmupService.computeStreak(userId, localDate);
-    const systemPrompt = warmupService.buildSystemPrompt(profile, topic, keywords);
+    const systemPrompt = warmupService.buildSystemPrompt(profile, topicLabel, keywords);
 
     res.json({
       systemPrompt,
-      topic,
       keywords,
       userLevel: profile.levelEstimate,
       streak,
-      sessionId: session ? (session as any)._id?.toString() : undefined,
     });
   }),
 );
@@ -129,7 +74,11 @@ router.post(
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { localDate } = req.body as { localDate?: string };
+    const { localDate, topicId, topicLabel } = req.body as {
+      localDate?: string;
+      topicId?: string;
+      topicLabel?: string;
+    };
     if (!localDate || !isDateWithinOneDayOfServer(localDate)) {
       return res.status(400).json({ error: 'Invalid localDate' });
     }
@@ -138,26 +87,16 @@ router.post(
     const sessionsCollection = db.collection<WarmupSession>('warmupSessions');
 
     const now = new Date();
+    const result = await sessionsCollection.insertOne({
+      userId,
+      date: localDate,
+      status: 'active' as const,
+      topicId: topicId || '',
+      topic: topicLabel || '',
+      createdAt: now,
+    } as any);
 
-    const result = await sessionsCollection.findOneAndUpdate(
-      { userId, date: localDate },
-      {
-        $setOnInsert: {
-          userId,
-          date: localDate,
-          status: 'active' as const,
-          createdAt: now,
-        },
-      },
-      {
-        upsert: true,
-        returnDocument: 'after',
-      },
-    );
-
-    const session = result.value as any;
-    const sessionId = session?._id?.toString();
-
+    const sessionId = result.insertedId.toString();
     res.json({ sessionId });
   }),
 );
@@ -193,23 +132,46 @@ router.post(
     });
 
     const profile = await warmupService.getOrCreateProfile(userId);
-    const feedback = await warmupService.generateSessionFeedback(
-      transcript,
-      profile.levelEstimate,
-    );
+
+    // Extract only user lines from transcript for corrections
+    const userTranscript = transcript
+      .split('\n')
+      .filter((line) => line.startsWith('User:'))
+      .map((line) => line.replace(/^User:\s*/, ''))
+      .join(' ');
+
+    const [feedback, corrections] = await Promise.all([
+      warmupService.generateSessionFeedback(transcript, profile.levelEstimate),
+      warmupService.generateCorrections(userTranscript, profile.levelEstimate),
+    ]);
+
+    // Find the session document by sessionId (ObjectId) or fall back to userId+date
+    let sessionDoc: WarmupSession | null = null;
+    try {
+      if (sessionObjectId && ObjectId.isValid(sessionObjectId)) {
+        sessionDoc = await sessionsCollection.findOne({
+          _id: new ObjectId(sessionObjectId) as any,
+          userId,
+        });
+      }
+    } catch { /* ignore */ }
 
     const localDate =
-      (existing && existing.date) ||
-      new Date().toISOString().slice(0, 10); // Fallback to server date
+      (sessionDoc && sessionDoc.date) ||
+      new Date().toISOString().slice(0, 10);
 
     const streak = await warmupService.computeStreak(userId, localDate);
 
+    const updateQuery = sessionDoc
+      ? { _id: (sessionDoc as any)._id }
+      : { userId, date: localDate };
+
     await sessionsCollection.updateOne(
-      { userId, date: localDate },
+      updateQuery as any,
       {
         $set: {
           status: 'completed',
-          durationSeconds: durationSeconds ?? existing?.durationSeconds ?? 0,
+          durationSeconds: durationSeconds ?? 0,
           topicsCovered: feedback.topicsCovered,
           levelAtSession: feedback.levelAtSession,
           streak,
@@ -218,6 +180,7 @@ router.post(
             practiceTip: feedback.practiceTip,
             levelNote: feedback.levelNote,
           },
+          corrections,
         },
       },
       { upsert: true },
@@ -246,6 +209,7 @@ router.post(
       },
       topicsCovered: feedback.topicsCovered,
       levelAtSession: feedback.levelAtSession,
+      corrections,
     });
   }),
 );

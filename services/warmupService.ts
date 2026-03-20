@@ -5,24 +5,28 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
 export interface WarmupConfigResponse {
   systemPrompt: string;
-  topic: string;
   keywords: string[];
   userLevel: string;
   streak: number;
 }
 
 export const warmupService = {
-  async getConfig(localDate: string, getToken: () => Promise<string | null>): Promise<WarmupConfigResponse> {
+  async getConfig(localDate: string, topicLabel: string, getToken: () => Promise<string | null>): Promise<WarmupConfigResponse> {
     return authenticatedFetchJSON<WarmupConfigResponse>(
-      `${BACKEND_URL}/api/warmup/config?localDate=${encodeURIComponent(localDate)}`,
+      `${BACKEND_URL}/api/warmup/config?localDate=${encodeURIComponent(localDate)}&topic=${encodeURIComponent(topicLabel)}`,
       { method: 'GET', getToken },
     );
   },
 
-  async startSession(localDate: string, getToken: () => Promise<string | null>): Promise<{ sessionId: string }> {
+  async startSession(
+    localDate: string,
+    topicId: string,
+    topicLabel: string,
+    getToken: () => Promise<string | null>,
+  ): Promise<{ sessionId: string }> {
     return authenticatedFetchJSON<{ sessionId: string }>(
       `${BACKEND_URL}/api/warmup/session/start`,
-      { method: 'POST', getToken, body: JSON.stringify({ localDate }) },
+      { method: 'POST', getToken, body: JSON.stringify({ localDate, topicId, topicLabel }) },
     );
   },
 
@@ -40,6 +44,7 @@ export const warmupService = {
     };
     topicsCovered: string[];
     levelAtSession: string;
+    corrections: { original: string; corrected: string; explanation: string }[];
   }> {
     return authenticatedFetchJSON(
       `${BACKEND_URL}/api/warmup/session/complete`,

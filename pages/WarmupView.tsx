@@ -28,6 +28,7 @@ export function WarmupView() {
     };
     topicsCovered: string[];
     durationSeconds: number;
+    corrections: { original: string; corrected: string; explanation: string }[];
   } | null>(null);
 
   const localDate = useMemo(
@@ -65,6 +66,7 @@ export function WarmupView() {
                   feedback: data.feedback,
                   topicsCovered: data.topicsCovered || [],
                   durationSeconds,
+                  corrections: data.corrections || [],
                 });
               } catch (err) {
                 console.error(err);
@@ -77,6 +79,7 @@ export function WarmupView() {
                   },
                   topicsCovered: [],
                   durationSeconds,
+                  corrections: [],
                 });
               }
               setView('complete');
@@ -114,6 +117,7 @@ export function WarmupView() {
             feedback={completion.feedback}
             topicsCovered={completion.topicsCovered}
             durationSeconds={completion.durationSeconds}
+            corrections={completion.corrections}
             onBackToDashboard={() => setView('dashboard')}
           />
         )}

@@ -526,6 +526,10 @@ const translations: Record<Language, Record<string, string>> = {
     'warmup.tomorrow': 'Pour demain →',
     'warmup.back': 'Retour',
     'warmup.backToDashboard': 'Retour au tableau de bord',
+    'warmup.selectTopic': 'Choisir un sujet',
+    'warmup.difficultyEasy': 'Facile — A2 · B1',
+    'warmup.difficultyMedium': 'Intermédiaire — B1 · B2',
+    'warmup.correctionsTitle': 'À corriger',
     'warmup.cardDescription': '5 minutes de conversation détendue pour garder ton français actif, sans pression d\'examen.',
     'warmup.levelLabel': 'Niveau estimé :',
 
@@ -1047,6 +1051,10 @@ const translations: Record<Language, Record<string, string>> = {
     'warmup.tomorrow': 'For tomorrow →',
     'warmup.back': 'Back',
     'warmup.backToDashboard': 'Back to dashboard',
+    'warmup.selectTopic': 'Select a topic',
+    'warmup.difficultyEasy': 'Easy — A2 · B1',
+    'warmup.difficultyMedium': 'Intermediate — B1 · B2',
+    'warmup.correctionsTitle': 'Corrections',
     'warmup.cardDescription': '5-minute relaxed conversation to keep your French active, no exam pressure.',
     'warmup.levelLabel': 'Estimated level:',
 

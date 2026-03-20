@@ -120,23 +120,6 @@ export const warmupService = {
     ].join('\n');
   },
 
-  selectTopic(profile: WarmupUserProfile): string {
-    const RECENT_WINDOW = 5;
-    const recent = (profile.topicsExplored || []).slice(-RECENT_WINDOW);
-    const candidates = [
-      'vie quotidienne',
-      'travail et carrière',
-      'voyages',
-      'famille et amis',
-      'études et projets',
-      'loisirs et passions',
-      'actualités légères',
-    ];
-
-    const available = candidates.filter((t) => !recent.includes(t));
-    return (available.length ? available : candidates)[0];
-  },
-
   async generateKeywords(topic: string, level: string): Promise<string[]> {
     try {
       const prompt = [
@@ -203,6 +186,67 @@ export const warmupService = {
         },
       },
     );
+  },
+
+  async generateCorrections(
+    userTranscript: string,
+    level: string,
+  ): Promise<{ original: string; corrected: string; explanation: string }[]> {
+    const wordCount = userTranscript.trim().split(/\s+/).filter(Boolean).length;
+    if (wordCount < 10) return [];
+
+    const prompt = [
+      'Tu es un·e correcteur·trice bienveillant·e de français pour un·e candidat·e au TEF Canada.',
+      '',
+      `Niveau estimé: ${level || 'A2-B1'}.`,
+      '',
+      'Voici les phrases prononcées par le candidat pendant la séance:',
+      userTranscript,
+      '',
+      'Ta mission:',
+      '- Repère 2 à 3 phrases ou segments où le candidat a fait une erreur ou utilisé une formulation maladroite.',
+      '- Pour chaque extrait, propose une reformulation naturelle et explique brièvement pourquoi.',
+      '',
+      'Format de sortie STRICT (JSON uniquement, pas de texte autour):',
+      '[',
+      '  {',
+      '    "original": "ce que le candidat a dit",',
+      '    "corrected": "la version correcte ou plus naturelle",',
+      '    "explanation": "explication courte en français (1 phrase max)"',
+      '  }',
+      ']',
+      '',
+      'Important:',
+      '- Maximum 3 corrections.',
+      '- Choisis les erreurs les plus utiles à corriger pour le TEF.',
+      '- Reste bienveillant·e et concis·e.',
+      '- Si le candidat a très bien parlé et qu\'il n\'y a pas d\'erreur notable, retourne un tableau vide [].',
+    ].join('\n');
+
+    try {
+      const raw = await geminiService.generateText(prompt);
+      if (typeof raw === 'string' && raw.trim()) {
+        const text = raw.replace(/```json\n?|\n?```/g, '').trim();
+        const match = text.match(/\[[\s\S]*\]/);
+        if (match) {
+          const parsed = JSON.parse(match[0]);
+          if (Array.isArray(parsed)) {
+            return parsed
+              .filter((c: any) => c.original && c.corrected && c.explanation)
+              .slice(0, 3)
+              .map((c: any) => ({
+                original: String(c.original),
+                corrected: String(c.corrected),
+                explanation: String(c.explanation),
+              }));
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error generating warmup corrections:', error);
+    }
+
+    return [];
   },
 
   async generateSessionFeedback(

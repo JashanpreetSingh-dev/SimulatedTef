@@ -1,15 +1,15 @@
-## ADDED Requirements
+## Requirements
 
 ### Requirement: System records one session document per completed warm-up
-The system SHALL store a `warmupSession` document in MongoDB for each completed session. The userId + date combination SHALL be unique (one session per user per day).
+The system SHALL store a `warmupSession` document in MongoDB for each completed session. The userId + date uniqueness constraint is removed — multiple sessions per user per day are permitted.
 
 #### Scenario: Session document created on start
 - **WHEN** `POST /api/warmup/session/start` is called
-- **THEN** the system SHALL upsert a warmupSession document with status: "active" for today's date (idempotent — calling start twice for the same day returns the same sessionId)
+- **THEN** the system SHALL insert a new warmupSession document with status: "active" for today's date (no longer idempotent — each call creates a new session document)
 
-#### Scenario: Session document completed
+#### Scenario: Session document completed with corrections
 - **WHEN** `POST /api/warmup/session/complete` is called
-- **THEN** the system SHALL update the session document with status: "completed", durationSeconds, topicsCovered[], levelAtSession, and feedback { wentWell, practiceTip, levelNote }
+- **THEN** the system SHALL update the session document with status: "completed", durationSeconds, topicsCovered[], levelAtSession, feedback `{ wentWell, practiceTip, levelNote }`, and `corrections[]`
 
 ---
 
@@ -40,4 +40,3 @@ The system SHALL provide `GET /api/warmup/history` returning the last 30 session
 #### Scenario: Empty history
 - **WHEN** a user has no session history
 - **THEN** the system SHALL return an empty array (not an error)
-
