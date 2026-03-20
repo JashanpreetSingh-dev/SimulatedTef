@@ -55,7 +55,12 @@ router.get(
 
     const profile = await warmupService.getOrCreateProfile(userId);
 
-    if (session && session.topic && session.keywords && session.keywords.length) {
+    const keywordsLookValid = (kws: string[] | undefined) =>
+      Array.isArray(kws) &&
+      kws.length > 0 &&
+      kws.every((k) => k.length < 60 && !k.toLowerCase().includes('transcript'));
+
+    if (session && session.topic && keywordsLookValid(session.keywords)) {
       const streak = await warmupService.computeStreak(userId, localDate);
       const systemPrompt = warmupService.buildSystemPrompt(
         profile,
