@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob, LIVE_API_CONFIG } from '../../services/gemini';
 
 interface Props {
@@ -19,6 +20,7 @@ export const WarmupSession: React.FC<Props> = ({
   sessionId,
   onComplete,
 }) => {
+  const { t } = useLanguage();
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active'>('idle');
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
@@ -270,7 +272,7 @@ export const WarmupSession: React.FC<Props> = ({
   const finishSession = () => {
     const durationSeconds = 5 * 60 - timeLeft;
     const allLines = [
-      ...userLinesRef.current.map((l) => `Utilisateur: ${l.text}`),
+      ...userLinesRef.current.map((l) => `User: ${l.text}`),
       ...aiLinesRef.current.map((l) => `AI: ${l.text}`),
     ];
     const transcript = allLines.join('\n');
@@ -384,16 +386,16 @@ export const WarmupSession: React.FC<Props> = ({
         }`}
       >
         {status === 'connecting' ? (
-          <span>Connexion...</span>
+          <span>{t('warmup.connecting')}</span>
         ) : status === 'active' ? (
           <>
             <span>⏹</span>
-            <span>Terminer</span>
+            <span>{t('warmup.stop')}</span>
           </>
         ) : (
           <>
             <span>🎙</span>
-            <span>Commencer</span>
+            <span>{t('warmup.start')}</span>
           </>
         )}
       </button>

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { warmupService } from '../../services/warmupService';
 
 interface Props {
@@ -15,6 +17,8 @@ interface Props {
 
 export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
   const { getToken } = useAuth();
+  const { t } = useLanguage();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<{
@@ -51,7 +55,7 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
         if (!cancelled) {
           setError(
             err?.message ||
-              "Impossible de charger la configuration de l'échauffement.",
+              t('warmup.configLoadError'),
           );
         }
       } finally {
@@ -82,33 +86,39 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
     } catch (err: any) {
       setError(
         err?.message ||
-          "Impossible de démarrer la séance. Veuillez réessayer dans un instant.",
+          t('warmup.startError'),
       );
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
+      <div className="flex items-start justify-between gap-4">
+        <div className="space-y-1">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-1 mb-2"
+          >
+            ← {t('warmup.backToDashboard')}
+          </button>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50">
-            Échauffement oral quotidien
+            {t('warmup.title')}
           </h2>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
-            Une petite séance de conversation guidée chaque jour pour garder ton français en mouvement.
+            {t('warmup.subtitle')}
           </p>
         </div>
         {config && (
           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200 shrink-0">
             <span>🔥</span>
-            <span>{config.streak || 0} jour(s)</span>
+            <span>{t('warmup.streak', { count: String(config.streak || 0) })}</span>
           </span>
         )}
       </div>
 
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
         <div className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.25em]">
-          Sujet du jour
+          {t('warmup.topicLabel')}
         </div>
 
         {loading && (
@@ -142,7 +152,7 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
 
         {!loading && !config && !error && (
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Impossible de charger le sujet du jour.
+            {t('warmup.topicLoadError')}
           </p>
         )}
 
@@ -163,12 +173,12 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
         {sessionCompletedToday ? (
           <>
             <span>✅</span>
-            <span>Déjà fait pour aujourd&apos;hui</span>
+            <span>{t('warmup.alreadyDone')}</span>
           </>
         ) : (
           <>
             <span>🎙</span>
-            <span>Commencer</span>
+            <span>{t('warmup.start')}</span>
           </>
         )}
       </button>

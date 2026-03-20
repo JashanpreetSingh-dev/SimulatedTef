@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface Props {
   streak?: number;
@@ -8,6 +9,7 @@ interface Props {
 
 export function WarmupCard({ streak, levelEstimate }: Props) {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const displayStreak = streak ?? 0;
   const displayLevel = levelEstimate ?? 'A2';
@@ -26,25 +28,24 @@ export function WarmupCard({ streak, levelEstimate }: Props) {
             Warm-Up
           </span>
           <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-white/40 text-amber-900 border border-amber-200">
-            {displayStreak} jour(s) 🔥
+            {t('warmup.streak', { count: String(displayStreak) })} 🔥
           </span>
         </div>
       </div>
       <h3 className="text-base md:text-xl font-bold text-amber-950 mb-2">
-        Échauffement oral quotidien
+        {t('warmup.title')}
       </h3>
       <p className="text-amber-950/80 text-xs md:text-sm leading-relaxed mb-4">
-        8 minutes de conversation détendue pour garder ton français actif, sans
-        pression d&apos;examen.
+        {t('warmup.cardDescription')}
       </p>
       <div className="flex items-center justify-between text-xs md:text-sm">
         <div className="flex items-center gap-1.5 text-amber-950 font-semibold">
           <span className="px-2 py-0.5 rounded-full bg-white/50 border border-amber-200">
-            Niveau estimé : {displayLevel}
+            {t('warmup.levelLabel')} {displayLevel}
           </span>
         </div>
         <div className="text-amber-950 font-bold flex items-center">
-          <span className="mr-1">Commencer</span> <span>→</span>
+          <span className="mr-1">{t('warmup.start')}</span> <span>→</span>
         </div>
       </div>
     </div>
