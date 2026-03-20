@@ -32,31 +32,32 @@ export const WarmupComplete: React.FC<Props> = ({
 
   return (
     <div className="space-y-6">
-      <button
-        onClick={onBackToDashboard}
-        className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
-      >
-        ← {t('back.dashboard')}
-      </button>
-
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
-            {t('warmup.greatSession')}
-          </h2>
-          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
-            {t('warmup.todayFeedback')}
-          </p>
-        </div>
-        <div className="flex flex-col items-end gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
-            <span>🔥</span>
-            <span>{t('warmup.streakLabel', { count: String(streak) })}</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
-            <span>⏱</span>
-            <span>{minutes} min</span>
-          </span>
+      <div className="space-y-2 md:space-y-3">
+        <button
+          onClick={onBackToDashboard}
+          className="text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
+        >
+          ← {t('back.dashboard')}
+        </button>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
+              {t('warmup.greatSession')}
+            </h2>
+            <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
+              {t('warmup.todayFeedback')}
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-2 shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200">
+              <span>🔥</span>
+              <span>{t('warmup.streakLabel', { count: String(streak) })}</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">
+              <span>⏱</span>
+              <span>{minutes} min</span>
+            </span>
+          </div>
         </div>
       </div>
 

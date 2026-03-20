@@ -216,6 +216,26 @@ router.post(
 );
 
 router.get(
+  '/summary',
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const userId = req.userId;
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const profile = await warmupService.getOrCreateProfile(userId);
+    const localDate = new Date().toLocaleDateString('en-CA');
+    const streak = await warmupService.computeStreak(userId, localDate);
+
+    res.json({
+      streak,
+      levelEstimate: profile.levelEstimate || 'A2',
+    });
+  }),
+);
+
+router.get(
   '/history',
   requireAuth,
   asyncHandler(async (req, res) => {

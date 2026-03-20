@@ -54,5 +54,27 @@ export const warmupService = {
     );
   },
 
+  async getSummary(getToken: () => Promise<string | null>): Promise<{ streak: number; levelEstimate: string }> {
+    return authenticatedFetchJSON(
+      `${BACKEND_URL}/api/warmup/summary`,
+      { method: 'GET', getToken },
+    );
+  },
+
+  async getHistory(getToken: () => Promise<string | null>): Promise<{
+    date: string;
+    status: string;
+    durationSeconds: number;
+    topic?: string;
+    topicsCovered: string[];
+    levelAtSession?: string;
+    streak?: number;
+  }[]> {
+    return authenticatedFetchJSON(
+      `${BACKEND_URL}/api/warmup/history`,
+      { method: 'GET', getToken },
+    );
+  },
+
   makeWarmupSystemPrompt,
 };

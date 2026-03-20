@@ -6,6 +6,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { WarmupCard } from '../components/dashboard/WarmupCard';
+import { warmupService } from '../services/warmupService';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
@@ -18,6 +19,7 @@ export function Dashboard() {
   const { t } = useLanguage();
   const [batch, setBatch] = useState<Batch | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [warmupSummary, setWarmupSummary] = useState<{ streak: number; levelEstimate: string } | null>(null);
   const isD2C = useIsD2C();
 
   // Check if user is a professor or admin (admins have all professor permissions)
@@ -34,6 +36,11 @@ export function Dashboard() {
   }, [isProfessor, isD2C]);
 
   useEffect(() => {
+    loadWarmupSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (isD2C) {
       loadSubscription();
     }
@@ -48,6 +55,16 @@ export function Dashboard() {
     } catch (err) {
       console.error('Failed to load batch:', err);
       setBatch(null);
+    }
+  };
+
+  const loadWarmupSummary = async () => {
+    try {
+      const getTokenWrapper = async () => getToken();
+      const summary = await warmupService.getSummary(getTokenWrapper);
+      setWarmupSummary(summary);
+    } catch (err) {
+      console.error('Failed to load warmup summary:', err);
     }
   };
 
@@ -92,7 +109,7 @@ export function Dashboard() {
         {/* Section Cards */}
         <div className="grid md:grid-cols-3 gap-6">
           <PracticeCard />
-          <WarmupCard />
+          <WarmupCard streak={warmupSummary?.streak} levelEstimate={warmupSummary?.levelEstimate} />
           <MockExamsCard />
         </div>
       </main>
