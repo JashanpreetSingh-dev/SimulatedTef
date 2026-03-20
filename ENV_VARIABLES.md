@@ -9,6 +9,7 @@
 ### Optional
 - **`MONGODB_DB_NAME`** - Database name (default: `tef_master`)
 - **`REDIS_URL`** - Redis connection (required for job queue). If Bull workers fail with "not enough memory", increase Redis `maxmemory` (e.g. 256mb). See [REDIS_CLOUD_SETUP.md](REDIS_CLOUD_SETUP.md).
+- **`CLERK_WEBHOOK_SECRET`** - Signing secret for Clerk webhooks (used to verify `/api/clerk-webhooks`).
 - **`PORT`** - Server port (default: `3001`)
 - **`HOST`** - Server host (default: `0.0.0.0`)
 - **`NODE_ENV`** - Environment mode (`development` or `production`)
@@ -72,6 +73,25 @@ stripe listen --forward-to localhost:3001/api/stripe-webhooks
 
 Copy the webhook signing secret from the CLI output and set it as `STRIPE_WEBHOOK_SECRET` in your `.env`.
 
+## Email / Notifications Configuration (Resend)
+
+Used for transactional emails such as welcome messages and subscription notifications.
+
+- **`RESEND_API_KEY`** - Resend API key (required to send any emails).
+- **`RESEND_FROM_EMAIL`** - Default sender address, e.g. `Your App <no-reply@yourdomain.com>`.
+- **`RESEND_WELCOME_TEMPLATE_ID`** - Resend template ID for the welcome email.
+- **`RESEND_SUB_CONGRATS_TEMPLATE_ID`** - Resend template ID for the subscription congratulations email.
+
+### Local Development (.env)
+
+```bash
+# Resend (transactional emails)
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxx
+RESEND_FROM_EMAIL="Your App <no-reply@yourdomain.com>"
+RESEND_WELCOME_TEMPLATE_ID=welcome-template-id
+RESEND_SUB_CONGRATS_TEMPLATE_ID=sub-congrats-template-id
+```
+
 ## Frontend Variables
 
 - **`VITE_BACKEND_URL`** - Backend API URL (default: `http://localhost:3001`)
@@ -127,6 +147,9 @@ STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_PRICE_ID_BASIC=price_...
 STRIPE_PRICE_ID_PREMIUM=price_...
+
+# Clerk webhooks (welcome emails)
+CLERK_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
 
 # OR TTS - Gemini (alternative)
 # TTS_PROVIDER=gemini

@@ -11,6 +11,7 @@ An AI-powered oral expression simulator and evaluator for the TEF Canada exam. P
 - 📊 **Performance Tracking** - View history and track your progress
 - 🎙️ **Audio Recording** - Review your performance with complete session recordings
 - 📝 **Detailed Feedback** - Get comprehensive evaluation including CLB and CECR levels
+- ✉️ **Email Notifications** - Branded welcome and subscription emails for users
 
 ## Tech Stack
 
@@ -38,7 +39,7 @@ npm install
 
 ### 2. Environment Variables
 
-Create a `.env.local` file in the project root:
+Create a `.env.local` file in the project root (see `ENV_VARIABLES.md` for the full list and detailed descriptions):
 
 ```env
 # Required
@@ -46,12 +47,21 @@ GEMINI_API_KEY=your_gemini_api_key_here
 MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/
 CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 CLERK_SECRET_KEY=your_clerk_secret_key
+
+# Stripe (D2C subscriptions)
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+STRIPE_PRICE_ID_BASIC=price_basic_xxxxx
+STRIPE_PRICE_ID_PREMIUM=price_premium_xxxxx
 
-# Stripe Price IDs (for pack purchases)
-STRIPE_PRICE_ID_STARTER_PACK=price_xxxxx
-STRIPE_PRICE_ID_EXAM_READY_PACK=price_xxxxx
+# Resend (transactional email)
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxxxxxxx
+RESEND_FROM_EMAIL="Your App <no-reply@yourdomain.com>"
+RESEND_WELCOME_TEMPLATE_ID=welcome-template-id
+RESEND_SUB_CONGRATS_TEMPLATE_ID=sub-congrats-template-id
+
+# Clerk webhooks (welcome emails)
+CLERK_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxx
 
 # Optional
 MONGODB_DB_NAME=tef_master
@@ -150,6 +160,46 @@ npm start
 - `POST /api/recordings/upload` - Upload audio recording
 - `GET /api/recordings/:id` - Download audio recording
 - `GET /api/health` - Health check
+- `POST /api/stripe-webhooks` - Stripe webhook endpoint (subscriptions, invoices)
+- `POST /api/clerk-webhooks` - Clerk webhook endpoint (user lifecycle events, e.g. welcome emails)
+
+## Email Notifications
+
+This project includes a reusable email notifications module powered by **Resend**:
+
+- **Welcome email**: Sent when Clerk fires a `user.created` webhook to `/api/clerk-webhooks`.
+- **Subscription congratulations email**: Sent when Stripe fires `customer.subscription.created` to `/api/stripe-webhooks`.
+- Email sends are performed via a BullMQ **email** queue and a background `emailWorker`, so webhook handlers stay fast and resilient.
+
+To use it:
+
+1. Configure Resend env vars: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_WELCOME_TEMPLATE_ID`, `RESEND_SUB_CONGRATS_TEMPLATE_ID`.
+2. Create and publish templates in the Resend dashboard that expect variables like `firstName`, `tierName`, `billingPeriod`, and `dashboardUrl`.
+3. Set `CLERK_WEBHOOK_SECRET` and `STRIPE_WEBHOOK_SECRET` to the signing secrets from Clerk and Stripe.
+
+Welcome sends are idempotent per user (tracked in the `userNotifications` collection).
+
+## CLI Tools
+
+There is a Node-based CLI (`npm run cli`) for managing tasks and triggering manual emails.
+
+Common examples:
+
+```bash
+# Reading / listening / mock-exam management (existing)
+npm run cli -- reading list
+npm run cli -- listening generate
+npm run cli -- mock-exam generate
+
+# Email notifications (manual sends)
+# Enqueue a welcome email for a specific Clerk user
+npm run cli -- email send-welcome --user-id user_123
+
+# Enqueue a subscription congratulations email
+npm run cli -- email send-subscription-congrats --user-id user_123 --tier-id basic
+```
+
+The CLI commands enqueue jobs on the BullMQ email queue; the background worker uses the same `notificationService` and Resend templates as the webhooks.
 
 ## Deployment
 

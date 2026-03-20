@@ -158,15 +158,25 @@ export const mockExamService = {
       return false;
     }
 
-    // Check if user already has an active mock exam session
+    // Check if user already has a mock exam session for this exam
     const activeSession = await db.collection("examSessions").findOne({
       userId,
       mockExamId,
       examType: "mock",
     });
 
-    // If there's an active session, user can resume, but can also start if it's not fully completed
-    return !activeSession || activeSession.completedModules?.length !== 3;
+    if (!activeSession) {
+      // No session yet → user can start this mock
+      return true;
+    }
+
+    const completedCount = Array.isArray(activeSession.completedModules)
+      ? activeSession.completedModules.length
+      : 0;
+
+    // User can (re)start / resume as long as all 4 modules are not yet completed.
+    // Only a fully completed 4‑module mock should block a new start.
+    return completedCount < 4;
   },
 
   async createMockExamSession(
