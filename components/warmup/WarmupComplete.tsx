@@ -74,10 +74,9 @@ export const WarmupComplete: React.FC<Props> = ({
 
       <button
         onClick={onBackToDashboard}
-        className="w-full py-3.5 rounded-xl text-sm font-black uppercase tracking-[0.25em] flex items-center justify-center gap-2 bg-slate-900 text-white hover:bg-slate-800 shadow-lg shadow-slate-900/30"
+        className="text-slate-500 hover:text-slate-800 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
       >
-        <span>↩</span>
-        <span>{t('warmup.back')}</span>
+        ← {t('back.dashboard')}
       </button>
     </div>
   );
