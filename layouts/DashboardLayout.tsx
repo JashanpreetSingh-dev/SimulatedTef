@@ -72,10 +72,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               {t('nav.dashboard')}
             </button>
-            <button 
+            <button
               onClick={() => navigate('/warmup')}
               className={isActive('/warmup') ? 'text-amber-400 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-              Warm-Up
+              {t('nav.warmup')}
             </button>
             {isProfessor && (
               <>

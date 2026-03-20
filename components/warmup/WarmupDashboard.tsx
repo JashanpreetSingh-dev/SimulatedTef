@@ -97,9 +97,9 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
         <div className="space-y-1">
           <button
             onClick={() => navigate('/dashboard')}
-            className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-1 mb-2"
+            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-800 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors flex-shrink-0"
           >
-            ← {t('warmup.backToDashboard')}
+            ← {t('back.dashboard')}
           </button>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50">
             {t('warmup.title')}

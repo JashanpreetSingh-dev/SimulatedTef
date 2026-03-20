@@ -227,11 +227,12 @@ export const WarmupSession: React.FC<Props> = ({
               source.onended = () => { sourcesRef.current.delete(source); };
             }
 
-            // Collect user speech for transcript (not displayed)
+            // Collect user speech for transcript; clear AI panel so next AI turn starts fresh
             if (message.serverContent?.inputTranscription?.text) {
               const userText = message.serverContent.inputTranscription.text;
               if (userText && userText.trim()) {
                 userLinesRef.current.push({ speaker: 'user', text: userText.trim() });
+                if (isMountedRef.current) setAiTranscript('');
               }
             }
 

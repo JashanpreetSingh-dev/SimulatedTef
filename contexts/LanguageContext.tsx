@@ -14,6 +14,7 @@ const translations: Record<Language, Record<string, string>> = {
   fr: {
     // Navigation
     'nav.dashboard': 'Tableau de bord',
+    'nav.warmup': 'Warm-Up',
     'nav.history': 'Historique',
     'nav.signOut': 'Déconnexion',
     'nav.createAssignment': 'Créer un devoir',
@@ -534,6 +535,7 @@ const translations: Record<Language, Record<string, string>> = {
   en: {
     // Navigation
     'nav.dashboard': 'Dashboard',
+    'nav.warmup': 'Warm-Up',
     'nav.history': 'History',
     'nav.signOut': 'Sign Out',
     'nav.createAssignment': 'Create Assignment',
