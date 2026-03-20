@@ -235,13 +235,13 @@ export const WarmupSession: React.FC<Props> = ({
               }
             }
 
-            // Collect AI speech for transcript and display latest line
+            // Collect AI speech for transcript and display accumulated turn
             if (message.serverContent?.outputTranscription?.text) {
               const modelText = message.serverContent.outputTranscription.text;
               if (modelText && modelText.trim()) {
                 aiLinesRef.current.push({ speaker: 'ai', text: modelText.trim() });
                 if (isMountedRef.current) {
-                  setAiTranscript(modelText.trim());
+                  setAiTranscript((prev) => (prev ? prev + ' ' + modelText.trim() : modelText.trim()));
                 }
               }
             }
@@ -250,6 +250,7 @@ export const WarmupSession: React.FC<Props> = ({
               sourcesRef.current.forEach((s) => { try { s.stop(); } catch { /* ignore */ } });
               sourcesRef.current.clear();
               nextStartTimeRef.current = 0;
+              if (isMountedRef.current) setAiTranscript('');
             }
           },
           onerror: (e: any) => {
@@ -359,7 +360,7 @@ export const WarmupSession: React.FC<Props> = ({
       {status === 'active' && aiTranscript && (
         <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3">
           <div className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em] mb-1">IA</div>
-          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{aiTranscript}</p>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed max-h-24 overflow-y-auto">{aiTranscript}</p>
         </div>
       )}
 
