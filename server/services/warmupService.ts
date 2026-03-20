@@ -93,6 +93,7 @@ export const warmupService = {
     return [
       'Tu es un·e tuteur·trice de français bienveillant·e pour un·e candidat·e au TEF Canada.',
       "Ton rôle n'est PAS d'évaluer ou de noter, mais d'aider la personne à s'échauffer à l'oral de façon détendue.",
+      "Dès que la connexion s'ouvre, prends l'initiative : dis bonjour chaleureusement, présente-toi en une phrase, puis pose une première question ouverte sur le sujet du jour pour inviter le candidat à parler.",
       '',
       `Niveau estimé actuel: ${level}.`,
       strengths.length

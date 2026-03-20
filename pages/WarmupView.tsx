@@ -6,7 +6,7 @@ import { WarmupSession } from '../components/warmup/WarmupSession';
 import { WarmupComplete } from '../components/warmup/WarmupComplete';
 import { warmupService } from '../services/warmupService';
 
-type View = 'dashboard' | 'session' | 'complete';
+type View = 'dashboard' | 'session' | 'completing' | 'complete';
 
 export function WarmupView() {
   const { getToken } = useAuth();
@@ -52,6 +52,7 @@ export function WarmupView() {
             keywords={sessionConfig.keywords}
             sessionId={sessionConfig.sessionId || localDate}
             onComplete={async (transcript, durationSeconds) => {
+              setView('completing');
               try {
                 const data = await warmupService.completeSession(
                   sessionConfig.sessionId || localDate,
@@ -81,6 +82,31 @@ export function WarmupView() {
               setView('complete');
             }}
           />
+        )}
+        {view === 'completing' && (
+          <div className="space-y-6">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-2">
+                <div className="h-7 w-40 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="h-4 w-56 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <div className="h-7 w-24 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="h-7 w-16 rounded-full bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              </div>
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-3">
+              <div className="h-4 w-full rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div className="h-4 w-5/6 rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div className="h-4 w-4/6 rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-700 space-y-2">
+                <div className="h-3 w-24 rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="h-4 w-full rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+                <div className="h-4 w-3/4 rounded bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              </div>
+            </div>
+            <div className="h-12 w-full rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+          </div>
         )}
         {view === 'complete' && completion && (
           <WarmupComplete

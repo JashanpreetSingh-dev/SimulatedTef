@@ -185,6 +185,16 @@ export const WarmupSession: React.FC<Props> = ({
 
               liveMicSource.connect(workletNode);
               workletNode.connect(inputAudioCtxRef.current.destination);
+
+              // Trigger AI to initiate the conversation
+              sessionPromise.then((session) => {
+                if (!isLiveRef.current || !session) return;
+                try {
+                  session.sendRealtimeInput({
+                    text: "[Note interne: La connexion est ouverte. Dis bonjour chaleureusement et lance la conversation sur le sujet du jour maintenant.]",
+                  });
+                } catch {}
+              });
             } catch (audioError) {
               console.error('Error setting up warmup audio:', audioError);
               stopSession();
