@@ -465,7 +465,40 @@ export async function createIndexes(): Promise<void> {
       { unique: true, name: 'userId_type_idx' }
     );
     console.log('Created index: userNotifications.userId_type_idx');
-    
+
+    // Warmup sessions collection indexes
+    const warmupSessionsCollection = db.collection('warmupSessions');
+
+    // One session per user per local date
+    await warmupSessionsCollection.createIndex(
+      { userId: 1, date: 1 },
+      { name: 'userId_date_idx', unique: true }
+    );
+    console.log('Created index: warmupSessions.userId_date_idx');
+
+    // Recent sessions per user
+    await warmupSessionsCollection.createIndex(
+      { userId: 1, createdAt: -1 },
+      { name: 'userId_createdAt_idx' }
+    );
+    console.log('Created index: warmupSessions.userId_createdAt_idx');
+
+    // Status index (sparse to avoid indexing missing/legacy docs)
+    await warmupSessionsCollection.createIndex(
+      { status: 1 },
+      { name: 'status_idx', sparse: true }
+    );
+    console.log('Created index: warmupSessions.status_idx');
+
+    // Warmup user profiles collection indexes
+    const warmupUserProfilesCollection = db.collection('warmupUserProfiles');
+
+    await warmupUserProfilesCollection.createIndex(
+      { userId: 1 },
+      { name: 'userId_idx', unique: true }
+    );
+    console.log('Created index: warmupUserProfiles.userId_idx');
+
     console.log(' All database indexes created successfully');
   } catch (error: any) {
     console.error('Error creating indexes:', error.message);

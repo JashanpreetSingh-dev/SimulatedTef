@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
+import { WarmupCard } from '../components/dashboard/WarmupCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
@@ -89,8 +90,9 @@ export function Dashboard() {
         </div>
 
         {/* Section Cards */}
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
           <PracticeCard />
+          <WarmupCard />
           <MockExamsCard />
         </div>
       </main>

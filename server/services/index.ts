@@ -45,3 +45,4 @@ export * as taskService from './taskService';
 export { userUsageService } from './userUsageService';
 export { voteAnalyticsService } from './voteAnalyticsService';
 export { writtenTaskService } from './writtenTaskService';
+export { warmupService } from './warmupService';

@@ -99,6 +99,8 @@ if (!clerkSecretKey) {
       startQuestionGenerationWorker();
       const { startEmailWorker } = await import('./workers/emailWorker');
       startEmailWorker();
+      const { startWarmupWorker } = await import('./workers/warmupWorker');
+      startWarmupWorker();
       console.log('Workers started in same process (RUN_WORKER=true)');
       
       // Set up periodic cleanup of old jobs to prevent Redis memory issues
@@ -114,6 +116,8 @@ if (!clerkSecretKey) {
         startQuestionGenerationWorker();
         const { startEmailWorker } = await import('./workers/emailWorker');
         startEmailWorker();
+        const { startWarmupWorker } = await import('./workers/warmupWorker');
+        startWarmupWorker();
         console.log('Workers started in same process (development mode)');
         
         // Set up periodic cleanup of old jobs to prevent Redis memory issues
@@ -207,6 +211,12 @@ async function gracefulShutdown(signal: string): Promise<void> {
     try {
       const { stopEmailWorker } = await import('./workers/emailWorker');
       await stopEmailWorker();
+    } catch {
+      // Worker not running
+    }
+    try {
+      const { stopWarmupWorker } = await import('./workers/warmupWorker');
+      await stopWarmupWorker();
     } catch {
       // Worker not running
     }

@@ -88,3 +88,26 @@ export interface EmailJobResult {
   success: boolean;
   error?: string;
 }
+
+export interface WarmupMemoryJobData {
+  userId: string;
+  sessionId: string;
+  /**
+   * Full interleaved transcript of the warm-up session (user and AI turns).
+   */
+  transcript: string;
+  /**
+   * Feedback object returned from generateSessionFeedback.
+   */
+  feedback: {
+    wentWell: string;
+    practiceTip: string;
+    levelNote: string;
+    topicsCovered: string[];
+    levelAtSession: string;
+  };
+  /**
+   * Snapshot of the current warmup user profile, if it exists.
+   */
+  currentProfile?: any;
+}

@@ -72,6 +72,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               className={isActive('/dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
               {t('nav.dashboard')}
             </button>
+            <button 
+              onClick={() => navigate('/warmup')}
+              className={isActive('/warmup') ? 'text-amber-400 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+              Warm-Up
+            </button>
             {isProfessor && (
               <>
                 <button 
@@ -221,6 +226,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 }`}
               >
                 {t('nav.dashboard')}
+              </button>
+              <button 
+                onClick={() => handleNavigate('/warmup')}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                  isActive('/warmup') 
+                    ? 'bg-amber-100 dark:bg-amber-900 text-amber-400 dark:text-amber-300' 
+                    : 'text-slate-500 dark:text-slate-400 hover:bg-amber-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                Warm-Up
               </button>
               {isProfessor && (
                 <>
