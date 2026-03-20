@@ -493,7 +493,7 @@ export const geminiService = {
 
   async generateText(prompt: string): Promise<string> {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
+      model: "gemini-2.5-flash",
       contents: prompt,
     });
     return response.text ?? '';
@@ -501,7 +501,7 @@ export const geminiService = {
 
   async generateScenario(section: TEFSection): Promise<string> {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
+      model: "gemini-2.5-flash",
       contents: `Generate a TEF Canada ${section} task in JSON.`,
       config: {
         responseMimeType: "application/json",
