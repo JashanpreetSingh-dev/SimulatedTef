@@ -97,11 +97,11 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
         <div className="space-y-1">
           <button
             onClick={() => navigate('/dashboard')}
-            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-800 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors flex-shrink-0"
+            className="mb-3 md:mb-6 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors flex-shrink-0"
           >
             ← {t('back.dashboard')}
           </button>
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100">
             {t('warmup.title')}
           </h2>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">
@@ -134,14 +134,14 @@ export const WarmupDashboard: React.FC<Props> = ({ onStart }) => {
 
         {!loading && config && (
           <>
-            <h3 className="text-xl md:text-2xl font-semibold text-slate-900 dark:text-slate-50">
+            <h3 className="text-xl md:text-2xl font-semibold text-slate-800 dark:text-slate-100">
               {config.topic}
             </h3>
             <div className="flex flex-wrap gap-2">
               {config.keywords.map((k) => (
                 <span
                   key={k}
-                  className="px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100"
+                  className="px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100"
                 >
                   {k}
                 </span>

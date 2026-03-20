@@ -350,7 +350,7 @@ export const WarmupSession: React.FC<Props> = ({
         {keywords.map((k) => (
           <span
             key={k}
-            className="px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200"
+            className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200"
           >
             {k}
           </span>
