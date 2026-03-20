@@ -154,25 +154,12 @@ export const warmupService = {
         '- Chaque entrée doit être une courte expression (1 à 3 mots).',
       ].join('\n');
 
-      const response = await geminiService.evaluateResponse(
-        'OralExpression',
-        prompt,
-        '',
-      );
-
-      const raw =
-        (response as any)?.keywords ||
-        (typeof (response as any)?.feedback === 'string'
-          ? (response as any).feedback
-          : '');
-
-      if (Array.isArray(raw)) {
-        return raw.map((k) => String(k)).filter(Boolean).slice(0, 5);
-      }
+      const raw = await geminiService.generateText(prompt);
 
       if (typeof raw === 'string' && raw.trim()) {
         try {
-          const parsed = JSON.parse(raw);
+          const text = raw.replace(/```json\n?|\n?```/g, '').trim();
+          const parsed = JSON.parse(text);
           if (Array.isArray(parsed.keywords)) {
             return parsed.keywords.map((k: any) => String(k)).slice(0, 5);
           }
@@ -182,7 +169,7 @@ export const warmupService = {
             .map((s) => s.trim())
             .filter(Boolean);
           if (parts.length) {
-            return parts.slice(0, 10);
+            return parts.slice(0, 5);
           }
         }
       }
@@ -257,21 +244,15 @@ export const warmupService = {
     const prompt = promptLines.join('\n');
 
     try {
-      const response = await geminiService.evaluateResponse(
-        'OralExpression',
-        prompt,
-        '',
-      );
-
-      const text = (response as any)?.feedback || '';
+      const raw = await geminiService.generateText(prompt);
       let parsed: any = null;
 
-      if (typeof text === 'string' && text.trim()) {
+      if (typeof raw === 'string' && raw.trim()) {
         try {
+          const text = raw.replace(/```json\n?|\n?```/g, '').trim();
           parsed = JSON.parse(text);
         } catch {
-          // If feedback is not raw JSON, try to extract JSON block
-          const match = text.match(/\{[\s\S]*\}/);
+          const match = raw.match(/\{[\s\S]*\}/);
           if (match) {
             try {
               parsed = JSON.parse(match[0]);

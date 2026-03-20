@@ -491,6 +491,14 @@ export const geminiService = {
     });
   },
 
+  async generateText(prompt: string): Promise<string> {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-09-2025",
+      contents: prompt,
+    });
+    return response.text ?? '';
+  },
+
   async generateScenario(section: TEFSection): Promise<string> {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-09-2025",
