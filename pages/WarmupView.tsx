@@ -52,7 +52,7 @@ export function WarmupView() {
             systemPrompt={sessionConfig.systemPrompt}
             phrases={sessionConfig.phrases}
             sessionId={sessionConfig.sessionId || localDate}
-            onComplete={async (transcript, durationSeconds) => {
+            onComplete={async (transcript, durationSeconds, audioBase64) => {
               setView('completing');
               try {
                 const data = await warmupService.completeSession(
@@ -60,6 +60,7 @@ export function WarmupView() {
                   transcript,
                   durationSeconds,
                   getToken,
+                  audioBase64,
                 );
                 setCompletion({
                   streak: data.streak,

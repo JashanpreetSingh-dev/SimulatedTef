@@ -37,6 +37,7 @@ export const warmupService = {
     transcript: string,
     durationSeconds: number,
     getToken: () => Promise<string | null>,
+    audioBase64?: string,
   ): Promise<{
     streak: number;
     feedback: {
@@ -50,7 +51,7 @@ export const warmupService = {
   }> {
     return authenticatedFetchJSON(
       `${BACKEND_URL}/api/warmup/session/complete`,
-      { method: 'POST', getToken, body: JSON.stringify({ sessionId, transcript, durationSeconds }) },
+      { method: 'POST', getToken, body: JSON.stringify({ sessionId, transcript, durationSeconds, audioBase64 }) },
     );
   },
 
@@ -69,6 +70,8 @@ export const warmupService = {
     topicsCovered: string[];
     levelAtSession?: string;
     streak?: number;
+    feedback?: { wentWell: string; practiceTip: string; levelNote: string };
+    corrections: { original: string; corrected: string; explanation: string }[];
   }[]> {
     return authenticatedFetchJSON(
       `${BACKEND_URL}/api/warmup/history`,

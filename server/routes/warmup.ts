@@ -1,11 +1,27 @@
 import { ObjectId } from 'mongodb';
 import { Router } from 'express';
+import { GoogleGenAI } from '@google/genai';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
 import { connectDB } from '../db/connection';
 import { warmupService, getTopicPhrases } from '../services/warmupService';
 import { enqueueWarmupProfileJob } from '../jobs/warmupQueue';
 import { WarmupSession } from '../models/WarmupSession';
+
+async function transcribeUserAudio(base64Audio: string): Promise<string> {
+  const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+  const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
+  const response = await (ai as any).models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: [{
+      parts: [
+        { inlineData: { mimeType: 'audio/webm', data: base64Audio } },
+        { text: 'This is a recording of a person speaking French. Transcribe only what this person says, in French, as accurately as possible. Output just the transcription text, no labels or formatting.' },
+      ],
+    }],
+  });
+  return response.text?.trim() || '';
+}
 
 const router = Router();
 
@@ -111,10 +127,11 @@ router.post(
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { sessionId, transcript, durationSeconds } = req.body as {
+    const { sessionId, transcript, durationSeconds, audioBase64 } = req.body as {
       sessionId?: string;
       transcript?: string;
       durationSeconds?: number;
+      audioBase64?: string;
     };
 
     if (!sessionId || typeof transcript !== 'string') {
@@ -134,12 +151,22 @@ router.post(
 
     const profile = await warmupService.getOrCreateProfile(userId);
 
-    // Extract only user lines from transcript for corrections
-    const userTranscript = transcript
-      .split('\n')
-      .filter((line) => line.startsWith('User:'))
-      .map((line) => line.replace(/^User:\s*/, ''))
-      .join(' ');
+    // Transcribe user's voice recording for accurate corrections (falls back to Gemini inputTranscription)
+    let userTranscript = '';
+    if (audioBase64) {
+      try {
+        userTranscript = await transcribeUserAudio(audioBase64);
+      } catch (err) {
+        console.warn('Audio transcription failed, falling back to inputTranscription:', err);
+      }
+    }
+    if (!userTranscript) {
+      userTranscript = transcript
+        .split('\n')
+        .filter((line) => line.startsWith('User:'))
+        .map((line) => line.replace(/^User:\s*/, ''))
+        .join(' ');
+    }
 
     const [feedback, corrections] = await Promise.all([
       warmupService.generateSessionFeedback(transcript, profile.levelEstimate),
@@ -257,9 +284,12 @@ router.get(
       date: s.date,
       status: s.status,
       durationSeconds: s.durationSeconds ?? 0,
+      topic: s.topic,
       topicsCovered: s.topicsCovered ?? [],
       levelAtSession: s.levelAtSession,
       streak: s.streak,
+      feedback: s.feedback,
+      corrections: s.corrections ?? [],
     }));
 
     res.json(history);

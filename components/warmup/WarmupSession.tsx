@@ -6,7 +6,7 @@ interface Props {
   systemPrompt: string;
   phrases: string[];
   sessionId: string;
-  onComplete: (transcript: string, durationSeconds: number) => void;
+  onComplete: (transcript: string, durationSeconds: number, audioBase64?: string) => void;
 }
 
 type TranscriptLine = {
@@ -40,6 +40,8 @@ export const WarmupSession: React.FC<Props> = ({
   const aiLinesRef = useRef<TranscriptLine[]>([]);
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const hasSent60sNoteRef = useRef(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
 
   const stopSession = () => {
     isLiveRef.current = false;
@@ -85,6 +87,11 @@ export const WarmupSession: React.FC<Props> = ({
       userSilenceTimeoutRef.current = null;
     }
 
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try { mediaRecorderRef.current.stop(); } catch { /* ignore */ }
+    }
+    mediaRecorderRef.current = null;
+
     if (isMountedRef.current) {
       setIsUserSpeaking(false);
     }
@@ -101,6 +108,7 @@ export const WarmupSession: React.FC<Props> = ({
     hasSent60sNoteRef.current = false;
     userLinesRef.current = [];
     aiLinesRef.current = [];
+    recordedChunksRef.current = [];
 
     let stream: MediaStream | null = null;
 
@@ -152,6 +160,19 @@ export const WarmupSession: React.FC<Props> = ({
             }
 
             try {
+              // Start MediaRecorder on the raw mic stream (mic only = just the user's voice)
+              const mimeType = MediaRecorder.isTypeSupported('audio/webm')
+                ? 'audio/webm'
+                : MediaRecorder.isTypeSupported('audio/ogg')
+                ? 'audio/ogg'
+                : 'audio/wav';
+              const recorder = new MediaRecorder(stream, { mimeType: mimeType as any });
+              recorder.ondataavailable = (e) => {
+                if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+              };
+              recorder.start(1000);
+              mediaRecorderRef.current = recorder;
+
               const liveMicSource = inputAudioCtxRef.current.createMediaStreamSource(stream);
               const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '') + '/';
               const workletUrl = new URL(`${base}mic-processor.js`, window.location.href).href;
@@ -294,9 +315,35 @@ export const WarmupSession: React.FC<Props> = ({
     ];
     const transcript = allLines.join('\n');
 
-    stopSession();
-    setStatus('idle');
-    onComplete(transcript, durationSeconds > 0 ? durationSeconds : 0);
+    // Stop MediaRecorder and collect final chunks before invoking onComplete
+    const recorder = mediaRecorderRef.current;
+    if (recorder && recorder.state !== 'inactive') {
+      const stopPromise = new Promise<string | undefined>((resolve) => {
+        recorder.onstop = () => {
+          const chunks = recordedChunksRef.current;
+          if (chunks.length === 0) { resolve(undefined); return; }
+          const blob = new Blob(chunks, { type: chunks[0].type });
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const result = reader.result as string;
+            // Strip the data URL prefix so server receives raw base64
+            resolve(result.split(',')[1] || undefined);
+          };
+          reader.readAsDataURL(blob);
+        };
+        try { recorder.stop(); } catch { resolve(undefined); }
+      });
+
+      stopSession();
+      setStatus('idle');
+      stopPromise.then((audioBase64) => {
+        onComplete(transcript, durationSeconds > 0 ? durationSeconds : 0, audioBase64);
+      });
+    } else {
+      stopSession();
+      setStatus('idle');
+      onComplete(transcript, durationSeconds > 0 ? durationSeconds : 0, undefined);
+    }
   };
 
   useEffect(() => {
