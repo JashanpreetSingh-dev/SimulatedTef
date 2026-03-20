@@ -45,19 +45,28 @@ export const WarmupComplete: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm space-y-4">
-        <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
-          {feedback.wentWell}
-          {feedback.levelNote ? ` ${feedback.levelNote}` : ''}
-        </p>
-
+      <div className="space-y-3">
+        {feedback.wentWell && (
+          <div className="flex items-start gap-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl px-4 py-3 border border-emerald-100 dark:border-emerald-800">
+            <span className="text-lg shrink-0 mt-0.5">✅</span>
+            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              {feedback.wentWell.split(/[.!?]/)[0].trim()}{feedback.wentWell.match(/[.!?]/) ? feedback.wentWell.match(/[.!?]/)![0] : ''}
+            </p>
+          </div>
+        )}
         {feedback.practiceTip && (
-          <div className="pt-3 border-t border-slate-100 dark:border-slate-700">
-            <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.25em]">
-              {t('warmup.tomorrow')}
-            </span>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {feedback.practiceTip}
+          <div className="flex items-start gap-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-3 border border-amber-100 dark:border-amber-800">
+            <span className="text-lg shrink-0 mt-0.5">💡</span>
+            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              {feedback.practiceTip.split(/[.!?]/)[0].trim()}{feedback.practiceTip.match(/[.!?]/) ? feedback.practiceTip.match(/[.!?]/)![0] : ''}
+            </p>
+          </div>
+        )}
+        {feedback.levelNote && (
+          <div className="flex items-start gap-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl px-4 py-3 border border-indigo-100 dark:border-indigo-800">
+            <span className="text-lg shrink-0 mt-0.5">📊</span>
+            <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+              {feedback.levelNote.split(/[.!?]/)[0].trim()}{feedback.levelNote.match(/[.!?]/) ? feedback.levelNote.match(/[.!?]/)![0] : ''}
             </p>
           </div>
         )}

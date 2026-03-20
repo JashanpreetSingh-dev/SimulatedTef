@@ -24,6 +24,7 @@ export const WarmupSession: React.FC<Props> = ({
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active'>('idle');
   const [timeLeft, setTimeLeft] = useState(5 * 60);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
+  const [aiTranscript, setAiTranscript] = useState<string>('');
 
   const sessionRef = useRef<any>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
@@ -96,6 +97,7 @@ export const WarmupSession: React.FC<Props> = ({
     isLiveRef.current = true;
     setStatus('connecting');
     setTimeLeft(5 * 60);
+    setAiTranscript('');
     hasSent60sNoteRef.current = false;
     userLinesRef.current = [];
     aiLinesRef.current = [];
@@ -233,11 +235,14 @@ export const WarmupSession: React.FC<Props> = ({
               }
             }
 
-            // Collect AI speech for transcript (not displayed)
+            // Collect AI speech for transcript and display latest line
             if (message.serverContent?.outputTranscription?.text) {
               const modelText = message.serverContent.outputTranscription.text;
               if (modelText && modelText.trim()) {
                 aiLinesRef.current.push({ speaker: 'ai', text: modelText.trim() });
+                if (isMountedRef.current) {
+                  setAiTranscript(modelText.trim());
+                }
               }
             }
 
@@ -349,6 +354,14 @@ export const WarmupSession: React.FC<Props> = ({
           </span>
         ))}
       </div>
+
+      {/* AI transcript aid */}
+      {status === 'active' && aiTranscript && (
+        <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3">
+          <div className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.2em] mb-1">IA</div>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{aiTranscript}</p>
+        </div>
+      )}
 
       {/* Mic indicator + timer */}
       <div className="flex flex-col items-center gap-6 py-8">
