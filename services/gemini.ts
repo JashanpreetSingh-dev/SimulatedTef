@@ -453,9 +453,55 @@ export const geminiService = {
     });
   },
 
+  async connectLiveWithPrompt(
+    callbacks: any,
+    systemInstruction: string,
+    options?: {
+      responseTimeout?: number;
+      turnDetectionTimeout?: number;
+    }
+  ) {
+    const config: any = {
+      responseModalities: [Modality.AUDIO],
+      speechConfig: {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
+      },
+      systemInstruction,
+      // For warm-up sessions we MUST enable both transcriptions
+      outputAudioTranscription: {}, // Model's speech transcription
+      inputAudioTranscription: {}, // User's speech transcription
+    };
+
+    const turnDetectionTimeout =
+      options?.turnDetectionTimeout ?? LIVE_API_CONFIG.turnDetectionTimeout;
+    const responseTimeout =
+      options?.responseTimeout ?? LIVE_API_CONFIG.responseWaitTime;
+
+    if (responseTimeout) {
+      config.responseTimeout = responseTimeout;
+    }
+    if (turnDetectionTimeout) {
+      config.turnDetectionTimeout = turnDetectionTimeout;
+    }
+
+    return ai.live.connect({
+      model: 'gemini-2.5-flash-native-audio-latest',
+      callbacks,
+      config,
+    });
+  },
+
+  async generateText(prompt: string): Promise<string> {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    return response.text ?? '';
+  },
+
   async generateScenario(section: TEFSection): Promise<string> {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-09-2025",
+      model: "gemini-2.5-flash",
       contents: `Generate a TEF Canada ${section} task in JSON.`,
       config: {
         responseMimeType: "application/json",

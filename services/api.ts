@@ -12,5 +12,6 @@ export { evaluationJobService } from './evaluationJobService';
 export { persistenceService } from './persistence';
 export { subscriptionService } from './subscriptionService';
 export { votingService } from './votingService';
+export { warmupService } from './warmupService';
 
 export * from './tasks';
