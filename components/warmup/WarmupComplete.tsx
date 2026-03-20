@@ -24,6 +24,13 @@ export const WarmupComplete: React.FC<Props> = ({
 
   return (
     <div className="space-y-6">
+      <button
+        onClick={onBackToDashboard}
+        className="text-slate-500 hover:text-slate-800 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
+      >
+        ← {t('back.dashboard')}
+      </button>
+
       <div className="flex items-center justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-50">
@@ -72,12 +79,6 @@ export const WarmupComplete: React.FC<Props> = ({
         )}
       </div>
 
-      <button
-        onClick={onBackToDashboard}
-        className="text-slate-500 hover:text-slate-800 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
-      >
-        ← {t('back.dashboard')}
-      </button>
     </div>
   );
 };
