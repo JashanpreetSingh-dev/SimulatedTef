@@ -11,6 +11,8 @@ import { AssignmentCreationShowcase } from '../components/AssignmentCreationShow
 import { EnterpriseCTA } from '../components/EnterpriseCTA';
 import { SubscriptionPlans } from '../components/SubscriptionPlans';
 import { Footer } from '../components/Footer';
+import { PromoBanner } from '../components/PromoBanner';
+import activePromo from '../config/promoConfig';
 
 export function LandingPage() {
   const { t } = useLanguage();
@@ -88,6 +90,9 @@ export function LandingPage() {
           </div>
         </nav>
       </header>
+
+      {/* Promo Banner */}
+      <PromoBanner promo={activePromo} />
 
       {/* Hero Section - Dynamic based on audience */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
@@ -430,7 +435,9 @@ export function LandingPage() {
 
       {/* Subscription Plans Section - Only show for D2C */}
       {audience === 'd2c' && (
-        <SubscriptionPlans variant="landing" />
+        <div id="pricing">
+          <SubscriptionPlans variant="landing" />
+        </div>
       )}
 
       {/* Enterprise CTA Section - Show for B2B or as secondary for D2C */}

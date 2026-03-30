@@ -3,16 +3,18 @@
  */
 
 import React from 'react';
+import { randomUUID } from 'crypto';
 import { createClerkClient } from '@clerk/backend';
 import { connectDB } from '../db/connection';
 import { sendReactEmail } from '../utils/emailClient';
 import { WelcomeToAkseliEmail } from '../../emails/WelcomeToAkseli';
 import { SubscriptionCongratsEmail } from '../../emails/SubscriptionCongrats';
+import { GoodFridayPromoEmail } from '../../emails/GoodFridayPromo';
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY || '';
 const clerkClient = clerkSecretKey ? createClerkClient({ secretKey: clerkSecretKey }) : null;
 
-type NotificationType = 'welcome' | 'subscription_congrats';
+type NotificationType = 'welcome' | 'subscription_congrats' | 'good_friday_promo';
 
 export type WelcomeEmailPayload = {
   userId: string;
@@ -162,6 +164,54 @@ export async function sendWelcomeEmail(payload: WelcomeEmailPayload): Promise<vo
   await recordNotificationSent(userId, 'welcome', { email: identity.email });
 }
 
+export type GoodFridayPromoPayload = {
+  userId: string;
+  email?: string;
+  firstName?: string;
+};
+
+export async function sendGoodFridayPromoEmail(payload: GoodFridayPromoPayload): Promise<void> {
+  const { userId } = payload;
+
+  if (await hasNotificationBeenSent(userId, 'good_friday_promo')) {
+    return;
+  }
+
+  const identity = await resolveUserIdentity(userId, {
+    email: payload.email,
+    firstName: payload.firstName,
+  });
+  if (!identity) {
+    return;
+  }
+
+  const dashboardUrl = getDashboardUrl();
+  const pricingUrl = `${dashboardUrl}/pricing`;
+  const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
+  const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
+
+  const senderName = process.env.EMAIL_SENDER_NAME || 'Akseli';
+  const fromAddress = process.env.RESEND_FROM_EMAIL || '';
+
+  await sendReactEmail({
+    to: identity.email,
+    subject: 'Vendredi Saint : -40 % sur votre abonnement Akseli',
+    from: `${senderName} <${fromAddress}>`,
+    headers: {
+      'X-Entity-Ref-ID': randomUUID(),
+    },
+    react: React.createElement(GoodFridayPromoEmail, {
+      firstName: identity.firstName,
+      pricingUrl,
+      logoUrl,
+      ...(instagramIconUrl && { instagramIconUrl }),
+      instagramUrl: process.env.EMAIL_INSTAGRAM_URL,
+    }),
+  });
+
+  await recordNotificationSent(userId, 'good_friday_promo', { email: identity.email });
+}
+
 /** Idempotency: only send subscription congrats once per user. */
 export async function hasSubscriptionCongratsBeenSent(userId: string): Promise<boolean> {
   return hasNotificationBeenSent(userId, 'subscription_congrats');
@@ -239,5 +289,6 @@ export const notificationService = {
   sendWelcomeEmail,
   sendSubscriptionCongratsEmail,
   hasSubscriptionCongratsBeenSent,
+  sendGoodFridayPromoEmail,
 };
 

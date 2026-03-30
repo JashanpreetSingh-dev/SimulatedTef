@@ -7,6 +7,7 @@ import { useIsD2C } from '../utils/userType';
 import { UsageDashboard } from '../components/subscription/UsageDashboard';
 import { SubscriptionOverview } from '../components/subscription/SubscriptionOverview';
 import { ChangePlanModal } from '../components/subscription/ChangePlanModal';
+import activePromo from '../config/promoConfig';
 
 export function SubscriptionView() {
   const { getToken } = useAuth();
@@ -275,12 +276,29 @@ export function SubscriptionView() {
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
                       {tier.name}
                     </h3>
-                    <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
-                      <span className="text-3xl font-black text-slate-900 dark:text-white tabular-nums">
-                        {priceLabel}
-                      </span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">{priceSub}</span>
-                    </div>
+                    {activePromo?.discountPercent && tier.id !== 'free' && tier.stripePrice ? (
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-slate-400 dark:text-slate-500 text-lg font-semibold line-through tabular-nums">
+                          {priceLabel}
+                        </span>
+                        <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                          <span className="text-3xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums">
+                            {formatPrice({ ...tier.stripePrice, amount: Math.round(tier.stripePrice.amount * (1 - activePromo.discountPercent / 100) * 100) / 100 })}
+                          </span>
+                          <span className="text-sm text-slate-500 dark:text-slate-400">{priceSub}</span>
+                        </div>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">
+                          {activePromo.discountPercent}% off — code {activePromo.code}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                        <span className="text-3xl font-black text-slate-900 dark:text-white tabular-nums">
+                          {priceLabel}
+                        </span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">{priceSub}</span>
+                      </div>
+                    )}
                     {isCurrentTier && (
                       <span className="inline-flex items-center mt-3 px-3 py-1.5 bg-indigo-600 dark:bg-indigo-500 text-white rounded-full text-xs font-semibold">
                         Current Plan
