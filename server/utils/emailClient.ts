@@ -22,6 +22,8 @@ export type ReactEmailPayload = {
   subject: string;
   react: ReactElement;
   attachments?: ReactEmailAttachment[];
+  headers?: Record<string, string>;
+  from?: string; // Override sender, e.g. "Jashanpreet from Akseli <noreply@akseli.ca>"
 };
 
 const apiKey = process.env.RESEND_API_KEY;
@@ -83,6 +85,8 @@ export async function sendReactEmail({
   subject,
   react,
   attachments,
+  headers,
+  from,
 }: ReactEmailPayload): Promise<void> {
   if (!ensureConfigured()) {
     return;
@@ -90,10 +94,11 @@ export async function sendReactEmail({
 
   try {
     const response = await resend!.emails.send({
-      from: fromEmail as string,
+      from: from || (fromEmail as string),
       to,
       subject,
       react,
+      ...(headers && { headers }),
       ...(attachments?.length && {
         attachments: attachments.map((a) => ({
           content: a.content,

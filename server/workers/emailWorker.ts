@@ -44,6 +44,12 @@ export function startEmailWorker(): Worker<EmailJobData, EmailJobResult> {
             periodStart,
             periodEnd,
           });
+        } else if (templateKind === 'good_friday_promo') {
+          await notificationService.sendGoodFridayPromoEmail({
+            userId,
+            email,
+            firstName,
+          });
         } else {
           console.warn(`Unknown email templateKind: ${templateKind}`);
           return { success: false, error: `Unknown templateKind: ${templateKind}` };
