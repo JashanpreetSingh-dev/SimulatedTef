@@ -440,3 +440,36 @@ export interface BatchAssignment {
   assignedAt: string; // ISO timestamp
   orgId: string; // Organization ID (for filtering)
 }
+
+/** Daily revision ritual (TEF-focused) — server-generated deck */
+export type DailyRitualCardType = 'vocab' | 'grammar';
+
+export interface DailyRitualVocabCard {
+  id: string;
+  type: 'vocab';
+  /** French headword or expression */
+  lemma: string;
+  /** One short line in English (gloss or meaning) */
+  englishLine: string;
+  /** One French sentence — item in context */
+  contextSentence: string;
+  /** One short French line — nuance or usage */
+  explanation: string;
+  registerNote?: string;
+}
+
+export interface DailyRitualGrammarCard {
+  id: string;
+  type: 'grammar';
+  /** Short French label */
+  title: string;
+  /** One short line in English — same rule in English */
+  englishLine: string;
+  /** One short French line — the rule */
+  ruleSummary: string;
+  /** One or two very short French example lines */
+  examples: string[];
+  commonPitfall?: string;
+}
+
+export type DailyRitualCard = DailyRitualVocabCard | DailyRitualGrammarCard;

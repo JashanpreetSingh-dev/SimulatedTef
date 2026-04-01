@@ -10,6 +10,7 @@ import { Assignment, ReadingTask, ListeningTask, ReadingListeningQuestion, MCQRe
 import { AudioItemMetadata } from '../services/tasks';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
 import { useLanguage } from '../contexts/LanguageContext';
+import { BackNavButton, secondaryOutlineButtonClass } from '../components/navigation/BackNavButton';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
@@ -225,8 +226,9 @@ export function AssignmentExamView() {
               <h2 className="text-xl font-bold text-red-800 dark:text-red-200 mb-2">{t('errors.error')}</h2>
               <p className="text-red-600 dark:text-red-300 mb-4">{error}</p>
               <button
+                type="button"
                 onClick={() => navigate('/practice')}
-                className="px-6 py-4 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold"
+                className={secondaryOutlineButtonClass}
               >
                 {t('back.practice')}
               </button>
@@ -255,12 +257,7 @@ export function AssignmentExamView() {
       <DashboardLayout>
         <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
           <div className="max-w-6xl mx-auto">
-            <button 
-              onClick={handleClose}
-              className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
-            >
-              ← {t('back.practice')}
-            </button>
+            <BackNavButton onClick={handleClose} label={t('back.practice')} />
             {isSubmitting ? (
               <div className="min-h-[400px] flex items-center justify-center">
                 <div className="text-center">
@@ -291,12 +288,7 @@ export function AssignmentExamView() {
       <DashboardLayout>
         <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
           <div className="max-w-6xl mx-auto">
-            <button 
-              onClick={handleClose}
-              className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
-            >
-              ← {t('back.practice')}
-            </button>
+            <BackNavButton onClick={handleClose} label={t('back.practice')} />
             {isSubmitting ? (
               <div className="min-h-[400px] flex items-center justify-center">
                 <div className="text-center">

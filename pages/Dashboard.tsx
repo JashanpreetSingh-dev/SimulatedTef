@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
+import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
@@ -93,6 +94,7 @@ export function Dashboard() {
           <PracticeCard />
           <MockExamsCard />
         </div>
+        <DailyRitualCard />
       </main>
     </DashboardLayout>
   );
