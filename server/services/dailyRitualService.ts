@@ -62,28 +62,60 @@ function normalizeDeckItem(item: unknown): CardWithoutId | null {
       asTrimmedString(o.englishLine || o.english || o.ruleEnglish || o.summaryEn)
     );
     const ruleSummary = oneLine(asTrimmedString(o.ruleSummary || o.summary || o.rule));
-    let examples: string[] = [];
+    const ruleSummaryEnglish = oneLine(
+      asTrimmedString(
+        o.ruleSummaryEnglish || o.ruleEnglishExplanation || o.explanationEn || o.ruleEn
+      )
+    );
+
+    type ExPair = { french: string; english: string };
+    const examples: ExPair[] = [];
     if (Array.isArray(o.examples)) {
-      examples = o.examples.map((x) => oneLine(asTrimmedString(x))).filter(Boolean);
+      for (const x of o.examples) {
+        if (typeof x === 'string') {
+          const fr = oneLine(asTrimmedString(x));
+          if (fr) examples.push({ french: fr, english: '' });
+        } else if (x && typeof x === 'object') {
+          const row = x as Record<string, unknown>;
+          const french = oneLine(asTrimmedString(row.french || row.fr || row.sentenceFr || row.sentence));
+          const english = oneLine(asTrimmedString(row.english || row.en || row.noteEn || row.gloss));
+          if (french) examples.push({ french, english });
+        }
+      }
     } else if (typeof o.examples === 'string') {
-      examples = o.examples
-        .split(/\n+|(?:\s*;\s*)/)
-        .map((s) => oneLine(s.trim()))
-        .filter(Boolean);
+      for (const part of o.examples.split(/\n+|(?:\s*;\s*)/)) {
+        const fr = oneLine(part.trim());
+        if (fr) examples.push({ french: fr, english: '' });
+      }
     }
     if (examples.length === 0) {
       const one = oneLine(asTrimmedString(o.example));
-      if (one) examples = [one];
+      if (one) examples.push({ french: one, english: '' });
     }
-    const commonPitfall = asTrimmedString(o.commonPitfall || o.pitfall);
-    if (!title || !englishLine || !ruleSummary || examples.length === 0) return null;
+
+    let commonPitfall = asTrimmedString(o.commonPitfall || o.pitfall);
+    let commonPitfallEnglish = asTrimmedString(o.commonPitfallEnglish || o.pitfallEnglish);
+    if (commonPitfall && !commonPitfallEnglish) {
+      commonPitfall = '';
+      commonPitfallEnglish = '';
+    }
+
+    const examplesOk = examples
+      .filter((e) => e.french && e.english)
+      .slice(0, 2);
+    if (!title || !englishLine || !ruleSummary || !ruleSummaryEnglish || examplesOk.length === 0) {
+      return null;
+    }
+
     return {
       type: 'grammar',
       title,
       englishLine,
       ruleSummary,
-      examples: examples.slice(0, 2),
+      ruleSummaryEnglish,
+      examples: examplesOk,
       ...(commonPitfall ? { commonPitfall: oneLine(commonPitfall) } : {}),
+      ...(commonPitfallEnglish ? { commonPitfallEnglish: oneLine(commonPitfallEnglish) } : {}),
     };
   }
 
@@ -131,24 +163,54 @@ const VOCAB_CARD_SCHEMA: Schema = {
   propertyOrdering: ['type', 'lemma', 'englishLine', 'contextSentence', 'explanation', 'registerNote'],
 };
 
+const GRAMMAR_EXAMPLE_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    french: { type: Type.STRING, description: 'Short French example sentence' },
+    english: {
+      type: Type.STRING,
+      description: 'English: what the example illustrates (not a translation only—clear for learners)',
+    },
+  },
+  required: ['french', 'english'],
+  propertyOrdering: ['french', 'english'],
+};
+
 const GRAMMAR_CARD_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
     type: { type: Type.STRING, enum: ['grammar'] },
     title: { type: Type.STRING, description: 'Short French label for the rule' },
-    englishLine: { type: Type.STRING, description: 'One English line: same rule in English' },
-    ruleSummary: { type: Type.STRING, description: 'One French line: the rule' },
+    englishLine: { type: Type.STRING, description: 'One English line: headline gloss of the rule' },
+    ruleSummary: { type: Type.STRING, description: 'One French line: the rule stated in French' },
+    ruleSummaryEnglish: {
+      type: Type.STRING,
+      description: 'One or two short English lines: full parallel explanation of the rule (not identical wording to englishLine)',
+    },
     examples: {
       type: Type.ARRAY,
-      items: { type: Type.STRING },
+      items: GRAMMAR_EXAMPLE_SCHEMA,
       minItems: '1',
-      maxItems: '3',
-      description: '1–2 short French example lines',
+      maxItems: '2',
+      description: '1–2 objects: each french example + english explanation of what it shows',
     },
-    commonPitfall: { type: Type.STRING, description: 'Optional one short line (French)' },
+    commonPitfall: { type: Type.STRING, description: 'Optional one short line in French' },
+    commonPitfallEnglish: {
+      type: Type.STRING,
+      description: 'If commonPitfall is set, required: same pitfall explained in English',
+    },
   },
-  required: ['type', 'title', 'englishLine', 'ruleSummary', 'examples'],
-  propertyOrdering: ['type', 'title', 'englishLine', 'ruleSummary', 'examples', 'commonPitfall'],
+  required: ['type', 'title', 'englishLine', 'ruleSummary', 'ruleSummaryEnglish', 'examples'],
+  propertyOrdering: [
+    'type',
+    'title',
+    'englishLine',
+    'ruleSummary',
+    'ruleSummaryEnglish',
+    'examples',
+    'commonPitfall',
+    'commonPitfallEnglish',
+  ],
 };
 
 function buildDeckResponseSchema(focus: DailyRitualFocus, minCards: number): Schema {
@@ -203,12 +265,14 @@ Vocabulary cards (type "vocab") — each field one line when possible:
 - explanation: one French line — nuance or usage
 - registerNote: optional one short line (French or English)
 
-Grammar cards (type "grammar"):
+Grammar cards (type "grammar") — English support throughout (TEF learners):
 - title: one short French label for the rule
-- englishLine: one English line — the same rule explained in English
-- ruleSummary: one French line — the rule
-- examples: array of 1 or 2 very short French example lines only
-- commonPitfall: optional one short line (French)
+- englishLine: one English line — quick headline gloss
+- ruleSummary: one French line — the rule in French
+- ruleSummaryEnglish: one or two short English lines — clear explanation of the rule (not copy-paste of englishLine)
+- examples: array of 1–2 objects, each with "french" (example sentence) and "english" (what it demonstrates / meaning for learners)
+- commonPitfall: optional one short line in French
+- commonPitfallEnglish: if you set commonPitfall, REQUIRED — same idea in English
 
 Topics must be diverse (immigration, travail, santé, environnement, éducation, culture, technologie, etc.).
 
@@ -240,7 +304,7 @@ function buildTopUpPrompt(params: {
 Do NOT repeat any of these (new lemmas/titles only):
 ${excludeLines || '(none)'}
 
-Same bilingual one-line format as before: every card must include englishLine. Vocab: lemma, englishLine, contextSentence, explanation. Grammar: title, englishLine, ruleSummary, examples (1-2 short French lines).
+Same format: vocab unchanged. Grammar must include ruleSummaryEnglish, and each example must be { french, english } with non-empty english. If commonPitfall is set, include commonPitfallEnglish.
 
 Return JSON only with property "cards" array of exactly ${need} items.`;
 }
@@ -265,8 +329,10 @@ function assignIds(cards: CardWithoutId[]): DailyRitualCard[] {
       title: c.title,
       englishLine: c.englishLine,
       ruleSummary: c.ruleSummary,
+      ruleSummaryEnglish: c.ruleSummaryEnglish,
       examples: c.examples,
       ...(c.commonPitfall ? { commonPitfall: c.commonPitfall } : {}),
+      ...(c.commonPitfallEnglish ? { commonPitfallEnglish: c.commonPitfallEnglish } : {}),
     };
   });
 }
@@ -314,7 +380,8 @@ async function callGeminiForCards(
       systemInstruction:
         'You are a JSON generator. Output MUST be a single JSON object matching the response schema exactly. ' +
         'No markdown, no code fences, no commentary before or after the JSON. ' +
-        'Use the exact property names from the schema. For each card, include every required field.',
+        'Use the exact property names from the schema. For each card, include every required field. ' +
+        'Grammar cards must include English explanations: ruleSummaryEnglish and english on every example; if commonPitfall is present, include commonPitfallEnglish.',
     },
   });
 

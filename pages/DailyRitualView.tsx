@@ -16,8 +16,6 @@ import { BackNavButton, secondaryOutlineButtonClass } from '../components/naviga
 
 type Phase = 'setup' | 'loading' | 'session' | 'complete' | 'error';
 
-const SESSION_TARGET_SEC = 15 * 60;
-
 export function DailyRitualView() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -33,25 +31,12 @@ export function DailyRitualView() {
   const [index, setIndex] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
-  const [sessionSeconds, setSessionSeconds] = useState(0);
   const [cachedNotice, setCachedNotice] = useState(false);
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return false;
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }, []);
-
-  useEffect(() => {
-    if (phase !== 'session') return;
-    const id = window.setInterval(() => setSessionSeconds((s) => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [phase]);
-
-  const formatClock = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
 
   const startSession = useCallback(async () => {
     setPhase('loading');
@@ -63,7 +48,6 @@ export function DailyRitualView() {
       setIndex(0);
       setMasteredCount(0);
       setReviewCount(0);
-      setSessionSeconds(0);
       setPhase('session');
     } catch (e) {
       setErrorMessage(e instanceof Error ? e.message : t('ritual.loadError'));
@@ -116,16 +100,13 @@ export function DailyRitualView() {
     return () => window.removeEventListener('keydown', onKey);
   }, [phase, handleMastered, handleReview]);
 
-  const remaining = deck.length - index;
-  const estMinutesLeft = Math.max(1, Math.ceil((remaining * 35) / 60));
-
   return (
     <DashboardLayout>
       <main className="flex-1 max-w-3xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 md:py-10">
         <div className="flex items-center justify-between gap-4 mb-3 sm:mb-6">
           <BackNavButton
-            onClick={() => navigate('/practice')}
-            label={t('back.practice')}
+            onClick={() => navigate('/dashboard')}
+            label={t('back.dashboard')}
             marginClassName="mb-0"
           />
         </div>
@@ -285,18 +266,11 @@ export function DailyRitualView() {
 
         {phase === 'session' && current && (
           <div>
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2 sm:mb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-              <span>
-                {t('ritual.progress', {
-                  current: String(index + 1),
-                  total: String(deck.length),
-                })}
-              </span>
-              <span>
-                {t('ritual.timer', { time: formatClock(sessionSeconds) })}
-                {' · '}
-                {t('ritual.estRemaining', { m: String(estMinutesLeft) })}
-              </span>
+            <div className="mb-2 sm:mb-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+              {t('ritual.progress', {
+                current: String(index + 1),
+                total: String(deck.length),
+              })}
             </div>
             {cachedNotice ? (
               <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 mb-2 sm:mb-3 leading-snug">
@@ -323,14 +297,9 @@ export function DailyRitualView() {
               {t('ritual.completeStats', {
                 mastered: String(masteredCount),
                 review: String(reviewCount),
-                time: formatClock(sessionSeconds),
               })}
             </p>
-            {sessionSeconds < SESSION_TARGET_SEC ? (
-              <p className="text-sm text-slate-500">{t('ritual.completeShort')}</p>
-            ) : (
-              <p className="text-sm text-slate-500">{t('ritual.completeNice')}</p>
-            )}
+            <p className="text-sm text-slate-500 dark:text-slate-400">{t('ritual.completeShort')}</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <button
                 type="button"
@@ -344,10 +313,10 @@ export function DailyRitualView() {
               </button>
               <button
                 type="button"
-                onClick={() => navigate('/practice')}
+                onClick={() => navigate('/dashboard')}
                 className={secondaryOutlineButtonClass}
               >
-                {t('back.practice')}
+                {t('back.dashboard')}
               </button>
             </div>
           </div>

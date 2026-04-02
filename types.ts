@@ -458,18 +458,28 @@ export interface DailyRitualVocabCard {
   registerNote?: string;
 }
 
+/** Grammar example: French sentence + English gloss (required for ritual cards). */
+export interface DailyRitualGrammarExample {
+  french: string;
+  english: string;
+}
+
 export interface DailyRitualGrammarCard {
   id: string;
   type: 'grammar';
   /** Short French label */
   title: string;
-  /** One short line in English — same rule in English */
+  /** One short line in English — headline gloss of the rule */
   englishLine: string;
   /** One short French line — the rule */
   ruleSummary: string;
-  /** One or two very short French example lines */
-  examples: string[];
+  /** English explanation of the rule (not just a gloss — full parallel explanation) */
+  ruleSummaryEnglish: string;
+  /** 1–2 examples, each with French + English */
+  examples: DailyRitualGrammarExample[];
   commonPitfall?: string;
+  /** English explanation of the pitfall (include when commonPitfall is set) */
+  commonPitfallEnglish?: string;
 }
 
 export type DailyRitualCard = DailyRitualVocabCard | DailyRitualGrammarCard;

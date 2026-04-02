@@ -32,8 +32,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     'feature.dailyRitualCalloutTitle': 'Nouveau : rituel quotidien TEF',
     'feature.dailyRitualCalloutBody':
-      'Une session courte (~15 min) avec cartes vocabulaire et grammaire générées pour le TEF Canada (B2–C1). Depuis la pratique ou ci-dessous.',
-    'feature.dailyRitualCalloutCta': 'Essayer le rituel',
+      'Vocabulaire et grammaire TEF (B2–C1), série IA — la grammaire est expliquée en anglais. Ici ou via la carte teal sous Pratique.',
     'feature.dailyRitualCalloutDismiss': 'Compris',
     
     // Back buttons
@@ -291,15 +290,11 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.loadError': 'Impossible de charger la série.',
     'ritual.backSetup': 'Retour aux options',
     'ritual.progress': 'Carte {current} / {total}',
-    'ritual.timer': 'Temps : {time}',
-    'ritual.estRemaining': '~{m} min restantes (estim.)',
     'ritual.cachedDeck': 'Série du jour reprise (même contenu que plus tôt aujourd’hui).',
     'ritual.keyboardHint': 'Raccourcis : ← à revoir, → maîtrisé ; Espace ou Entrée pour retourner la carte.',
     'ritual.completeTitle': 'Séance terminée',
-    'ritual.completeStats':
-      'Maîtrisé : {mastered} · À revoir (enregistré) : {review} · Durée : {time}',
+    'ritual.completeStats': 'Maîtrisé : {mastered} · À revoir (enregistré) : {review}',
     'ritual.completeShort': 'Vous pouvez relancer une série ou continuer votre préparation.',
-    'ritual.completeNice': 'Bon travail — vous avez tenu une séance complète.',
     'ritual.newSession': 'Nouvelle séance',
     'ritual.vocab': 'Vocabulaire',
     'ritual.grammar': 'Grammaire',
@@ -585,8 +580,7 @@ const translations: Record<Language, Record<string, string>> = {
 
     'feature.dailyRitualCalloutTitle': 'New: TEF daily ritual',
     'feature.dailyRitualCalloutBody':
-      'A short session (~15 min) with AI-built vocabulary and grammar cards for TEF Canada (B2–C1). Open it from Practice or below.',
-    'feature.dailyRitualCalloutCta': 'Try the ritual',
+      'TEF vocab & grammar (B2–C1), AI-built deck—grammar explained in English. Start here or use the teal card under Practice.',
     'feature.dailyRitualCalloutDismiss': 'Got it',
     
     // Back buttons
@@ -844,15 +838,11 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.loadError': 'Could not load the deck.',
     'ritual.backSetup': 'Back to options',
     'ritual.progress': 'Card {current} / {total}',
-    'ritual.timer': 'Time: {time}',
-    'ritual.estRemaining': '~{m} min left (est.)',
     'ritual.cachedDeck': 'Today’s deck restored (same as earlier today).',
     'ritual.keyboardHint': 'Shortcuts: ← review later, → mastered; Space or Enter to flip the card.',
     'ritual.completeTitle': 'Session complete',
-    'ritual.completeStats':
-      'Mastered: {mastered} · Marked for review: {review} · Duration: {time}',
+    'ritual.completeStats': 'Mastered: {mastered} · Marked for review: {review}',
     'ritual.completeShort': 'Start another deck or continue your prep.',
-    'ritual.completeNice': 'Strong work — you completed a full session.',
     'ritual.newSession': 'New session',
     'ritual.vocab': 'Vocabulary',
     'ritual.grammar': 'Grammar',
