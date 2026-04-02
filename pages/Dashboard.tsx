@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
+import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
+import { DailyRitualFeatureCallout } from '../components/dashboard/DailyRitualFeatureCallout';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { WarmupCard } from '../components/dashboard/WarmupCard';
 import { warmupService } from '../services/warmupService';
@@ -106,12 +108,15 @@ export function Dashboard() {
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
 
+        <DailyRitualFeatureCallout />
+
         {/* Section Cards */}
         <div className="grid md:grid-cols-3 gap-6">
           <PracticeCard />
           <WarmupCard streak={warmupSummary?.streak} levelEstimate={warmupSummary?.levelEstimate} />
           <MockExamsCard />
         </div>
+        <DailyRitualCard />
       </main>
     </DashboardLayout>
   );

@@ -70,3 +70,22 @@ export const resultRetrievalLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator,
 });
+
+/** AI deck generation — limit cost per user */
+export const dailyRitualDeckLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 20,
+  message: 'Too many daily ritual deck requests. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator,
+});
+
+export const dailyRitualWeakCardLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 120,
+  message: 'Too many requests. Please slow down.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator,
+});

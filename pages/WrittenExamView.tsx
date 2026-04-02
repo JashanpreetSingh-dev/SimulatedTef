@@ -6,6 +6,7 @@ import { WrittenExpressionExam } from '../components/writtenExpression';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
 import { DashboardLayout } from '../layouts/DashboardLayout';
+import { BackNavButton } from '../components/navigation/BackNavButton';
 import { getRandomWrittenTasks, getRandomWrittenSectionATask, getRandomWrittenSectionBTask } from '../services/writtenTasks';
 import { persistenceService } from '../services/persistence';
 import { useExamResult } from '../hooks/useExamResult';
@@ -203,12 +204,10 @@ export function WrittenExamView() {
     <DashboardLayout>
       <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-3 md:p-6 transition-colors">
         <div className="max-w-6xl mx-auto">
-          <button 
+          <BackNavButton
             onClick={handleBack}
-            className="mb-3 md:mb-6 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider cursor-pointer"
-          >
-            ← {location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
-          </button>
+            label={location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
+          />
           {tasks && (
             <WrittenExpressionExam
               taskA={tasks.taskA}

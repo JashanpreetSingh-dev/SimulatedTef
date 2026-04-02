@@ -10,6 +10,7 @@ import { ReadingTab } from '../components/practice/ReadingTab';
 import { ListeningTab } from '../components/practice/ListeningTab';
 import { PracticeModuleSelector } from '../components/practice/PracticeModuleSelector';
 import { useIsD2C } from '../utils/userType';
+import { BackNavButton } from '../components/navigation/BackNavButton';
 
 export function PracticeView() {
   const navigate = useNavigate();
@@ -99,22 +100,15 @@ export function PracticeView() {
             </div>
           )}
           {!selectedModule ? (
-            <button 
-              onClick={() => navigate('/dashboard')}
-              className="mb-3 md:mb-6 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
-            >
-              ← {t('back.dashboard')}
-            </button>
+            <BackNavButton onClick={() => navigate('/dashboard')} label={t('back.dashboard')} />
           ) : (
-            <button 
+            <BackNavButton
               onClick={() => {
                 setSelectedModule(null);
                 setPracticeTab('practice');
               }}
-              className="mb-3 md:mb-6 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-wider transition-colors"
-            >
-              ← {t('back.practice')}
-            </button>
+              label={t('back.practice')}
+            />
           )}
           {!selectedModule ? (
             <>

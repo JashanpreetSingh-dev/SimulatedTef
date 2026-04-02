@@ -12,6 +12,7 @@ import { registerReadingCommands } from './commands/reading';
 import { registerListeningCommands } from './commands/listening';
 import { registerMockExamCommands } from './commands/mock-exam';
 import { registerEmailCommands } from './commands/email';
+import { registerUsersCommands } from './commands/users';
 
 // Main CLI setup
 const cli = yargs(hideBin(process.argv))
@@ -42,6 +43,10 @@ const cli = yargs(hideBin(process.argv))
   .command('email', 'Send notification emails manually', (yargs) => {
     return registerEmailCommands(yargs)
       .demandCommand(1, 'You need at least one command after email');
+  })
+  .command('users', 'Manage and inspect users', (yargs) => {
+    return registerUsersCommands(yargs)
+      .demandCommand(1, 'You need at least one command after users');
   })
   .demandCommand(1, 'You need at least one command before moving on')
   .strict()

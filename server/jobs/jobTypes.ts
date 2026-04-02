@@ -71,7 +71,7 @@ export interface QuestionGenerationJobResult {
   error?: string;
 }
 
-export type EmailTemplateKind = 'welcome' | 'subscription_congrats';
+export type EmailTemplateKind = 'welcome' | 'subscription_congrats' | 'good_friday_promo';
 
 export interface EmailJobData {
   templateKind: EmailTemplateKind;

@@ -440,3 +440,46 @@ export interface BatchAssignment {
   assignedAt: string; // ISO timestamp
   orgId: string; // Organization ID (for filtering)
 }
+
+/** Daily revision ritual (TEF-focused) — server-generated deck */
+export type DailyRitualCardType = 'vocab' | 'grammar';
+
+export interface DailyRitualVocabCard {
+  id: string;
+  type: 'vocab';
+  /** French headword or expression */
+  lemma: string;
+  /** One short line in English (gloss or meaning) */
+  englishLine: string;
+  /** One French sentence — item in context */
+  contextSentence: string;
+  /** One short French line — nuance or usage */
+  explanation: string;
+  registerNote?: string;
+}
+
+/** Grammar example: French sentence + English gloss (required for ritual cards). */
+export interface DailyRitualGrammarExample {
+  french: string;
+  english: string;
+}
+
+export interface DailyRitualGrammarCard {
+  id: string;
+  type: 'grammar';
+  /** Short French label */
+  title: string;
+  /** One short line in English — headline gloss of the rule */
+  englishLine: string;
+  /** One short French line — the rule */
+  ruleSummary: string;
+  /** English explanation of the rule (not just a gloss — full parallel explanation) */
+  ruleSummaryEnglish: string;
+  /** 1–2 examples, each with French + English */
+  examples: DailyRitualGrammarExample[];
+  commonPitfall?: string;
+  /** English explanation of the pitfall (include when commonPitfall is set) */
+  commonPitfallEnglish?: string;
+}
+
+export type DailyRitualCard = DailyRitualVocabCard | DailyRitualGrammarCard;

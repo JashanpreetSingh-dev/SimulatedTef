@@ -30,6 +30,11 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argumentez pour convaincre un ami. (8 min)',
     'dashboard.oralExpressionDescription': 'Enchaînez les deux sections pour une simulation réelle. (12 min)',
     'dashboard.mockExamDescription': 'Examen complet en 4 modules : Expression Orale, Compréhension Écrite, Compréhension Orale et Expression Écrite',
+
+    'feature.dailyRitualCalloutTitle': 'Nouveau : rituel quotidien TEF',
+    'feature.dailyRitualCalloutBody':
+      'Vocabulaire et grammaire TEF (B2–C1), série IA — la grammaire est expliquée en anglais. Ici ou via la carte teal sous Pratique.',
+    'feature.dailyRitualCalloutDismiss': 'Compris',
     
     // Back buttons
     'back.dashboard': 'Retour au tableau de bord',
@@ -53,6 +58,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.clbLevel': 'Niveau CLB',
     'common.commencer': 'Commencer',
     'common.start': 'Commencer',
+    'common.new': 'Nouveau',
     'common.startMockExam': 'Commencer l\'examen blanc',
     'common.startPracticing': 'Commencer à pratiquer',
     'common.practice': 'Pratique',
@@ -264,6 +270,49 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionBDescription': 'Argumentation avec retour en temps réel',
     'practice.limitReached': 'Limite atteinte',
     'practice.standardPractice': 'Pratique standard',
+
+    // Daily revision ritual (TEF)
+    'ritual.title': 'Rituel quotidien — vocabulaire & grammaire',
+    'ritual.subtitle':
+      'Révision bilingue courte (FR + une ligne EN), ~15 min, niveau TEF Canada (B2–C1). Une carte = un tirage.',
+    'ritual.focus': 'Contenu',
+    'ritual.focusMixed': 'Mixte (vocabulaire et grammaire)',
+    'ritual.focusVocab': 'Vocabulaire avancé',
+    'ritual.focusGrammar': 'Grammaire / temps / structures',
+    'ritual.level': 'Niveau cible',
+    'ritual.cardCount': 'Nombre de cartes',
+    'ritual.cards': 'cartes',
+    'ritual.newDeckOption': 'Demander une nouvelle série aujourd’hui',
+    'ritual.newDeckOptionDetail':
+      'D’habitude, la même série est reprise si vous relancez dans la journée (plus rapide). Activez cette option pour que l’IA génère un contenu tout neuf pour cette séance.',
+    'ritual.newDeckOptionHelpAria': 'En savoir plus : nouvelle série du jour',
+    'ritual.start': 'Démarrer la séance',
+    'ritual.generating': 'Génération de votre série en cours…',
+    'ritual.loadError': 'Impossible de charger la série.',
+    'ritual.backSetup': 'Retour aux options',
+    'ritual.progress': 'Carte {current} / {total}',
+    'ritual.cachedDeck': 'Série du jour reprise (même contenu que plus tôt aujourd’hui).',
+    'ritual.keyboardHint': 'Raccourcis : ← à revoir, → maîtrisé ; Espace ou Entrée pour retourner la carte.',
+    'ritual.completeTitle': 'Séance terminée',
+    'ritual.completeStats': 'Maîtrisé : {mastered} · À revoir (enregistré) : {review}',
+    'ritual.completeShort': 'Vous pouvez relancer une série ou continuer votre préparation.',
+    'ritual.newSession': 'Nouvelle séance',
+    'ritual.vocab': 'Vocabulaire',
+    'ritual.grammar': 'Grammaire',
+    'ritual.english': 'EN',
+    'ritual.french': 'Français',
+    'ritual.context': 'Contexte :',
+    'ritual.tapToReveal': 'Toucher pour voir la réponse',
+    'ritual.explanation': 'Explication',
+    'ritual.register': 'Registre / nuance :',
+    'ritual.examples': 'Exemples',
+    'ritual.pitfall': 'Piège fréquent :',
+    'ritual.swipeHint': 'Glisser à droite : maîtrisé · à gauche : à revoir',
+    'ritual.reviewLater': 'À revoir',
+    'ritual.mastered': 'Maîtrisé',
+    'practice.dailyRitualTitle': 'Rituel quotidien TEF',
+    'practice.dailyRitualDescription':
+      'Cartes FR + une ligne EN, vocabulaire et grammaire, deck IA — ~15 min, ton sérieux TEF Canada (B2–C1).',
     
     // Errors
     'errors.error': 'Erreur',
@@ -558,6 +607,11 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argue to convince a friend. (8 min)',
     'dashboard.oralExpressionDescription': 'Chain both sections for a real simulation. (12 min)',
     'dashboard.mockExamDescription': 'Complete 4-module exam: Oral Expression, Written Expression, Reading, and Listening',
+
+    'feature.dailyRitualCalloutTitle': 'New: TEF daily ritual',
+    'feature.dailyRitualCalloutBody':
+      'TEF vocab & grammar (B2–C1), AI-built deck—grammar explained in English. Start here or use the teal card under Practice.',
+    'feature.dailyRitualCalloutDismiss': 'Got it',
     
     // Back buttons
     'back.dashboard': 'Back to Dashboard',
@@ -581,6 +635,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.clbLevel': 'CLB Level',
     'common.commencer': 'Start',
     'common.start': 'Start',
+    'common.new': 'New',
     'common.startMockExam': 'Start Mock Exam',
     'common.startPracticing': 'Start Practicing',
     'common.practice': 'Practice',
@@ -792,6 +847,49 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.guidedSectionBDescription': 'Argumentation with real-time feedback',
     'practice.limitReached': 'Limit reached',
     'practice.standardPractice': 'Standard Practice',
+
+    // Daily revision ritual (TEF)
+    'ritual.title': 'Daily ritual — vocabulary & grammar',
+    'ritual.subtitle':
+      'Short bilingual drill (FR + one English line), ~15 min, TEF Canada (B2–C1). One swipe = one card.',
+    'ritual.focus': 'Content',
+    'ritual.focusMixed': 'Mixed (vocabulary and grammar)',
+    'ritual.focusVocab': 'Advanced vocabulary',
+    'ritual.focusGrammar': 'Grammar / tenses / structures',
+    'ritual.level': 'Target level',
+    'ritual.cardCount': 'Number of cards',
+    'ritual.cards': 'cards',
+    'ritual.newDeckOption': 'Ask for a fresh card set today',
+    'ritual.newDeckOptionDetail':
+      'Usually we keep the same deck if you start again the same day, so it loads faster. Turn this on if you want the AI to build a brand-new deck for this session.',
+    'ritual.newDeckOptionHelpAria': 'More about the fresh card set option',
+    'ritual.start': 'Start session',
+    'ritual.generating': 'Generating your deck…',
+    'ritual.loadError': 'Could not load the deck.',
+    'ritual.backSetup': 'Back to options',
+    'ritual.progress': 'Card {current} / {total}',
+    'ritual.cachedDeck': 'Today’s deck restored (same as earlier today).',
+    'ritual.keyboardHint': 'Shortcuts: ← review later, → mastered; Space or Enter to flip the card.',
+    'ritual.completeTitle': 'Session complete',
+    'ritual.completeStats': 'Mastered: {mastered} · Marked for review: {review}',
+    'ritual.completeShort': 'Start another deck or continue your prep.',
+    'ritual.newSession': 'New session',
+    'ritual.vocab': 'Vocabulary',
+    'ritual.grammar': 'Grammar',
+    'ritual.english': 'EN',
+    'ritual.french': 'French',
+    'ritual.context': 'Context:',
+    'ritual.tapToReveal': 'Tap to reveal',
+    'ritual.explanation': 'Explanation',
+    'ritual.register': 'Register / nuance:',
+    'ritual.examples': 'Examples',
+    'ritual.pitfall': 'Common pitfall:',
+    'ritual.swipeHint': 'Swipe right: mastered · left: review later',
+    'ritual.reviewLater': 'Review later',
+    'ritual.mastered': 'Mastered',
+    'practice.dailyRitualTitle': 'TEF daily ritual',
+    'practice.dailyRitualDescription':
+      'FR cards plus one English line, vocab & grammar, AI-built deck — ~15 min, serious TEF Canada prep (B2–C1).',
     
     // Errors
     'errors.error': 'Error',

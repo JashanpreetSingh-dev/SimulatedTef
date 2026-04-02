@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { SignUpButton } from '@clerk/clerk-react';
 import { subscriptionService } from '../services/subscriptionService';
+import activePromo from '../config/promoConfig';
+
+function applyDiscount(price: string, discountPercent: number): string {
+  const numeric = parseFloat(price.replace(/[^0-9.]/g, ''));
+  if (isNaN(numeric) || numeric === 0) return price;
+  const discounted = numeric * (1 - discountPercent / 100);
+  const prefix = price.match(/^[^0-9]*/)?.[0] ?? '';
+  return `${prefix}${Number.isInteger(discounted) ? discounted : discounted.toFixed(2)}`;
+}
 
 interface SubscriptionTier {
   id: 'free' | 'basic' | 'premium';
@@ -146,16 +155,37 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
                 <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-3">
                   {tier.name}
                 </h3>
-                <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
-                  <span className="text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
-                    {tier.price}
-                  </span>
-                  {tier.priceSubtext && (
-                    <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-                      {tier.priceSubtext}
+                {activePromo?.discountPercent && tier.id !== 'free' ? (
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-slate-400 dark:text-slate-500 text-lg font-semibold line-through tabular-nums">
+                      {tier.price}
                     </span>
-                  )}
-                </div>
+                    <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                      <span className="text-4xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums tracking-tight">
+                        {applyDiscount(tier.price, activePromo.discountPercent)}
+                      </span>
+                      {tier.priceSubtext && (
+                        <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                          {tier.priceSubtext}
+                        </span>
+                      )}
+                    </div>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400">
+                      {activePromo.discountPercent}% off — code {activePromo.code}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-baseline justify-center gap-1.5 flex-wrap">
+                    <span className="text-4xl font-black text-slate-900 dark:text-white tabular-nums tracking-tight">
+                      {tier.price}
+                    </span>
+                    {tier.priceSubtext && (
+                      <span className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+                        {tier.priceSubtext}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               <ul className="space-y-3.5 mb-8 flex-1">
