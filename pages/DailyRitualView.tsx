@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { RitualCardStack } from '../components/dailyRitual/RitualCardStack';
+import { RitualSelect } from '../components/dailyRitual/RitualSelect';
 import {
   fetchDailyDeck,
   saveWeakCard,
@@ -27,6 +28,7 @@ export function DailyRitualView() {
   const [cefrHint, setCefrHint] = useState<DailyRitualCefrHint>('B2');
   const [cardCount, setCardCount] = useState(24);
   const [skipCache, setSkipCache] = useState(false);
+  const [newDeckHelpOpen, setNewDeckHelpOpen] = useState(false);
   const [deck, setDeck] = useState<DailyRitualCard[]>([]);
   const [index, setIndex] = useState(0);
   const [masteredCount, setMasteredCount] = useState(0);
@@ -136,63 +138,126 @@ export function DailyRitualView() {
         </p>
 
         {phase === 'setup' && (
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/60 p-6 space-y-6 shadow-sm">
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
-                {t('ritual.focus')}
-              </label>
-              <select
-                value={focus}
-                onChange={(e) => setFocus(e.target.value as DailyRitualFocus)}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-100"
-              >
-                <option value="mixed">{t('ritual.focusMixed')}</option>
-                <option value="vocab">{t('ritual.focusVocab')}</option>
-                <option value="grammar">{t('ritual.focusGrammar')}</option>
-              </select>
+          <div className="rounded-2xl border-2 border-teal-200/80 dark:border-teal-800/50 bg-white dark:bg-slate-900/70 p-5 sm:p-7 shadow-sm space-y-6 sm:space-y-7">
+            <div className="grid gap-5 sm:gap-6 sm:grid-cols-2">
+              <div className="min-w-0">
+                <label
+                  htmlFor="ritual-focus"
+                  className="block text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2"
+                >
+                  {t('ritual.focus')}
+                </label>
+                <RitualSelect
+                  id="ritual-focus"
+                  value={focus}
+                  onChange={(v) => setFocus(v as DailyRitualFocus)}
+                  options={[
+                    { value: 'mixed', label: t('ritual.focusMixed') },
+                    { value: 'vocab', label: t('ritual.focusVocab') },
+                    { value: 'grammar', label: t('ritual.focusGrammar') },
+                  ]}
+                />
+              </div>
+              <div className="min-w-0">
+                <label
+                  htmlFor="ritual-level"
+                  className="block text-sm font-semibold text-slate-800 dark:text-slate-100 mb-2"
+                >
+                  {t('ritual.level')}
+                </label>
+                <RitualSelect
+                  id="ritual-level"
+                  value={cefrHint}
+                  onChange={(v) => setCefrHint(v as DailyRitualCefrHint)}
+                  options={[
+                    { value: 'B2', label: 'B2' },
+                    { value: 'C1', label: 'C1' },
+                  ]}
+                />
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
-                {t('ritual.level')}
-              </label>
-              <select
-                value={cefrHint}
-                onChange={(e) => setCefrHint(e.target.value as DailyRitualCefrHint)}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 px-4 py-2.5 text-slate-900 dark:text-slate-100"
+
+            <div className="rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 p-4 sm:p-5">
+              <label
+                htmlFor="ritual-card-count"
+                className="block text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3"
               >
-                <option value="B2">B2</option>
-                <option value="C1">C1</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">
                 {t('ritual.cardCount')}
               </label>
-              <input
-                type="range"
-                min={8}
-                max={36}
-                value={cardCount}
-                onChange={(e) => setCardCount(Number(e.target.value))}
-                className="w-full"
-              />
-              <p className="text-sm text-slate-500 mt-1">
-                {cardCount} {t('ritual.cards')}
-              </p>
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <input
+                  id="ritual-card-count"
+                  type="range"
+                  min={8}
+                  max={36}
+                  value={cardCount}
+                  onChange={(e) => setCardCount(Number(e.target.value))}
+                  className="touch-manipulation flex-1 min-w-[140px] h-11 cursor-pointer accent-teal-600 dark:accent-teal-500 [color-scheme:light] dark:[color-scheme:dark]"
+                />
+                <output
+                  htmlFor="ritual-card-count"
+                  className="tabular-nums min-w-[5.5rem] rounded-lg bg-teal-100 dark:bg-teal-950/80 px-3 py-2 text-center text-base font-bold text-teal-900 dark:text-teal-100 ring-1 ring-teal-300/60 dark:ring-teal-700/60"
+                >
+                  {cardCount} {t('ritual.cards')}
+                </output>
+              </div>
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={skipCache}
-                onChange={(e) => setSkipCache(e.target.checked)}
-                className="rounded border-slate-300"
-              />
-              <span className="text-sm text-slate-700 dark:text-slate-200">{t('ritual.skipCache')}</span>
-            </label>
+
+            <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-slate-50/50 dark:bg-slate-800/30 p-3 sm:p-4">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label
+                      htmlFor="ritual-skip-cache-switch"
+                      id="ritual-new-deck-label"
+                      className="cursor-pointer text-sm sm:text-base font-medium leading-snug text-slate-800 dark:text-slate-100 touch-manipulation"
+                    >
+                      {t('ritual.newDeckOption')}
+                    </label>
+                    <button
+                      type="button"
+                      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-300 bg-white text-xs font-bold text-slate-600 shadow-sm hover:border-teal-400 hover:bg-teal-50 hover:text-teal-800 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-teal-500 dark:hover:bg-teal-950/50 dark:hover:text-teal-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 touch-manipulation"
+                      aria-label={t('ritual.newDeckOptionHelpAria')}
+                      aria-expanded={newDeckHelpOpen}
+                      aria-controls="ritual-new-deck-help"
+                      title={t('ritual.newDeckOptionDetail')}
+                      onClick={() => setNewDeckHelpOpen((o) => !o)}
+                    >
+                      ?
+                    </button>
+                  </div>
+                  {newDeckHelpOpen ? (
+                    <p
+                      id="ritual-new-deck-help"
+                      className="mt-2 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+                      role="region"
+                    >
+                      {t('ritual.newDeckOptionDetail')}
+                    </p>
+                  ) : null}
+                </div>
+                <button
+                  id="ritual-skip-cache-switch"
+                  type="button"
+                  role="switch"
+                  aria-checked={skipCache}
+                  aria-labelledby="ritual-new-deck-label"
+                  onClick={() => setSkipCache((s) => !s)}
+                  className={`
+                    relative mt-0.5 flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition-colors touch-manipulation
+                    focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900
+                    ${skipCache ? 'justify-end bg-teal-600' : 'justify-start bg-slate-300 dark:bg-slate-600'}
+                  `}
+                >
+                  <span className="pointer-events-none block h-7 w-7 rounded-full bg-white shadow-sm ring-1 ring-black/5 dark:ring-white/10" aria-hidden />
+                </button>
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={startSession}
-              className="w-full py-3 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-md shadow-teal-900/15 transition-colors"
+              className="touch-manipulation w-full min-h-[52px] rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-base font-bold shadow-md shadow-teal-900/20 transition-colors"
             >
               {t('ritual.start')}
             </button>

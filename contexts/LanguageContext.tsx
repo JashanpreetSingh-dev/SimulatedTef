@@ -29,6 +29,12 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argumentez pour convaincre un ami. (8 min)',
     'dashboard.oralExpressionDescription': 'Enchaînez les deux sections pour une simulation réelle. (12 min)',
     'dashboard.mockExamDescription': 'Examen complet en 4 modules : Expression Orale, Compréhension Écrite, Compréhension Orale et Expression Écrite',
+
+    'feature.dailyRitualCalloutTitle': 'Nouveau : rituel quotidien TEF',
+    'feature.dailyRitualCalloutBody':
+      'Une session courte (~15 min) avec cartes vocabulaire et grammaire générées pour le TEF Canada (B2–C1). Depuis la pratique ou ci-dessous.',
+    'feature.dailyRitualCalloutCta': 'Essayer le rituel',
+    'feature.dailyRitualCalloutDismiss': 'Compris',
     
     // Back buttons
     'back.dashboard': 'Retour au tableau de bord',
@@ -52,6 +58,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.clbLevel': 'Niveau CLB',
     'common.commencer': 'Commencer',
     'common.start': 'Commencer',
+    'common.new': 'Nouveau',
     'common.startMockExam': 'Commencer l\'examen blanc',
     'common.startPracticing': 'Commencer à pratiquer',
     'common.practice': 'Pratique',
@@ -275,7 +282,10 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.level': 'Niveau cible',
     'ritual.cardCount': 'Nombre de cartes',
     'ritual.cards': 'cartes',
-    'ritual.skipCache': 'Forcer une nouvelle série (ignorer le cache du jour)',
+    'ritual.newDeckOption': 'Demander une nouvelle série aujourd’hui',
+    'ritual.newDeckOptionDetail':
+      'D’habitude, la même série est reprise si vous relancez dans la journée (plus rapide). Activez cette option pour que l’IA génère un contenu tout neuf pour cette séance.',
+    'ritual.newDeckOptionHelpAria': 'En savoir plus : nouvelle série du jour',
     'ritual.start': 'Démarrer la séance',
     'ritual.generating': 'Génération de votre série en cours…',
     'ritual.loadError': 'Impossible de charger la série.',
@@ -306,7 +316,7 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.mastered': 'Maîtrisé',
     'practice.dailyRitualTitle': 'Rituel quotidien TEF',
     'practice.dailyRitualDescription':
-      'Cartes vocabulaire et grammaire (B2–C1), ~15 minutes, ton examen.',
+      'Cartes FR + une ligne EN, vocabulaire et grammaire, deck IA — ~15 min, ton sérieux TEF Canada (B2–C1).',
     
     // Errors
     'errors.error': 'Erreur',
@@ -572,6 +582,12 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argue to convince a friend. (8 min)',
     'dashboard.oralExpressionDescription': 'Chain both sections for a real simulation. (12 min)',
     'dashboard.mockExamDescription': 'Complete 4-module exam: Oral Expression, Written Expression, Reading, and Listening',
+
+    'feature.dailyRitualCalloutTitle': 'New: TEF daily ritual',
+    'feature.dailyRitualCalloutBody':
+      'A short session (~15 min) with AI-built vocabulary and grammar cards for TEF Canada (B2–C1). Open it from Practice or below.',
+    'feature.dailyRitualCalloutCta': 'Try the ritual',
+    'feature.dailyRitualCalloutDismiss': 'Got it',
     
     // Back buttons
     'back.dashboard': 'Back to Dashboard',
@@ -595,6 +611,7 @@ const translations: Record<Language, Record<string, string>> = {
     'common.clbLevel': 'CLB Level',
     'common.commencer': 'Start',
     'common.start': 'Start',
+    'common.new': 'New',
     'common.startMockExam': 'Start Mock Exam',
     'common.startPracticing': 'Start Practicing',
     'common.practice': 'Practice',
@@ -818,7 +835,10 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.level': 'Target level',
     'ritual.cardCount': 'Number of cards',
     'ritual.cards': 'cards',
-    'ritual.skipCache': 'Force a new deck (ignore today’s cache)',
+    'ritual.newDeckOption': 'Ask for a fresh card set today',
+    'ritual.newDeckOptionDetail':
+      'Usually we keep the same deck if you start again the same day, so it loads faster. Turn this on if you want the AI to build a brand-new deck for this session.',
+    'ritual.newDeckOptionHelpAria': 'More about the fresh card set option',
     'ritual.start': 'Start session',
     'ritual.generating': 'Generating your deck…',
     'ritual.loadError': 'Could not load the deck.',
@@ -849,7 +869,7 @@ const translations: Record<Language, Record<string, string>> = {
     'ritual.mastered': 'Mastered',
     'practice.dailyRitualTitle': 'TEF daily ritual',
     'practice.dailyRitualDescription':
-      'Vocabulary & grammar cards (B2–C1), ~15 minutes, exam-focused tone.',
+      'FR cards plus one English line, vocab & grammar, AI-built deck — ~15 min, serious TEF Canada prep (B2–C1).',
     
     // Errors
     'errors.error': 'Error',

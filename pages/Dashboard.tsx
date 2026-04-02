@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
+import { DailyRitualFeatureCallout } from '../components/dashboard/DailyRitualFeatureCallout';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
@@ -88,6 +89,8 @@ export function Dashboard() {
           </div>
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
+
+        <DailyRitualFeatureCallout />
 
         {/* Section Cards */}
         <div className="grid md:grid-cols-2 gap-6">

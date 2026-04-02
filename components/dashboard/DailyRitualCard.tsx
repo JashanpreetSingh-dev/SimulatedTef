@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { SHOW_DAILY_RITUAL_NEW_BADGE } from '../../config/featureDiscovery';
 
 export function DailyRitualCard() {
   const navigate = useNavigate();
@@ -16,7 +17,14 @@ export function DailyRitualCard() {
           📇
         </div>
       </div>
-      <h3 className="text-base md:text-xl font-bold text-white mb-2">{t('practice.dailyRitualTitle')}</h3>
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        <h3 className="text-base md:text-xl font-bold text-white">{t('practice.dailyRitualTitle')}</h3>
+        {SHOW_DAILY_RITUAL_NEW_BADGE ? (
+          <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-wide text-white ring-1 ring-white/30">
+            {t('common.new')}
+          </span>
+        ) : null}
+      </div>
       <p className="text-teal-100 text-xs md:text-sm leading-relaxed mb-4">{t('practice.dailyRitualDescription')}</p>
       <div className="flex items-center text-white font-bold text-xs md:text-sm">
         {t('common.start')} <span className="ml-2">→</span>
