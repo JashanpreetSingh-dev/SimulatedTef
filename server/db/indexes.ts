@@ -465,6 +465,17 @@ export async function createIndexes(): Promise<void> {
       { unique: true, name: 'userId_type_idx' }
     );
     console.log('Created index: userNotifications.userId_type_idx');
+
+    const dailyRitualDeckCache = db.collection('daily_ritual_deck_cache');
+    await dailyRitualDeckCache.createIndex(
+      { userId: 1, dateKey: 1, optionsHash: 1 },
+      { unique: true, name: 'daily_ritual_deck_user_date_opts_idx' }
+    );
+    console.log(' Created index: daily_ritual_deck_cache.daily_ritual_deck_user_date_opts_idx');
+
+    const dailyRitualWeak = db.collection('daily_ritual_weak_cards');
+    await dailyRitualWeak.createIndex({ userId: 1 }, { unique: true, name: 'daily_ritual_weak_user_idx' });
+    console.log(' Created index: daily_ritual_weak_cards.daily_ritual_weak_user_idx');
     
     console.log(' All database indexes created successfully');
   } catch (error: any) {

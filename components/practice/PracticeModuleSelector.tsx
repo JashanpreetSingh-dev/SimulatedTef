@@ -1,5 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { SHOW_DAILY_RITUAL_NEW_BADGE } from '../../config/featureDiscovery';
 import { useIsD2C } from '../../utils/userType';
 
 interface PracticeModuleSelectorProps {
@@ -9,6 +11,7 @@ interface PracticeModuleSelectorProps {
 export function PracticeModuleSelector({ onSelectModule }: PracticeModuleSelectorProps) {
   const { t } = useLanguage();
   const isD2C = useIsD2C();
+  const navigate = useNavigate();
   
   return (
     <div className="grid md:grid-cols-2 gap-4 md:gap-6">
@@ -83,6 +86,35 @@ export function PracticeModuleSelector({ onSelectModule }: PracticeModuleSelecto
           </div>
         </div>
       )}
+
+      <div
+        className="md:col-span-2 bg-gradient-to-br from-teal-600 to-teal-900 rounded-xl md:rounded-2xl p-4 md:p-5 shadow-lg hover:shadow-xl hover:shadow-teal-500/20 border border-teal-400/25 transition-all cursor-pointer group"
+        onClick={() => navigate('/practice/daily-ritual')}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center text-xl shrink-0 group-hover:scale-105 transition-transform">
+              📇
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-base md:text-lg font-bold text-white">{t('practice.dailyRitualTitle')}</h3>
+                {SHOW_DAILY_RITUAL_NEW_BADGE ? (
+                  <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-wide text-white ring-1 ring-white/30">
+                    {t('common.new')}
+                  </span>
+                ) : null}
+              </div>
+              <p className="text-teal-100 text-xs md:text-sm leading-relaxed mt-0.5">
+                {t('practice.dailyRitualDescription')}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center text-white font-bold text-sm sm:shrink-0">
+            {t('common.start')} <span className="ml-2">→</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

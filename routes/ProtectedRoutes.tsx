@@ -20,6 +20,7 @@ import { AdminVoteAnalyticsView } from '../pages/AdminVoteAnalyticsView';
 import { AdminOrgConfigView } from '../pages/AdminOrgConfigView';
 import { AdminD2CConfigView } from '../pages/AdminD2CConfigView';
 import { SubscriptionView } from '../pages/SubscriptionView';
+import { DailyRitualView } from '../pages/DailyRitualView';
 
 /**
  * Protected routes - only accessible when signed in
@@ -29,6 +30,7 @@ export function ProtectedRoutes() {
     <Routes>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/practice" element={<PracticeView />} />
+      <Route path="/practice/daily-ritual" element={<DailyRitualView />} />
       <Route path="/history" element={<HistoryView />} />
       <Route path="/results/:id" element={<ResultView />} />
       <Route path="/exam/:mode" element={<ExamView />} />
