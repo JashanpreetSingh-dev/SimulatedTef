@@ -165,6 +165,9 @@ export const LIVE_API_CONFIG = {
   turnDetectionTimeout: undefined as number | undefined, // Use Gemini's native turn detection
 } as const;
 
+/** Live (native audio) model for `ai.live.connect` (oral exam + warm-up). */
+const GEMINI_LIVE_MODEL = 'gemini-3.1-flash-live-preview';
+
 export const encodeAudio = (bytes: Uint8Array) => {
   let binary = '';
   const len = bytes.byteLength;
@@ -447,7 +450,7 @@ export const geminiService = {
     }
 
     return ai.live.connect({
-      model: 'gemini-2.5-flash-native-audio-latest',
+      model: GEMINI_LIVE_MODEL,
       callbacks,
       config,
     });
@@ -485,7 +488,7 @@ export const geminiService = {
     }
 
     return ai.live.connect({
-      model: 'gemini-2.5-flash-native-audio-latest',
+      model: GEMINI_LIVE_MODEL,
       callbacks,
       config,
     });
