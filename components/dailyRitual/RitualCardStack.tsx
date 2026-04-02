@@ -339,18 +339,34 @@ export function RitualCardStack({
           {t('ritual.french')}
         </p>
         <p className="text-xs sm:text-sm leading-snug text-slate-800 dark:text-slate-100">{card.ruleSummary}</p>
-        <ul className="list-disc pl-4 sm:pl-5 space-y-1 text-xs sm:text-sm text-slate-800 dark:text-slate-100">
+        <p className="text-xs sm:text-sm leading-snug text-slate-700 dark:text-slate-200 border-l-2 border-teal-400/55 dark:border-teal-500/45 pl-2 sm:pl-3 mt-2">
+          <span className="font-medium text-teal-800 dark:text-teal-300">{t('ritual.english')} </span>
+          {card.ruleSummaryEnglish}
+        </p>
+        <ul className="list-none space-y-2.5 sm:space-y-3 pt-1 text-xs sm:text-sm text-slate-800 dark:text-slate-100">
           {card.examples.map((ex, i) => (
-            <li key={i} className="leading-snug">
-              {ex}
+            <li key={i} className="leading-snug border-t border-teal-200/60 dark:border-teal-800/50 pt-2 first:border-t-0 first:pt-0">
+              <span className="block">{ex.french}</span>
+              <span className="mt-1 block text-slate-600 dark:text-slate-300">
+                <span className="font-medium text-teal-800 dark:text-teal-300">{t('ritual.english')} </span>
+                {ex.english}
+              </span>
             </li>
           ))}
         </ul>
         {card.commonPitfall ? (
-          <p className="text-[10px] sm:text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 rounded-lg p-2 sm:p-2.5 leading-snug">
-            <span className="font-medium">{t('ritual.pitfall')} </span>
-            {card.commonPitfall}
-          </p>
+          <div className="text-[10px] sm:text-xs text-amber-800 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 rounded-lg p-2 sm:p-2.5 leading-snug space-y-1.5">
+            <p>
+              <span className="font-medium">{t('ritual.pitfall')} </span>
+              {card.commonPitfall}
+            </p>
+            {card.commonPitfallEnglish ? (
+              <p className="border-t border-amber-200/70 dark:border-amber-800/50 pt-1.5">
+                <span className="font-medium text-amber-900 dark:text-amber-100">{t('ritual.english')} </span>
+                {card.commonPitfallEnglish}
+              </p>
+            ) : null}
+          </div>
         ) : null}
       </div>
     );

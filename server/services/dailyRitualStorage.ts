@@ -12,7 +12,7 @@ const WEAK_CARDS = 'daily_ritual_weak_cards';
 const MAX_WEAK = 25;
 
 /** Bump when deck shape/prompt changes so Mongo cache does not serve stale cards */
-const DECK_FORMAT_VERSION = 'bilingual-oneline-v2';
+const DECK_FORMAT_VERSION = 'grammar-bilingual-en-v3';
 
 export function optionsHash(focus: DailyRitualFocus, cefrHint: DailyRitualCefrHint, cardCount: number): string {
   const payload = JSON.stringify({ focus, cefrHint, cardCount, v: DECK_FORMAT_VERSION });

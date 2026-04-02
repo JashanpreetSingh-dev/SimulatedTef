@@ -60,7 +60,7 @@ export function DailyRitualFeatureCallout() {
             onClick={go}
             className="rounded-lg bg-teal-600 px-3 py-2 text-xs md:text-sm font-semibold text-white shadow-sm hover:bg-teal-700 transition-colors"
           >
-            {t('feature.dailyRitualCalloutCta')}
+            {t('ritual.start')}
           </button>
           <button
             type="button"
