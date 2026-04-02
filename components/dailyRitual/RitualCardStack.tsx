@@ -2,9 +2,12 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import type { DailyRitualCard } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-const SWIPE_THRESHOLD = 72;
+const SWIPE_THRESHOLD = 56;
 const FLY_OUT_X = 460;
 const FLY_OUT_MS = 230;
+/** Require clearer horizontal intent so vertical scroll inside the card still works. */
+const TOUCH_DIRECTION_SLACK = 14;
+const TOUCH_HORIZONTAL_RATIO = 1.35;
 
 export interface RitualCardStackProps {
   card: DailyRitualCard;
@@ -26,11 +29,17 @@ export function RitualCardStack({
   const [offsetX, setOffsetX] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const cardSurfaceRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
   const startX = useRef(0);
   const pointerIdRef = useRef<number | null>(null);
   const swipeHandledRef = useRef(false);
   const movedRef = useRef(false);
   const exitTimerRef = useRef<number | null>(null);
+  const isAnimatingOutRef = useRef(false);
+  const touchTrackingRef = useRef(false);
+  const touchCommittedRef = useRef(false);
+  const touchStartYRef = useRef(0);
 
   useEffect(() => {
     if (exitTimerRef.current) {
@@ -39,9 +48,14 @@ export function RitualCardStack({
     }
     setFlipped(false);
     setOffsetX(0);
+    draggingRef.current = false;
     setDragging(false);
     setIsAnimatingOut(false);
   }, [card.id]);
+
+  useEffect(() => {
+    isAnimatingOutRef.current = isAnimatingOut;
+  }, [isAnimatingOut]);
 
   useEffect(() => {
     return () => {
@@ -53,7 +67,7 @@ export function RitualCardStack({
 
   const triggerAction = useCallback(
     (direction: -1 | 1) => {
-      if (isAnimatingOut) return;
+      if (isAnimatingOutRef.current) return;
 
       if (prefersReducedMotion) {
         if (direction === 1) onMastered();
@@ -68,24 +82,34 @@ export function RitualCardStack({
         else onReview();
       }, FLY_OUT_MS);
     },
-    [isAnimatingOut, onMastered, onReview, prefersReducedMotion]
+    [onMastered, onReview, prefersReducedMotion]
   );
 
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (isAnimatingOut) return;
+    if (isAnimatingOutRef.current) return;
     if (prefersReducedMotion) return;
+    if (e.pointerType === 'touch') return;
     if (e.button !== undefined && e.button !== 0) return;
     swipeHandledRef.current = false;
     movedRef.current = false;
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    const surface = cardSurfaceRef.current;
+    if (surface?.setPointerCapture) {
+      try {
+        surface.setPointerCapture(e.pointerId);
+      } catch {
+        /* duplicate capture */
+      }
+    }
     pointerIdRef.current = e.pointerId;
     startX.current = e.clientX;
+    draggingRef.current = true;
     setDragging(true);
   };
 
   const endDrag = useCallback(
     (clientX: number) => {
       const dx = clientX - startX.current;
+      draggingRef.current = false;
       setDragging(false);
       pointerIdRef.current = null;
       if (dx > SWIPE_THRESHOLD) {
@@ -104,48 +128,159 @@ export function RitualCardStack({
   );
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (!dragging || prefersReducedMotion) return;
+    if (!draggingRef.current || prefersReducedMotion) return;
     const dx = e.clientX - startX.current;
     if (Math.abs(dx) > 12) movedRef.current = true;
     setOffsetX(dx);
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
-    if (!dragging || prefersReducedMotion) return;
-    try {
-      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
-    } catch {
-      /* ignore */
+  const releaseCaptureSafe = (pointerId: number) => {
+    const surface = cardSurfaceRef.current;
+    if (surface?.releasePointerCapture) {
+      try {
+        surface.releasePointerCapture(pointerId);
+      } catch {
+        /* ignore */
+      }
     }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!draggingRef.current || prefersReducedMotion) return;
+    releaseCaptureSafe(e.pointerId);
     endDrag(e.clientX);
   };
 
   const handlePointerCancel = (e: React.PointerEvent) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
     setDragging(false);
     setOffsetX(0);
     pointerIdRef.current = null;
-    try {
-      (e.target as HTMLElement).releasePointerCapture?.(e.pointerId);
-    } catch {
-      /* ignore */
-    }
+    releaseCaptureSafe(e.pointerId);
   };
+
+  const handleLostPointerCapture = () => {
+    draggingRef.current = false;
+    setDragging(false);
+    setOffsetX(0);
+    pointerIdRef.current = null;
+  };
+
+  // Touch: separate path with non-passive touchmove after horizontal intent (no library).
+  // Pointer + capture on iOS often fights overflow scroll; touch-action:none blocked vertical scroll.
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const el = cardSurfaceRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (isAnimatingOutRef.current) return;
+      if (e.touches.length !== 1) return;
+      touchTrackingRef.current = true;
+      touchCommittedRef.current = false;
+      swipeHandledRef.current = false;
+      movedRef.current = false;
+      startX.current = e.touches[0].clientX;
+      touchStartYRef.current = e.touches[0].clientY;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!touchTrackingRef.current || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startX.current;
+      const dy = t.clientY - touchStartYRef.current;
+
+      if (!touchCommittedRef.current) {
+        if (Math.abs(dx) < TOUCH_DIRECTION_SLACK && Math.abs(dy) < TOUCH_DIRECTION_SLACK) return;
+        const horizontal = Math.abs(dx) >= Math.abs(dy) * TOUCH_HORIZONTAL_RATIO;
+        if (!horizontal) {
+          touchTrackingRef.current = false;
+          return;
+        }
+        touchCommittedRef.current = true;
+        draggingRef.current = true;
+        setDragging(true);
+      }
+
+      e.preventDefault();
+      if (Math.abs(dx) > 12) movedRef.current = true;
+      setOffsetX(dx);
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      if (!touchTrackingRef.current) {
+        return;
+      }
+      touchTrackingRef.current = false;
+      if (!touchCommittedRef.current) return;
+      touchCommittedRef.current = false;
+      draggingRef.current = false;
+      setDragging(false);
+      const t = e.changedTouches[0];
+      if (!t) return;
+      const dx = t.clientX - startX.current;
+      if (dx > SWIPE_THRESHOLD) {
+        swipeHandledRef.current = true;
+        triggerAction(1);
+        return;
+      }
+      if (dx < -SWIPE_THRESHOLD) {
+        swipeHandledRef.current = true;
+        triggerAction(-1);
+        return;
+      }
+      setOffsetX(0);
+    };
+
+    const onTouchCancel = () => {
+      if (touchCommittedRef.current) {
+        draggingRef.current = false;
+        setDragging(false);
+        setOffsetX(0);
+      }
+      touchTrackingRef.current = false;
+      touchCommittedRef.current = false;
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('touchcancel', onTouchCancel, { passive: true });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('touchcancel', onTouchCancel);
+    };
+  }, [prefersReducedMotion, card.id, triggerAction]);
 
   const rotation = prefersReducedMotion ? 0 : Math.max(-14, Math.min(14, offsetX / 11));
   const dragScale = prefersReducedMotion ? 1 : dragging ? 1.01 : 1;
-  const cardStyle: React.CSSProperties = prefersReducedMotion
+
+  // Swipe uses 2D transforms only. 3D flip (preserve-3d + backface-visibility) has proven
+  // unreliable across Chromium/GPU paths and can render both faces invisible.
+  const surfaceStyle: React.CSSProperties = prefersReducedMotion
     ? {}
+    : {
+        touchAction: 'pan-y',
+        opacity: isAnimatingOut ? 0 : 1,
+        transition: isAnimatingOut ? `opacity ${FLY_OUT_MS}ms ease-out` : undefined,
+      };
+
+  const swipeLayerStyle: React.CSSProperties | undefined = prefersReducedMotion
+    ? undefined
     : {
         transform: `translateX(${offsetX}px) rotate(${rotation}deg) scale(${dragScale})`,
         transition: dragging
           ? 'none'
           : isAnimatingOut
-            ? `transform ${FLY_OUT_MS}ms cubic-bezier(.2,.8,.2,1), opacity ${FLY_OUT_MS}ms ease-out`
-            : 'transform 340ms cubic-bezier(.2,.85,.25,1)',
-        opacity: isAnimatingOut ? 0 : 1,
-        touchAction: 'none',
+            ? `transform ${FLY_OUT_MS}ms cubic-bezier(.2,.8,.2,1)`
+            : 'transform 420ms cubic-bezier(.2,.85,.25,1)',
       };
+
+  const faceTransition = prefersReducedMotion ? 'none' : 'opacity 320ms cubic-bezier(.2,.85,.25,1)';
 
   const frontContent =
     card.type === 'vocab' ? (
@@ -229,8 +364,9 @@ export function RitualCardStack({
         />
       ) : null}
 
-      <div className="shrink-0" style={{ perspective: 1100 }}>
+      <div className="shrink-0">
         <div
+          ref={cardSurfaceRef}
           role="button"
           tabIndex={0}
           onClick={() => {
@@ -256,41 +392,43 @@ export function RitualCardStack({
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
-          style={cardStyle}
+          onLostPointerCapture={handleLostPointerCapture}
+          style={surfaceStyle}
           className={`
             relative rounded-xl md:rounded-2xl border-2 border-teal-300/90 dark:border-teal-500/45
             bg-teal-50/40 dark:bg-teal-950/35
             shadow-xl shadow-teal-900/8 dark:shadow-black/50 dark:ring-1 dark:ring-teal-400/15
-            h-[clamp(220px,48dvh,340px)] sm:h-[min(54dvh,380px)] md:h-auto md:min-h-[360px]
+            h-[clamp(220px,48dvh,340px)] sm:h-[min(54dvh,380px)] md:min-h-[360px] md:h-[min(54dvh,400px)]
             p-4 sm:p-5 md:p-8 cursor-pointer
             focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500
           `}
         >
-          <div
-            className="relative h-full min-h-0"
-            style={{
-              transformStyle: 'preserve-3d',
-              transition: prefersReducedMotion ? 'none' : 'transform 420ms cubic-bezier(.2,.75,.2,1)',
-              transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
-            }}
-          >
-            <div
-              className="absolute inset-0 flex flex-col justify-start sm:justify-center overflow-y-auto overscroll-y-contain py-0.5 [-webkit-overflow-scrolling:touch]"
-              style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
-              aria-hidden={flipped}
-            >
-              {frontContent}
-            </div>
-            <div
-              className="absolute inset-0 flex flex-col justify-start sm:justify-center overflow-y-auto overscroll-y-contain py-0.5 [-webkit-overflow-scrolling:touch]"
-              style={{
-                transform: 'rotateY(180deg)',
-                backfaceVisibility: 'hidden',
-                WebkitBackfaceVisibility: 'hidden',
-              }}
-              aria-hidden={!flipped}
-            >
-              {backContent}
+          <div className="h-full min-h-0" style={swipeLayerStyle}>
+            <div className="relative h-full min-h-0">
+              <div
+                className="absolute inset-0 flex flex-col justify-start overflow-y-auto overscroll-y-contain py-1 [-webkit-overflow-scrolling:touch]"
+                style={{
+                  opacity: flipped ? 0 : 1,
+                  pointerEvents: flipped ? 'none' : 'auto',
+                  transition: faceTransition,
+                  zIndex: flipped ? 0 : 1,
+                }}
+                aria-hidden={flipped}
+              >
+                {frontContent}
+              </div>
+              <div
+                className="absolute inset-0 flex flex-col justify-start overflow-y-auto overscroll-y-contain py-1 [-webkit-overflow-scrolling:touch]"
+                style={{
+                  opacity: flipped ? 1 : 0,
+                  pointerEvents: flipped ? 'auto' : 'none',
+                  transition: faceTransition,
+                  zIndex: flipped ? 1 : 0,
+                }}
+                aria-hidden={!flipped}
+              >
+                {backContent}
+              </div>
             </div>
           </div>
         </div>
