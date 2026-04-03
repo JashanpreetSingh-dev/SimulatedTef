@@ -38,7 +38,7 @@ The market is fragmented, the AI-native wedge is real (Gemini Live oral examiner
 >
 > Hi [Name],
 >
-> I built SimulatedTEF — an AI-powered TEF Canada practice app that simulates the oral examiner using Gemini AI. Students practice Section A and B with real-time feedback, any time of day.
+> I built Akseli — an AI-powered TEF Canada practice app that simulates the oral examiner using Gemini AI. Students practice Section A and B with real-time feedback, any time of day.
 >
 > I'd like to offer your students 30% off with a partner code. No contract, no procurement — just a code they redeem at checkout.
 >

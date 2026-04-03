@@ -10,32 +10,29 @@ export const FAQSection: React.FC = () => {
 
   const faqs: FAQItem[] = [
     {
-      question: 'What are the 4 modules in TEF Canada?',
-      answer: 'TEF Canada consists of 4 modules: Compréhension Écrite (Reading - 40 MCQ), Compréhension Orale (Listening - 40 MCQ), Expression Écrite (Writing - 2 tasks), and Expression Orale (Speaking - 2 sections). Akseli covers all 4 modules with AI-powered evaluation.',
+      question: 'Do these questions match the real TEF Canada oral exam?',
+      answer:
+        'Akseli uses prompts that mirror TEF Canada structures and difficulty, but they are not official CCI Paris materials. You will see interview and role-play style tasks very similar to what appears on exam day.',
     },
     {
-      question: 'How does the AI evaluate my speaking?',
-      answer: 'Our AI examiner conducts real-time conversations using advanced speech recognition. It evaluates your pronunciation, fluency, grammar, vocabulary, and coherence based on the official CCI Paris framework used by actual TEF examiners.',
+      question: 'Can I practice TEF Canada oral sections A and B separately?',
+      answer:
+        'Yes. You can focus on short interview-style questions (Section A), longer role-plays (Section B), or run a full oral session that chains both. This lets you target your weakest area or simulate the full exam.',
     },
     {
-      question: 'How does the AI evaluate my writing?',
-      answer: 'When you submit your written responses, our AI analyzes grammar, vocabulary range, text coherence, and structure according to the official CCI Paris evaluation criteria. You receive detailed feedback with specific areas for improvement.',
+      question: 'How many practice sessions do I get per month?',
+      answer:
+        'On the Basic plan you get 10 oral sessions per month. On the Premium plan you get up to 30 oral sessions per month, which is usually enough to practice several times a week before your exam.',
     },
     {
-      question: 'What\'s the difference between Practice and Mock Exam modes?',
-      answer: 'Practice mode lets you learn at your own pace with no time pressure - great for building skills. Mock Exam mode simulates the real test conditions with official time limits, helping you prepare for actual exam day stress.',
+      question: 'Is this enough to replace a TEF tutor?',
+      answer:
+        'Akseli is designed to give you far more speaking volume and feedback than an occasional tutoring session, but it is not a perfect substitute for a human teacher. Many learners combine AI practice with 1–2 human sessions to check nuance and strategy.',
     },
     {
-      question: 'How accurate is the CLB scoring?',
-      answer: 'Our AI is trained on the official CCI Paris evaluation framework. While no simulation can guarantee exact scores, our CLB predictions closely align with actual TEF results and help you understand your current level.',
-    },
-    {
-      question: 'Can teachers create custom assessments?',
-      answer: 'Yes! Teachers can use our AI Assessment Creator to generate custom Reading and Listening comprehension tests. Simply describe the topic, and our AI creates questions, passages, and audio. Teachers can review, edit, and publish assessments to their students.',
-    },
-    {
-      question: 'How do organizations work?',
-      answer: 'Teachers can create organizations and invite students. Once students join, they automatically see assessments published by their teachers. This makes it easy to manage classes and track student progress.',
+      question: 'Can I try a TEF Canada practice session for free?',
+      answer:
+        'Yes. You can start with a free TEF Canada oral practice session before choosing a plan, so you can see how the AI examiner and feedback work for you.',
     },
   ];
 
@@ -48,7 +45,7 @@ export const FAQSection: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 dark:text-slate-100 mb-4 sm:mb-6 leading-[1.1] tracking-[-0.02em] px-2">
-            Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Questions</span>
+            TEF Canada oral practice FAQ
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-[1.6] px-4">
             Everything you need to know about TEF Canada preparation with Akseli.

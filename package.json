@@ -42,6 +42,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-rate-limit": "^8.2.1",
+    "framer-motion": "^12.38.0",
     "ioredis": "^5.3.2",
     "logrocket": "^12.0.0",
     "logrocket-react": "^7.0.0",
@@ -50,6 +51,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-email": "^5.2.9",
+    "react-helmet-async": "^3.0.0",
     "react-paginate": "^8.3.0",
     "react-router-dom": "^7.11.0",
     "resend": "^6.9.3",
@@ -58,7 +60,6 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "cross-env": "^7.0.3",
     "@react-email/preview-server": "^5.2.9",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -66,10 +67,11 @@
     "@types/react-paginate": "^7.1.4",
     "@types/yargs": "^17.0.35",
     "@vitejs/plugin-react": "^5.0.0",
+    "cross-env": "^7.0.3",
     "tsx": "^4.7.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
-    "yargs": "^18.0.0",
-    "vitest": "latest"
+    "vitest": "latest",
+    "yargs": "^18.0.0"
   }
 }

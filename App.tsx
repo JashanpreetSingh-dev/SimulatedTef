@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { HelmetProvider } from 'react-helmet-async';
 import { ClerkProviderWithTheme } from './providers/ClerkProviderWithTheme';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -10,6 +11,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 
 function App() {
   return (
+    <HelmetProvider>
     <LanguageProvider>
       <ThemeProvider>
         <ClerkProviderWithTheme>
@@ -29,6 +31,7 @@ function App() {
         </ClerkProviderWithTheme>
       </ThemeProvider>
     </LanguageProvider>
+    </HelmetProvider>
   );
 }
 

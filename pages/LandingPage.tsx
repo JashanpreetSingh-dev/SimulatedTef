@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import LogRocket from 'logrocket';
 import { SignInButton, SignUpButton } from '@clerk/clerk-react';
+import { Helmet } from 'react-helmet-async';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { useScrollAnimation } from '../utils/animations';
 import { FAQSection } from '../components/FAQSection';
 import { ExamInterfaceShowcase } from '../components/ExamInterfaceShowcase';
 import { ResultsDashboardShowcase } from '../components/ResultsDashboardShowcase';
@@ -14,15 +16,60 @@ import { Footer } from '../components/Footer';
 import { PromoBanner } from '../components/PromoBanner';
 import activePromo from '../config/promoConfig';
 
+// Animation variants
+const heroContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+const heroItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } },
+};
+const fadeUp = {
+  hidden: { opacity: 0, y: 36 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const } },
+};
+const cardContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
+const cardItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } },
+};
+
 export function LandingPage() {
   const { t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
-  const [featuresRef, featuresVisible] = useScrollAnimation();
-  const [comparisonRef, comparisonVisible] = useScrollAnimation();
   const [audience, setAudience] = useState<'d2c' | 'b2b'>('d2c'); // Default to D2C
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-indigo-100 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex flex-col transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex flex-col transition-colors duration-300">
+      <Helmet>
+        <html lang="en" />
+        <title>TEF Canada Oral Practice Online – Akseli AI Examiner</title>
+        <meta name="description" content="Practice TEF Canada oral sections A and B with an AI examiner that simulates the real exam. 30 oral sessions for less than one hour of tutoring. Instant feedback, on your schedule." />
+        <meta name="keywords" content="TEF Canada oral practice, TEF Canada speaking practice, TEF Canada online, simulated TEF exam, AI French examiner, TEF Canada preparation, practique TEF Canada" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
+        <meta property="og:description" content="Practice TEF Canada oral sections A and B with an AI examiner. 30 oral sessions for less than one hour of TEF tutoring. Instant feedback, any time of day." />
+        <meta property="og:image" content="/logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
+        <meta name="twitter:description" content="Practice TEF Canada Sections A and B with an AI examiner. Less than one hour of tutoring per month." />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: [
+            { '@type': 'Question', name: 'Do these questions match the real TEF Canada oral exam?', acceptedAnswer: { '@type': 'Answer', text: 'The prompts are modeled on official TEF Canada oral structures — the same types of scenarios and question formats — but are not official CCIP/CCI Paris content.' } },
+            { '@type': 'Question', name: 'Can I practice TEF Canada oral sections A and B separately?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can focus on Section A (short interview-style questions), Section B (longer role-plays), or run a full oral session that chains both.' } },
+            { '@type': 'Question', name: 'How many practice sessions do I get per month?', acceptedAnswer: { '@type': 'Answer', text: 'Basic plan: 10 oral sessions per month ($25/mo). Premium plan: 30 oral sessions per month ($45/mo).' } },
+            { '@type': 'Question', name: 'Is this enough to replace a TEF tutor?', acceptedAnswer: { '@type': 'Answer', text: 'Akseli is great for volume and speaking comfort. It gives you on-demand practice any time of day — but if you can afford both, a human tutor is still valuable for personalized coaching.' } },
+            { '@type': 'Question', name: 'Can I try a TEF Canada practice session for free?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Sign up for a free account and try your first oral practice session before subscribing.' } },
+          ],
+        })}</script>
+      </Helmet>
+
       {/* Header Navigation */}
       <header className="sticky top-0 z-50 bg-indigo-100/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 transition-colors">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
@@ -96,9 +143,7 @@ export function LandingPage() {
 
       {/* Hero Section - Dynamic based on audience */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-100/40 via-indigo-100 to-slate-50 dark:from-indigo-900/20 dark:via-slate-800 dark:to-slate-900" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-100/50 to-slate-50 dark:from-transparent dark:via-slate-800/50 dark:to-slate-900" />
-        <div className="z-10 text-center space-y-8 sm:space-y-12 max-w-5xl mx-auto w-full">
+        <div className="text-center space-y-8 sm:space-y-12 max-w-5xl mx-auto w-full">
           {/* Audience Toggle - Mobile */}
           <div className="md:hidden flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-lg p-1 mb-4">
             <button
@@ -123,91 +168,100 @@ export function LandingPage() {
             </button>
           </div>
 
+          <AnimatePresence mode="wait">
           {audience === 'd2c' ? (
-            // D2C Hero Content
-            <>
-              <div className="space-y-4 sm:space-y-6">
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 animate-fade-in-up">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
-                </h1>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2 animate-fade-in-up delay-200">
-                  One month of premium costs less than one hour with a tutor
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
-                  Practice 30 oral sessions with an AI TEF examiner — on your schedule, any time of day. Get detailed feedback after every session, without booking anyone.
+            // D2C Hero Content — TEF Canada oral focused
+            <motion.div key="d2c" variants={heroContainer} initial="hidden" animate="show" className="w-full space-y-8 sm:space-y-12">
+              <motion.p variants={heroItem} className="text-sm font-semibold text-teal-700 dark:text-teal-400 tracking-[0.2em] uppercase">
+                Akseli • TEF Canada
+              </motion.p>
+              <motion.h1 variants={heroItem} className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 text-slate-900 dark:text-slate-50">
+                TEF Canada oral practice, with an AI examiner
+              </motion.h1>
+              <motion.p variants={heroItem} className="text-slate-600 dark:text-slate-300 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4">
+                Practice TEF Canada Sections A and B with realistic prompts and timing. Get comfortable speaking out loud before you ever meet the real examiner.
+              </motion.p>
+              <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4">
+                <p className="text-teal-700 dark:text-teal-400 text-sm sm:text-base font-semibold">
+                  ✨ 30 oral sessions for less than one hour of tutoring
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4 animate-fade-in-up delay-350">
-                  <p className="text-indigo-600 dark:text-indigo-400 text-sm sm:text-base font-semibold">
-                    ✨ Premium $45/mo — less than 30 min of tutoring
-                  </p>
-                  <span className="hidden sm:inline text-slate-400">•</span>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
-                    All 4 TEF modules • Start free
-                  </p>
-                </div>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-400">
-                <SignUpButton mode="modal" fallbackRedirectUrl="/dashboard" signInFallbackRedirectUrl="/dashboard">
-                  <button className="group relative w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden">
-                    <span className="relative z-10">Try Now - Free</span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
+                <span className="hidden sm:inline text-slate-400">•</span>
+                <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
+                  Designed specifically for TEF Canada oral preparation
+                </p>
+              </motion.div>
+              <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4">
+                <SignUpButton
+                  mode="modal"
+                  fallbackRedirectUrl="/dashboard"
+                  signInFallbackRedirectUrl="/dashboard"
+                  afterSignUpUrl="/dashboard"
+                >
+                  <button
+                    className="group relative w-full sm:w-auto px-8 py-4 rounded-full bg-teal-700 text-white font-semibold text-base sm:text-lg hover:bg-teal-800 dark:bg-teal-500 dark:text-slate-900 dark:hover:bg-teal-400 transition-colors duration-200 active:scale-[0.98]"
+                    onClick={() => {
+                      LogRocket.track('marketing_cta_click', {
+                        location: 'hero',
+                        action: 'start_free_tef_practice',
+                      });
+                    }}
+                  >
+                    <span className="relative z-10">Start a free TEF practice</span>
                   </button>
                 </SignUpButton>
                 <SignInButton mode="modal">
-                  <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-white dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl border border-slate-200 dark:border-slate-700 active:scale-[0.98] overflow-hidden">
+                  <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-white dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700 active:scale-[0.98]">
                     <span className="relative z-10">Sign in</span>
                   </button>
                 </SignInButton>
-              </div>
-            </>
+              </motion.div>
+            </motion.div>
           ) : (
             // B2B Hero Content
-            <>
-              <div className="space-y-4 sm:space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 animate-fade-in-up">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
-                  </span>
-                  <span className="text-indigo-600 dark:text-indigo-300 text-sm font-medium">For Language Schools & Institutions</span>
-                </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 animate-fade-in-up delay-200">
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
-                </h1>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2 animate-fade-in-up delay-300">
-                  Enterprise TEF Canada Preparation Platform
-                </h2>
-                <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-400">
-                  Empower your institution with AI-powered assessments, student management, and custom content creation. Scale your TEF Canada preparation program efficiently.
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4 animate-fade-in-up delay-500">
+            <motion.div key="b2b" variants={heroContainer} initial="hidden" animate="show" className="w-full space-y-8 sm:space-y-12">
+              <motion.div variants={heroItem} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                <span className="text-indigo-600 dark:text-indigo-300 text-sm font-medium">For Language Schools & Institutions</span>
+              </motion.div>
+              <motion.h1 variants={heroItem} className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
+              </motion.h1>
+              <motion.h2 variants={heroItem} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2">
+                Enterprise TEF Canada Preparation Platform
+              </motion.h2>
+              <motion.p variants={heroItem} className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4">
+                Empower your institution with AI-powered assessments, student management, and custom content creation. Scale your TEF Canada preparation program efficiently.
+              </motion.p>
+              <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4">
                 <a
                   href="#enterprise-cta"
-                  className="group relative w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-2xl hover:shadow-indigo-500/40 dark:hover:shadow-indigo-500/40 active:scale-[0.98] overflow-hidden text-center"
+                  className="group relative w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-indigo-500 to-indigo-600 dark:from-indigo-500 dark:to-indigo-600 text-white dark:text-white font-semibold text-base sm:text-lg hover:from-indigo-600 hover:to-indigo-700 dark:hover:from-indigo-600 dark:hover:to-indigo-700 transition-all duration-300 active:scale-[0.98] overflow-hidden text-center"
                 >
                   <span className="relative z-10">Request Enterprise Demo</span>
                   <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></span>
                 </a>
                 <SignInButton mode="modal">
-                  <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-white dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl border border-slate-200 dark:border-slate-700 active:scale-[0.98] overflow-hidden">
+                  <button className="group relative w-full sm:w-auto px-6 py-4 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-800 dark:text-slate-100 font-semibold text-base sm:text-lg hover:bg-white dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700 active:scale-[0.98] overflow-hidden">
                     <span className="relative z-10">Sign in</span>
                   </button>
                 </SignInButton>
-              </div>
-            </>
+              </motion.div>
+            </motion.div>
           )}
+          </AnimatePresence>
         </div>
       </section>
 
       {/* Features Section - Show relevant features based on audience */}
-      <section 
-        ref={featuresRef as React.RefObject<HTMLElement>}
-        className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 transition-all duration-1000 ${
-          featuresVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-        }`}
+      <motion.section
+        variants={fadeUp}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, margin: '-80px' }}
+        className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16"
       >
         <div className="max-w-6xl mx-auto">
           {audience === 'd2c' ? (
@@ -222,68 +276,56 @@ export function LandingPage() {
                 </p>
               </div>
               
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {/* Student Features - Same as before */}
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-indigo-300/20 dark:hover:shadow-indigo-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-100' : 'opacity-0 translate-y-4'
-                }`}>
+              <motion.div variants={cardContainer} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {/* Student Features */}
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-800 group-hover:rotate-3 transition-all duration-300">📝</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Practice Mode</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Unlimited practice sessions for all 4 modules. Learn at your own pace with no time pressure.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-cyan-300/20 dark:hover:shadow-cyan-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-200' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-cyan-200 dark:group-hover:bg-cyan-800 group-hover:rotate-3 transition-all duration-300">🎯</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Mock Exams</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Full simulation with official time limits. Experience the real exam conditions before test day.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-emerald-500/20 dark:hover:shadow-emerald-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-300' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800 group-hover:rotate-3 transition-all duration-300">🎙️</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">AI Oral Evaluation</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Live conversation with AI examiner. Get instant feedback on pronunciation, fluency, and grammar.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-amber-500/20 dark:hover:shadow-amber-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-400' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-amber-200 dark:group-hover:bg-amber-800 group-hover:rotate-3 transition-all duration-300">✍️</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">AI Written Evaluation</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Submit essays and get detailed AI feedback using official CCI Paris scoring criteria.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-blue-500/20 dark:hover:shadow-blue-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-500' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 group-hover:rotate-3 transition-all duration-300">📊</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">CLB Scoring</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Get TEF scores (0-699) and CLB levels mapped for Canadian immigration applications.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-rose-500/20 dark:hover:shadow-rose-500/20 border border-slate-200 dark:border-slate-700 ${
-                  featuresVisible ? 'animate-slide-up delay-600' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-rose-200 dark:group-hover:bg-rose-800 group-hover:rotate-3 transition-all duration-300">📈</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Progress Tracking</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Track your improvement over time with detailed history and performance analytics.
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </>
           ) : (
             // B2B Features
@@ -297,49 +339,44 @@ export function LandingPage() {
                 </p>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                <div className={`group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-violet-500/20 dark:hover:shadow-violet-500/20 border border-violet-200 dark:border-violet-700 ${
-                  featuresVisible ? 'animate-slide-up delay-100' : 'opacity-0 translate-y-4'
-                }`}>
+              <motion.div variants={cardContainer} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-colors duration-200 border border-violet-200 dark:border-violet-700">
                   <div className="w-12 h-12 rounded-2xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-violet-200 dark:group-hover:bg-violet-800 group-hover:rotate-3 transition-all duration-300">🪄</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">AI Assessment Creator</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Generate custom Reading & Listening assessments with AI. Just describe the topic and let AI create questions.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-violet-500/20 dark:hover:shadow-violet-500/20 border border-violet-200 dark:border-violet-700 ${
-                  featuresVisible ? 'animate-slide-up delay-200' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-colors duration-200 border border-violet-200 dark:border-violet-700">
                   <div className="w-12 h-12 rounded-2xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-violet-200 dark:group-hover:bg-violet-800 group-hover:rotate-3 transition-all duration-300">👥</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Organization Management</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Invite students to your organization. Assignments are automatically shared with your class.
                   </p>
-                </div>
+                </motion.div>
 
-                <div className={`group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-all duration-300 hover:scale-[1.05] hover:shadow-xl hover:shadow-violet-500/20 dark:hover:shadow-violet-500/20 border border-violet-200 dark:border-violet-700 ${
-                  featuresVisible ? 'animate-slide-up delay-300' : 'opacity-0 translate-y-4'
-                }`}>
+                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 hover:from-violet-200 hover:to-indigo-200 dark:hover:from-violet-800/40 dark:hover:to-indigo-800/40 transition-colors duration-200 border border-violet-200 dark:border-violet-700">
                   <div className="w-12 h-12 rounded-2xl bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-violet-200 dark:group-hover:bg-violet-800 group-hover:rotate-3 transition-all duration-300">✏️</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Edit & Review</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
                     Review AI-generated questions, edit content, and publish when ready. Full control over your assessments.
                   </p>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
             </>
           )}
         </div>
-      </section>
+      </motion.section>
 
       {/* All 4 Modules Section - Show for D2C */}
       {audience === 'd2c' && (
-        <section 
-          ref={comparisonRef as React.RefObject<HTMLElement>}
-          className={`relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 bg-slate-100/50 dark:bg-slate-800/30 transition-all duration-1000 ${
-            comparisonVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-          }`}
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16 bg-slate-100/50 dark:bg-slate-800/30"
         >
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-8 sm:mb-16 md:mb-24">
@@ -351,11 +388,9 @@ export function LandingPage() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <motion.div variants={cardContainer} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
               {/* Oral Expression */}
-              <div className={`space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-emerald-200 dark:border-emerald-800 shadow-sm transition-all duration-500 ${
-                comparisonVisible ? 'animate-slide-up delay-100' : 'opacity-0 translate-y-8'
-              }`}>
+              <motion.div variants={cardItem} whileHover={{ scale: 1.03, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-emerald-200 dark:border-emerald-800 shadow-sm">
                 <div className="text-3xl mb-2">🎙️</div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Expression Orale</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
@@ -366,12 +401,10 @@ export function LandingPage() {
                     AI Evaluated
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Written Expression */}
-              <div className={`space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-amber-200 dark:border-amber-800 shadow-sm transition-all duration-500 ${
-                comparisonVisible ? 'animate-slide-up delay-200' : 'opacity-0 translate-y-8'
-              }`}>
+              <motion.div variants={cardItem} whileHover={{ scale: 1.03, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-amber-200 dark:border-amber-800 shadow-sm">
                 <div className="text-3xl mb-2">✍️</div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Expression Écrite</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
@@ -382,12 +415,10 @@ export function LandingPage() {
                     AI Evaluated
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Reading Comprehension */}
-              <div className={`space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-800 shadow-sm transition-all duration-500 ${
-                comparisonVisible ? 'animate-slide-up delay-300' : 'opacity-0 translate-y-8'
-              }`}>
+              <motion.div variants={cardItem} whileHover={{ scale: 1.03, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-blue-200 dark:border-blue-800 shadow-sm">
                 <div className="text-3xl mb-2">📖</div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Compréhension Écrite</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
@@ -398,12 +429,10 @@ export function LandingPage() {
                     40 Questions
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Listening Comprehension */}
-              <div className={`space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-cyan-200 dark:border-cyan-800 shadow-sm transition-all duration-500 ${
-                comparisonVisible ? 'animate-slide-up delay-400' : 'opacity-0 translate-y-8'
-              }`}>
+              <motion.div variants={cardItem} whileHover={{ scale: 1.03, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="space-y-4 p-6 rounded-3xl bg-indigo-100 dark:bg-slate-800/50 backdrop-blur-sm border-2 border-cyan-200 dark:border-cyan-800 shadow-sm">
                 <div className="text-3xl mb-2">🎧</div>
                 <h3 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100">Compréhension Orale</h3>
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
@@ -414,10 +443,10 @@ export function LandingPage() {
                     40 Questions
                   </span>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* Showcases - Conditional based on audience */}
