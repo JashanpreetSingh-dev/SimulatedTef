@@ -880,7 +880,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           const outputTx = message.serverContent?.outputTranscription;
           if (outputTx) {
             const raw = outputTx.text;
-            if (raw !== undefined && raw !== null && String(raw).trim().length > 0) {
+            // Skip dot-only chunks — Gemini emits these during silence (hallucination)
+            const rawStr = raw !== undefined && raw !== null ? String(raw).trim() : '';
+            if (rawStr.length > 0 && !/^[.\s…·•]+$/.test(rawStr)) {
               examinerUtteranceBufferRef.current = mergeLiveTranscriptionChunk(
                 examinerUtteranceBufferRef.current,
                 String(raw)

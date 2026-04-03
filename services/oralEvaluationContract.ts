@@ -10,6 +10,15 @@ export const ORAL_EVAL_MIN_CHARS_FULL = 100;
 export const ORAL_EVAL_MIN_USER_TURNS_FULL = 2;
 
 /**
+ * Returns true if the text is a Gemini Live hallucination:
+ * consists only of dots, ellipses, and whitespace (e.g. ".... ..." or "…….").
+ * These are emitted during silence when the model has nothing real to transcribe.
+ */
+function isHallucinatedDots(text: string): boolean {
+  return /^[.\s…·•]+$/.test(text);
+}
+
+/**
  * Append one diarized line to a ref-backed transcript string.
  */
 export function appendDiarizedTurn(
@@ -19,6 +28,8 @@ export function appendDiarizedTurn(
 ): void {
   const t = text.trim().replace(/\s+/g, ' ');
   if (!t) return;
+  // Drop hallucinated dot-only lines (Gemini emits these during silence)
+  if (isHallucinatedDots(t)) return;
   if (!ref.current) {
     ref.current = `${role}: ${t}`;
   } else {
