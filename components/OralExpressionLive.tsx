@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
 import { TEFTask, SavedResult } from '../types';
@@ -7,11 +7,28 @@ import { persistenceService } from '../services/persistence';
 import { evaluationJobService } from '../services/evaluationJobService';
 import {
   appendDiarizedTurn,
-  oralTranscriptPassesContract,
   transcriptUserLinesOnly,
 } from '../services/oralEvaluationContract';
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
+
+/**
+ * Live outputTranscription often sends incremental fragments (a few words), not the full line each time.
+ * Merge into a running utterance: support cumulative growth or tail append.
+ */
+function mergeLiveTranscriptionChunk(previous: string, chunk: string): string {
+  const p = previous.trimEnd();
+  const c = chunk.trim();
+  if (!c) return p;
+  if (!p) return c;
+  if (p === c) return p;
+  if (c.startsWith(p)) return c;
+  if (p.startsWith(c)) return p;
+  if (p.endsWith(c)) return p;
+  if (c.endsWith(p)) return c;
+  const sep = /[-'’]$/.test(p) || /^[-'’]/.test(c) ? '' : ' ';
+  return `${p}${sep}${c}`.trim();
+}
 
 // Type declaration for Web Speech API
 interface SpeechRecognition extends EventTarget {
@@ -52,16 +69,20 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const { getToken } = useAuth();
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active' | 'evaluating'>('idle');
-  const [transcription, setTranscription] = useState('');
+  const [showLiveCaptions, setShowLiveCaptions] = useState(() => {
+    try {
+      return typeof localStorage !== 'undefined' && localStorage.getItem('tef-oral-live-captions') === '1';
+    } catch {
+      return false;
+    }
+  });
+  const [examinerCaptionDisplay, setExaminerCaptionDisplay] = useState('');
   const [isModelSpeaking, setIsModelSpeaking] = useState(false);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [showImageFull, setShowImageFull] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
-  const [doesContentOverflow, setDoesContentOverflow] = useState(false);
-  
   const currentTask: TEFTask = currentPart === 'A' ? scenario.officialTasks.partA : scenario.officialTasks.partB;
-  const micSectionRef = useRef<HTMLDivElement>(null);
 
   const sessionRef = useRef<any>(null);
   const inputAudioCtxRef = useRef<AudioContext | null>(null);
@@ -97,6 +118,45 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   /** AudioWorklet node and mic source for live send (replaces deprecated ScriptProcessorNode) */
   const micWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
   const micSourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+
+  const examinerCaptionScrollRef = useRef<HTMLDivElement | null>(null);
+
+  /** Merged text for the examiner's current spoken utterance (streaming). Caption UI shows this only — no append of past turns. */
+  const examinerUtteranceBufferRef = useRef('');
+  /** True after we committed this turn to transcript (finished or fallback flush). */
+  const examinerOutputCommittedForTurnRef = useRef(false);
+  const examinerAudioEndFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  /** Examiner captions update immediately (no debounce) so opening words are not skipped. */
+  const refreshExaminerCaptionDisplay = useCallback(() => {
+    if (!isMountedRef.current) return;
+    setExaminerCaptionDisplay(examinerUtteranceBufferRef.current.trim());
+  }, []);
+
+  /** Hide examiner caption immediately (e.g. user’s turn); does not mutate eval buffer. */
+  const clearExaminerCaptionOnly = useCallback(() => {
+    if (isMountedRef.current) setExaminerCaptionDisplay('');
+  }, []);
+
+  const clearLiveCaptions = useCallback(() => {
+    if (examinerAudioEndFlushTimerRef.current) clearTimeout(examinerAudioEndFlushTimerRef.current);
+    examinerAudioEndFlushTimerRef.current = null;
+    examinerUtteranceBufferRef.current = '';
+    examinerOutputCommittedForTurnRef.current = false;
+    setExaminerCaptionDisplay('');
+  }, []);
+
+  const toggleLiveCaptions = useCallback(() => {
+    setShowLiveCaptions((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('tef-oral-live-captions', next ? '1' : '0');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }, []);
 
   // Helper function to stop MediaRecorder and wait for final chunks
   const stopMediaRecorderAndWait = async (): Promise<void> => {
@@ -354,6 +414,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
       if (currentPart === 'A') geminiUserSeenPartARef.current = false;
       else geminiUserSeenPartBRef.current = false;
+      clearLiveCaptions();
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -497,17 +558,15 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                     return;
                   }
                   console.log('🎤 Web Speech API transcription:', finalTranscript);
+                  clearExaminerCaptionOnly();
                   const ref = currentPart === 'A' ? transcriptA : transcriptB;
                   appendDiarizedTurn(ref, 'User', finalTranscript);
                   console.log(
                     `📝 Part ${currentPart} transcript length:`,
                     ref.current.length
                   );
-                  if (isMountedRef.current) {
-                    setTranscription(finalTranscript.trim());
-                  }
                 } else if (interimTranscript && isMountedRef.current) {
-                  setTranscription(interimTranscript);
+                  clearExaminerCaptionOnly();
                 }
               };
               
@@ -689,6 +748,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               clearTimeout(userSilenceTimeoutRef.current);
               userSilenceTimeoutRef.current = null;
             }
+
+            // First chunk of a new TTS chain (sources empty). Commit prior turn only if still uncommitted;
+            // do NOT clear the caption panel here — outputTranscription often arrives before audio, and
+            // clearExaminerCaptionOnly would wipe those first words until the next chunk.
+            if (sourcesRef.current.size === 0) {
+              if (examinerAudioEndFlushTimerRef.current) {
+                clearTimeout(examinerAudioEndFlushTimerRef.current);
+                examinerAudioEndFlushTimerRef.current = null;
+              }
+              if (!examinerOutputCommittedForTurnRef.current && examinerUtteranceBufferRef.current.trim()) {
+                const full = examinerUtteranceBufferRef.current.trim();
+                const ref = currentPart === 'A' ? transcriptA : transcriptB;
+                appendDiarizedTurn(ref, 'Examiner', full);
+                examinerUtteranceBufferRef.current = '';
+              }
+              examinerOutputCommittedForTurnRef.current = false;
+              refreshExaminerCaptionDisplay();
+            }
             
             const base64 = message.serverContent.modelTurn.parts[0].inlineData.data;
             const audioData = decodeAudio(base64);
@@ -746,6 +823,23 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               sourcesRef.current.delete(source);
               if (sourcesRef.current.size === 0 && isMountedRef.current) {
                 setIsModelSpeaking(false);
+                if (examinerAudioEndFlushTimerRef.current) {
+                  clearTimeout(examinerAudioEndFlushTimerRef.current);
+                }
+                examinerAudioEndFlushTimerRef.current = setTimeout(() => {
+                  examinerAudioEndFlushTimerRef.current = null;
+                  if (
+                    !examinerOutputCommittedForTurnRef.current &&
+                    examinerUtteranceBufferRef.current.trim()
+                  ) {
+                    const full = examinerUtteranceBufferRef.current.trim();
+                    const ref = currentPart === 'A' ? transcriptA : transcriptB;
+                    appendDiarizedTurn(ref, 'Examiner', full);
+                    examinerUtteranceBufferRef.current = '';
+                    examinerOutputCommittedForTurnRef.current = true;
+                    refreshExaminerCaptionDisplay();
+                  }
+                }, 450);
               }
             };
           }
@@ -757,14 +851,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             const userText = message.serverContent.inputTranscription.text;
             if (userText && userText.trim()) {
               console.log('🎤 Gemini input transcription captured:', userText.substring(0, 100) + (userText.length > 100 ? '...' : ''));
+              clearExaminerCaptionOnly();
               if (currentPart === 'A') geminiUserSeenPartARef.current = true;
               else geminiUserSeenPartBRef.current = true;
               const ref = currentPart === 'A' ? transcriptA : transcriptB;
               appendDiarizedTurn(ref, 'User', userText);
               console.log('📝 Part', currentPart, 'transcript length:', ref.current.length);
-              // Update UI with latest user speech
-              setTranscription(userText);
-              
+
               // Log user message - usage metadata typically comes with AI response
               // (user input is part of the promptTokenCount in the AI response)
             }
@@ -776,24 +869,50 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             const userText = message.serverContent.inputAudioTranscription.text;
             if (userText && userText.trim()) {
               console.log('🎤 Gemini inputAudioTranscription captured:', userText.substring(0, 100));
+              clearExaminerCaptionOnly();
               if (currentPart === 'A') geminiUserSeenPartARef.current = true;
               else geminiUserSeenPartBRef.current = true;
               const ref = currentPart === 'A' ? transcriptA : transcriptB;
               appendDiarizedTurn(ref, 'User', userText);
-              setTranscription(userText);
             }
           }
           
-          if (message.serverContent?.outputTranscription?.text) {
-            const modelText = message.serverContent.outputTranscription.text;
-            if (modelText && modelText.trim()) {
-              const ref = currentPart === 'A' ? transcriptA : transcriptB;
-              appendDiarizedTurn(ref, 'Examiner', modelText);
+          const outputTx = message.serverContent?.outputTranscription;
+          if (outputTx) {
+            const raw = outputTx.text;
+            if (raw !== undefined && raw !== null && String(raw).trim().length > 0) {
+              examinerUtteranceBufferRef.current = mergeLiveTranscriptionChunk(
+                examinerUtteranceBufferRef.current,
+                String(raw)
+              );
             }
-            setTranscription(modelText);
+            if (outputTx.finished === true) {
+              const full = examinerUtteranceBufferRef.current.trim();
+              if (full) {
+                const ref = currentPart === 'A' ? transcriptA : transcriptB;
+                appendDiarizedTurn(ref, 'Examiner', full);
+                examinerUtteranceBufferRef.current = '';
+              }
+              examinerOutputCommittedForTurnRef.current = true;
+              refreshExaminerCaptionDisplay();
+            } else {
+              refreshExaminerCaptionDisplay();
+            }
           }
 
           if (message.serverContent?.interrupted) {
+            if (examinerAudioEndFlushTimerRef.current) {
+              clearTimeout(examinerAudioEndFlushTimerRef.current);
+              examinerAudioEndFlushTimerRef.current = null;
+            }
+            const partial = examinerUtteranceBufferRef.current.trim();
+            if (partial && !examinerOutputCommittedForTurnRef.current) {
+              const ref = currentPart === 'A' ? transcriptA : transcriptB;
+              appendDiarizedTurn(ref, 'Examiner', partial);
+            }
+            examinerUtteranceBufferRef.current = '';
+            examinerOutputCommittedForTurnRef.current = true;
+
             sourcesRef.current.forEach(s => { try { s.stop(); } catch(e) {} });
             sourcesRef.current.clear();
             nextStartTimeRef.current = 0;
@@ -806,6 +925,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               clearTimeout(userSilenceTimeoutRef.current);
               userSilenceTimeoutRef.current = null;
             }
+            refreshExaminerCaptionDisplay();
           }
         },
         onerror: (e: any) => {
@@ -950,7 +1070,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       
       // Set Part B as current (this updates currentTask which is used in startSession)
       setCurrentPart('B');
-      setTranscription('');
+      clearLiveCaptions();
       setStatus('idle');
       setIsAiThinking(false); // Clear thinking state when transitioning
       // Reset timer for Part B
@@ -996,6 +1116,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       // Immediately redirect to result page with loading state
       onFinish(placeholderResult);
       
+      clearLiveCaptions();
       // Now continue with evaluation in the background
       setStatus('evaluating');
       
@@ -1078,9 +1199,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
               // Continue without recordingId - audio playback won't be available
             }
             
-            // Note: Transcription will be done by the worker, so we don't transcribe here
-            // This saves ~15-30 seconds by not blocking on transcription
-            console.log('✅ Audio blob ready - worker will transcribe and evaluate');
+            console.log('✅ Audio blob ready for client transcription (same path as recheck)');
           } catch (error) {
             console.error('❌ Error processing audio recording:', error);
             audioTranscript = null;
@@ -1091,41 +1210,59 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           audioTranscript = null;
         }
         
-        // Canonical diarized transcript (User:/Examiner:) for evaluation when contract passes
-        let fullUserTranscript: string = '';
+        // Live refs stay for UI/captions only; evaluation uses recording transcription (recheck parity).
+        let liveTranscriptFallback: string = '';
         if (scenario.mode === 'partA') {
-          fullUserTranscript = transcriptA.current.trim() || '';
+          liveTranscriptFallback = transcriptA.current.trim() || '';
         } else if (scenario.mode === 'partB') {
-          fullUserTranscript = transcriptB.current.trim() || '';
+          liveTranscriptFallback = transcriptB.current.trim() || '';
         } else {
-          fullUserTranscript = [
+          liveTranscriptFallback = [
             transcriptA.current.trim(),
             transcriptB.current.trim()
           ].filter(Boolean).join('\n\n').trim() || '';
         }
 
-        const transcriptPasses = oralTranscriptPassesContract(
-          fullUserTranscript,
-          scenario.mode
-        );
-        const hasRecordableAudio = !!(wavBlob && wavBlob.size > 0);
-        const omitJobAudio = transcriptPasses && hasRecordableAudio;
-        const jobTranscript = omitJobAudio
-          ? fullUserTranscript
-          : hasRecordableAudio
-            ? undefined
-            : fullUserTranscript || undefined;
-        const jobAudioBlob = omitJobAudio ? undefined : wavBlob || undefined;
+        let evalTranscript = '';
+        let fluencyFromRecording: Record<string, unknown> | undefined;
+        let usedRecordingTranscribe = false;
+
+        if (wavBlob && wavBlob.size > 0) {
+          try {
+            console.log('🎤 Transcribing recording for evaluation (recheck-quality path)...');
+            const tx = await geminiService.transcribeAudio(wavBlob);
+            const t = (tx.transcript || '').trim();
+            if (t) {
+              evalTranscript = t;
+              fluencyFromRecording = tx.fluency_analysis as Record<string, unknown> | undefined;
+              usedRecordingTranscribe = true;
+              console.log(
+                '✅ Transcription done for job, length:',
+                evalTranscript.length,
+                fluencyFromRecording ? '(with fluency_analysis)' : ''
+              );
+            }
+          } catch (txErr) {
+            console.error('❌ Client transcribeAudio failed, falling back to live transcript:', txErr);
+          }
+        }
+
+        if (!evalTranscript) {
+          evalTranscript = liveTranscriptFallback;
+          fluencyFromRecording = undefined;
+          if (!evalTranscript) {
+            console.warn('⚠️ No eval transcript: no recording transcription and empty live transcript');
+          }
+        }
 
         console.log('📝 Submitting oral evaluation job:', {
           audioBlobSize: wavBlob?.size || 0,
-          transcriptPasses,
-          omitJobAudio,
-          transcriptLength: fullUserTranscript.length,
-          preview: fullUserTranscript.substring(0, 200) + (fullUserTranscript.length > 200 ? '...' : '')
+          evalSource: usedRecordingTranscribe ? 'transcribeAudio' : 'liveFallback',
+          transcriptLength: evalTranscript.length,
+          preview: evalTranscript.substring(0, 200) + (evalTranscript.length > 200 ? '...' : '')
         });
 
-        const userOnlyForQuestions = transcriptUserLinesOnly(fullUserTranscript);
+        const userOnlyForQuestions = transcriptUserLinesOnly(evalTranscript);
         const questionCount =
           (userOnlyForQuestions.match(/\?/g) || []).length +
           (userOnlyForQuestions.match(
@@ -1145,7 +1282,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
-          jobTranscript,
+          evalTranscript || undefined,
           scenario.officialTasks.partA.id,
           scenario.officialTasks.partA.time_limit_sec + (scenario.officialTasks.partB?.time_limit_sec || 0),
           questionCount > 0 ? questionCount : undefined,
@@ -1155,13 +1292,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
-          undefined,
+          fluencyFromRecording ?? undefined,
           getToken,
           undefined,
           undefined,
           mockExamId,
           module as 'oralExpression' | undefined,
-          jobAudioBlob
+          undefined
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
@@ -1343,54 +1480,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   }, [status, currentPart, timeLeft, isUserSpeaking, isModelSpeaking]);
 
   useEffect(() => {
+    const el = examinerCaptionScrollRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  }, [examinerCaptionDisplay]);
+
+  useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      if (examinerAudioEndFlushTimerRef.current) clearTimeout(examinerAudioEndFlushTimerRef.current);
       stopSession();
     };
   }, []);
-
-  // Check if mic section overflows viewport and control page scrolling
-  useEffect(() => {
-    const checkContentOverflow = () => {
-      if (!micSectionRef.current) return;
-      
-      const section = micSectionRef.current;
-      const rect = section.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      
-      // Check if section bottom extends beyond viewport (only on mobile)
-      const isMobile = window.innerWidth < 768; // md breakpoint
-      const overflows = isMobile && rect.bottom > windowHeight;
-      
-      setDoesContentOverflow(overflows);
-      
-      // Control page scrolling: allow scroll only if content overflows
-      if (isMobile) {
-        if (overflows) {
-          document.body.style.overflow = 'auto';
-        } else {
-          document.body.style.overflow = 'hidden';
-        }
-      } else {
-        document.body.style.overflow = 'auto';
-      }
-    };
-
-    // Check on mount and resize
-    checkContentOverflow();
-    window.addEventListener('resize', checkContentOverflow);
-    
-    // Also check after a short delay to account for layout changes
-    const timeoutId = setTimeout(checkContentOverflow, 100);
-
-    return () => {
-      window.removeEventListener('resize', checkContentOverflow);
-      clearTimeout(timeoutId);
-      // Reset body overflow on unmount
-      document.body.style.overflow = 'auto';
-    };
-  }, [status, currentPart]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number): string => {
@@ -1415,7 +1517,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   }
 
   return (
-    <div className="space-y-3 md:space-y-4">
+    <div className="space-y-3 md:space-y-4 pb-8 md:pb-0">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div className="flex gap-2">
           {scenario.mode !== 'partB' && (
@@ -1494,9 +1596,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           </div>
         </div>
 
+        <div className="flex flex-col gap-3 min-w-0">
         <div 
-          ref={micSectionRef}
-          className="bg-indigo-400 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
+          className="order-2 lg:order-1 bg-indigo-400 rounded-2xl md:rounded-2xl p-4 md:p-8 flex flex-row md:flex-col items-center justify-between md:justify-center gap-4 md:gap-0 md:space-y-8 relative overflow-hidden shadow-2xl transition-colors"
         >
           <div className={`absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 ${isModelSpeaking ? 'bg-indigo-300' : isAiThinking ? 'bg-amber-300 animate-pulse' : (isUserSpeaking ? 'bg-emerald-300' : 'bg-transparent')}`} />
           
@@ -1536,6 +1638,56 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             </h4>
             <p className="text-indigo-100 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
+        </div>
+
+        {status === 'active' && (
+          <div className="order-1 lg:order-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-900/35 dark:bg-slate-950/50 backdrop-blur-sm overflow-hidden shadow-md md:shadow-md">
+            <div className="flex items-center justify-between gap-3 px-3 sm:px-4 py-2.5 min-h-[48px] border-b border-slate-200/30 dark:border-slate-700/80">
+              <span className="text-[10px] sm:text-[11px] md:text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-300">
+                Sous-titres
+              </span>
+              <button
+                type="button"
+                onClick={toggleLiveCaptions}
+                className="shrink-0 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0 inline-flex items-center justify-center px-3 py-2 md:px-2 md:py-1 rounded-lg md:rounded-none text-[11px] sm:text-xs md:text-[10px] font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-300 hover:bg-indigo-500/10 dark:hover:bg-indigo-400/10 active:opacity-80 transition-colors cursor-pointer"
+              >
+                {showLiveCaptions ? 'Masquer' : 'Afficher'}
+              </button>
+            </div>
+            {showLiveCaptions && (
+              <div
+                ref={examinerCaptionScrollRef}
+                className="max-h-none overflow-visible md:max-h-40 md:overflow-y-auto overscroll-y-contain md:touch-pan-y px-3 sm:px-4 py-3 md:py-2.5 text-left md:scroll-smooth md:[-webkit-overflow-scrolling:touch]"
+              >
+                <div
+                  className={`rounded-xl border px-3 py-2.5 md:px-3 md:py-2.5 transition-colors ${
+                    isModelSpeaking
+                      ? 'border-indigo-400/50 bg-indigo-950/40 dark:border-indigo-500/40 dark:bg-indigo-950/55'
+                      : 'border-slate-200/40 bg-slate-800/20 dark:border-slate-600/50 dark:bg-slate-900/40'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <span className="text-[10px] sm:text-[11px] md:text-[9px] font-black uppercase tracking-widest text-indigo-500 dark:text-indigo-300">
+                      Examinateur
+                    </span>
+                    {isModelSpeaking && (
+                      <span className="inline-flex h-2 w-2 md:h-1.5 md:w-1.5 rounded-full bg-indigo-400 animate-pulse shrink-0" aria-hidden />
+                    )}
+                  </div>
+                  {examinerCaptionDisplay ? (
+                    <p className="text-[15px] leading-snug sm:text-base sm:leading-snug md:text-sm md:leading-relaxed text-slate-100 dark:text-slate-50 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                      {examinerCaptionDisplay}
+                    </p>
+                  ) : (
+                    <p className="text-[13px] sm:text-sm md:text-xs text-slate-500 dark:text-slate-400 italic min-h-[1.35rem] md:min-h-[1.25rem]">
+                      {isModelSpeaking ? 'Écoutez…' : 'En attente de la réplique du simulateur.'}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         </div>
       </div>
 

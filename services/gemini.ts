@@ -312,15 +312,19 @@ export const geminiService = {
     };
   }> {
     try {
-      // Convert blob to base64
+      // Convert blob to base64 (MediaRecorder often yields audio/webm or audio/ogg)
       const base64 = await blobToBase64(audioBlob);
-      
+      const mimeType =
+        audioBlob.type && /^audio\//i.test(audioBlob.type)
+          ? audioBlob.type.split(';')[0].trim()
+          : 'audio/wav';
+
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [{
           parts: [{
             inlineData: {
-              mimeType: "audio/wav",
+              mimeType,
               data: base64
             }
           }, {
@@ -435,8 +439,9 @@ export const geminiService = {
         voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
       },
       systemInstruction,
-      // outputAudioTranscription: {}, // Model's speech transcription
-      // inputAudioTranscription: {}, // User's speech transcription
+      /** Emits serverContent.outputTranscription for model audio (examiner captions + evaluation refs). */
+      outputAudioTranscription: {},
+      // inputAudioTranscription omitted: inputTranscription / Web Speech already cover user text; avoids duplicate streams.
       ...(!isGemini31LiveModel() ? { contextWindowCompression: contextWindowConfig } : {}),
     };
 
