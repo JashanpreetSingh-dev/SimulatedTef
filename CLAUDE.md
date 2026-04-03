@@ -5,6 +5,14 @@ Use the `/browse` skill from gstack for all web browsing. Never use `mcp__claude
 Available gstack skills:
 `/office-hours`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/design-consultation`, `/design-shotgun`, `/design-html`, `/review`, `/ship`, `/land-and-deploy`, `/canary`, `/benchmark`, `/browse`, `/connect-chrome`, `/qa`, `/qa-only`, `/design-review`, `/setup-browser-cookies`, `/setup-deploy`, `/retro`, `/investigate`, `/document-release`, `/codex`, `/cso`, `/autoplan`, `/careful`, `/freeze`, `/guard`, `/unfreeze`, `/gstack-upgrade`, `/learn`
 
+## Design documents
+
+gstack skills that produce design/plan documents (`/office-hours`, `/plan-ceo-review`, `/plan-eng-review`, `/plan-design-review`, `/design-consultation`) must save their output to **`docs/design/`** in the repo root, not to `~/.gstack/projects/`. Use the filename convention `{skill}-{YYYYMMDD}-{short-slug}.md` (e.g. `office-hours-20260402-launch-strategy.md`).
+
+After writing the file, always stage and commit it: `git add docs/design/ && git commit -m "docs: add {skill} design doc — {short description}"`.
+
+`~/.gstack/` is still used for gstack internals (learnings, timeline, reviews) — those stay local and are not committed.
+
 ## Skill routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill
