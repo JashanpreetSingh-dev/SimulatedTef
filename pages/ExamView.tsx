@@ -12,6 +12,7 @@ import { getRandomTasks } from '../services/tasks';
 import { persistenceService } from '../services/persistence';
 import { useExamResult } from '../hooks/useExamResult';
 import { useUsage } from '../hooks/useUsage';
+import LogRocket from 'logrocket';
 
 export function ExamView() {
   const { mode } = useParams<{ mode: 'partA' | 'partB' | 'full' }>();
@@ -32,6 +33,14 @@ export function ExamView() {
       console.log('Exam completed successfully:', savedResult._id);
       sessionStorage.removeItem(`exam_session_${mode}`);
       sessionStorage.removeItem(`exam_scenario_${mode}`);
+      // Track first oral practice completion (fires once per user)
+      if (user?.id) {
+        const key = `first_practice_completed_${user.id}`;
+        if (!localStorage.getItem(key)) {
+          localStorage.setItem(key, 'true');
+          LogRocket.track('first_practice_completed');
+        }
+      }
     },
     onError: (error) => {
       console.error('Exam error:', error);

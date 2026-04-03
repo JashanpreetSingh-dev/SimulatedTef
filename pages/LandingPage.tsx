@@ -131,18 +131,18 @@ export function LandingPage() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
                 </h1>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2 animate-fade-in-up delay-200">
-                  Master TEF Canada with AI-Powered Practice
+                  One month of premium costs less than one hour with a tutor
                 </h2>
                 <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4 animate-fade-in-up delay-300">
-                  Practice speaking, writing, reading, and listening with instant AI feedback. Get ready for your TEF Canada exam with realistic mock tests and detailed evaluations.
+                  Practice 30 oral sessions with an AI TEF examiner — on your schedule, any time of day. Get detailed feedback after every session, without booking anyone.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4 animate-fade-in-up delay-350">
                   <p className="text-indigo-600 dark:text-indigo-400 text-sm sm:text-base font-semibold">
-                    ✨ Start free: 1 speaking (Section A & B each), 1 written (Section A & B each), 1 mock exam
+                    ✨ Premium $45/mo — less than 30 min of tutoring
                   </p>
                   <span className="hidden sm:inline text-slate-400">•</span>
                   <p className="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
-                    All 4 TEF modules • Upgrade anytime
+                    All 4 TEF modules • Start free
                   </p>
                 </div>
               </div>
