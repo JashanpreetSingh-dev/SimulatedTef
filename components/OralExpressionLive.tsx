@@ -5,6 +5,11 @@ import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../s
 import { TEFTask, SavedResult } from '../types';
 import { persistenceService } from '../services/persistence';
 import { evaluationJobService } from '../services/evaluationJobService';
+import {
+  appendDiarizedTurn,
+  oralTranscriptPassesContract,
+  transcriptUserLinesOnly,
+} from '../services/oralEvaluationContract';
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
 
@@ -72,6 +77,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   
   const transcriptA = useRef('');
   const transcriptB = useRef('');
+  /** When true for the active part, Gemini Live has supplied user transcription — skip Web Speech append to avoid duplicates. */
+  const geminiUserSeenPartARef = useRef(false);
+  const geminiUserSeenPartBRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
@@ -344,6 +352,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       hasUnexpectedCloseRecoveryRef.current = false;
       hasSent60ControlRef.current = false;
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
+      if (currentPart === 'A') geminiUserSeenPartARef.current = false;
+      else geminiUserSeenPartBRef.current = false;
       // Clear recorded chunks when starting Part A or when not in full mode
       // For Part B in full mode, we preserve Part A chunks (already saved to recordedChunksPartARef)
       if (currentPart === 'A' || scenario.mode !== 'full') {
@@ -480,14 +490,19 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 }
                 
                 if (finalTranscript.trim()) {
-                  console.log('🎤 Web Speech API transcription:', finalTranscript);
-                  if (currentPart === 'A') {
-                    transcriptA.current += ' ' + finalTranscript.trim();
-                    console.log('📝 Part A transcript length:', transcriptA.current.length);
-                  } else {
-                    transcriptB.current += ' ' + finalTranscript.trim();
-                    console.log('📝 Part B transcript length:', transcriptB.current.length);
+                  const useGeminiPrimary =
+                    (currentPart === 'A' && geminiUserSeenPartARef.current) ||
+                    (currentPart === 'B' && geminiUserSeenPartBRef.current);
+                  if (useGeminiPrimary) {
+                    return;
                   }
+                  console.log('🎤 Web Speech API transcription:', finalTranscript);
+                  const ref = currentPart === 'A' ? transcriptA : transcriptB;
+                  appendDiarizedTurn(ref, 'User', finalTranscript);
+                  console.log(
+                    `📝 Part ${currentPart} transcript length:`,
+                    ref.current.length
+                  );
                   if (isMountedRef.current) {
                     setTranscription(finalTranscript.trim());
                   }
@@ -742,13 +757,11 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             const userText = message.serverContent.inputTranscription.text;
             if (userText && userText.trim()) {
               console.log('🎤 Gemini input transcription captured:', userText.substring(0, 100) + (userText.length > 100 ? '...' : ''));
-              if (currentPart === 'A') {
-                transcriptA.current += ' ' + userText.trim();
-                console.log('📝 Part A transcript length:', transcriptA.current.length);
-              } else {
-                transcriptB.current += ' ' + userText.trim();
-                console.log('📝 Part B transcript length:', transcriptB.current.length);
-              }
+              if (currentPart === 'A') geminiUserSeenPartARef.current = true;
+              else geminiUserSeenPartBRef.current = true;
+              const ref = currentPart === 'A' ? transcriptA : transcriptB;
+              appendDiarizedTurn(ref, 'User', userText);
+              console.log('📝 Part', currentPart, 'transcript length:', ref.current.length);
               // Update UI with latest user speech
               setTranscription(userText);
               
@@ -763,21 +776,21 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             const userText = message.serverContent.inputAudioTranscription.text;
             if (userText && userText.trim()) {
               console.log('🎤 Gemini inputAudioTranscription captured:', userText.substring(0, 100));
-              if (currentPart === 'A') {
-                transcriptA.current += ' ' + userText.trim();
-              } else {
-                transcriptB.current += ' ' + userText.trim();
-              }
+              if (currentPart === 'A') geminiUserSeenPartARef.current = true;
+              else geminiUserSeenPartBRef.current = true;
+              const ref = currentPart === 'A' ? transcriptA : transcriptB;
+              appendDiarizedTurn(ref, 'User', userText);
               setTranscription(userText);
             }
           }
           
-          // Also capture model's output transcription for display (examiner speech)
-          if (message.serverContent?.outputTranscription) {
-            let modelText = message.serverContent.outputTranscription.text;
-            
-            // Don't accumulate model speech in transcripts - only show in UI
-            setTranscription(prev => modelText);
+          if (message.serverContent?.outputTranscription?.text) {
+            const modelText = message.serverContent.outputTranscription.text;
+            if (modelText && modelText.trim()) {
+              const ref = currentPart === 'A' ? transcriptA : transcriptB;
+              appendDiarizedTurn(ref, 'Examiner', modelText);
+            }
+            setTranscription(modelText);
           }
 
           if (message.serverContent?.interrupted) {
@@ -1078,9 +1091,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           audioTranscript = null;
         }
         
-        // For OralExpression: send audio blob to worker (worker will transcribe)
-        // We still need a transcript for the job submission (can be empty or live transcript as fallback)
-        // The worker will use audioBlob to generate the actual transcript
+        // Canonical diarized transcript (User:/Examiner:) for evaluation when contract passes
         let fullUserTranscript: string = '';
         if (scenario.mode === 'partA') {
           fullUserTranscript = transcriptA.current.trim() || '';
@@ -1092,16 +1103,34 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             transcriptB.current.trim()
           ].filter(Boolean).join('\n\n').trim() || '';
         }
-        
-        console.log('📝 Submitting job with audio blob (worker will transcribe):', {
+
+        const transcriptPasses = oralTranscriptPassesContract(
+          fullUserTranscript,
+          scenario.mode
+        );
+        const hasRecordableAudio = !!(wavBlob && wavBlob.size > 0);
+        const omitJobAudio = transcriptPasses && hasRecordableAudio;
+        const jobTranscript = omitJobAudio
+          ? fullUserTranscript
+          : hasRecordableAudio
+            ? undefined
+            : fullUserTranscript || undefined;
+        const jobAudioBlob = omitJobAudio ? undefined : wavBlob || undefined;
+
+        console.log('📝 Submitting oral evaluation job:', {
           audioBlobSize: wavBlob?.size || 0,
-          fallbackTranscriptLength: fullUserTranscript.length,
+          transcriptPasses,
+          omitJobAudio,
+          transcriptLength: fullUserTranscript.length,
           preview: fullUserTranscript.substring(0, 200) + (fullUserTranscript.length > 200 ? '...' : '')
         });
-        
-        // Estimate question count for EO1 (rough heuristic: count question marks and question words)
-        const questionCount = (fullUserTranscript.match(/\?/g) || []).length + 
-          (fullUserTranscript.match(/\b(combien|comment|où|quand|qui|quoi|pourquoi|quel|quelle|quels|quelles)\b/gi) || []).length;
+
+        const userOnlyForQuestions = transcriptUserLinesOnly(fullUserTranscript);
+        const questionCount =
+          (userOnlyForQuestions.match(/\?/g) || []).length +
+          (userOnlyForQuestions.match(
+            /\b(combien|comment|où|quand|qui|quoi|pourquoi|quel|quelle|quels|quelles)\b/gi
+          ) || []).length;
         
         // Submit evaluation job to queue (non-blocking)
         const eo2RemainingSeconds =
@@ -1116,7 +1145,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         const { jobId } = await evaluationJobService.submitJob(
           'OralExpression',
           fullPrompt,
-          fullUserTranscript || undefined, // Optional fallback transcript (worker will use audioBlob)
+          jobTranscript,
           scenario.officialTasks.partA.id,
           scenario.officialTasks.partA.time_limit_sec + (scenario.officialTasks.partB?.time_limit_sec || 0),
           questionCount > 0 ? questionCount : undefined,
@@ -1126,13 +1155,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           scenario.officialTasks.partA,
           scenario.officialTasks.partB,
           eo2RemainingSeconds,
-          undefined, // fluencyAnalysis - worker will generate this from audio
+          undefined,
           getToken,
-          undefined, // writtenSectionAText
-          undefined, // writtenSectionBText
-          mockExamId, // mockExamId
-          module as 'oralExpression' | undefined, // module
-          wavBlob || undefined // audioBlob - worker will transcribe this
+          undefined,
+          undefined,
+          mockExamId,
+          module as 'oralExpression' | undefined,
+          jobAudioBlob
         );
         
         console.log('📋 Evaluation job submitted:', jobId);
