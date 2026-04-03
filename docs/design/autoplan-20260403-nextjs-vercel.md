@@ -1,5 +1,5 @@
 ---
-status: DRAFT
+status: RESOLVED — DO NOT MIGRATE
 ---
 # Plan: Next.js Conversion + Vercel Deployment?
 
