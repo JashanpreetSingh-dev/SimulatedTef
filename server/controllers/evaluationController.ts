@@ -36,6 +36,9 @@ export const evaluationController = {
       module,
     } = req.body;
 
+    const transcriptTrimmed =
+      typeof transcript === 'string' ? transcript.trim() : '';
+
     // Validate required fields
     // For OralExpression: either transcript OR audioBlob must be provided
     // For WrittenExpression: transcript is required
@@ -45,13 +48,13 @@ export const evaluationController = {
       });
     }
 
-    if (section === 'WrittenExpression' && !transcript) {
+    if (section === 'WrittenExpression' && !transcriptTrimmed) {
       return res.status(400).json({
         error: 'Missing required field: transcript (required for WrittenExpression)',
       });
     }
 
-    if (section === 'OralExpression' && !transcript && !audioBlob) {
+    if (section === 'OralExpression' && !transcriptTrimmed && !audioBlob) {
       return res.status(400).json({
         error: 'Missing required field: either transcript or audioBlob must be provided for OralExpression',
       });
@@ -83,8 +86,8 @@ export const evaluationController = {
       {
         section,
         prompt,
-        transcript, // Optional for OralExpression if audioBlob is provided
-        audioBlob, // New: base64 encoded audio for worker to transcribe
+        transcript: transcriptTrimmed || undefined,
+        audioBlob,
         scenarioId,
         timeLimitSec,
         questionCount,

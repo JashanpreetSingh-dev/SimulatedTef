@@ -165,6 +165,16 @@ export const LIVE_API_CONFIG = {
   turnDetectionTimeout: undefined as number | undefined, // Use Gemini's native turn detection
 } as const;
 
+/** Live WebSocket model for oral exam (`connectLive`). */
+const GEMINI_LIVE_MODEL = 'gemini-3.1-flash-live-preview';
+
+/** Live realtime mic input: 16-bit PCM at 16 kHz per Gemini Live API docs. */
+const GEMINI_LIVE_INPUT_SAMPLE_RATE = 16000;
+
+function isGemini31LiveModel(): boolean {
+  return GEMINI_LIVE_MODEL.includes('gemini-3.1') || GEMINI_LIVE_MODEL.includes('3.1-flash-live');
+}
+
 export const encodeAudio = (bytes: Uint8Array) => {
   let binary = '';
   const len = bytes.byteLength;
@@ -260,15 +270,19 @@ export async function decodeAudioData(
 }
 
 export function createPcmBlob(data: Float32Array, sampleRate: number): Blob {
-  const l = data.length;
+  const pcm =
+    Math.round(sampleRate) === GEMINI_LIVE_INPUT_SAMPLE_RATE
+      ? data
+      : resampleAudioData(data, sampleRate, GEMINI_LIVE_INPUT_SAMPLE_RATE);
+  const l = pcm.length;
   const int16 = new Int16Array(l);
   for (let i = 0; i < l; i++) {
-    const s = Math.max(-1, Math.min(1, data[i]));
+    const s = Math.max(-1, Math.min(1, pcm[i]));
     int16[i] = s * 32767;
   }
   return {
     data: encodeAudio(new Uint8Array(int16.buffer)),
-    mimeType: `audio/pcm;rate=${Math.round(sampleRate)}`,
+    mimeType: `audio/pcm;rate=${GEMINI_LIVE_INPUT_SAMPLE_RATE}`,
   };
 }
 
@@ -298,15 +312,19 @@ export const geminiService = {
     };
   }> {
     try {
-      // Convert blob to base64
+      // Convert blob to base64 (MediaRecorder often yields audio/webm or audio/ogg)
       const base64 = await blobToBase64(audioBlob);
-      
+      const mimeType =
+        audioBlob.type && /^audio\//i.test(audioBlob.type)
+          ? audioBlob.type.split(';')[0].trim()
+          : 'audio/wav';
+
       const response = await ai.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [{
           parts: [{
             inlineData: {
-              mimeType: "audio/wav",
+              mimeType,
               data: base64
             }
           }, {
@@ -404,19 +422,15 @@ export const geminiService = {
     // Section B: No compression to preserve full conversation history
     // Section A: Use compression for cost optimization (shorter, simpler interactions)
     const isSectionB = part === 'B';
+    // SDK types use string token counts; Gemini 3.1 Live rejects this block — omit for that model.
     const contextWindowConfig = isSectionB
       ? {
-        slidingWindow: {
-          targetTokens: 10000, // Keep at least 1000 tokens in context
-        },
-        triggerTokens: 10000, // Start compressing when context exceeds 1500 tokens
-      }
+          slidingWindow: { targetTokens: '10000' },
+          triggerTokens: '12000',
+        }
       : {
-          // Section A: Smaller window is sufficient for shorter, simpler interactions
-          slidingWindow: {
-            targetTokens: 500, // Keep at least 500 tokens in context
-          },
-          triggerTokens: 750, // Start compressing when context exceeds 750 tokens
+          slidingWindow: { targetTokens: '500' },
+          triggerTokens: '750',
         };
 
     const config: any = {
@@ -425,29 +439,19 @@ export const geminiService = {
         voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } },
       },
       systemInstruction,
-      // outputAudioTranscription: {}, // Model's speech transcription
-      // inputAudioTranscription: {}, // User's speech transcription
-      // Cost optimization: Enable context window compression for Section A only
-      // Section B has no compression to preserve full conversation history
-      ...(contextWindowConfig && { contextWindowCompression: contextWindowConfig }),
+      /** Emits serverContent.outputTranscription for model audio (examiner captions + evaluation refs). */
+      outputAudioTranscription: {},
+      // inputAudioTranscription omitted: inputTranscription / Web Speech already cover user text; avoids duplicate streams.
+      ...(!isGemini31LiveModel() ? { contextWindowCompression: contextWindowConfig } : {}),
     };
 
-    // Add timeout configs if provided (if the SDK supports them)
-    // Note: These may not be directly supported by the SDK, but we can handle them client-side
-    // Use default from LIVE_API_CONFIG if not provided
-    const turnDetectionTimeout = options?.turnDetectionTimeout ?? LIVE_API_CONFIG.turnDetectionTimeout;
-    const responseTimeout = options?.responseTimeout ?? LIVE_API_CONFIG.responseWaitTime;
-    
-    if (responseTimeout) {
-      // Store in config for potential SDK support or client-side handling
-      config.responseTimeout = responseTimeout;
-    }
-    if (turnDetectionTimeout) {
-      config.turnDetectionTimeout = turnDetectionTimeout;
-    }
+    // Do not set responseTimeout / turnDetectionTimeout on Live config — not in LiveConnectConfig;
+    // sending them causes WebSocket 1007 on stricter Live models. Use LIVE_API_CONFIG client-side only.
+
+    void options;
 
     return ai.live.connect({
-      model: 'gemini-2.5-flash-native-audio-latest',
+      model: GEMINI_LIVE_MODEL,
       callbacks,
       config,
     });

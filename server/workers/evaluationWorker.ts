@@ -100,11 +100,23 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
 
         console.log(`Processing evaluation job ${job.id} for user ${userId}`);
 
-        let transcript = providedTranscript;
+        let transcript =
+          typeof providedTranscript === 'string' ? providedTranscript.trim() : '';
         let fluencyAnalysis = providedFluencyAnalysis;
 
+        const needsAudioTranscribe =
+          section === 'OralExpression' && Boolean(audioBlob) && !transcript;
+
+        if (section === 'OralExpression' && transcript && !needsAudioTranscribe) {
+          await safeUpdateProgress(job, 28);
+          await safePublish(
+            channel,
+            JSON.stringify({ status: 'active', progress: 28, stage: 'evaluating' })
+          );
+        }
+
         // For OralExpression: transcribe audio if audioBlob is provided and transcript is not
-        if (section === 'OralExpression' && audioBlob && !transcript) {
+        if (needsAudioTranscribe) {
           await safeUpdateProgress(job, 15); // 15% - Transcribing
           await safePublish(channel, JSON.stringify({ status: 'active', progress: 15 }));
 

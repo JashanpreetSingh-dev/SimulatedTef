@@ -99,7 +99,7 @@ Use these questions to inform your evaluation across all criteria, ensuring your
 OPTIONAL FLUENCY ANALYSIS (if provided):
 - You may receive an additional section labelled "FLUENCY ANALYSIS (from audio)" that contains objective metrics derived from the candidate's audio (hesitation_rate, filler_words_per_min, average_pause_seconds, self_corrections, fluency_comment).
 - Use these metrics ONLY to inform the \"fluency\" and \"interaction\" criteria (scores and comments). They should NOT directly change grammar or vocabulary scores.
-- If this section is missing, rely solely on the transcript to infer fluency.
+- If this section is missing, rely solely on the transcript to infer fluency. For Expression Orale, the transcript may come from live session transcription (not a separate audio-metrics pass): infer hesitations and pauses only from what appears in the text (fillers, repairs, punctuation); do not assume precise timing you cannot see.
 ${fullExamGuidance}
 ${mode === 'partB' ? `
 CRITICAL - SECTION B ONLY EVALUATION:
@@ -482,10 +482,16 @@ self_corrections: ${typeof fluencyAnalysis.self_corrections === 'number' ? fluen
 fluency_comment: ${fluencyAnalysis.fluency_comment ?? 'N/A'}`
       : '';
 
+  const liveTranscriptOnlyNote =
+    section === 'OralExpression' && !fluencyAnalysis
+      ? `\n\nTRANSCRIPT SOURCE (no separate audio fluency block):
+This run did not include objective audio fluency metrics. The transcript may be from live session transcription. Base fluency and interaction judgments on the dialogue text (including fillers and self-corrections if present); do not invent pause durations or metrics not evidenced in the transcript.`
+      : '';
+
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${singleSectionContext}${fullExamContext}${eo2TimeContext}${fluencyContext}
+Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${singleSectionContext}${fullExamContext}${eo2TimeContext}${fluencyContext}${liveTranscriptOnlyNote}
 
 Candidate ${section === 'WrittenExpression' ? 'text' : 'transcript'} (French):
 ${candidateText || "(empty)"}`;

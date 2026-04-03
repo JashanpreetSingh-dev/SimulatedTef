@@ -24,7 +24,7 @@ export const evaluationJobService = {
   async submitJob(
     section: 'OralExpression' | 'WrittenExpression',
     prompt: string,
-    transcript: string | undefined, // Optional for OralExpression if audioBlob is provided
+    transcript: string | undefined, // Optional for OralExpression when audioBlob is provided (worker transcribes)
     scenarioId: number,
     timeLimitSec: number,
     questionCount: number | undefined,
@@ -40,7 +40,8 @@ export const evaluationJobService = {
     writtenSectionBText?: string,
     mockExamId?: string,
     module?: 'oralExpression' | 'reading' | 'listening' | 'writtenExpression',
-    audioBlob?: Blob // New: audio blob for OralExpression (worker will transcribe)
+    /** OralExpression: omit when live transcript satisfies contract; worker then skips transcribe. */
+    audioBlob?: Blob
   ): Promise<{ jobId: string }> {
     // Convert audio blob to base64 if provided
     let audioBlobBase64: string | undefined;

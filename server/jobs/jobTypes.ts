@@ -11,7 +11,7 @@ export interface EvaluationJobData {
    * If transcript is provided, it will be used directly (backward compatibility)
    */
   transcript?: string;
-  /** Audio blob as base64 string for OralExpression (worker will transcribe) */
+  /** OralExpression: base64 audio when client transcript is insufficient (worker transcribes + fluency). */
   audioBlob?: string;
   scenarioId: number;
   timeLimitSec: number;
