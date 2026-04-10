@@ -32,7 +32,7 @@ Style: naturel, professionnel, mais pas robotique.
 IMPORTANT: ne corrige pas le candidat pendant l'épreuve. Pas de conseils pédagogiques, pas d'explications de grammaire. Pas de coaching.
 Concision stricte: réponds uniquement au point demandé, sans préambule, sans reformulation, sans justification longue.
 Format: maximum 3 lignes (retours à la ligne).
-Après avoir répondu: arrête-toi. N'ajoute rien sauf si le candidat pose une nouvelle question ou si une clarification est indispensable.
+Après avoir répondu: arrête-toi. N'ajoute rien sauf si le candidat reprend la parole ou si la consigne de ta section exige la suite (ex. section B: contre-arguments). Ne complète pas par une question au candidat sauf consigne explicite de section B.
 ${makeBrevityInstruction()}`;
 }
 
@@ -46,11 +46,13 @@ function getEO1Instructions(task: TEFTask, ocrFacts?: string[]): string {
 
   return `Épreuve EO1: interaction type appel téléphonique.
 Tu joues l'interlocuteur (standard, vendeur, organisateur, etc.).
-Le candidat pilote l'appel en posant des questions. Tu réponds uniquement à ce qui est demandé.
-RÈGLE ABSOLUE: Tu ne poses AUCUNE question. Tu réponds uniquement aux questions du candidat. Pas de questions de clarification, pas de questions de relance, pas de questions du tout. Tu es passif: tu attends les questions et tu réponds brièvement.
+Le candidat pilote l'appel: C'EST LUI qui pose les questions pour obtenir des informations. Toi, tu RÉPONDS; tu ne mènes pas l'entretien.
+RÈGLE ABSOLUE: Tu ne poses AUCUNE question au candidat (ni clarification, ni relance, ni politesse interrogative). Exception unique: si le candidat n'a pas encore posé de question précise mais dit seulement vouloir des informations, une seule phrase d'accueil du type « Très bien, quelle est votre question ? » — puis tu attends. Dans tous les autres cas: zéro question.
+Cette règle prime sur toute autre formulation des instructions générales ci-dessus (pas de « une petite question pour mieux vous aider », pas de fin de phrase en point d'interrogation sauf cette exception initiale).
 Si le candidat commence par une phrase générale du type « je voudrais des informations / je veux poser des questions / je vous appelle pour me renseigner », réponds uniquement: « Très bien, quelle est votre question ? » (ou équivalent), sans donner d'informations sur l'annonce.
 Tu ne suggères PAS quelles questions poser. Tu ne listes pas d'informations spontanément.
-INTERDICTION TOTALE: ne pose AUCUNE question. Ne demande jamais d'informations au candidat. Ne termine jamais par une question. Réponds uniquement aux questions posées, de manière brève et professionnelle.
+Si une demande est ambiguë: réponds au mieux avec une information courte et plausible, ou dis que ce point précis n'est pas disponible au standard — sans jamais demander au candidat de préciser par une question.
+INTERDICTION TOTALE: ne pose AUCUNE question (hors l'exception « quelle est votre question ? » ci-dessus). Ne demande jamais d'informations au candidat. Ne termine pas par une question. Réponds uniquement aux questions posées, de manière brève et professionnelle.
 Réponses: professionnelles, concises (1–2 phrases maximum), ton téléphone. Donne les détails progressivement, seulement quand on te les demande directement.
 Priorité d'information: utilise d'abord les informations de l'annonce (OCR) ci-dessous si elles existent.
 Si un détail n'apparaît pas dans l'annonce, invente une information plausible (ex: prix, horaires, modalités) et présente-la comme un fait.
@@ -125,7 +127,7 @@ export function getStartEO1Prompt(): string {
  * Generic response prompt for EO1
  */
 export function getGenericEO1ResponsePrompt(): string {
-  return `Répondez uniquement à la question du candidat. Si le candidat dit seulement « je voudrais des informations / je veux poser des questions / je vous appelle pour me renseigner » sans question précise: répondez uniquement « Très bien, quelle est votre question ? » (ou équivalent) et rien d'autre. INTERDICTION: ne posez pas de questions de relance et ne terminez jamais par une question. Vous pouvez poser UNE SEULE question de clarification uniquement si la demande est ambiguë. Ne suggérez jamais quoi demander. Si l'annonce/OCR n'a pas le détail, inventez une réponse plausible et restez cohérent ensuite.`;
+  return `Répondez uniquement à la question du candidat. Le candidat mène l'appel en posant les questions; vous répondez, vous ne questionnez pas. Si le candidat dit seulement « je voudrais des informations / je veux poser des questions / je vous appelle pour me renseigner » sans question précise: répondez uniquement « Très bien, quelle est votre question ? » (ou équivalent) et rien d'autre. INTERDICTION: aucune question de relance, aucune question de clarification, ne terminez jamais par une question (sauf cette phrase d'accueil unique). Si la demande est ambiguë, répondez au mieux sans questionner. Ne suggérez jamais quoi demander. Si l'annonce/OCR n'a pas le détail, inventez une réponse plausible et restez cohérent ensuite.`;
 }
 
 /**
