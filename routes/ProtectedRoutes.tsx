@@ -13,6 +13,10 @@ import { BatchesView } from '../pages/BatchesView';
 import { BatchDetailView } from '../pages/BatchDetailView';
 import { TermsOfService } from '../components/TermsOfService';
 import { PrivacyPolicy } from '../components/PrivacyPolicy';
+import { BlogPage } from '../pages/BlogPage';
+import { ArticleOralPreparation } from '../pages/blog/ArticleOralPreparation';
+import { ArticleExpressEntry } from '../pages/blog/ArticleExpressEntry';
+import { ArticleVsTCF } from '../pages/blog/ArticleVsTCF';
 import { MockExamView } from '../components/MockExamView';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { AdminUsageView } from '../pages/AdminUsageView';
@@ -60,6 +64,10 @@ export function ProtectedRoutes() {
       <Route path="/subscription" element={<SubscriptionView />} />
       <Route path="/terms" element={<TermsOfService />} />
       <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/how-to-prepare-tef-canada-oral" element={<ArticleOralPreparation />} />
+      <Route path="/blog/tef-canada-clb-score-express-entry" element={<ArticleExpressEntry />} />
+      <Route path="/blog/tef-canada-vs-tcf-canada" element={<ArticleVsTCF />} />
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

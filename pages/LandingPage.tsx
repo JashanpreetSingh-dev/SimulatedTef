@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { FAQSection } from '../components/FAQSection';
+import { Link } from 'react-router-dom';
+import { blogPosts } from './blog/blogPosts';
 import { ExamInterfaceShowcase } from '../components/ExamInterfaceShowcase';
 import { ResultsDashboardShowcase } from '../components/ResultsDashboardShowcase';
 import { BatchManagementShowcase } from '../components/BatchManagementShowcase';
@@ -509,6 +511,48 @@ export function LandingPage() {
       </section>
 
       {/* FAQ Section */}
+      {/* Blog section */}
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-12 xl:px-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-end justify-between mb-10 sm:mb-14">
+            <div>
+              <p className="text-sm font-semibold text-teal-700 dark:text-teal-400 uppercase tracking-widest mb-2">From the blog</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 dark:text-slate-100 leading-[1.1] tracking-[-0.02em]">
+                TEF Canada guides
+              </h2>
+            </div>
+            <Link
+              to="/blog"
+              className="hidden sm:inline-flex items-center gap-1 text-sm font-semibold text-teal-700 dark:text-teal-400 hover:underline"
+            >
+              All articles →
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {blogPosts.map((post) => (
+              <Link
+                key={post.slug}
+                to={`/blog/${post.slug}`}
+                className="group flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600 hover:shadow-md transition-all duration-200"
+              >
+                <div className="text-xs text-slate-400 mb-3">{post.readingTimeMin} min read</div>
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-50 group-hover:text-teal-700 dark:group-hover:text-teal-400 transition-colors leading-snug mb-3 flex-1">
+                  {post.title}
+                </h3>
+                <span className="text-sm font-semibold text-teal-700 dark:text-teal-400 group-hover:underline">
+                  Read →
+                </span>
+              </Link>
+            ))}
+          </div>
+          <div className="mt-8 text-center sm:hidden">
+            <Link to="/blog" className="text-sm font-semibold text-teal-700 dark:text-teal-400 hover:underline">
+              All articles →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <FAQSection />
 
       <Footer variant="light" />
