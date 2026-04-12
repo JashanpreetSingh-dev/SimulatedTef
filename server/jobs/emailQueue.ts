@@ -37,7 +37,29 @@ emailQueue.on('waiting', (job) => {
   console.log(`Email job ${job.id} waiting in queue`);
 });
 
-export async function enqueueEmailJob(data: EmailJobData): Promise<void> {
-  await emailQueue.add('send-email', data);
+/**
+ * Register a repeatable weekly digest job (Monday 08:00 America/Toronto).
+ * Safe to call on every startup — BullMQ deduplicates repeatable jobs by key.
+ */
+export async function scheduleWeeklyDigest(): Promise<void> {
+  await emailQueue.add(
+    'send-email',
+    { templateKind: 'weekly_digest', userId: '__broadcast__' },
+    {
+      repeat: {
+        pattern: '0 8 * * 1', // every Monday at 08:00
+        tz: 'America/Toronto',
+      },
+      jobId: 'weekly-digest-broadcast',
+    }
+  );
+  console.log('Weekly digest cron scheduled (Monday 08:00 America/Toronto)');
+}
+
+export async function enqueueEmailJob(
+  data: EmailJobData,
+  opts?: { delay?: number }
+): Promise<void> {
+  await emailQueue.add('send-email', data, opts?.delay !== undefined ? { delay: opts.delay } : undefined);
 }
 

@@ -50,6 +50,15 @@ export function startEmailWorker(): Worker<EmailJobData, EmailJobResult> {
             email,
             firstName,
           });
+        } else if (templateKind === 'day3_nudge') {
+          await notificationService.sendDay3NudgeEmail({
+            userId,
+            email,
+            firstName,
+          });
+        } else if (templateKind === 'weekly_digest') {
+          // Broadcast job: fan-out to all eligible users
+          await notificationService.sendWeeklyDigestBroadcast();
         } else {
           console.warn(`Unknown email templateKind: ${templateKind}`);
           return { success: false, error: `Unknown templateKind: ${templateKind}` };

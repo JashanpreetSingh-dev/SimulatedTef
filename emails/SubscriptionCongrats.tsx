@@ -29,6 +29,7 @@ type SubscriptionCongratsProps = {
   thanksForSubImageUrl?: string;
   instagramIconUrl?: string;
   instagramUrl?: string;
+  unsubscribeUrl?: string;
 };
 
 const BRAND_GRADIENT = 'linear-gradient(90deg, #6366F1, #818CF8, #06B6D4)';
@@ -44,6 +45,7 @@ export const SubscriptionCongratsEmail = ({
   thanksForSubImageUrl = DEFAULT_THANKS_FOR_SUB_IMAGE_URL,
   instagramIconUrl = DEFAULT_INSTAGRAM_ICON_URL,
   instagramUrl = 'https://www.instagram.com/akseli.ca/',
+  unsubscribeUrl,
 }: SubscriptionCongratsProps) => {
   return (
     <Html lang="fr">
@@ -148,6 +150,11 @@ export const SubscriptionCongratsEmail = ({
               .
             </Text>
             <Text style={footerSmall}>© Akseli. Tous droits réservés.</Text>
+            {unsubscribeUrl && (
+              <Text style={footerSmall}>
+                <a href={unsubscribeUrl} style={{ color: '#9ca3af' }}>Se désabonner</a>
+              </Text>
+            )}
           </Section>
         </Container>
       </Body>

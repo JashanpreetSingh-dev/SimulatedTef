@@ -99,8 +99,10 @@ if (!clerkSecretKey) {
       startQuestionGenerationWorker();
       const { startEmailWorker } = await import('./workers/emailWorker');
       startEmailWorker();
+      const { scheduleWeeklyDigest } = await import('./jobs/emailQueue');
+      await scheduleWeeklyDigest();
       console.log('Workers started in same process (RUN_WORKER=true)');
-      
+
       // Set up periodic cleanup of old jobs to prevent Redis memory issues
       const { cleanupOldJobs } = await import('./jobs/evaluationQueue');
       setInterval(async () => {
@@ -114,6 +116,8 @@ if (!clerkSecretKey) {
         startQuestionGenerationWorker();
         const { startEmailWorker } = await import('./workers/emailWorker');
         startEmailWorker();
+        const { scheduleWeeklyDigest } = await import('./jobs/emailQueue');
+        await scheduleWeeklyDigest();
         console.log('Workers started in same process (development mode)');
         
         // Set up periodic cleanup of old jobs to prevent Redis memory issues

@@ -476,7 +476,27 @@ export async function createIndexes(): Promise<void> {
     const dailyRitualWeak = db.collection('daily_ritual_weak_cards');
     await dailyRitualWeak.createIndex({ userId: 1 }, { unique: true, name: 'daily_ritual_weak_user_idx' });
     console.log(' Created index: daily_ritual_weak_cards.daily_ritual_weak_user_idx');
-    
+
+    // emailPreferences: unique on userId (one preference record per user)
+    const emailPreferencesCollection = db.collection('emailPreferences');
+    await emailPreferencesCollection.createIndex(
+      { userId: 1 },
+      { unique: true, name: 'userId_idx' }
+    );
+    console.log('Created index: emailPreferences.userId_idx');
+
+    // pendingNudges: unique on userId (one pending nudge per user)
+    const pendingNudgesCollection = db.collection('pendingNudges');
+    await pendingNudgesCollection.createIndex(
+      { userId: 1 },
+      { unique: true, name: 'userId_idx' }
+    );
+    await pendingNudgesCollection.createIndex(
+      { sendAfter: 1 },
+      { name: 'sendAfter_idx' }
+    );
+    console.log('Created index: pendingNudges.userId_idx, sendAfter_idx');
+
     console.log(' All database indexes created successfully');
   } catch (error: any) {
     console.error('Error creating indexes:', error.message);

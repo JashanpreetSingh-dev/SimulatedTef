@@ -27,6 +27,8 @@ type WelcomeToAkseliProps = {
   instagramIconUrl?: string;
   /** Instagram profile URL. Defaults to https://www.instagram.com/akseli.ca/ */
   instagramUrl?: string;
+  /** 1-click unsubscribe URL (HMAC-signed) */
+  unsubscribeUrl?: string;
 };
 
 const BRAND_GRADIENT = 'linear-gradient(90deg, #6366F1, #818CF8, #06B6D4)';
@@ -37,6 +39,7 @@ export const WelcomeToAkseliEmail = ({
   logoUrl,
   instagramIconUrl = DEFAULT_INSTAGRAM_ICON_URL,
   instagramUrl = 'https://www.instagram.com/akseli.ca/',
+  unsubscribeUrl,
 }: WelcomeToAkseliProps) => {
   return (
   <Html lang="fr">
@@ -237,6 +240,13 @@ export const WelcomeToAkseliEmail = ({
             .
           </Text>
           <Text style={footerSmall}>© Akseli. Tous droits réservés.</Text>
+          {unsubscribeUrl && (
+            <Text style={footerSmall}>
+              <a href={unsubscribeUrl} style={{ color: '#9ca3af' }}>
+                Se désabonner
+              </a>
+            </Text>
+          )}
         </Section>
       </Container>
     </Body>

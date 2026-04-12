@@ -7,14 +7,17 @@ import { randomUUID } from 'crypto';
 import { createClerkClient } from '@clerk/backend';
 import { connectDB } from '../db/connection';
 import { sendReactEmail } from '../utils/emailClient';
+import { createUnsubscribeToken } from '../routes/unsubscribe';
 import { WelcomeToAkseliEmail } from '../../emails/WelcomeToAkseli';
 import { SubscriptionCongratsEmail } from '../../emails/SubscriptionCongrats';
 import { GoodFridayPromoEmail } from '../../emails/GoodFridayPromo';
+import { Day3NudgeEmail } from '../../emails/Day3Nudge';
+import { WeeklyDigestEmail } from '../../emails/WeeklyDigest';
 
 const clerkSecretKey = process.env.CLERK_SECRET_KEY || '';
 const clerkClient = clerkSecretKey ? createClerkClient({ secretKey: clerkSecretKey }) : null;
 
-type NotificationType = 'welcome' | 'subscription_congrats' | 'good_friday_promo';
+type NotificationType = 'welcome' | 'subscription_congrats' | 'good_friday_promo' | 'day3_nudge' | 'weekly_digest';
 
 export type WelcomeEmailPayload = {
   userId: string;
@@ -31,6 +34,26 @@ export type SubscriptionCongratsPayload = {
   periodStart?: string;
   periodEnd?: string;
 };
+
+async function isUnsubscribed(userId: string): Promise<boolean> {
+  try {
+    const db = await connectDB();
+    const pref = await db.collection('emailPreferences').findOne({ userId });
+    return !!pref?.unsubscribedAt;
+  } catch (error) {
+    console.error('Failed to check unsubscribe status:', error);
+    return false; // fail open — better to send than to silently drop
+  }
+}
+
+function buildUnsubscribeUrl(userId: string, baseUrl: string): string {
+  try {
+    const token = createUnsubscribeToken(userId);
+    return `${baseUrl}/api/unsubscribe?userId=${encodeURIComponent(userId)}&token=${encodeURIComponent(token)}`;
+  } catch {
+    return ''; // EMAIL_UNSUBSCRIBE_SECRET not set in dev
+  }
+}
 
 function getDashboardUrl(): string {
   const envUrl = process.env.FRONTEND_URL || process.env.VITE_BACKEND_URL;
@@ -130,6 +153,8 @@ async function recordNotificationSent(
 export async function sendWelcomeEmail(payload: WelcomeEmailPayload): Promise<void> {
   const { userId } = payload;
 
+  if (await isUnsubscribed(userId)) return;
+
   // Idempotency: only send welcome email once per user
   if (await hasNotificationBeenSent(userId, 'welcome')) {
     return;
@@ -144,18 +169,19 @@ export async function sendWelcomeEmail(payload: WelcomeEmailPayload): Promise<vo
   }
 
   const dashboardUrl = getDashboardUrl();
-
-  // Logo and Instagram icon: always use hosted URLs
+  const unsubscribeUrl = buildUnsubscribeUrl(userId, dashboardUrl);
   const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
-  const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL; // undefined = component default
+  const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
 
   await sendReactEmail({
     to: identity.email,
     subject: 'Bienvenue sur Akseli',
+    tags: [{ name: 'template', value: 'welcome' }],
     react: React.createElement(WelcomeToAkseliEmail, {
       firstName: identity.firstName,
-      dashboardUrl,
+      dashboardUrl: `${dashboardUrl}?utm_source=email&utm_medium=transactional&utm_campaign=welcome`,
       logoUrl,
+      unsubscribeUrl,
       ...(instagramIconUrl && { instagramIconUrl }),
       instagramUrl: process.env.EMAIL_INSTAGRAM_URL,
     }),
@@ -173,6 +199,8 @@ export type GoodFridayPromoPayload = {
 export async function sendGoodFridayPromoEmail(payload: GoodFridayPromoPayload): Promise<void> {
   const { userId } = payload;
 
+  if (await isUnsubscribed(userId)) return;
+
   if (await hasNotificationBeenSent(userId, 'good_friday_promo')) {
     return;
   }
@@ -186,7 +214,8 @@ export async function sendGoodFridayPromoEmail(payload: GoodFridayPromoPayload):
   }
 
   const dashboardUrl = getDashboardUrl();
-  const pricingUrl = `${dashboardUrl}/pricing`;
+  const pricingUrl = `${dashboardUrl}/pricing?utm_source=email&utm_medium=promo&utm_campaign=good_friday`;
+  const unsubscribeUrl = buildUnsubscribeUrl(userId, dashboardUrl);
   const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
   const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
 
@@ -197,12 +226,14 @@ export async function sendGoodFridayPromoEmail(payload: GoodFridayPromoPayload):
     to: identity.email,
     subject: 'Vendredi Saint : -40 % sur votre abonnement Akseli',
     from: `${senderName} <${fromAddress}>`,
+    tags: [{ name: 'template', value: 'good_friday_promo' }],
     headers: {
       'X-Entity-Ref-ID': randomUUID(),
     },
     react: React.createElement(GoodFridayPromoEmail, {
       firstName: identity.firstName,
       pricingUrl,
+      unsubscribeUrl,
       logoUrl,
       ...(instagramIconUrl && { instagramIconUrl }),
       instagramUrl: process.env.EMAIL_INSTAGRAM_URL,
@@ -255,6 +286,7 @@ export async function sendSubscriptionCongratsEmail(
       : undefined;
 
   const dashboardUrl = getDashboardUrl();
+  const unsubscribeUrl = buildUnsubscribeUrl(userId, dashboardUrl);
   const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
   const thanksForSubImageUrl = process.env.EMAIL_THANKS_FOR_SUB_IMAGE_URL || 'https://akseli.ca/thanks_for_sub.png';
   const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
@@ -263,11 +295,13 @@ export async function sendSubscriptionCongratsEmail(
     await sendReactEmail({
       to: identity.email,
       subject: 'Merci pour votre abonnement Akseli',
+      tags: [{ name: 'template', value: 'subscription_congrats' }],
       react: React.createElement(SubscriptionCongratsEmail, {
         firstName: identity.firstName,
         tierName: niceTierName,
         billingPeriod: billingPeriodLabel ?? undefined,
-        dashboardUrl,
+        dashboardUrl: `${dashboardUrl}?utm_source=email&utm_medium=transactional&utm_campaign=subscription_congrats`,
+        unsubscribeUrl,
         logoUrl,
         thanksForSubImageUrl,
         ...(instagramIconUrl && { instagramIconUrl }),
@@ -285,10 +319,172 @@ export async function sendSubscriptionCongratsEmail(
   );
 }
 
+export type Day3NudgePayload = {
+  userId: string;
+  email?: string;
+  firstName?: string;
+};
+
+/**
+ * Send the day-3 nudge email to a user who has not yet completed any practice session.
+ * Skips if: unsubscribed, already sent, or user has results in the last 90 days.
+ * Deletes the pendingNudges sentinel on successful send.
+ */
+export async function sendDay3NudgeEmail(payload: Day3NudgePayload): Promise<void> {
+  const { userId } = payload;
+
+  if (await isUnsubscribed(userId)) return;
+
+  if (await hasNotificationBeenSent(userId, 'day3_nudge')) return;
+
+  // Skip if user has already done at least one session in the last 90 days
+  try {
+    const db = await connectDB();
+    const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+    const resultCount = await db.collection('results').countDocuments({
+      userId,
+      $or: [{ timestamp: { $gte: cutoff } }, { createdAt: { $gte: cutoff } }],
+    });
+    if (resultCount > 0) {
+      // User already practiced — delete sentinel and skip
+      await db.collection('pendingNudges').deleteOne({ userId });
+      return;
+    }
+  } catch (error) {
+    console.error('Day3 nudge: failed to check results, sending anyway:', error);
+  }
+
+  const identity = await resolveUserIdentity(userId, {
+    email: payload.email,
+    firstName: payload.firstName,
+  });
+  if (!identity) return;
+
+  const dashboardUrl = getDashboardUrl();
+  const practiceUrl = `${dashboardUrl}/practice?utm_source=email&utm_medium=lifecycle&utm_campaign=day3_nudge`;
+  const unsubscribeUrl = buildUnsubscribeUrl(userId, dashboardUrl);
+  const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
+  const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
+
+  await sendReactEmail({
+    to: identity.email,
+    subject: 'Votre première session TEF vous attend — 15 minutes suffisent',
+    tags: [{ name: 'template', value: 'day3_nudge' }],
+    react: React.createElement(Day3NudgeEmail, {
+      firstName: identity.firstName,
+      practiceUrl,
+      logoUrl,
+      unsubscribeUrl,
+      ...(instagramIconUrl && { instagramIconUrl }),
+      instagramUrl: process.env.EMAIL_INSTAGRAM_URL,
+    }),
+  });
+
+  await recordNotificationSent(userId, 'day3_nudge', { email: identity.email });
+
+  // Clean up the sentinel
+  try {
+    const db = await connectDB();
+    await db.collection('pendingNudges').deleteOne({ userId });
+  } catch (error) {
+    console.error('Day3 nudge: failed to delete pendingNudges sentinel:', error);
+  }
+}
+
+/**
+ * Fan-out weekly digest to all non-unsubscribed users who have been active in the last 14 days.
+ * Looks up user emails from the userNotifications welcome record (stored at signup).
+ * Skips users with 0 results in the last 14 days.
+ */
+export async function sendWeeklyDigestBroadcast(): Promise<{ sent: number; skipped: number }> {
+  const db = await connectDB();
+  const dashboardUrl = getDashboardUrl();
+  const logoUrl = process.env.EMAIL_LOGO_URL || 'https://akseli.ca/logo.png';
+  const instagramIconUrl = process.env.EMAIL_INSTAGRAM_ICON_URL;
+
+  // Find all users we have an email for (stored when welcome email was sent)
+  const welcomeRecords = await db
+    .collection('userNotifications')
+    .find({ type: 'welcome', email: { $exists: true, $ne: '' } })
+    .toArray();
+
+  const cutoff14d = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
+  const cutoff7d = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+  let sent = 0;
+  let skipped = 0;
+
+  for (const record of welcomeRecords) {
+    const userId: string = record.userId;
+    const email: string = record.email;
+
+    try {
+      // Skip unsubscribed users
+      if (await isUnsubscribed(userId)) {
+        skipped++;
+        continue;
+      }
+
+      // Skip users with no activity in the last 14 days
+      const recentCount = await db.collection('results').countDocuments({
+        userId,
+        $or: [{ timestamp: { $gte: cutoff14d } }, { createdAt: { $gte: cutoff14d } }],
+      });
+      if (recentCount === 0) {
+        skipped++;
+        continue;
+      }
+
+      // Count sessions this week (last 7 days) for personalisation
+      const weekCount = await db.collection('results').countDocuments({
+        userId,
+        $or: [{ timestamp: { $gte: cutoff7d } }, { createdAt: { $gte: cutoff7d } }],
+      });
+
+      // Resolve first name (stored on welcome record or derive from email)
+      let firstName: string = record.firstName || '';
+      if (!firstName) {
+        const localPart = email.split('@')[0];
+        firstName = toTitleCase(localPart.replace(/[._-]/g, ' '));
+      }
+
+      const practiceUrl = `${dashboardUrl}/practice?utm_source=email&utm_medium=lifecycle&utm_campaign=weekly_digest`;
+      const unsubscribeUrl = buildUnsubscribeUrl(userId, dashboardUrl);
+
+      await sendReactEmail({
+        to: email,
+        subject: weekCount > 0
+          ? `Votre semaine Akseli — ${weekCount} session${weekCount > 1 ? 's' : ''} ✅`
+          : 'Une nouvelle semaine pour votre TEF Canada',
+        tags: [{ name: 'template', value: 'weekly_digest' }],
+        react: React.createElement(WeeklyDigestEmail, {
+          firstName,
+          dashboardUrl: practiceUrl,
+          sessionCount: weekCount,
+          logoUrl,
+          unsubscribeUrl,
+          ...(instagramIconUrl && { instagramIconUrl }),
+          instagramUrl: process.env.EMAIL_INSTAGRAM_URL,
+        }),
+      });
+
+      sent++;
+    } catch (error) {
+      console.error(`Weekly digest failed for user ${userId}:`, error);
+      skipped++;
+    }
+  }
+
+  console.log(`Weekly digest broadcast complete: sent=${sent}, skipped=${skipped}`);
+  return { sent, skipped };
+}
+
 export const notificationService = {
   sendWelcomeEmail,
   sendSubscriptionCongratsEmail,
   hasSubscriptionCongratsBeenSent,
   sendGoodFridayPromoEmail,
+  sendDay3NudgeEmail,
+  sendWeeklyDigestBroadcast,
 };
 

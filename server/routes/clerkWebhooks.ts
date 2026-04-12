@@ -6,6 +6,7 @@ import { Router, Request, Response } from 'express';
 import { Webhook } from 'svix';
 import { asyncHandler } from '../middleware/errorHandler';
 import { enqueueEmailJob } from '../jobs/emailQueue';
+import { connectDB } from '../db/connection';
 
 const router = Router();
 
@@ -68,6 +69,24 @@ router.post(
         email,
         firstName,
       });
+
+      // Day-3 nudge: upsert MongoDB sentinel (durability) + enqueue 72h delayed job
+      const NUDGE_DELAY_MS = 72 * 60 * 60 * 1000; // 72 hours
+      const sendAfter = new Date(Date.now() + NUDGE_DELAY_MS).toISOString();
+      try {
+        const db = await connectDB();
+        await db.collection('pendingNudges').updateOne(
+          { userId },
+          { $setOnInsert: { userId, email, firstName, sendAfter, createdAt: new Date().toISOString() } },
+          { upsert: true }
+        );
+      } catch (err) {
+        console.error('Failed to upsert pendingNudges sentinel for user', userId, err);
+      }
+      await enqueueEmailJob(
+        { templateKind: 'day3_nudge', userId, email, firstName },
+        { delay: NUDGE_DELAY_MS }
+      );
     }
 
     res.json({ received: true });

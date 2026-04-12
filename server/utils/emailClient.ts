@@ -24,6 +24,7 @@ export type ReactEmailPayload = {
   attachments?: ReactEmailAttachment[];
   headers?: Record<string, string>;
   from?: string; // Override sender, e.g. "Jashanpreet from Akseli <noreply@akseli.ca>"
+  tags?: Array<{ name: string; value: string }>; // Resend tracking tags
 };
 
 const apiKey = process.env.RESEND_API_KEY;
@@ -87,6 +88,7 @@ export async function sendReactEmail({
   attachments,
   headers,
   from,
+  tags,
 }: ReactEmailPayload): Promise<void> {
   if (!ensureConfigured()) {
     return;
@@ -99,6 +101,7 @@ export async function sendReactEmail({
       subject,
       react,
       ...(headers && { headers }),
+      ...(tags?.length && { tags }),
       ...(attachments?.length && {
         attachments: attachments.map((a) => ({
           content: a.content,
@@ -110,6 +113,7 @@ export async function sendReactEmail({
 
     if (response.error) {
       console.error('Failed to send email via Resend:', response.error);
+      throw new Error(`Resend error: ${response.error.message ?? JSON.stringify(response.error)}`);
     } else {
       console.log('Email sent via Resend (React):', {
         to,
@@ -119,6 +123,7 @@ export async function sendReactEmail({
     }
   } catch (error: any) {
     console.error('Error sending email via Resend:', error?.message || error);
+    throw error;
   }
 }
 
