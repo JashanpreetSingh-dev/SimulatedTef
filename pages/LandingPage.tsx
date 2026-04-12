@@ -48,8 +48,9 @@ export function LandingPage() {
       <Helmet>
         <html lang="en" />
         <title>TEF Canada Oral Practice Online – Akseli AI Examiner</title>
-        <meta name="description" content="Practice TEF Canada oral sections A and B with an AI examiner that simulates the real exam. 30 oral sessions for less than one hour of tutoring. Instant feedback, on your schedule." />
-        <meta name="keywords" content="TEF Canada oral practice, TEF Canada speaking practice, TEF Canada online, simulated TEF exam, AI French examiner, TEF Canada preparation, practique TEF Canada" />
+        <meta name="description" content="Practice TEF Canada oral sections A and B with an AI examiner. Ideal for Express Entry and immigration candidates. 30 sessions for less than the cost of one tutor hour. Instant feedback, on your schedule." />
+        <meta name="keywords" content="TEF Canada oral practice, TEF Canada speaking practice, TEF Canada online, simulated TEF exam, AI French examiner, TEF Canada preparation, TEF Canada Express Entry, TEF Canada CLB score, TEF Canada immigration, pratique oral TEF Canada" />
+        <link rel="canonical" href="https://akseli.ca/" />
         <meta property="og:type" content="website" />
         <meta property="og:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
         <meta property="og:description" content="Practice TEF Canada oral sections A and B with an AI examiner. 30 oral sessions for less than one hour of TEF tutoring. Instant feedback, any time of day." />
@@ -66,7 +67,40 @@ export function LandingPage() {
             { '@type': 'Question', name: 'How many practice sessions do I get per month?', acceptedAnswer: { '@type': 'Answer', text: 'Basic plan: 10 oral sessions per month ($25/mo). Premium plan: 30 oral sessions per month ($45/mo).' } },
             { '@type': 'Question', name: 'Is this enough to replace a TEF tutor?', acceptedAnswer: { '@type': 'Answer', text: 'Akseli is great for volume and speaking comfort. It gives you on-demand practice any time of day — but if you can afford both, a human tutor is still valuable for personalized coaching.' } },
             { '@type': 'Question', name: 'Can I try a TEF Canada practice session for free?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Sign up for a free account and try your first oral practice session before subscribing.' } },
+            { '@type': 'Question', name: 'What TEF Canada CLB score do I need for Express Entry or permanent residency?', acceptedAnswer: { '@type': 'Answer', text: 'For Express Entry (Federal Skilled Worker), you typically need CLB 7 in all four skills. Many provincial nominee programs require CLB 5 or CLB 6. Akseli helps you build the speaking fluency needed to reach your target CLB level on TEF Canada oral sections.' } },
+            { '@type': 'Question', name: 'How long does it take to prepare for TEF Canada oral sections?', acceptedAnswer: { '@type': 'Answer', text: 'Most candidates who practice consistently for 4–8 weeks see meaningful improvement. Akseli lets you do 1–2 realistic practice sessions per day, which accelerates improvement compared to weekly tutoring.' } },
+            { '@type': 'Question', name: 'Can I use Akseli to prepare for TEF Canada if I already speak some French?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Akseli is built specifically for TEF Canada oral preparation, not general French learning. Even intermediate speakers benefit from practicing the exam format: timed responses, Section A interview questions, Section B role-play scenarios, and the CLB scoring rubric.' } },
           ],
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'SoftwareApplication',
+          name: 'Akseli',
+          url: 'https://akseli.ca',
+          applicationCategory: 'EducationalApplication',
+          operatingSystem: 'Web',
+          description: 'AI-powered TEF Canada oral practice platform for Express Entry and immigration candidates. Practice Sections A and B with realistic prompts and instant feedback.',
+          offers: [
+            {
+              '@type': 'Offer',
+              name: 'Basic',
+              price: '25',
+              priceCurrency: 'CAD',
+              description: '10 oral practice sessions per month',
+            },
+            {
+              '@type': 'Offer',
+              name: 'Premium',
+              price: '45',
+              priceCurrency: 'CAD',
+              description: '30 oral practice sessions per month',
+            },
+          ],
+          inLanguage: ['en', 'fr'],
+          audience: {
+            '@type': 'Audience',
+            audienceType: 'Canadian immigration applicants preparing for TEF Canada oral exam',
+          },
         })}</script>
       </Helmet>
 

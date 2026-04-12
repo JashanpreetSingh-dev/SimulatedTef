@@ -34,6 +34,21 @@ export const FAQSection: React.FC = () => {
       answer:
         'Yes. You can start with a free TEF Canada oral practice session before choosing a plan, so you can see how the AI examiner and feedback work for you.',
     },
+    {
+      question: 'What TEF Canada CLB score do I need for Express Entry or permanent residency?',
+      answer:
+        'For Express Entry (Federal Skilled Worker), you typically need CLB 7 in all four skills (oral expression, oral comprehension, written expression, written comprehension). Many provincial nominee programs (PNPs) require CLB 5 or CLB 6. Akseli helps you build the speaking fluency and comfort needed to reach your target CLB level on TEF Canada oral sections.',
+    },
+    {
+      question: 'How long does it take to prepare for TEF Canada oral sections?',
+      answer:
+        'Most candidates who practice consistently for 4–8 weeks see meaningful improvement. The key is speaking volume — Akseli lets you do 1–2 realistic practice sessions per day at your own schedule, which accelerates the improvement you would normally get from weekly tutoring spread over months.',
+    },
+    {
+      question: 'Can I use Akseli to prepare for TEF Canada if I already speak some French?',
+      answer:
+        'Yes. Akseli is built specifically for TEF Canada oral preparation, not general French learning. Even intermediate speakers benefit from practicing the exam format: timed responses, Section A interview questions, Section B role-play scenarios, and understanding the CLB scoring rubric. Most users arrive with some French and use Akseli to close the gap between their everyday French and exam-ready French.',
+    },
   ];
 
   const toggleFAQ = (index: number) => {
