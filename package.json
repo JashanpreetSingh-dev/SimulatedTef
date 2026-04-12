@@ -71,7 +71,9 @@
     "tsx": "^4.7.1",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
+    "vite-plugin-pwa": "^1.2.0",
     "vitest": "latest",
+    "workbox-window": "^7.4.0",
     "yargs": "^18.0.0"
   }
 }
