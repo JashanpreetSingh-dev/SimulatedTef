@@ -29,7 +29,7 @@ export const FrenchAccentBar: React.FC<FrenchAccentBarProps> = ({ onInsertCharac
       selectionStart = textarea.selectionStart;
       selectionEnd = textarea.selectionEnd;
     }
-    
+
     // Prevent button from taking focus when clicked
     event.preventDefault();
     

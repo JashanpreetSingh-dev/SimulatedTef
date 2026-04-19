@@ -11,6 +11,8 @@ export const WebhookEventSchema = z.object({
   processedAt: z.string().optional(),
   error: z.string().optional(),
   createdAt: z.string(),
+  /** BSON Date for Mongo TTL; documents without this field are never auto-expired. */
+  mongoTtlAnchor: z.date().optional(),
 });
 
 export type WebhookEvent = z.infer<typeof WebhookEventSchema> & {
@@ -30,6 +32,7 @@ export function createWebhookEvent(
     eventType,
     processed,
     createdAt: new Date().toISOString(),
+    mongoTtlAnchor: new Date(),
   };
 }
 

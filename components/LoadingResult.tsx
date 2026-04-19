@@ -189,12 +189,17 @@ export const LoadingResult: React.FC<LoadingResultProps> = ({
       <div className="max-w-md w-full bg-indigo-100/70 dark:bg-slate-800 rounded-[3rem] border border-slate-200 dark:border-slate-700 p-12 shadow-xl">
         <div className="mb-8 text-center">
           {progress !== undefined && progress > 0 ? (
-            <LoadingProgress 
-              progress={progress} 
-              message={type === 'written' ? t('writtenExpression.evaluating') : t('writtenExpression.analyzing')}
-              showPercentage={true}
-              className="mb-6"
-            />
+            <>
+              <LoadingProgress 
+                progress={progress} 
+                message={type === 'written' ? t('writtenExpression.evaluating') : t('writtenExpression.analyzing')}
+                showPercentage={true}
+                className="mb-6"
+              />
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
+                {t('writtenExpression.evaluationDurationNote')}
+              </p>
+            </>
           ) : (
             <>
               <LoadingSpinner size="lg" color="primary" className="mb-6" />
@@ -203,6 +208,9 @@ export const LoadingResult: React.FC<LoadingResultProps> = ({
               </h2>
               <p className="text-slate-500 dark:text-slate-400 font-medium">
                 {type === 'written' ? t('writtenExpression.analyzingWriting') : t('writtenExpression.evaluatingPerformance')}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mt-3 leading-relaxed">
+                {t('writtenExpression.evaluationDurationNote')}
               </p>
               {isTimeoutWarning && timeRemaining && (
                 <p className="text-sm text-amber-600 dark:text-amber-400 font-medium mt-2">

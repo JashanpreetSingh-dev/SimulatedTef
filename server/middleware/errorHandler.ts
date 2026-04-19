@@ -3,6 +3,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../logger';
 
 /**
  * Custom error class for application errors
@@ -42,23 +43,17 @@ export function errorHandler(
     message = err.message;
   }
 
-  // Log error
+  const logCtx = {
+    requestId: req.requestId,
+    path: req.path,
+    method: req.method,
+    userId: req.userId,
+    statusCode,
+  };
   if (!isOperational || statusCode >= 500) {
-    console.error('Error:', {
-      message: err.message,
-      stack: err.stack,
-      statusCode,
-      path: req.path,
-      method: req.method,
-      userId: req.userId,
-    });
+    logger.error({ err, ...logCtx }, err.message);
   } else {
-    console.warn('Client error:', {
-      message: err.message,
-      statusCode,
-      path: req.path,
-      method: req.method,
-    });
+    logger.warn({ err, ...logCtx }, err.message);
   }
 
   // Send error response

@@ -3,6 +3,13 @@
 **Method:** graphify knowledge graph analysis of `server/` (97 files, 530 nodes, 752 edges) + manual frontend audit  
 **Scope:** Non-breaking improvements only — no business logic changes
 
+### Implementation notes (post-review)
+
+- **CORS + Helmet:** Prefer `FRONTEND_URL` (and optional comma-separated `CORS_ORIGINS`) for the allowlist; **require `FRONTEND_URL` in production** so CORS is not accidentally empty. Enable Helmet’s safe defaults first; **leave CSP off or very loose on this Express API** until someone maps Clerk/Stripe/third-party needs — strict CSP breaks SPAs and redirect flows if applied blindly.
+- **React.lazy / code splitting:** Lazy-load **most** routes; keep **one or two critical paths eager** (e.g. dashboard shell) if measurements show a chunk waterfall — not “every route lazy” as a hard rule.
+- **BullMQ retries:** Default retry behavior depends on **BullMQ version and how jobs are added** — confirm `attempts` / `backoff` on **queue add options and Worker options** in-repo before documenting exact numbers.
+- **`connectDB` fan-in:** High import count is not automatically wrong. Prefer **documenting the intended access pattern** (facade vs direct connection) before adding ESLint `no-restricted-imports`, so the rule does not fight legitimate bootstrap code.
+
 ---
 
 ## What We Found
@@ -43,9 +50,9 @@
 
 **3. CORS wide open + no security headers**
 - `app.use(cors())` — no origin whitelist
-- No `helmet.js` — missing X-Frame-Options, X-Content-Type-Options, CSP, HSTS
-- Fix: `cors({ origin: [FRONTEND_URL] })` + `app.use(helmet())`
-- File: `server/server.ts`
+- No `helmet.js` — missing X-Frame-Options, X-Content-Type-Options, etc.
+- Fix: allowlist via `FRONTEND_URL` + optional `CORS_ORIGINS`; dev auto-allows `http://localhost:3000` (Vite). `helmet()` with **CSP disabled or tuned** for this API (see Implementation notes above).
+- File: `server/server.ts`, `server/env.ts`
 
 ---
 
@@ -57,20 +64,21 @@
 - Files: `server/middleware/errorHandler.ts`, new `server/middleware/requestId.ts`
 
 **5. BullMQ workers have no retry config**
-- `evaluationWorker` and `questionGenerationWorker` rely on BullMQ defaults (0 retries)
-- A single Gemini timeout = silent job failure, no retry, no dead-letter
-- Fix: Add `attempts: 3, backoff: { type: 'exponential', delay: 2000 }` + `removeOnFail: false`
-- Files: `server/workers/evaluationWorker.ts`, `server/workers/questionGenerationWorker.ts`
+- Workers may rely on BullMQ / job defaults — **verify** `attempts` and `backoff` on both **Worker** and **`queue.add`** call sites.
+- A single Gemini timeout can mean a failed job with no recovery if retries are not set.
+- Fix: Add `attempts: 3, backoff: { type: 'exponential', delay: 2000 }` + `removeOnFail: false` (or equivalent) where jobs are produced and consumed.
+- Files: `server/workers/evaluationWorker.ts`, `server/workers/questionGenerationWorker.ts`, related queue modules
 
 **6. No code splitting on frontend**
 - All 24 routes are statically imported — entire app bundle loads on first visit
-- Fix: Wrap every page in `React.lazy()` + `Suspense`
-- File: `App.tsx`
+- Fix: `React.lazy()` + `Suspense` for **most** routes; keep critical paths eager if chunk waterfalls show up in profiling.
+- File: `App.tsx`, `routes/ProtectedRoutes.tsx`
 
 **7. No request timeout middleware**
 - Server has no global timeout — a slow DB query holds threads indefinitely
 - Individual `authenticatedFetch` has 30s client-side timeout, but server-side has none
 - Fix: `express-timeout-handler` or simple timeout middleware
+- **Done:** `server/middleware/requestTimeout.ts` after `express.json()` (default 120s, override with `REQUEST_TIMEOUT_MS`). Webhook routes mount earlier and are unaffected.
 
 ---
 
@@ -84,21 +92,21 @@
 
 **9. No TTL indexes on growing collections**
 - `webhookEvents`, `conversationLogs`, `usageEvents` grow unbounded
-- Fix: TTL index on `webhookEvents` (30 days), `conversationLogs` (90 days)
-- File: `server/db/indexes.ts`
+- Fix: Mongo TTL requires BSON `Date`; new writes set `mongoTtlAnchor` in `createWebhookEvent` / `createUsageEvent` / `createConversationLog`. TTL indexes: webhooks 30d, conversation logs 90d, usage events 90d. Legacy documents without `mongoTtlAnchor` are never auto-removed.
+- File: `server/db/indexes.ts`, `server/models/webhookEvent.ts`, `usageEvent.ts`, `ConversationLog.ts`
 
 **10. `connectDB()` imported directly everywhere**
-- 47 direct import edges — services bypass the model layer and import from `db/connection.ts`
-- Fix: ESLint `no-restricted-imports` rule to enforce DB access only through models
-- Flagged by graph as surprising connections: `subscriptionService`, `stripeWebhooks`, `clearMockData` all directly call `connectDB()`
+- 47 direct import edges — services import from `db/connection.ts` (high fan-in, not necessarily incorrect).
+- Fix (pick after design): ESLint `no-restricted-imports`, a thin `db` facade, or DI — **document intended pattern first** so lint rules match architecture.
+- Flagged by graph: `subscriptionService`, `stripeWebhooks`, `clearMockData` among direct callers.
 
 **11. Tailwind loaded from CDN in production**
 - `index.html` fetches Tailwind from CDN — eliminates tree-shaking and adds network dep
 - Fix: Build-time Tailwind CLI with PurgeCSS
 
 **12. Analytics scripts blocking render**
-- Google Analytics + Ahrefs load synchronously in `<head>`
-- Fix: Add `async`/`defer` attributes
+- Ahrefs loader already uses `async`. gtag loader uses `async`; inline config moved to **end of `<body>`** before `index.tsx` so `<head>` meta/CSS parse first.
+- File: `index.html`
 
 ---
 
@@ -122,8 +130,7 @@
 - Fix: Replace with `unknown` + type narrowing — no logic change
 
 **17. `voteAnalyticsService` appears isolated**
-- ≤1 connection in the graph — possible dead code or under-documented
-- Audit: is it called anywhere? If not, remove.
+- Graph under-connected this module; it **is in use**: `server/routes/admin.ts` (`voteAnalyticsService.getAnalytics`), `pages/AdminVoteAnalyticsView.tsx`, nav in `layouts/DashboardLayout.tsx`. **Not dead code** — graph false positive.
 
 ---
 
@@ -168,5 +175,20 @@ These are the major system flows, now formally documented:
 **Total high-impact: ~1.5 days**
 
 ---
+
+## Implementation status (2026-04-18)
+
+| Item | Status |
+|------|--------|
+| Critical 1 — Env validation (`MONGODB_URI`; prod `CLERK_SECRET_KEY` + `FRONTEND_URL`) | Done — `server/env.ts`, wired from `server/server.ts` |
+| Critical 2 — Error boundaries (root, signed-in shell, exam / mock-exam routes) | Done — `components/ErrorBoundary.tsx`, `App.tsx`, `routes/ProtectedRoutes.tsx` |
+| Critical 3 — CORS allowlist + Helmet (CSP off on API) | Done — `server/server.ts` |
+| High 5 — BullMQ retries | **Already present** — `defaultJobOptions.attempts` / `backoff` on `evaluationQueue` and `questionGenerationQueue`; `queue.add` call sites do not override `attempts` down to 1 |
+| High 7 — Request timeout | Done — `server/middleware/requestTimeout.ts`, global after `express.json()` in `server/server.ts` |
+| Medium 9 — TTL indexes | Done — `mongoTtlAnchor` + TTL in `server/db/indexes.ts` and model factories |
+| Medium 12 — Analytics head | Done — gtag block moved to end of `index.html` `<body>` |
+| High 4 — Pino + request ID | Done — `server/logger.ts`, `server/middleware/requestId.ts`, `errorHandler.ts`, `server/server.ts` |
+| High 6 — React.lazy | Done — `App.tsx`, `routes/ProtectedRoutes.tsx` with `Suspense` fallbacks |
+| Low 17 — voteAnalyticsService | **Not applicable** — in use via admin API and UI (see item 17 above) |
 
 *Generated 2026-04-18 via graphify knowledge graph analysis + manual audit*

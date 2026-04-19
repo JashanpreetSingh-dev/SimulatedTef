@@ -25,4 +25,7 @@ export const FRENCH_ACCENTS: FrenchAccent[] = [
   { char: 'ç', label: 'ç', uppercase: 'Ç' },
   { char: 'œ', label: 'œ', uppercase: 'Œ' },
   { char: 'æ', label: 'æ', uppercase: 'Æ' },
+  /** French quotation marks (guillemets); no case variant — shift inserts the same character. */
+  { char: '«', label: '«', uppercase: '«' },
+  { char: '»', label: '»', uppercase: '»' },
 ];

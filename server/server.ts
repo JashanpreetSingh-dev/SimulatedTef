@@ -1,24 +1,38 @@
 /**
  * Backend Server for TEF Master
  * Uses MongoDB URI to connect to database
- * 
- * Required Env Variables:
+ *
+ * Required env (all environments):
  * - MONGODB_URI (e.g., mongodb+srv://user:pass@cluster.mongodb.net/)
- * - MONGODB_DB_NAME (optional, defaults to 'tef_master')
- * - CLERK_SECRET_KEY (required for authentication)
- * - SUPER_USER_ID (optional, Clerk user ID that bypasses all usage limits)
- * 
+ *
+ * Production also requires:
+ * - CLERK_SECRET_KEY
+ * - FRONTEND_URL (browser app origin for CORS; no trailing slash required)
+ *
+ * Optional:
+ * - MONGODB_DB_NAME (defaults to 'tef_master')
+ * - CORS_ORIGINS (comma-separated extra allowed origins)
+ * - SUPER_USER_ID (Clerk user ID that bypasses usage limits)
+ *
  * Run with: npm run server
  */
 
+import 'dotenv/config';
+import { assertServerEnv, getCorsAllowedOrigins } from './env';
+assertServerEnv();
+
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import 'dotenv/config';
 import { connectDB, closeDB, checkConnectionHealth } from './db/connection';
 import { createIndexes } from './db/indexes';
 import { errorHandler } from './middleware/errorHandler';
+import { requestTimeout } from './middleware/requestTimeout';
+import { requestIdMiddleware } from './middleware/requestId';
+import { logger } from './logger';
+import pinoHttp from 'pino-http';
 import { subscriptionService } from './services/subscriptionService';
 import { d2cConfigService } from './services/d2cConfigService';
 
@@ -26,7 +40,30 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors());
+app.use(
+  helmet({
+    // API + optional SPA static host; strict CSP belongs on the document host after inventory.
+    contentSecurityPolicy: false,
+  })
+);
+const corsAllowedOrigins = getCorsAllowedOrigins();
+app.use(
+  cors({
+    credentials: true,
+    origin(origin, callback) {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      const normalized = origin.replace(/\/$/, '');
+      if (corsAllowedOrigins.has(normalized)) {
+        callback(null, true);
+        return;
+      }
+      callback(null, false);
+    },
+  })
+);
 
 // Webhooks need raw body for signature verification
 // MUST be mounted BEFORE express.json() middleware
@@ -38,18 +75,31 @@ app.use('/api/clerk-webhooks', express.raw({ type: 'application/json' }), clerkW
 // Increase body parser limit to handle large evaluation job payloads (transcripts, prompts, tasks, fluency analysis)
 // This must come AFTER the webhook route to avoid parsing webhook bodies as JSON
 app.use(express.json({ limit: '20mb' }));
+// Stripe/Clerk webhooks are handled above and never reach this line.
+app.use(requestIdMiddleware);
+app.use(requestTimeout());
+app.use(
+  pinoHttp({
+    logger,
+    genReqId: (req, _res) => req.requestId || '',
+    customLogLevel: (_req, res) => (res.statusCode >= 500 ? 'error' : res.statusCode >= 400 ? 'warn' : 'info'),
+    autoLogging: {
+      ignore: (req) => req.url === '/api/health',
+    },
+  })
+);
 
 declare global {
   namespace Express {
     interface Request {
       userId?: string;
+      requestId?: string;
     }
   }
 }
 
 
 const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
-const clerkSecretKey = process.env.CLERK_SECRET_KEY || "";
 
 import { requireAuth } from './middleware/auth';
 
@@ -73,16 +123,6 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
-if (!process.env.MONGODB_URI) {
-  console.error('MONGODB_URI is required!');
-  console.error('Add MONGODB_URI to your .env file');
-}
-
-if (!clerkSecretKey) {
-  console.warn('CLERK_SECRET_KEY is not set!');
-  console.warn('Authentication will be disabled. Set CLERK_SECRET_KEY for production security.');
-}
-
 // Initialize database connection and indexes on startup
 (async () => {
   try {
@@ -99,7 +139,7 @@ if (!clerkSecretKey) {
       startQuestionGenerationWorker();
       const { startEmailWorker } = await import('./workers/emailWorker');
       startEmailWorker();
-      console.log('Workers started in same process (RUN_WORKER=true)');
+      logger.info('Workers started in same process (RUN_WORKER=true)');
       
       // Set up periodic cleanup of old jobs to prevent Redis memory issues
       const { cleanupOldJobs } = await import('./jobs/evaluationQueue');
@@ -114,7 +154,7 @@ if (!clerkSecretKey) {
         startQuestionGenerationWorker();
         const { startEmailWorker } = await import('./workers/emailWorker');
         startEmailWorker();
-        console.log('Workers started in same process (development mode)');
+        logger.info('Workers started in same process (development mode)');
         
         // Set up periodic cleanup of old jobs to prevent Redis memory issues
         const { cleanupOldJobs } = await import('./jobs/evaluationQueue');
@@ -123,10 +163,12 @@ if (!clerkSecretKey) {
         }, 15 * 60 * 1000); // Clean up every 15 minutes
       }
     } else {
-      console.log('Workers not started (RUN_WORKER not set to true). Run workers as separate services in production.');
+      logger.info(
+        'Workers not started (RUN_WORKER not set to true). Run workers as separate services in production.'
+      );
     }
-  } catch (error: any) {
-    console.error('Failed to initialize:', error.message);
+  } catch (error: unknown) {
+    logger.error({ err: error }, 'Failed to initialize');
   }
 })();
 

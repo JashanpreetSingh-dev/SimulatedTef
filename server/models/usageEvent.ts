@@ -20,6 +20,8 @@ export const UsageEventSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   type: z.enum(USAGE_EVENT_TYPES),
   createdAt: z.string(), // ISO
+  /** BSON Date for Mongo TTL; optional on legacy documents. */
+  mongoTtlAnchor: z.date().optional(),
 });
 
 export type UsageEvent = z.infer<typeof UsageEventSchema> & {
@@ -36,5 +38,6 @@ export function createUsageEvent(
     date,
     type,
     createdAt: new Date().toISOString(),
+    mongoTtlAnchor: new Date(),
   };
 }

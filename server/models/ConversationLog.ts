@@ -47,6 +47,8 @@ export const ConversationLogSchema = z.object({
   resultId: z.string().optional(), // Link to result if completed
   createdAt: z.string(),
   updatedAt: z.string(),
+  /** BSON Date for Mongo TTL; optional on legacy documents. */
+  mongoTtlAnchor: z.date().optional(),
 });
 
 export type ConversationLog = z.infer<typeof ConversationLogSchema> & {
@@ -102,5 +104,6 @@ export function createConversationLog(
     },
     createdAt: now,
     updatedAt: now,
+    mongoTtlAnchor: new Date(),
   };
 }

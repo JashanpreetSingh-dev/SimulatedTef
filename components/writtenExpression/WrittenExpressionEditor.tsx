@@ -34,15 +34,14 @@ export const WrittenExpressionEditor: React.FC<WrittenExpressionEditorProps> = (
     onFinish(text);
   };
 
-  const handleInsertCharacter = (char: string) => {
+  const handleInsertCharacter = (char: string, selectionStart?: number, selectionEnd?: number) => {
     const textarea = textareaRef.current;
     if (textarea) {
-      const { newText, newCursorPosition } = insertCharacterAtCursor(
-        text,
-        char,
-        textarea.selectionStart,
-        textarea.selectionEnd
-      );
+      const fromRefStart = textarea.selectionStart;
+      const fromRefEnd = textarea.selectionEnd;
+      const start = selectionStart !== undefined ? selectionStart : fromRefStart;
+      const end = selectionEnd !== undefined ? selectionEnd : fromRefEnd;
+      const { newText, newCursorPosition } = insertCharacterAtCursor(text, char, start, end);
       setText(newText);
       // Set cursor position after inserted character
       setTimeout(() => {

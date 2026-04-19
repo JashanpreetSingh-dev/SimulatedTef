@@ -123,6 +123,12 @@ export async function createIndexes(): Promise<void> {
       { name: 'userId_date_createdAt_idx' }
     );
     console.log('Created index: usageEvents.userId_date_createdAt_idx');
+    // TTL: prune old events (mongoTtlAnchor set on new inserts in createUsageEvent). Legacy docs without the field are never removed.
+    await usageEventsCollection.createIndex(
+      { mongoTtlAnchor: 1 },
+      { name: 'mongoTtlAnchor_ttl_idx', expireAfterSeconds: 90 * 24 * 60 * 60 }
+    );
+    console.log('Created index: usageEvents.mongoTtlAnchor_ttl_idx (TTL 90d)');
     
     // Exam sessions collection indexes
     const examSessionsCollection = db.collection('examSessions');
@@ -157,6 +163,11 @@ export async function createIndexes(): Promise<void> {
       { name: 'processed_processedAt_idx' }
     );
     console.log('Created index: webhookEvents.processed_processedAt_idx');
+    await webhookEventsCollection.createIndex(
+      { mongoTtlAnchor: 1 },
+      { name: 'mongoTtlAnchor_ttl_idx', expireAfterSeconds: 30 * 24 * 60 * 60 }
+    );
+    console.log('Created index: webhookEvents.mongoTtlAnchor_ttl_idx (TTL 30d)');
     
     // Reading Tasks collection indexes
     const readingTasksCollection = db.collection('readingTasks');
@@ -457,6 +468,11 @@ export async function createIndexes(): Promise<void> {
       { name: 'userId_part_startedAt_idx' }
     );
     console.log(' Created index: conversationLogs.userId_part_startedAt_idx');
+    await conversationLogsCollection.createIndex(
+      { mongoTtlAnchor: 1 },
+      { name: 'mongoTtlAnchor_ttl_idx', expireAfterSeconds: 90 * 24 * 60 * 60 }
+    );
+    console.log(' Created index: conversationLogs.mongoTtlAnchor_ttl_idx (TTL 90d)');
 
     // userNotifications: unique on userId+type for atomic "claim" (prevents duplicate subscription congrats)
     const userNotificationsCollection = db.collection('userNotifications');

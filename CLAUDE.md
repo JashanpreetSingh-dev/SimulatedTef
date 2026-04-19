@@ -13,6 +13,16 @@ After writing the file, always stage and commit it: `git add docs/design/ && git
 
 `~/.gstack/` is still used for gstack internals (learnings, timeline, reviews) — those stay local and are not committed.
 
+## Knowledge graph (Graphify)
+
+This repo has Graphify output under **`graphify-out/`**. When the task touches **architecture, module boundaries, how components connect, onboarding a large area of the codebase, or cross-file relationships**, read these **before** guessing from ad-hoc search alone:
+
+1. **`graphify-out/GRAPH_REPORT.md`** — plain-language audit and communities (start here).
+2. **`graphify-out/graph.json`** — nodes, edges, and provenance (EXTRACTED / INFERRED / AMBIGUOUS) for precise follow-up.
+3. **`graphify-out/graph.html`** — interactive visualization; use when spatial/layout of the graph matters.
+
+If those files are missing or stale for the area being discussed, say so and either read the source directly or suggest re-running Graphify on the relevant path. A second corpus may exist at **`server/graphify-out/`** when the graph was built from `server/` only — prefer the tree that matches the user’s question.
+
 ## Skill routing
 
 When the user's request matches an available skill, ALWAYS invoke it using the Skill

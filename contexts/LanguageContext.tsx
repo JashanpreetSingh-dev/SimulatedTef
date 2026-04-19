@@ -222,6 +222,8 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.savingResults': 'Sauvegarde des résultats',
     'writtenExpression.processingAudio': 'Traitement de l\'enregistrement audio',
     'writtenExpression.transcribingAudio': 'Transcription de l\'audio',
+    'writtenExpression.evaluationDurationNote':
+      'Cela prend généralement quelques minutes (souvent 2 à 3). Laissez cet onglet ouvert.',
     
     // Guided Writing
     'guidedWriting.companionTitle': 'Compagnon d\'apprentissage',
@@ -747,6 +749,8 @@ const translations: Record<Language, Record<string, string>> = {
     'writtenExpression.savingResults': 'Saving results',
     'writtenExpression.processingAudio': 'Processing audio recording',
     'writtenExpression.transcribingAudio': 'Transcribing audio',
+    'writtenExpression.evaluationDurationNote':
+      'This usually takes a few minutes (often about 2–3). Please keep this tab open.',
     
     // Listening Exam
     'listeningExam.close': 'Close',
