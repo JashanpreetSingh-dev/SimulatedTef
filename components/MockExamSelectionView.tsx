@@ -1,8 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { authenticatedFetchJSON } from '../services/authenticatedFetch';
+import { useIsD2C } from '../utils/userType';
+import { usePageTour } from '../hooks/usePageTour';
+
+const MOCK_EXAM_STEPS = [
+  {
+    element: '#tour-mock-exam-tabs',
+    popover: {
+      title: '📋 Pick an exam to start',
+      description: "Each mock exam is a complete full-length simulation. Pick one and commit — partial completions still save your progress.",
+      side: 'bottom' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#tour-mock-exam-completed-btn',
+    popover: {
+      title: '✅ Review your results',
+      description: "Completed exams and your section-by-section scores show up here. Track your progress before booking the real thing.",
+      side: 'bottom' as const,
+      align: 'end' as const,
+      nextBtnText: "Let's go! →",
+    },
+  },
+];
 
 type TabType = 'mock-test' | 'completed';
 
@@ -39,8 +63,11 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
   onCancel,
 }) => {
   const { getToken } = useAuth();
+  const { user } = useUser();
   const { theme } = useTheme();
   const { t } = useLanguage();
+  const isD2C = useIsD2C();
+  usePageTour(isD2C ? user?.id : undefined, 'mock_exam', MOCK_EXAM_STEPS);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mockExams, setMockExams] = useState<MockExam[]>([]);
@@ -233,7 +260,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-4">
+          <div id="tour-mock-exam-tabs" className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl mb-4">
             <button
               onClick={() => setActiveTab('mock-test')}
               className={`
@@ -247,6 +274,7 @@ export const MockExamSelectionView: React.FC<MockExamSelectionViewProps> = ({
               {t('mockExam.mockTests')}
             </button>
             <button
+              id="tour-mock-exam-completed-btn"
               onClick={() => setActiveTab('completed')}
               className={`
                 flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all relative

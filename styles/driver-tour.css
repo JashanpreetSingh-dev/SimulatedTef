@@ -1,0 +1,121 @@
+/* ─── driver.js tour theme ─── matches the app's indigo/slate design ─────── */
+
+.driver-popover {
+  background-color: #1e293b; /* slate-800 */
+  color: #f8fafc;
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 12px;
+  padding: 18px 20px 14px;
+  min-width: 280px;
+  max-width: 340px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(99, 102, 241, 0.12);
+}
+
+.driver-popover * {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+.driver-popover-title {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.driver-popover-description {
+  color: #94a3b8; /* slate-400 */
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 6px !important;
+}
+
+/* close × button */
+.driver-popover-close-btn {
+  color: #475569;
+  font-size: 16px;
+}
+
+.driver-popover-close-btn:hover,
+.driver-popover-close-btn:focus {
+  color: #f8fafc;
+}
+
+/* footer */
+.driver-popover-footer {
+  margin-top: 14px;
+}
+
+/* progress "1 of 3" */
+.driver-popover-progress-text {
+  color: #475569; /* slate-600 */
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* ── buttons base ── */
+.driver-popover-footer button {
+  border-radius: 7px !important;
+  padding: 5px 13px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  text-shadow: none !important;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+/* prev — ghost */
+.driver-popover-prev-btn {
+  background-color: transparent !important;
+  color: #64748b !important;
+  border: 1px solid #334155 !important;
+}
+
+.driver-popover-prev-btn:hover,
+.driver-popover-prev-btn:focus {
+  background-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+/* next / done — indigo-500 primary */
+.driver-popover-next-btn {
+  background-color: #6366f1 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.driver-popover-next-btn:hover,
+.driver-popover-next-btn:focus {
+  background-color: #4f46e5 !important;
+}
+
+/* ── arrow — match popover bg ── */
+.driver-popover-arrow {
+  border-color: #1e293b;
+}
+
+.driver-popover-arrow-side-left {
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.driver-popover-arrow-side-right {
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+  border-top-color: transparent;
+}
+
+.driver-popover-arrow-side-top {
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.driver-popover-arrow-side-bottom {
+  border-left-color: transparent;
+  border-top-color: transparent;
+  border-right-color: transparent;
+}

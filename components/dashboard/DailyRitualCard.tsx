@@ -9,7 +9,8 @@ export function DailyRitualCard() {
 
   return (
     <div
-      className="bg-gradient-to-br from-teal-600 to-teal-900 rounded-2xl md:rounded-3xl p-6 shadow-lg hover:shadow-xl hover:shadow-teal-500/25 transition-all group cursor-pointer border border-teal-400/25"
+      id="tour-daily-ritual-card"
+      className="h-full bg-gradient-to-br from-teal-600 to-teal-900 rounded-2xl md:rounded-3xl p-6 shadow-lg hover:shadow-xl hover:shadow-teal-500/25 transition-all group cursor-pointer border border-teal-400/25"
       onClick={() => navigate('/practice/daily-ritual')}
     >
       <div className="flex items-start justify-between mb-4">

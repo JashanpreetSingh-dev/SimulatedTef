@@ -1,7 +1,40 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@clerk/clerk-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useIsD2C } from '../utils/userType';
+import { usePageTour } from '../hooks/usePageTour';
+
+const DAILY_RITUAL_STEPS = [
+  {
+    element: '#ritual-focus',
+    popover: {
+      title: '🎯 Choose your focus',
+      description: "Vocabulary, grammar, or a mix tailored to TEF weak spots. Start with Mixed — it auto-targets the areas you need most.",
+      side: 'top' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#ritual-level',
+    popover: {
+      title: '📊 Set your target level',
+      description: "B2 is the TEF Canada minimum for permanent residency. Choose C1 if you want a comfortable score buffer.",
+      side: 'top' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#tour-ritual-start-btn',
+    popover: {
+      title: '🚀 Start your session',
+      description: "Hit this daily. Swipe right to mark a card mastered, left to review it again. 15 focused minutes beats 3 hours of cramming once a week.",
+      side: 'top' as const,
+      align: 'start' as const,
+      nextBtnText: "Let's do it! →",
+    },
+  },
+];
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { RitualCardStack } from '../components/dailyRitual/RitualCardStack';
 import { RitualSelect } from '../components/dailyRitual/RitualSelect';
@@ -20,7 +53,11 @@ export function DailyRitualView() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { getToken } = useAuth();
+  const { user } = useUser();
+  const isD2C = useIsD2C();
+  usePageTour(isD2C ? user?.id : undefined, 'daily_ritual', DAILY_RITUAL_STEPS);
   const [phase, setPhase] = useState<Phase>('setup');
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [focus, setFocus] = useState<DailyRitualFocus>('mixed');
   const [cefrHint, setCefrHint] = useState<DailyRitualCefrHint>('B2');
@@ -236,6 +273,7 @@ export function DailyRitualView() {
             </div>
 
             <button
+              id="tour-ritual-start-btn"
               type="button"
               onClick={startSession}
               className="touch-manipulation w-full min-h-[52px] rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-base font-bold shadow-md shadow-teal-900/20 transition-colors"

@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useIsD2C } from '../utils/userType';
+import { usePageTour } from '../hooks/usePageTour';
 import { OralExpressionLive } from '../components/OralExpressionLive';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
@@ -14,6 +16,28 @@ import { useExamResult } from '../hooks/useExamResult';
 import { useUsage } from '../hooks/useUsage';
 import LogRocket from 'logrocket';
 
+const ORAL_EXAM_STEPS = [
+  {
+    element: '#tour-oral-task-doc',
+    popover: {
+      title: '📄 Your exam document',
+      description: "Read the document and the Consigne carefully before you start. This is your speaking topic — know it well.",
+      side: 'right' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#tour-oral-mic-btn',
+    popover: {
+      title: '🎙 Ready? Hit Start',
+      description: "Press Start to begin. The AI examiner speaks first — listen, then respond naturally in French. When time runs out, your recording is auto-submitted for AI scoring.",
+      side: 'top' as const,
+      align: 'center' as const,
+      nextBtnText: "Got it — let's go!",
+    },
+  },
+];
+
 export function ExamView() {
   const { mode } = useParams<{ mode: 'partA' | 'partB' | 'full' }>();
   const navigate = useNavigate();
@@ -21,11 +45,14 @@ export function ExamView() {
   const { user } = useUser();
   const { getToken } = useAuth();
   const { t } = useLanguage();
+  const isD2C = useIsD2C();
   const [scenario, setScenario] = useState<any>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
   const { startExam, validateSession } = useUsage();
+  // Tour fires after warning modal is confirmed — OralExpressionLive is mounted by then
+  usePageTour(isD2C && hasSeenWarning ? user?.id : undefined, 'oral_exam', ORAL_EXAM_STEPS);
   
   // Use the custom hook for result management
   const { result, isLoading, handleResult } = useExamResult({

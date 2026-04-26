@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useIsD2C } from '../utils/userType';
+import { usePageTour } from '../hooks/usePageTour';
 import { GuidedWritingExam } from '../components/guidedWriting/GuidedWritingExam';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
@@ -15,6 +16,37 @@ import { WrittenTask } from '../types';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
+const WRITTEN_EXAM_STEPS = [
+  {
+    element: '#tour-written-editor',
+    popover: {
+      title: '✏️ Write your response here',
+      description: "Type your French response in this field. Use the accent bar above to insert é, è, ç, and more. Watch the word count — TEF has a minimum requirement.",
+      side: 'top' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#tour-written-companion',
+    popover: {
+      title: '🤖 AI Writing Coach',
+      description: "Stuck mid-draft? Request AI feedback. It won't write for you — it coaches structure, grammar, and vocabulary. Use it strategically.",
+      side: 'left' as const,
+      align: 'start' as const,
+    },
+  },
+  {
+    element: '#tour-written-submit',
+    popover: {
+      title: '📤 Submit when ready',
+      description: "Hit Submit to send your writing for AI scoring. Make sure you've hit your word count target first.",
+      side: 'top' as const,
+      align: 'center' as const,
+      nextBtnText: "Got it — let's write!",
+    },
+  },
+];
+
 export function GuidedWrittenExamView() {
   const { mode } = useParams<{ mode: 'partA' | 'partB' }>();
   const navigate = useNavigate();
@@ -23,7 +55,9 @@ export function GuidedWrittenExamView() {
   const { getToken } = useAuth();
   const { t } = useLanguage();
   const isD2C = useIsD2C();
+  // Tour fires once tasks are loaded (GuidedWritingEditor DOM elements exist by then)
   const [tasks, setTasks] = useState<{ taskA: WrittenTask; taskB: WrittenTask } | null>(null);
+  usePageTour(isD2C && !!tasks ? user?.id : undefined, 'written_exam', WRITTEN_EXAM_STEPS);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [limitCheckPassed, setLimitCheckPassed] = useState<boolean | null>(isD2C ? null : true);
   const initializedModeRef = useRef<string | null>(null);

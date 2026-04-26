@@ -99,6 +99,7 @@ export const GuidedWritingEditor: React.FC<GuidedWritingEditorProps> = ({
             <FrenchAccentBar onInsertCharacter={handleInsertCharacter} />
 
             <textarea
+              id="tour-written-editor"
               ref={textareaRef}
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -107,6 +108,7 @@ export const GuidedWritingEditor: React.FC<GuidedWritingEditorProps> = ({
             />
 
             <button
+              id="tour-written-submit"
               onClick={handleFinish}
               disabled={text.trim().length === 0}
               className="w-full py-3 bg-indigo-500 dark:bg-indigo-600 text-white rounded-lg font-semibold text-xs uppercase tracking-wide hover:bg-indigo-600 dark:hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale"
@@ -115,7 +117,7 @@ export const GuidedWritingEditor: React.FC<GuidedWritingEditorProps> = ({
             </button>
           </div>
 
-          <div className="flex-[0.4] min-h-0">
+          <div id="tour-written-companion" className="flex-[0.4] min-h-0">
             <CompanionPanel
               task={task}
               text={text}
