@@ -5,12 +5,12 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
-import { DailyRitualFeatureCallout } from '../components/dashboard/DailyRitualFeatureCallout';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
 import { subscriptionService, Subscription } from '../services/subscriptionService';
+import { useProductTour } from '../hooks/useProductTour';
 
 export function Dashboard() {
   const { user } = useUser();
@@ -19,8 +19,8 @@ export function Dashboard() {
   const { t } = useLanguage();
   const [batch, setBatch] = useState<Batch | null>(null);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [hasCompletedFirstPractice, setHasCompletedFirstPractice] = useState(false);
   const isD2C = useIsD2C();
+  useProductTour(isD2C ? user?.id : undefined);
 
   // Check if user is a professor or admin (admins have all professor permissions)
   const isProfessor = user?.organizationMemberships?.some(
@@ -41,13 +41,6 @@ export function Dashboard() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isD2C]);
-
-  useEffect(() => {
-    if (user?.id) {
-      const completed = localStorage.getItem(`first_practice_completed_${user.id}`) === 'true';
-      setHasCompletedFirstPractice(completed);
-    }
-  }, [user?.id]);
 
   const loadBatch = async () => {
     try {
@@ -98,29 +91,14 @@ export function Dashboard() {
           <p className="text-sm md:text-base text-slate-500 dark:text-slate-400">{t('dashboard.subtitle')}</p>
         </div>
 
-        {isD2C && !hasCompletedFirstPractice && (!subscription || subscription.tier === 'free') && (
-          <div className="rounded-xl bg-indigo-600 dark:bg-indigo-500 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="font-semibold text-white text-base">Ready to ace your TEF Canada oral?</p>
-              <p className="text-indigo-100 text-sm">Start your first AI-powered oral practice session — get real examiner feedback in minutes.</p>
-            </div>
-            <button
-              onClick={() => navigate('/practice')}
-              className="shrink-0 px-5 py-2.5 rounded-lg bg-white text-indigo-600 font-semibold text-sm hover:bg-indigo-50 transition-colors"
-            >
-              Start first oral practice
-            </button>
-          </div>
-        )}
+        {/* Hero — AI speaking + writing practice */}
+        <PracticeCard />
 
-        <DailyRitualFeatureCallout />
-
-        {/* Section Cards */}
+        {/* Secondary row — daily habit + milestone */}
         <div className="grid md:grid-cols-2 gap-6">
-          <PracticeCard />
+          <DailyRitualCard />
           <MockExamsCard />
         </div>
-        <DailyRitualCard />
       </main>
     </DashboardLayout>
   );

@@ -87,11 +87,42 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </>
             )}
             {isD2CUser && (
-              <button 
-                onClick={() => navigate('/subscription')}
-                className={isActive('/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
-                Subscription
-              </button>
+              <>
+                <button
+                  id="tour-nav-practice"
+                  onClick={() => navigate('/practice')}
+                  className={
+                    location.pathname.startsWith('/practice') && !isActive('/practice/daily-ritual')
+                      ? 'text-indigo-400 dark:text-indigo-400'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }>
+                  Practice
+                </button>
+                <button
+                  onClick={() => navigate('/mock-exam')}
+                  className={
+                    location.pathname.startsWith('/mock-exam')
+                      ? 'text-indigo-400 dark:text-indigo-400'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }>
+                  Mock Exam
+                </button>
+                <button
+                  onClick={() => navigate('/practice/daily-ritual')}
+                  className={isActive('/practice/daily-ritual') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  Daily Ritual
+                </button>
+                <button
+                  onClick={() => navigate('/history')}
+                  className={isActive('/history') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  History
+                </button>
+                <button
+                  onClick={() => navigate('/subscription')}
+                  className={isActive('/subscription') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                  Subscription
+                </button>
+              </>
             )}
             {isAdmin && (
               <>
@@ -247,16 +278,58 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </>
               )}
               {isD2CUser && (
-                <button 
-                  onClick={() => handleNavigate('/subscription')}
-                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                    isActive('/subscription')
-                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300' 
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  Subscription
-                </button>
+                <>
+                  <button
+                    onClick={() => handleNavigate('/practice')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      location.pathname.startsWith('/practice') && !isActive('/practice/daily-ritual')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Practice
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/mock-exam')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      location.pathname.startsWith('/mock-exam')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Mock Exam
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/practice/daily-ritual')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/practice/daily-ritual')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Daily Ritual
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/history')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/history')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    History
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/subscription')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      isActive('/subscription')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Subscription
+                  </button>
+                </>
               )}
               {isAdmin && (
                 <>

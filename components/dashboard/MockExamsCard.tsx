@@ -7,8 +7,9 @@ export function MockExamsCard() {
   const { t } = useLanguage();
 
   return (
-    <div 
-      className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transition-all group cursor-pointer"
+    <div
+      id="tour-mock-exam-card"
+      className="h-full bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl p-4 md:p-6 shadow-lg hover:shadow-xl hover:shadow-purple-500/20 transition-all group cursor-pointer"
       onClick={() => navigate('/mock-exam')}
     >
       <div className="flex items-start justify-between mb-3 md:mb-4">

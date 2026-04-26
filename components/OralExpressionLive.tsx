@@ -1546,7 +1546,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
-        <div className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
+        <div id="tour-oral-task-doc" className="bg-indigo-100/70 dark:bg-slate-800/50 rounded-2xl md:rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm flex flex-col h-[400px] md:h-[480px] transition-colors">
           <div className="bg-slate-100 dark:bg-slate-800 px-4 md:px-6 py-3 md:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
             <span className="text-[9px] md:text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">Document #{currentTask.id}</span>
             <button 
@@ -1607,6 +1607,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           <div className="relative group flex-shrink-0">
             <div className={`absolute inset-0 rounded-full blur-[60px] transition-all duration-700 ${isModelSpeaking ? 'bg-indigo-300/40 scale-150' : (isUserSpeaking ? 'bg-emerald-300/40 scale-125' : 'bg-indigo-100/70/5 scale-100')}`} />
             <button
+              id="tour-oral-mic-btn"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
