@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
+import '../styles/driver-tour.css';
 
 const TOUR_KEY = (userId: string) => `onboarding_done_${userId}`;
 
