@@ -309,6 +309,14 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           savedResult = await resultsService.upsertMockExamResult(resultToSave);
         } else {
           savedResult = await resultsService.create(resultToSave);
+
+          // Trigger quiz notification check for D2C users (fire-and-forget)
+          try {
+            const { checkAndCreateQuizNotification } = await import('../services/quizNotificationService');
+            await checkAndCreateQuizNotification(userId, savedResult._id!);
+          } catch {
+            // Never break result saving
+          }
         }
 
         // Track usage for written expression (non-mock exam practice) - D2C users only

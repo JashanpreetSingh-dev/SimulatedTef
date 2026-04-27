@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Footer } from '../components/Footer';
 import { useIsD2C } from '../utils/userType';
+import { NotificationPanel } from '../components/quiz/NotificationPanel';
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user } = useUser();
@@ -151,6 +152,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
+          <NotificationPanel isD2C={isD2CUser} />
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
