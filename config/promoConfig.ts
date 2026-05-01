@@ -17,12 +17,6 @@ export type PromoConfig = {
   discountPercent?: number;
 };
 
-const activePromo: PromoConfig | null = {
-  message: 'Good Friday Sale — get 40% off any plan.',
-  code: 'GOODFRIDAY40',
-  ctaLabel: 'Get the deal',
-  ctaHref: '#pricing',
-  discountPercent: 40,
-};
+const activePromo: PromoConfig | null = null;
 
 export default activePromo;
