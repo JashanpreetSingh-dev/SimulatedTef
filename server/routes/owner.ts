@@ -752,33 +752,68 @@ router.get(
       }
     }
 
+    const subByUser = new Map<string, { tier: string; status: string }>();
+    if (uniqueIds.length > 0) {
+      const subDocs = await db
+        .collection('subscriptions')
+        .find({ userId: { $in: uniqueIds } })
+        .project({ userId: 1, tier: 1, status: 1 })
+        .toArray();
+      for (const doc of subDocs) {
+        const uid = doc.userId as string | undefined;
+        if (uid) {
+          subByUser.set(uid, {
+            tier: typeof doc.tier === 'string' ? doc.tier : 'free',
+            status: typeof doc.status === 'string' ? doc.status : '',
+          });
+        }
+      }
+    }
+
+    function normalizeTier(raw: string): 'free' | 'basic' | 'premium' {
+      if (raw === 'basic' || raw === 'premium' || raw === 'free') return raw;
+      return 'free';
+    }
+
     const result = [...userMap.entries()]
-      .map(([userId, data]) => ({
-        userId,
-        userEmail: emailMap.get(userId) ?? userId,
-        speakingSessions: data.speakingSessions,
-        speakingCost: Math.round(data.speakingCost * 10000) / 10000,
-        oralEvals: data.oralEvals,
-        oralEvalCost: Math.round(data.oralEvalCost * 10000) / 10000,
-        writtenEvals: data.writtenEvals,
-        writtenEvalCost: Math.round(data.writtenEvalCost * 10000) / 10000,
-        dailyRitualEvents: data.dailyRitualEvents,
-        dailyRitualCost: Math.round(data.dailyRitualCost * 10000) / 10000,
-        guidedWritingEvents: data.guidedWritingEvents,
-        guidedWritingCost: Math.round(data.guidedWritingCost * 10000) / 10000,
-        otherEvents: data.otherEvents,
-        otherAiCost: Math.round(data.otherAiCost * 10000) / 10000,
-        totalCost:
-          Math.round(
-            (data.speakingCost +
-              data.oralEvalCost +
-              data.writtenEvalCost +
-              data.dailyRitualCost +
-              data.guidedWritingCost +
-              data.otherAiCost) *
-              10000
-          ) / 10000,
-      }))
+      .map(([userId, data]) => {
+        const sub = subByUser.get(userId);
+        const subscriptionTier = normalizeTier(sub?.tier ?? 'free');
+        const subscriptionStatus = sub?.status ?? '';
+        const isPayingSubscriber =
+          (subscriptionTier === 'basic' || subscriptionTier === 'premium') &&
+          (subscriptionStatus === 'active' || subscriptionStatus === 'trialing');
+
+        return {
+          userId,
+          userEmail: emailMap.get(userId) ?? userId,
+          subscriptionTier,
+          subscriptionStatus,
+          isPayingSubscriber,
+          speakingSessions: data.speakingSessions,
+          speakingCost: Math.round(data.speakingCost * 10000) / 10000,
+          oralEvals: data.oralEvals,
+          oralEvalCost: Math.round(data.oralEvalCost * 10000) / 10000,
+          writtenEvals: data.writtenEvals,
+          writtenEvalCost: Math.round(data.writtenEvalCost * 10000) / 10000,
+          dailyRitualEvents: data.dailyRitualEvents,
+          dailyRitualCost: Math.round(data.dailyRitualCost * 10000) / 10000,
+          guidedWritingEvents: data.guidedWritingEvents,
+          guidedWritingCost: Math.round(data.guidedWritingCost * 10000) / 10000,
+          otherEvents: data.otherEvents,
+          otherAiCost: Math.round(data.otherAiCost * 10000) / 10000,
+          totalCost:
+            Math.round(
+              (data.speakingCost +
+                data.oralEvalCost +
+                data.writtenEvalCost +
+                data.dailyRitualCost +
+                data.guidedWritingCost +
+                data.otherAiCost) *
+                10000
+            ) / 10000,
+        };
+      })
       .sort((a, b) => b.totalCost - a.totalCost);
 
     res.json(result);

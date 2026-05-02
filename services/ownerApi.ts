@@ -79,6 +79,11 @@ export interface RecentSession {
 export interface UserCost {
   userId: string;
   userEmail: string;
+  /** From `subscriptions` collection */
+  subscriptionTier: 'free' | 'basic' | 'premium';
+  subscriptionStatus: string;
+  /** Paid tier with Stripe status active or trialing */
+  isPayingSubscriber: boolean;
   speakingSessions: number;
   speakingCost: number;
   oralEvals: number;

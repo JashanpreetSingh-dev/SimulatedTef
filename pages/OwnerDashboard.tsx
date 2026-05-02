@@ -178,6 +178,38 @@ function KpiCard({ label, value, sub }: { label: string; value: string; sub?: st
   );
 }
 
+/** Plan badge for owner user-cost table and detail modal */
+function SubscriptionTierBadge({ user }: { user: UserCost }) {
+  const tier = user.subscriptionTier ?? 'free';
+  const paying = user.isPayingSubscriber ?? false;
+  const status = user.subscriptionStatus ?? '';
+  const label = tier === 'basic' ? 'Basic' : tier === 'premium' ? 'Premium' : 'Free';
+  const paidButInactive =
+    (tier === 'basic' || tier === 'premium') && !paying && status && status !== 'active' && status !== 'trialing';
+  const color = paying
+    ? tier === 'premium'
+      ? 'bg-violet-200 text-violet-900 dark:bg-violet-800 dark:text-violet-100 ring-1 ring-violet-400/60 dark:ring-violet-500/50'
+      : 'bg-indigo-200 text-indigo-900 dark:bg-indigo-800 dark:text-indigo-100 ring-1 ring-indigo-400/60 dark:ring-indigo-500/50'
+    : tier === 'premium'
+      ? 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300'
+      : tier === 'basic'
+        ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300'
+        : 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1 mt-1">
+      <span
+        className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${color}`}
+        title={status ? `Stripe: ${status}` : undefined}
+      >
+        {label}
+      </span>
+      {paidButInactive ? (
+        <span className="text-[10px] text-slate-400 dark:text-slate-500 normal-case font-medium">{status}</span>
+      ) : null}
+    </span>
+  );
+}
+
 // --- Progress bar ---
 function ProgressBar({ label, value, total, color }: { label: string; value: number; total: number; color: string }) {
   const p = pct(value, total);
@@ -276,6 +308,7 @@ function UserDetailModal({
           <div className="min-w-0">
             <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{user.userEmail}</p>
             <p className="text-xs text-slate-400 dark:text-slate-500 font-mono mt-0.5 truncate">{user.userId}</p>
+            <SubscriptionTierBadge user={user} />
           </div>
           <button
             onClick={onClose}
@@ -856,7 +889,9 @@ export function OwnerDashboard() {
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <div className="p-4 md:px-6 md:py-4 border-b border-slate-200 dark:border-slate-700">
                   <h2 className="text-sm font-bold text-slate-700 dark:text-slate-200">Cost per User</h2>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{sortedUsers.length} users · {dateRange.label} · tap column to sort</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                    {sortedUsers.length} users · {dateRange.label} · tap column to sort · paid Basic (indigo) / Premium (violet) rows are highlighted
+                  </p>
                 </div>
                 <div className="overflow-x-auto">
                   {sortedUsers.length === 0 ? (
@@ -880,8 +915,21 @@ export function OwnerDashboard() {
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
                         {sortedUsers.map((u, i) => (
-                          <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 cursor-pointer" onClick={() => setSelectedUser(u)}>
-                            <td className="px-3 sm:px-6 py-3 font-mono text-xs text-slate-600 dark:text-slate-300 max-w-[120px] sm:max-w-[200px] truncate">{u.userEmail}</td>
+                          <tr
+                            key={i}
+                            className={`cursor-pointer border-l-4 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30 ${
+                              u.isPayingSubscriber
+                                ? u.subscriptionTier === 'premium'
+                                  ? 'border-l-violet-500 bg-violet-50/40 dark:bg-violet-950/20'
+                                  : 'border-l-indigo-500 bg-indigo-50/40 dark:bg-indigo-950/20'
+                                : 'border-l-transparent'
+                            }`}
+                            onClick={() => setSelectedUser(u)}
+                          >
+                            <td className="px-3 sm:px-6 py-3 min-w-0 max-w-[140px] sm:max-w-[220px]">
+                              <div className="font-mono text-xs text-slate-600 dark:text-slate-300 truncate">{u.userEmail}</div>
+                              <SubscriptionTierBadge user={u} />
+                            </td>
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300">{fmt(u.speakingSessions)}</td>
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden sm:table-cell">{fmtDollars(u.speakingCost)}</td>
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden md:table-cell">{fmt(u.oralEvals)}</td>
