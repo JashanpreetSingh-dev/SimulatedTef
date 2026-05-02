@@ -235,6 +235,27 @@ function UserDetailModal({
       cost: user.writtenEvalCost,
       color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
     },
+    {
+      label: 'Daily ritual',
+      count: user.dailyRitualEvents,
+      unit: 'calls',
+      cost: user.dailyRitualCost,
+      color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-800 dark:text-teal-200',
+    },
+    {
+      label: 'Guided writing',
+      count: user.guidedWritingEvents,
+      unit: 'calls',
+      cost: user.guidedWritingCost,
+      color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200',
+    },
+    {
+      label: 'Other AI (titles, etc.)',
+      count: user.otherEvents,
+      unit: 'calls',
+      cost: user.otherAiCost,
+      color: 'bg-stone-100 dark:bg-stone-800/50 text-stone-700 dark:text-stone-300',
+    },
   ];
 
   return (
@@ -272,7 +293,7 @@ function UserDetailModal({
           </div>
 
           {/* Service breakdown cards */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {services.map(svc => (
               <div key={svc.label} className={`rounded-xl p-3 space-y-1 ${svc.color}`}>
                 <p className="text-xs font-semibold leading-tight">{svc.label}</p>
@@ -398,6 +419,9 @@ export function OwnerDashboard() {
         Speaking: costs.speaking?.[i] ?? 0,
         'Oral Eval': costs.oralEval?.[i] ?? 0,
         'Written Eval': costs.writtenEval?.[i] ?? 0,
+        'Daily ritual': costs.dailyRitual?.[i] ?? 0,
+        'Guided writing': costs.guidedWriting?.[i] ?? 0,
+        'Other AI': costs.otherAi?.[i] ?? 0,
       }))
     : [];
 
@@ -415,9 +439,12 @@ export function OwnerDashboard() {
   const costTotal = stats ? stats.cost.total : 0;
   const costItems = stats
     ? [
-        { label: 'Speaking (Live)', amount: stats.cost.speaking ?? 0,    color: 'bg-indigo-500' },
-        { label: 'Oral Eval',       amount: stats.cost.oralEval ?? 0,     color: 'bg-violet-500' },
-        { label: 'Written Eval',    amount: stats.cost.writtenEval ?? 0,  color: 'bg-fuchsia-500' },
+        { label: 'Speaking (Live)', amount: stats.cost.speaking ?? 0,       color: 'bg-indigo-500' },
+        { label: 'Oral Eval',       amount: stats.cost.oralEval ?? 0,      color: 'bg-violet-500' },
+        { label: 'Written Eval',    amount: stats.cost.writtenEval ?? 0,   color: 'bg-fuchsia-500' },
+        { label: 'Daily ritual',    amount: stats.cost.dailyRitual ?? 0,   color: 'bg-teal-500' },
+        { label: 'Guided writing',  amount: stats.cost.guidedWriting ?? 0, color: 'bg-amber-500' },
+        { label: 'Other AI',        amount: stats.cost.otherAi ?? 0,       color: 'bg-stone-500' },
       ]
     : [];
   const healthTotal = health ? health.completed + health.abandoned + health.failed : 0;
@@ -450,9 +477,25 @@ export function OwnerDashboard() {
       oralEvalCost:     acc.oralEvalCost     + u.oralEvalCost,
       writtenEvals:     acc.writtenEvals     + u.writtenEvals,
       writtenEvalCost:  acc.writtenEvalCost  + u.writtenEvalCost,
+      dailyRitualCost:  acc.dailyRitualCost  + u.dailyRitualCost,
+      guidedWritingCost: acc.guidedWritingCost + u.guidedWritingCost,
+      otherEvents:      acc.otherEvents      + u.otherEvents,
+      otherAiCost:      acc.otherAiCost      + u.otherAiCost,
       totalCost:        acc.totalCost        + u.totalCost,
     }),
-    { speakingSessions: 0, speakingCost: 0, oralEvals: 0, oralEvalCost: 0, writtenEvals: 0, writtenEvalCost: 0, totalCost: 0 }
+    {
+      speakingSessions: 0,
+      speakingCost: 0,
+      oralEvals: 0,
+      oralEvalCost: 0,
+      writtenEvals: 0,
+      writtenEvalCost: 0,
+      dailyRitualCost: 0,
+      guidedWritingCost: 0,
+      otherEvents: 0,
+      otherAiCost: 0,
+      totalCost: 0,
+    }
   );
 
   return (
@@ -586,15 +629,19 @@ export function OwnerDashboard() {
                   {costs && (
                     <div>
                       <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">Cost Trend — {dateRange.label}</p>
-                      <ResponsiveContainer width="100%" height={180}>
-                        <LineChart data={costChartData}>
+                      <ResponsiveContainer width="100%" height={220}>
+                        <LineChart data={costChartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                           <XAxis dataKey="date" tick={{ fontSize: 10 }} stroke="#94a3b8" />
                           <YAxis tick={{ fontSize: 10 }} stroke="#94a3b8" tickFormatter={v => `$${v}`} width={32} />
                           <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: 8, color: '#e2e8f0', fontSize: 12 }} formatter={(v: number) => fmtDollars(v)} />
+                          <Legend wrapperStyle={{ fontSize: 9 }} iconSize={8} />
                           <Line type="monotone" dataKey="Speaking"    stroke="#6366f1" strokeWidth={2} dot={false} />
                           <Line type="monotone" dataKey="Oral Eval"   stroke="#8b5cf6" strokeWidth={2} dot={false} />
                           <Line type="monotone" dataKey="Written Eval" stroke="#d946ef" strokeWidth={2} dot={false} />
+                          <Line type="monotone" dataKey="Daily ritual" stroke="#14b8a6" strokeWidth={2} dot={false} />
+                          <Line type="monotone" dataKey="Guided writing" stroke="#f59e0b" strokeWidth={2} dot={false} />
+                          <Line type="monotone" dataKey="Other AI" stroke="#78716c" strokeWidth={2} dot={false} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -825,6 +872,9 @@ export function OwnerDashboard() {
                           <SortTh col="oralEvalCost"     label="Oral $"   className="hidden md:table-cell" />
                           <SortTh col="writtenEvals"     label="Written"  className="hidden md:table-cell" />
                           <SortTh col="writtenEvalCost"  label="Written $" className="hidden md:table-cell" />
+                          <SortTh col="dailyRitualCost"  label="Ritual $" className="hidden xl:table-cell" />
+                          <SortTh col="guidedWritingCost" label="Guide $" className="hidden xl:table-cell" />
+                          <SortTh col="otherAiCost"      label="Misc $" className="hidden xl:table-cell" />
                           <SortTh col="totalCost"        label="Total $" />
                         </tr>
                       </thead>
@@ -838,6 +888,9 @@ export function OwnerDashboard() {
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden md:table-cell">{fmtDollars(u.oralEvalCost)}</td>
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden md:table-cell">{fmt(u.writtenEvals)}</td>
                             <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden md:table-cell">{fmtDollars(u.writtenEvalCost)}</td>
+                            <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden xl:table-cell">{fmtDollars(u.dailyRitualCost)}</td>
+                            <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden xl:table-cell">{fmtDollars(u.guidedWritingCost)}</td>
+                            <td className="px-3 sm:px-6 py-3 text-right text-slate-600 dark:text-slate-300 hidden xl:table-cell">{fmtDollars(u.otherAiCost)}</td>
                             <td className="px-3 sm:px-6 py-3 text-right font-semibold text-slate-700 dark:text-slate-200">{fmtDollars(u.totalCost)}</td>
                           </tr>
                         ))}
@@ -851,6 +904,9 @@ export function OwnerDashboard() {
                           <td className="px-3 sm:px-6 py-2 text-right hidden md:table-cell">{fmtDollars(userTotals.oralEvalCost)}</td>
                           <td className="px-3 sm:px-6 py-2 text-right hidden md:table-cell">{fmt(userTotals.writtenEvals)}</td>
                           <td className="px-3 sm:px-6 py-2 text-right hidden md:table-cell">{fmtDollars(userTotals.writtenEvalCost)}</td>
+                          <td className="px-3 sm:px-6 py-2 text-right hidden xl:table-cell">{fmtDollars(userTotals.dailyRitualCost)}</td>
+                          <td className="px-3 sm:px-6 py-2 text-right hidden xl:table-cell">{fmtDollars(userTotals.guidedWritingCost)}</td>
+                          <td className="px-3 sm:px-6 py-2 text-right hidden xl:table-cell">{fmtDollars(userTotals.otherAiCost)}</td>
                           <td className="px-3 sm:px-6 py-2 text-right">{fmtDollars(userTotals.totalCost)}</td>
                         </tr>
                       </tfoot>

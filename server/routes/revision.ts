@@ -9,6 +9,7 @@ import { validateBody, z } from '../middleware/validate';
 import {
   dailyRitualDeckLimiter,
   dailyRitualWeakCardLimiter,
+  guidedWritingFeedbackLimiter,
 } from '../middleware/rateLimiter';
 import { generateDailyDeck } from '../services/dailyRitualService';
 import {
@@ -18,7 +19,8 @@ import {
   appendWeakCard,
 } from '../services/dailyRitualStorage';
 import { dailyRitualCardSchema } from './revisionSchemas';
-import type { DailyRitualCard } from '../../types';
+import type { DailyRitualCard, WrittenTask } from '../../types';
+import { getGuidedWritingFeedbackForUser } from '../services/guidedWritingFeedbackService';
 
 const router = Router();
 
@@ -51,6 +53,7 @@ router.post(
       cardCount,
       cefrHint,
       weakCardsSummary,
+      userId,
     });
 
     await saveCachedDeck(userId, focus, cefrHint, cardCount, cards);
@@ -61,6 +64,39 @@ router.post(
 const weakCardBodySchema = z.object({
   card: dailyRitualCardSchema,
 });
+
+const guidedWritingTaskSchema = z.object({
+  id: z.string(),
+  section: z.enum(['A', 'B']),
+  subject: z.string(),
+  instruction: z.string(),
+  minWords: z.number(),
+  modelAnswer: z.string().optional(),
+});
+
+const guidedWritingFeedbackBodySchema = z.object({
+  text: z.string().min(1).max(50000),
+  section: z.enum(['A', 'B']),
+  task: guidedWritingTaskSchema,
+});
+
+router.post(
+  '/guided-writing-feedback',
+  requireAuth,
+  guidedWritingFeedbackLimiter,
+  validateBody(guidedWritingFeedbackBodySchema),
+  asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.userId!;
+    const { text, section, task } = req.body as z.infer<typeof guidedWritingFeedbackBodySchema>;
+    const feedback = await getGuidedWritingFeedbackForUser({
+      userId,
+      text,
+      section,
+      task: task as WrittenTask,
+    });
+    res.json(feedback);
+  })
+);
 
 router.post(
   '/weak-card',

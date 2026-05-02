@@ -10,6 +10,7 @@ import type {
   DailyRitualGrammarCard,
   DailyRitualVocabCard,
 } from '../../types';
+import { recordAiUsageFromGeminiResponse } from './aiUsageEventService';
 
 const apiKey = (process.env.API_KEY || process.env.GEMINI_API_KEY || '').trim();
 const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
@@ -364,7 +365,7 @@ function stripJsonFences(raw: string): string {
 
 async function callGeminiForCards(
   prompt: string,
-  options: { minCards: number; focus: DailyRitualFocus }
+  options: { minCards: number; focus: DailyRitualFocus; userId?: string | null }
 ): Promise<unknown[]> {
   if (!ai) throw new Error('GEMINI_API_KEY is not configured');
 
@@ -383,6 +384,13 @@ async function callGeminiForCards(
         'Use the exact property names from the schema. For each card, include every required field. ' +
         'Grammar cards must include English explanations: ruleSummaryEnglish and english on every example; if commonPitfall is present, include commonPitfallEnglish.',
     },
+  });
+
+  void recordAiUsageFromGeminiResponse({
+    source: 'dailyRitualDeck',
+    model: 'gemini-2.5-flash',
+    response,
+    userId: options.userId,
   });
 
   const text = stripJsonFences(getResponseText(response));
@@ -424,15 +432,16 @@ export async function generateDailyDeck(params: {
   cardCount: number;
   cefrHint: DailyRitualCefrHint;
   weakCardsSummary: string | null;
+  userId?: string | null;
 }): Promise<DailyRitualCard[]> {
-  const { focus, cardCount, cefrHint, weakCardsSummary } = params;
+  const { focus, cardCount, cefrHint, weakCardsSummary, userId } = params;
 
   if (cardCount < MIN_CARDS) {
     throw new Error(`cardCount must be at least ${MIN_CARDS}`);
   }
 
   const mainPrompt = buildPrompt({ focus, cardCount, cefrHint, weakCardsSummary });
-  let raw = await callGeminiForCards(mainPrompt, { minCards: cardCount, focus });
+  let raw = await callGeminiForCards(mainPrompt, { minCards: cardCount, focus, userId });
   let merged = mergeDedupe([], normalizeAll(raw));
 
   let rounds = 0;
@@ -444,7 +453,7 @@ export async function generateDailyDeck(params: {
       cefrHint,
       exclude: merged,
     });
-    raw = await callGeminiForCards(topUpPrompt, { minCards: need, focus });
+    raw = await callGeminiForCards(topUpPrompt, { minCards: need, focus, userId });
     merged = mergeDedupe(merged, normalizeAll(raw));
     rounds += 1;
   }

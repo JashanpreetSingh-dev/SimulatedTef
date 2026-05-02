@@ -89,3 +89,13 @@ export const dailyRitualWeakCardLimiter = rateLimit({
   legacyHeaders: false,
   keyGenerator,
 });
+
+/** Guided writing companion — Gemini text calls per user */
+export const guidedWritingFeedbackLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 40,
+  message: 'Too many guided writing feedback requests. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator,
+});

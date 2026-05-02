@@ -157,6 +157,43 @@ router.get(
       .toArray();
     const writtenEvalCost = writtenEvalCostAgg[0]?.total ?? 0;
 
+    const aiDateMatch = { createdAt: { $gte: since, $lte: until } };
+    const [dailyRitualAgg, guidedWritingAgg, otherAiMiscAgg] = await Promise.all([
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          { $match: { ...aiDateMatch, source: 'dailyRitualDeck' } },
+          { $group: { _id: null, total: { $sum: '$costUsd' } } },
+        ])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          { $match: { ...aiDateMatch, source: 'guidedWritingFeedback' } },
+          { $group: { _id: null, total: { $sum: '$costUsd' } } },
+        ])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          {
+            $match: {
+              ...aiDateMatch,
+              $nor: [{ source: 'dailyRitualDeck' }, { source: 'guidedWritingFeedback' }],
+            },
+          },
+          { $group: { _id: null, total: { $sum: '$costUsd' } } },
+        ])
+        .toArray(),
+    ]);
+    const dailyRitualAiCost = dailyRitualAgg[0]?.total ?? 0;
+    const guidedWritingAiCost = guidedWritingAgg[0]?.total ?? 0;
+    const otherAiMiscCost = otherAiMiscAgg[0]?.total ?? 0;
+    const miscAiRounded = Math.round(otherAiMiscCost * 100) / 100;
+    const dailyRitualRounded = Math.round(dailyRitualAiCost * 100) / 100;
+    const guidedWritingRounded = Math.round(guidedWritingAiCost * 100) / 100;
+    const aiSubtotal = dailyRitualAiCost + guidedWritingAiCost + otherAiMiscCost;
+
     res.json({
       users: { total: totalUsers, d2c: d2cUsers, org: orgUsers },
       subscriptions: subs,
@@ -170,7 +207,11 @@ router.get(
         speaking: Math.round(speakingCost * 100) / 100,
         oralEval: Math.round(oralEvalCost * 100) / 100,
         writtenEval: Math.round(writtenEvalCost * 100) / 100,
-        total: Math.round((speakingCost + oralEvalCost + writtenEvalCost) * 100) / 100,
+        dailyRitual: dailyRitualRounded,
+        guidedWriting: guidedWritingRounded,
+        otherAi: miscAiRounded,
+        total:
+          Math.round((speakingCost + oralEvalCost + writtenEvalCost + aiSubtotal) * 100) / 100,
       },
     });
   })
@@ -308,14 +349,59 @@ router.get(
       ])
       .toArray();
 
+    const aiDayMatch = { createdAt: { $gte: since, $lte: until } };
+    const dayGroup = {
+      $group: {
+        _id: { $substr: ['$createdAt', 0, 10] },
+        cost: { $sum: '$costUsd' },
+      },
+    };
+    const [dailyRitualCostAgg, guidedWritingCostAgg, otherAiMiscCostAgg] = await Promise.all([
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          { $match: { ...aiDayMatch, source: 'dailyRitualDeck' } },
+          dayGroup,
+          { $sort: { _id: 1 } },
+        ])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          { $match: { ...aiDayMatch, source: 'guidedWritingFeedback' } },
+          dayGroup,
+          { $sort: { _id: 1 } },
+        ])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          {
+            $match: {
+              ...aiDayMatch,
+              $nor: [{ source: 'dailyRitualDeck' }, { source: 'guidedWritingFeedback' }],
+            },
+          },
+          dayGroup,
+          { $sort: { _id: 1 } },
+        ])
+        .toArray(),
+    ]);
+
     const speakingMap = new Map(speakingCostAgg.map((r) => [r._id, r.cost]));
     const oralEvalMap = new Map(oralEvalCostAgg.map((r) => [r._id, r.cost]));
     const writtenEvalMap = new Map(writtenEvalCostAgg.map((r) => [r._id, r.cost]));
+    const dailyRitualMap = new Map(dailyRitualCostAgg.map((r) => [r._id, r.cost]));
+    const guidedWritingMap = new Map(guidedWritingCostAgg.map((r) => [r._id, r.cost]));
+    const otherAiMiscMap = new Map(otherAiMiscCostAgg.map((r) => [r._id, r.cost]));
 
     const labels: string[] = [];
     const speakingCosts: number[] = [];
     const oralEvalCosts: number[] = [];
     const writtenEvalCosts: number[] = [];
+    const dailyRitualCosts: number[] = [];
+    const guidedWritingCosts: number[] = [];
+    const otherAiCosts: number[] = [];
 
     const sinceDate = new Date(since);
     for (let i = 0; i < totalDays; i++) {
@@ -326,6 +412,9 @@ router.get(
       speakingCosts.push(Math.round(((speakingMap.get(label) as number) ?? 0) * 10000) / 10000);
       oralEvalCosts.push(Math.round(((oralEvalMap.get(label) as number) ?? 0) * 10000) / 10000);
       writtenEvalCosts.push(Math.round(((writtenEvalMap.get(label) as number) ?? 0) * 10000) / 10000);
+      dailyRitualCosts.push(Math.round(((dailyRitualMap.get(label) as number) ?? 0) * 10000) / 10000);
+      guidedWritingCosts.push(Math.round(((guidedWritingMap.get(label) as number) ?? 0) * 10000) / 10000);
+      otherAiCosts.push(Math.round(((otherAiMiscMap.get(label) as number) ?? 0) * 10000) / 10000);
     }
 
     res.json({
@@ -333,6 +422,9 @@ router.get(
       speaking: speakingCosts,
       oralEval: oralEvalCosts,
       writtenEval: writtenEvalCosts,
+      dailyRitual: dailyRitualCosts,
+      guidedWriting: guidedWritingCosts,
+      otherAi: otherAiCosts,
     });
   })
 );
@@ -363,8 +455,8 @@ router.get(
             avgTokens: {
               $avg: {
                 $add: [
-                  { $ifNull: ['$metrics.totalInputTokens', 0] },
-                  { $ifNull: ['$metrics.totalOutputTokens', 0] },
+                  { $ifNull: ['$metrics.totalBilledPromptTokens', 0] },
+                  { $ifNull: ['$metrics.totalCompletionTokens', 0] },
                 ],
               },
             },
@@ -536,6 +628,40 @@ router.get(
       ])
       .toArray();
 
+    const aiUserMatch = {
+      createdAt: { $gte: since, $lte: until },
+      userId: { $exists: true, $nin: [null, ''] },
+    };
+    const userAiGroup = {
+      $group: {
+        _id: '$userId',
+        events: { $sum: 1 },
+        aiCost: { $sum: '$costUsd' },
+      },
+    };
+    const [dailyRitualUserAgg, guidedWritingUserAgg, otherAiUserAgg] = await Promise.all([
+      db
+        .collection('aiUsageEvents')
+        .aggregate([{ $match: { ...aiUserMatch, source: 'dailyRitualDeck' } }, userAiGroup])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([{ $match: { ...aiUserMatch, source: 'guidedWritingFeedback' } }, userAiGroup])
+        .toArray(),
+      db
+        .collection('aiUsageEvents')
+        .aggregate([
+          {
+            $match: {
+              ...aiUserMatch,
+              $nor: [{ source: 'dailyRitualDeck' }, { source: 'guidedWritingFeedback' }],
+            },
+          },
+          userAiGroup,
+        ])
+        .toArray(),
+    ]);
+
     // Merge into a map keyed by userId
     const userMap = new Map<string, {
       speakingSessions: number;
@@ -544,11 +670,30 @@ router.get(
       oralEvalCost: number;
       writtenEvals: number;
       writtenEvalCost: number;
+      dailyRitualEvents: number;
+      dailyRitualCost: number;
+      guidedWritingEvents: number;
+      guidedWritingCost: number;
+      otherEvents: number;
+      otherAiCost: number;
     }>();
 
     function getOrCreate(userId: string) {
       if (!userMap.has(userId)) {
-        userMap.set(userId, { speakingSessions: 0, speakingCost: 0, oralEvals: 0, oralEvalCost: 0, writtenEvals: 0, writtenEvalCost: 0 });
+        userMap.set(userId, {
+          speakingSessions: 0,
+          speakingCost: 0,
+          oralEvals: 0,
+          oralEvalCost: 0,
+          writtenEvals: 0,
+          writtenEvalCost: 0,
+          dailyRitualEvents: 0,
+          dailyRitualCost: 0,
+          guidedWritingEvents: 0,
+          guidedWritingCost: 0,
+          otherEvents: 0,
+          otherAiCost: 0,
+        });
       }
       return userMap.get(userId)!;
     }
@@ -567,6 +712,27 @@ router.get(
       const u = getOrCreate(r._id as string);
       u.writtenEvals = r.writtenEvals as number;
       u.writtenEvalCost = r.writtenEvalCost as number;
+    }
+    for (const r of dailyRitualUserAgg) {
+      const uid = r._id as string;
+      if (!uid) continue;
+      const u = getOrCreate(uid);
+      u.dailyRitualEvents = r.events as number;
+      u.dailyRitualCost = r.aiCost as number;
+    }
+    for (const r of guidedWritingUserAgg) {
+      const uid = r._id as string;
+      if (!uid) continue;
+      const u = getOrCreate(uid);
+      u.guidedWritingEvents = r.events as number;
+      u.guidedWritingCost = r.aiCost as number;
+    }
+    for (const r of otherAiUserAgg) {
+      const uid = r._id as string;
+      if (!uid) continue;
+      const u = getOrCreate(uid);
+      u.otherEvents = r.events as number;
+      u.otherAiCost = r.aiCost as number;
     }
 
     // Batch Clerk email lookup
@@ -596,7 +762,22 @@ router.get(
         oralEvalCost: Math.round(data.oralEvalCost * 10000) / 10000,
         writtenEvals: data.writtenEvals,
         writtenEvalCost: Math.round(data.writtenEvalCost * 10000) / 10000,
-        totalCost: Math.round((data.speakingCost + data.oralEvalCost + data.writtenEvalCost) * 10000) / 10000,
+        dailyRitualEvents: data.dailyRitualEvents,
+        dailyRitualCost: Math.round(data.dailyRitualCost * 10000) / 10000,
+        guidedWritingEvents: data.guidedWritingEvents,
+        guidedWritingCost: Math.round(data.guidedWritingCost * 10000) / 10000,
+        otherEvents: data.otherEvents,
+        otherAiCost: Math.round(data.otherAiCost * 10000) / 10000,
+        totalCost:
+          Math.round(
+            (data.speakingCost +
+              data.oralEvalCost +
+              data.writtenEvalCost +
+              data.dailyRitualCost +
+              data.guidedWritingCost +
+              data.otherAiCost) *
+              10000
+          ) / 10000,
       }))
       .sort((a, b) => b.totalCost - a.totalCost);
 

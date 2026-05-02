@@ -1,6 +1,8 @@
 import { useState, useCallback } from 'react';
+import { useAuth } from '@clerk/clerk-react';
 import { WrittenTask } from '../../../types';
-import { getOnDemandFeedback, GuidedFeedback } from '../../../services/guidedWritingFeedback';
+import type { GuidedFeedback } from '../../../services/guidedWritingFeedback';
+import { fetchGuidedWritingFeedback } from '../../../services/guidedWritingFeedbackApi';
 
 interface UseGuidedWritingFeedbackOptions {
   task: WrittenTask;
@@ -8,6 +10,7 @@ interface UseGuidedWritingFeedbackOptions {
 }
 
 export function useGuidedWritingFeedback({ task, section }: UseGuidedWritingFeedbackOptions) {
+  const { getToken } = useAuth();
   const [feedback, setFeedback] = useState<GuidedFeedback | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +32,12 @@ export function useGuidedWritingFeedback({ task, section }: UseGuidedWritingFeed
     setError(null);
 
     try {
-      const result = await getOnDemandFeedback(text, task, section);
+      const token = await getToken();
+      if (!token) {
+        setError('Veuillez vous connecter pour utiliser le compagnon d’écriture.');
+        return;
+      }
+      const result = await fetchGuidedWritingFeedback(getToken, { text, section, task });
       setFeedback(result);
       setLastRequestedText(text);
     } catch (err: any) {
@@ -39,7 +47,7 @@ export function useGuidedWritingFeedback({ task, section }: UseGuidedWritingFeed
     } finally {
       setIsLoading(false);
     }
-  }, [task, section, lastRequestedText, feedback]);
+  }, [task, section, lastRequestedText, feedback, getToken]);
 
   const clearFeedback = useCallback(() => {
     setFeedback(null);

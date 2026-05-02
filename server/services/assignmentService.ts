@@ -14,6 +14,7 @@ import { questionService } from './questionService';
 import { generateQuestions as generateReadingQuestions } from '../../cli/services/questionGenerator';
 import { generateListeningQuestions } from '../../cli/services/listeningQuestionGenerator';
 import { GoogleGenAI } from '@google/genai';
+import { recordAiUsageFromGeminiResponse } from './aiUsageEventService';
 
 const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
 const ai = apiKey ? new GoogleGenAI({ apiKey: apiKey.trim() }) : null;
@@ -21,7 +22,7 @@ const ai = apiKey ? new GoogleGenAI({ apiKey: apiKey.trim() }) : null;
 /**
  * Generate assignment title from prompt using AI (if title not provided)
  */
-async function generateTitleFromPrompt(prompt: string): Promise<string> {
+async function generateTitleFromPrompt(prompt: string, createdBy: string): Promise<string> {
   if (!ai) {
     // Fallback if AI not available
     return prompt.substring(0, 50) + (prompt.length > 50 ? '...' : '');
@@ -35,6 +36,13 @@ async function generateTitleFromPrompt(prompt: string): Promise<string> {
           text: `Generate a concise, professional title (maximum 60 characters) for a French language practice assignment based on this prompt:\n\n${prompt}\n\nReturn only the title, no quotes, no explanation.`
         }]
       }]
+    });
+
+    void recordAiUsageFromGeminiResponse({
+      source: 'assignmentTitle',
+      model: 'gemini-2.5-flash',
+      response,
+      userId: createdBy,
     });
 
     const title = (response.text || '').trim();
@@ -83,7 +91,7 @@ export const assignmentService = {
     // Generate title if not provided
     let finalTitle = title;
     if (!finalTitle || finalTitle.trim() === '') {
-      finalTitle = await generateTitleFromPrompt(prompt);
+      finalTitle = await generateTitleFromPrompt(prompt, createdBy);
     }
 
     // Generate assignment ID using counter collection (O(1), safe under concurrency)

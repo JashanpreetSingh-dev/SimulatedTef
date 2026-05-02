@@ -26,6 +26,12 @@ export interface OwnerStats {
     speaking: number;
     oralEval: number;
     writtenEval: number;
+    /** Gemini daily ritual deck generation */
+    dailyRitual: number;
+    /** Guided writing on-demand feedback */
+    guidedWriting: number;
+    /** Assignment titles and any legacy events without a split source */
+    otherAi: number;
     total: number;
   };
 }
@@ -42,6 +48,10 @@ export interface CostBreakdown {
   speaking: number[];
   oralEval: number[];
   writtenEval: number[];
+  dailyRitual: number[];
+  guidedWriting: number[];
+  /** Assignment titles and other misc `aiUsageEvents` */
+  otherAi: number[];
 }
 
 export interface SessionHealth {
@@ -75,6 +85,12 @@ export interface UserCost {
   oralEvalCost: number;
   writtenEvals: number;
   writtenEvalCost: number;
+  dailyRitualEvents: number;
+  dailyRitualCost: number;
+  guidedWritingEvents: number;
+  guidedWritingCost: number;
+  otherEvents: number;
+  otherAiCost: number;
   totalCost: number;
 }
 

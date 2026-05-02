@@ -492,6 +492,12 @@ export async function createIndexes(): Promise<void> {
     const dailyRitualWeak = db.collection('daily_ritual_weak_cards');
     await dailyRitualWeak.createIndex({ userId: 1 }, { unique: true, name: 'daily_ritual_weak_user_idx' });
     console.log(' Created index: daily_ritual_weak_cards.daily_ritual_weak_user_idx');
+
+    const aiUsageEvents = db.collection('aiUsageEvents');
+    await aiUsageEvents.createIndex({ createdAt: -1 }, { name: 'aiUsageEvents_createdAt_idx' });
+    console.log(' Created index: aiUsageEvents.aiUsageEvents_createdAt_idx');
+    await aiUsageEvents.createIndex({ userId: 1, createdAt: -1 }, { name: 'aiUsageEvents_userId_createdAt_idx' });
+    console.log(' Created index: aiUsageEvents.aiUsageEvents_userId_createdAt_idx');
     
     console.log(' All database indexes created successfully');
   } catch (error: any) {
