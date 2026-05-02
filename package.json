@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:prod": "vite --mode local.prod",
+    "server:prod": "tsx --env-file=.env.local.prod server/server.ts",
     "build": "vite build",
     "preview": "vite preview",
     "server": "tsx server/server.ts",
@@ -58,6 +60,7 @@
     "react-helmet-async": "^3.0.0",
     "react-paginate": "^8.3.0",
     "react-router-dom": "^7.11.0",
+    "recharts": "^3.8.1",
     "resend": "^6.9.3",
     "stripe": "^20.1.0",
     "svix": "^1.86.0",
