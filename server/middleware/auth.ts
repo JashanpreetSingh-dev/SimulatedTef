@@ -171,6 +171,19 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
 }
 
 /**
+ * Require app owner middleware
+ * Gates routes to the single owner user identified by OWNER_USER_ID env var.
+ * Use after requireAuth middleware.
+ */
+export function requireOwner(req: Request, res: Response, next: NextFunction) {
+  const ownerId = process.env.OWNER_USER_ID;
+  if (!ownerId || req.userId !== ownerId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  next();
+}
+
+/**
  * Require specific role middleware
  * Checks if user has any of the allowed roles (from active org or any membership)
  * Use after requireAuth middleware

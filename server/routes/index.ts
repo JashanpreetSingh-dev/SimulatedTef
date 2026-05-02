@@ -15,6 +15,7 @@ import batchesRouter from './batches';
 import batchAssignmentsRouter from './batchAssignments';
 import conversationLogsRouter from './conversationLogs';
 import adminRouter from './admin';
+import ownerRouter from './owner';
 import subscriptionsRouter from './subscriptions';
 import revisionRouter from './revision';
 // Note: stripeWebhooksRouter is mounted directly in server.ts with raw body parser
@@ -34,6 +35,7 @@ router.use('/batches', batchesRouter);
 router.use('/batch-assignments', batchAssignmentsRouter);
 router.use('/conversation-logs', conversationLogsRouter);
 router.use('/admin', adminRouter);
+router.use('/owner', ownerRouter);
 router.use('/subscriptions', subscriptionsRouter);
 router.use('/revision', revisionRouter);
 // Note: stripe-webhooks is mounted directly in server.ts with raw body parser

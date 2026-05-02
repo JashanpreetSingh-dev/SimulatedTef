@@ -506,7 +506,7 @@ export const geminiService = {
     taskPartB?: any,
     eo2RemainingSeconds?: number,
     fluencyAnalysis?: any
-  ): Promise<EvaluationResult> {
+  ): Promise<EvaluationResult & { _usageMetadata?: { promptTokenCount: number; candidatesTokenCount: number } }> {
     const isFullExam = mode === 'full' && taskPartA && taskPartB;
     const systemPrompt = buildRubricSystemPrompt(section, isFullExam, mode);
     const userMessage = buildEvaluationUserMessage(
@@ -710,7 +710,16 @@ export const geminiService = {
         });
     // Parse and normalize the result to ensure all fields are present
     const rawResult = JSON.parse(response.text);
-    return normalizeEvaluationResult(rawResult, section, mode, taskPartA, taskPartB);
+    const normalized = normalizeEvaluationResult(rawResult, section, mode, taskPartA, taskPartB);
+    // Attach usage metadata for cost tracking (stripped before saving evaluation)
+    const usage = (response as any).usageMetadata;
+    if (usage) {
+      (normalized as any)._usageMetadata = {
+        promptTokenCount: usage.promptTokenCount ?? 0,
+        candidatesTokenCount: usage.candidatesTokenCount ?? 0,
+      };
+    }
+    return normalized;
       } catch (error: any) {
         lastError = error;
         // Check if it's a rate limit error (429)

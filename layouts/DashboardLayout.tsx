@@ -29,6 +29,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   // Check if user is D2C (no organization membership)
   const isD2CUser = useIsD2C();
 
+  // Owner-only gate
+  const isOwner = user?.id === import.meta.env.VITE_OWNER_USER_ID;
+
   const isActive = (path: string) => location.pathname === path;
 
   const handleNavigate = (path: string) => {
@@ -141,12 +144,19 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   className={isActive('/admin/org-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
                   {t('admin.orgConfig') || 'Organization Settings'}
                 </button>
-                <button 
+                <button
                   onClick={() => navigate('/admin/d2c-config')}
                   className={isActive('/admin/d2c-config') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
                   D2C Settings
                 </button>
               </>
+            )}
+            {isOwner && (
+              <button
+                onClick={() => navigate('/owner-dashboard')}
+                className={isActive('/owner-dashboard') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
+                Owner
+              </button>
             )}
           </div>
         </div>
@@ -365,8 +375,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   </button>
                 </>
               )}
+              {isOwner && (
+                <button
+                  onClick={() => handleNavigate('/owner-dashboard')}
+                  className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                    isActive('/owner-dashboard')
+                      ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  Owner
+                </button>
+              )}
               <div className="border-t border-slate-200 dark:border-slate-700 my-2" />
-              <button 
+              <button
                 onClick={() => {
                   signOut();
                   setIsMobileMenuOpen(false);

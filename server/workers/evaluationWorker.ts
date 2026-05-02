@@ -90,6 +90,15 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         fluencyAnalysis: providedFluencyAnalysis,
       } = job.data;
 
+      // Accumulate AI token usage across all generateContent calls in this job
+      // Transcription (audio input) and evaluation (text input) are billed at different rates:
+      //   gemini-2.5-flash audio input:  $1.00 / 1M tokens
+      //   gemini-2.5-flash text input:   $0.30 / 1M tokens
+      //   gemini-2.5-flash text output:  $2.50 / 1M tokens
+      let transcriptionPromptTokens = 0;  // audio tokens from transcription step
+      let evalPromptTokens = 0;           // text tokens from evaluation step
+      let totalCompletionTokens = 0;
+
       try {
         // Update job progress (no-op if Redis job key missing)
         await safeUpdateProgress(job, 5); // 5% - Starting
@@ -187,6 +196,13 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
             }
           });
 
+          // Capture token usage from transcription call (audio input rate applies)
+          const transcriptionUsage = (response as any).usageMetadata;
+          if (transcriptionUsage) {
+            transcriptionPromptTokens += transcriptionUsage.promptTokenCount ?? 0;
+            totalCompletionTokens += transcriptionUsage.candidatesTokenCount ?? 0;
+          }
+
           let parsed: any;
           try {
             parsed = response.text ? JSON.parse(response.text) : {};
@@ -229,6 +245,14 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           eo2RemainingSeconds,
           fluencyAnalysis
         );
+
+        // Capture token usage from evaluation call (text input rate applies)
+        const evalUsage = (result as any)._usageMetadata;
+        if (evalUsage) {
+          evalPromptTokens += evalUsage.promptTokenCount ?? 0;
+          totalCompletionTokens += evalUsage.candidatesTokenCount ?? 0;
+          delete (result as any)._usageMetadata;
+        }
 
         await safeUpdateProgress(job, 80); // 80% - Evaluation complete
         await safePublish(channel, JSON.stringify({ status: 'active', progress: 80 }));
@@ -300,6 +324,17 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           recordingId,
           transcript,
           ...(job.data.mockExamId && { mockExamId: job.data.mockExamId }),
+          // AI cost tracking (Gemini 2.5 Flash)
+          // Audio input (transcription): $1.00/1M — text input (eval): $0.30/1M — output: $2.50/1M
+          aiTokens: {
+            transcriptionPrompt: transcriptionPromptTokens,
+            evalPrompt: evalPromptTokens,
+            completion: totalCompletionTokens,
+          },
+          aiCost:
+            (transcriptionPromptTokens * 0.000001) +   // $1.00/1M audio input
+            (evalPromptTokens * 0.00000030) +           // $0.30/1M text input
+            (totalCompletionTokens * 0.00000250),       // $2.50/1M text output
         };
 
         // Save result to database

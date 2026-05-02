@@ -356,6 +356,10 @@ export interface SavedResult extends MongoDocument {
   transcript?: string;
   isLoading?: boolean; // Flag to indicate if evaluation is still in progress
   
+  // AI cost tracking
+  aiCost?: number; // Total AI cost in USD for this evaluation
+  aiTokens?: { prompt?: number; transcriptionPrompt?: number; evalPrompt?: number; completion: number }; // Token counts across all AI calls
+
   // Voting (for oral expression results)
   votes?: ResultVotes; // Vote scope determined by result.mode (full, partA, partB)
   

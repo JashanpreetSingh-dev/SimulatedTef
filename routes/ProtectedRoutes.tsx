@@ -43,6 +43,7 @@ const AdminD2CConfigView = lazy(() =>
 );
 const SubscriptionView = lazy(() => import('../pages/SubscriptionView').then((m) => ({ default: m.SubscriptionView })));
 const DailyRitualView = lazy(() => import('../pages/DailyRitualView').then((m) => ({ default: m.DailyRitualView })));
+const OwnerDashboard = lazy(() => import('../pages/OwnerDashboard').then((m) => ({ default: m.OwnerDashboard })));
 
 function RouteFallback() {
   return (
@@ -130,6 +131,7 @@ export function ProtectedRoutes() {
           <Route path="/admin/vote-analytics" element={<AdminVoteAnalyticsView />} />
           <Route path="/admin/org-config" element={<AdminOrgConfigView />} />
           <Route path="/admin/d2c-config" element={<AdminD2CConfigView />} />
+          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
           <Route path="/subscription" element={<SubscriptionView />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />

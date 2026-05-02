@@ -115,9 +115,14 @@ export const conversationLogService = {
         // INCREMENT total billed (each turn bills for full context + completion)
         update.$inc['metrics.totalBilledTokens'] = usageMetadata.totalTokenCount;
       }
-      // INCREMENT cost (each turn has its own cost based on that turn's totalTokenCount)
-      if ((usageMetadata as any).cost) {
-        update.$inc['metrics.totalCost'] = (usageMetadata as any).cost;
+      // INCREMENT cost — Gemini API never returns a .cost field, compute from tokens.
+      // gemini-3.1-flash-live-preview with responseModalities: AUDIO
+      // Input: $3.00/1M audio tokens, Output: $12.00/1M audio tokens
+      // promptTokenCount is billed per-turn (full context), candidatesTokenCount is new output only
+      const inputCost = (usageMetadata.promptTokenCount || 0) * 0.000003;   // $3.00 / 1M audio in
+      const outputCost = (usageMetadata.candidatesTokenCount || 0) * 0.000012; // $12.00 / 1M audio out
+      if (inputCost + outputCost > 0) {
+        update.$inc['metrics.totalCost'] = inputCost + outputCost;
       }
     }
 
