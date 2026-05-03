@@ -23,28 +23,153 @@ function daysAgo(days: number): Date {
   return d;
 }
 
-/** Format Date as YYYY-MM-DD */
+/** Format Date as YYYY-MM-DD (UTC calendar day) */
 function fmtDate(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
+interface ParsedDateRange {
+  since: string;
+  until: string;
+  totalDays: number;
+  chartTimeZone?: string;
+  chartStartYmd?: string;
+  chartEndYmd?: string;
+}
+
+const YMD_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidYmd(s: string): boolean {
+  if (!YMD_RE.test(s)) return false;
+  const [y, m, d] = s.split('-').map(Number);
+  const dt = new Date(y, m - 1, d);
+  return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+}
+
+function sanitizeTimeZone(raw: unknown): string | undefined {
+  if (typeof raw !== 'string' || raw.length < 2 || raw.length > 80) return undefined;
+  if (!/^[A-Za-z0-9_/+-]+$/.test(raw)) return undefined;
+  return raw;
+}
+
+/** Inclusive calendar days from YYYY-MM-DD to YYYY-MM-DD (Gregorian). */
+function enumerateCalendarDaysYmd(startYmd: string, endYmd: string): string[] {
+  const [a, b] = startYmd <= endYmd ? [startYmd, endYmd] : [endYmd, startYmd];
+  const out: string[] = [];
+  let y: number;
+  let m: number;
+  let d: number;
+  [y, m, d] = a.split('-').map(Number);
+  const [ye, me, de] = b.split('-').map(Number);
+  for (;;) {
+    out.push(`${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`);
+    if (y === ye && m === me && d === de) break;
+    const nd = new Date(y, m - 1, d);
+    nd.setDate(nd.getDate() + 1);
+    y = nd.getFullYear();
+    m = nd.getMonth() + 1;
+    d = nd.getDate();
+  }
+  return out;
+}
+
+/** Day key for $group: UTC ISO prefix, or local calendar day in IANA zone. */
+function dayBucketExpr(field: string, timeZone: string | undefined) {
+  if (!timeZone) {
+    return { $substr: [`$${field}`, 0, 10] };
+  }
+  return {
+    $dateToString: {
+      format: '%Y-%m-%d',
+      date: { $toDate: `$${field}` },
+      timezone: timeZone,
+    },
+  };
+}
+
+function chartUseLocalBuckets(
+  parsed: ParsedDateRange
+): parsed is ParsedDateRange & { chartTimeZone: string; chartStartYmd: string; chartEndYmd: string } {
+  return Boolean(parsed.chartTimeZone && parsed.chartStartYmd && parsed.chartEndYmd);
+}
+
+function buildChartLabels(parsed: ParsedDateRange): string[] {
+  if (chartUseLocalBuckets(parsed)) {
+    return enumerateCalendarDaysYmd(parsed.chartStartYmd, parsed.chartEndYmd);
+  }
+  const labels: string[] = [];
+  const sinceDate = new Date(parsed.since);
+  for (let i = 0; i < parsed.totalDays; i++) {
+    const d = new Date(sinceDate);
+    d.setUTCDate(d.getUTCDate() + i);
+    labels.push(fmtDate(d));
+  }
+  return labels;
+}
+
 /**
- * Parse date range from request query.
- * Prefers startDate/endDate params; falls back to days.
+ * Parse date range from query.
+ * - New: `since` + `until` (ISO) with `startDate`/`endDate` (YYYY-MM-DD) + `timeZone` (IANA) for local-day charts.
+ * - Legacy: `startDate`/`endDate` only → UTC midnight bounds (unchanged).
+ * - Fallback: `days` (default 30).
  */
-function parseDateRange(req: Request): { since: string; until: string; totalDays: number } {
-  const todayStr = new Date().toISOString().slice(0, 10);
-  if (req.query.startDate && req.query.endDate) {
-    const since = `${req.query.startDate}T00:00:00.000Z`;
-    const until = `${req.query.endDate}T23:59:59.999Z`;
+function parseDateRange(req: Request): ParsedDateRange {
+  const todayStrUtc = new Date().toISOString().slice(0, 10);
+  const sinceQ = req.query.since as string | undefined;
+  const untilQ = req.query.until as string | undefined;
+  const startDate = req.query.startDate as string | undefined;
+  const endDate = req.query.endDate as string | undefined;
+  const tz = sanitizeTimeZone(req.query.timeZone);
+  const totalDaysParsed = parseInt(req.query.totalDays as string, 10);
+
+  if (sinceQ && untilQ) {
+    const sinceD = new Date(sinceQ);
+    const untilD = new Date(untilQ);
+    if (!Number.isNaN(sinceD.getTime()) && !Number.isNaN(untilD.getTime())) {
+      let sT = sinceD.getTime();
+      let uT = untilD.getTime();
+      if (sT > uT) {
+        const x = sT;
+        sT = uT;
+        uT = x;
+      }
+      const since = new Date(sT).toISOString();
+      const until = new Date(uT).toISOString();
+
+      if (startDate && endDate && isValidYmd(startDate) && isValidYmd(endDate)) {
+        const lo = startDate <= endDate ? startDate : endDate;
+        const hi = startDate <= endDate ? endDate : startDate;
+        const labels = enumerateCalendarDaysYmd(lo, hi);
+        const totalDays = Math.min(400, Math.max(1, labels.length));
+        const out: ParsedDateRange = { since, until, totalDays };
+        if (tz) {
+          out.chartTimeZone = tz;
+          out.chartStartYmd = lo;
+          out.chartEndYmd = hi;
+        }
+        return out;
+      }
+
+      const totalDays =
+        Number.isFinite(totalDaysParsed) && totalDaysParsed > 0
+          ? Math.min(400, totalDaysParsed)
+          : Math.max(1, Math.ceil((uT - sT) / 86400000) + 1);
+      return { since, until, totalDays };
+    }
+  }
+
+  if (startDate && endDate && isValidYmd(startDate) && isValidYmd(endDate)) {
+    const since = `${startDate}T00:00:00.000Z`;
+    const until = `${endDate}T23:59:59.999Z`;
     const ms = new Date(until).getTime() - new Date(since).getTime();
     const totalDays = Math.max(1, Math.ceil(ms / 86400000));
     return { since, until, totalDays };
   }
+
   const days = Math.min(parseInt(req.query.days as string) || 30, 365);
   return {
     since: daysAgo(days).toISOString(),
-    until: `${todayStr}T23:59:59.999Z`,
+    until: `${todayStrUtc}T23:59:59.999Z`,
     totalDays: days,
   };
 }
@@ -226,7 +351,11 @@ router.get(
   requireAuth,
   requireOwner,
   asyncHandler(async (req: Request, res: Response) => {
-    const { since, until, totalDays } = parseDateRange(req);
+    const parsed = parseDateRange(req);
+    const { since, until } = parsed;
+    const tz = chartUseLocalBuckets(parsed) ? parsed.chartTimeZone : undefined;
+    const dayStarted = dayBucketExpr('startedAt', tz);
+    const dayCreated = dayBucketExpr('createdAt', tz);
     const db = await connectDB();
 
     const speakingAgg = await db
@@ -235,7 +364,7 @@ router.get(
         { $match: { startedAt: { $gte: since, $lte: until } } },
         {
           $group: {
-            _id: { $substr: ['$startedAt', 0, 10] },
+            _id: dayStarted,
             count: { $sum: 1 },
           },
         },
@@ -249,7 +378,7 @@ router.get(
         { $match: { createdAt: { $gte: since, $lte: until } } },
         {
           $group: {
-            _id: { $substr: ['$createdAt', 0, 10] },
+            _id: dayCreated,
             count: { $sum: 1 },
           },
         },
@@ -263,7 +392,7 @@ router.get(
         { $match: { createdAt: { $gte: since, $lte: until } } },
         {
           $group: {
-            _id: { $substr: ['$createdAt', 0, 10] },
+            _id: dayCreated,
             count: { $sum: 1 },
           },
         },
@@ -275,17 +404,12 @@ router.get(
     const evalMap = new Map(evalAgg.map((r) => [r._id, r.count]));
     const signupMap = new Map(signupAgg.map((r) => [r._id, r.count]));
 
-    const labels: string[] = [];
+    const labels = buildChartLabels(parsed);
     const speaking: number[] = [];
     const evaluations: number[] = [];
     const newSignups: number[] = [];
 
-    const sinceDate = new Date(since);
-    for (let i = 0; i < totalDays; i++) {
-      const d = new Date(sinceDate);
-      d.setUTCDate(d.getUTCDate() + i);
-      const label = fmtDate(d);
-      labels.push(label);
+    for (const label of labels) {
       speaking.push((speakingMap.get(label) as number) ?? 0);
       evaluations.push((evalMap.get(label) as number) ?? 0);
       newSignups.push((signupMap.get(label) as number) ?? 0);
@@ -304,7 +428,11 @@ router.get(
   requireAuth,
   requireOwner,
   asyncHandler(async (req: Request, res: Response) => {
-    const { since, until, totalDays } = parseDateRange(req);
+    const parsed = parseDateRange(req);
+    const { since, until } = parsed;
+    const tz = chartUseLocalBuckets(parsed) ? parsed.chartTimeZone : undefined;
+    const dayStarted = dayBucketExpr('startedAt', tz);
+    const dayCreated = dayBucketExpr('createdAt', tz);
     const db = await connectDB();
 
     const speakingCostAgg = await db
@@ -313,7 +441,7 @@ router.get(
         { $match: { startedAt: { $gte: since, $lte: until } } },
         {
           $group: {
-            _id: { $substr: ['$startedAt', 0, 10] },
+            _id: dayStarted,
             cost: { $sum: '$metrics.totalCost' },
           },
         },
@@ -327,7 +455,7 @@ router.get(
         { $match: { createdAt: { $gte: since, $lte: until }, module: 'oralExpression' } },
         {
           $group: {
-            _id: { $substr: ['$createdAt', 0, 10] },
+            _id: dayCreated,
             cost: { $sum: { $ifNull: ['$aiCost', 0] } },
           },
         },
@@ -341,7 +469,7 @@ router.get(
         { $match: { createdAt: { $gte: since, $lte: until }, module: 'writtenExpression' } },
         {
           $group: {
-            _id: { $substr: ['$createdAt', 0, 10] },
+            _id: dayCreated,
             cost: { $sum: { $ifNull: ['$aiCost', 0] } },
           },
         },
@@ -352,7 +480,7 @@ router.get(
     const aiDayMatch = { createdAt: { $gte: since, $lte: until } };
     const dayGroup = {
       $group: {
-        _id: { $substr: ['$createdAt', 0, 10] },
+        _id: dayCreated,
         cost: { $sum: '$costUsd' },
       },
     };
@@ -395,7 +523,7 @@ router.get(
     const guidedWritingMap = new Map(guidedWritingCostAgg.map((r) => [r._id, r.cost]));
     const otherAiMiscMap = new Map(otherAiMiscCostAgg.map((r) => [r._id, r.cost]));
 
-    const labels: string[] = [];
+    const labels = buildChartLabels(parsed);
     const speakingCosts: number[] = [];
     const oralEvalCosts: number[] = [];
     const writtenEvalCosts: number[] = [];
@@ -403,12 +531,7 @@ router.get(
     const guidedWritingCosts: number[] = [];
     const otherAiCosts: number[] = [];
 
-    const sinceDate = new Date(since);
-    for (let i = 0; i < totalDays; i++) {
-      const d = new Date(sinceDate);
-      d.setUTCDate(d.getUTCDate() + i);
-      const label = fmtDate(d);
-      labels.push(label);
+    for (const label of labels) {
       speakingCosts.push(Math.round(((speakingMap.get(label) as number) ?? 0) * 10000) / 10000);
       oralEvalCosts.push(Math.round(((oralEvalMap.get(label) as number) ?? 0) * 10000) / 10000);
       writtenEvalCosts.push(Math.round(((writtenEvalMap.get(label) as number) ?? 0) * 10000) / 10000);

@@ -2,6 +2,47 @@ import { authenticatedFetchJSON } from './authenticatedFetch';
 
 const API_BASE = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/api/owner`;
 
+/** IANA zone for owner chart bucketing (Mongo $dateToString). */
+export function getBrowserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+function localYmdStartIso(ymd: string): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d, 0, 0, 0, 0).toISOString();
+}
+
+function localYmdEndIso(ymd: string): string {
+  const [y, m, d] = ymd.split('-').map(Number);
+  return new Date(y, m - 1, d, 23, 59, 59, 999).toISOString();
+}
+
+function inclusiveLocalDayCount(startYmd: string, endYmd: string): number {
+  const [s, e] = startYmd <= endYmd ? [startYmd, endYmd] : [endYmd, startYmd];
+  const [ys, ms, ds] = s.split('-').map(Number);
+  const [ye, me, de] = e.split('-').map(Number);
+  const t1 = new Date(ys, ms - 1, ds).getTime();
+  const t2 = new Date(ye, me - 1, de).getTime();
+  return Math.floor((t2 - t1) / 86400000) + 1;
+}
+
+/** Query string: local calendar bounds + IANA zone for chart series. */
+export function buildOwnerDateRangeQuery(startDate: string, endDate: string): string {
+  const [s, e] = startDate <= endDate ? [startDate, endDate] : [endDate, startDate];
+  const params = new URLSearchParams();
+  params.set('since', localYmdStartIso(s));
+  params.set('until', localYmdEndIso(e));
+  params.set('startDate', s);
+  params.set('endDate', e);
+  params.set('totalDays', String(inclusiveLocalDayCount(s, e)));
+  params.set('timeZone', getBrowserTimeZone());
+  return params.toString();
+}
+
 // --- Response types ---
 
 export interface OwnerStats {
@@ -106,10 +147,8 @@ export async function fetchOwnerStats(
   startDate: string,
   endDate: string
 ): Promise<OwnerStats> {
-  return authenticatedFetchJSON<OwnerStats>(
-    `${API_BASE}/stats?startDate=${startDate}&endDate=${endDate}`,
-    { getToken }
-  );
+  const q = buildOwnerDateRangeQuery(startDate, endDate);
+  return authenticatedFetchJSON<OwnerStats>(`${API_BASE}/stats?${q}`, { getToken });
 }
 
 export async function fetchActivityChart(
@@ -117,10 +156,8 @@ export async function fetchActivityChart(
   startDate: string,
   endDate: string
 ): Promise<ActivityChart> {
-  return authenticatedFetchJSON<ActivityChart>(
-    `${API_BASE}/activity-chart?startDate=${startDate}&endDate=${endDate}`,
-    { getToken }
-  );
+  const q = buildOwnerDateRangeQuery(startDate, endDate);
+  return authenticatedFetchJSON<ActivityChart>(`${API_BASE}/activity-chart?${q}`, { getToken });
 }
 
 export async function fetchCostBreakdown(
@@ -128,10 +165,8 @@ export async function fetchCostBreakdown(
   startDate: string,
   endDate: string
 ): Promise<CostBreakdown> {
-  return authenticatedFetchJSON<CostBreakdown>(
-    `${API_BASE}/cost-breakdown?startDate=${startDate}&endDate=${endDate}`,
-    { getToken }
-  );
+  const q = buildOwnerDateRangeQuery(startDate, endDate);
+  return authenticatedFetchJSON<CostBreakdown>(`${API_BASE}/cost-breakdown?${q}`, { getToken });
 }
 
 export async function fetchSessionHealth(
@@ -147,10 +182,8 @@ export async function fetchUserCosts(
   startDate: string,
   endDate: string
 ): Promise<UserCost[]> {
-  return authenticatedFetchJSON<UserCost[]>(
-    `${API_BASE}/user-costs?startDate=${startDate}&endDate=${endDate}`,
-    { getToken }
-  );
+  const q = buildOwnerDateRangeQuery(startDate, endDate);
+  return authenticatedFetchJSON<UserCost[]>(`${API_BASE}/user-costs?${q}`, { getToken });
 }
 
 export async function fetchRecentSessions(
@@ -160,8 +193,10 @@ export async function fetchRecentSessions(
   endDate?: string
 ): Promise<RecentSession[]> {
   const params = new URLSearchParams({ limit: String(limit) });
-  if (startDate) params.set('startDate', startDate);
-  if (endDate) params.set('endDate', endDate);
+  if (startDate && endDate) {
+    const range = new URLSearchParams(buildOwnerDateRangeQuery(startDate, endDate));
+    range.forEach((v, k) => params.set(k, v));
+  }
   return authenticatedFetchJSON<RecentSession[]>(`${API_BASE}/recent-sessions?${params}`, {
     getToken,
   });

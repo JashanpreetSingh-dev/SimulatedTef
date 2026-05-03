@@ -36,16 +36,26 @@ interface DateRange {
   endDate: string;
 }
 
-function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+function pad2(n: number): string {
+  return String(n).padStart(2, '0');
 }
+
+/** Local calendar YYYY-MM-DD (not UTC). */
+function todayStr(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+
 function nDaysAgoStr(n: number): string {
   const d = new Date();
-  d.setUTCDate(d.getUTCDate() - n);
-  return d.toISOString().slice(0, 10);
+  d.setDate(d.getDate() - n);
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
+
 function yesterdayStr(): string {
-  return nDaysAgoStr(1);
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 }
 
 const PRESETS: DateRange[] = [
