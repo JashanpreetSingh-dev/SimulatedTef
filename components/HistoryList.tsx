@@ -46,11 +46,9 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         // Determine resultType based on module
         // For oral/written expression: show practice results
         // For reading/listening: show assignment results (practice assignments, not mock exam results)
-        const resultType = (module === 'oralExpression' || module === 'writtenExpression') 
-          ? 'practice' 
-          : (module === 'reading' || module === 'listening') 
-            ? 'assignment' 
-            : undefined;
+        const resultType = (module === 'oralExpression' || module === 'writtenExpression')
+          ? 'practice'
+          : undefined;
         
         const skip = currentPage * RESULTS_PER_PAGE;
         const response = await persistenceService.getAllResults(
@@ -528,12 +526,12 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         alert('Unable to retake this assignment. Please try again.');
       }
     } else if (result.module === 'reading' || result.module === 'listening') {
-      // For reading/listening mock exams - navigate to mock exam view
       const mockExamId = 'mockExamId' in result ? result.mockExamId : undefined;
       if (mockExamId) {
         navigate(`/mock-exam/${mockExamId}?module=${result.module}`);
       } else {
-        alert('Unable to retake this exam. Mock exam information is missing.');
+        // Free-mode result (no mockExamId, no assignmentId) — go back to Practice to start fresh
+        navigate('/practice');
       }
     }
   };

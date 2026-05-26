@@ -21,12 +21,10 @@ export function AdminD2CConfigView() {
   const [sectionALimit, setSectionALimit] = useState<number>(1);
   const [sectionBLimit, setSectionBLimit] = useState<number>(1);
   const [writtenExpressionLimit, setWrittenExpressionLimit] = useState<number>(1);
-  const [mockExamLimit, setMockExamLimit] = useState<number>(1);
   const [validationErrors, setValidationErrors] = useState<{
     sectionALimit?: string;
     sectionBLimit?: string;
     writtenExpressionLimit?: string;
-    mockExamLimit?: string;
   }>({});
 
   // Check if user is admin
@@ -53,7 +51,6 @@ export function AdminD2CConfigView() {
       setSectionALimit(data.sectionALimit);
       setSectionBLimit(data.sectionBLimit);
       setWrittenExpressionLimit(data.writtenExpressionSectionALimit ?? data.writtenExpressionSectionBLimit ?? 1);
-      setMockExamLimit(data.mockExamLimit);
     } catch (err: any) {
       console.error('❌ Failed to fetch D2C config:', err);
       setError(err.message || 'Failed to load D2C configuration');
@@ -67,7 +64,6 @@ export function AdminD2CConfigView() {
       sectionALimit?: string;
       sectionBLimit?: string;
       writtenExpressionLimit?: string;
-      mockExamLimit?: string;
     } = {};
 
     if (isNaN(sectionALimit) || sectionALimit < 0) {
@@ -80,10 +76,6 @@ export function AdminD2CConfigView() {
 
     if (writtenExpressionLimit !== -1 && (isNaN(writtenExpressionLimit) || writtenExpressionLimit < 0)) {
       errors.writtenExpressionLimit = 'Written expression limit must be -1 (unlimited) or at least 0';
-    }
-
-    if (isNaN(mockExamLimit) || mockExamLimit < 0) {
-      errors.mockExamLimit = 'Mock exam limit must be at least 0';
     }
 
     setValidationErrors(errors);
@@ -107,7 +99,6 @@ export function AdminD2CConfigView() {
         sectionBLimit,
         writtenExpressionSectionALimit: writtenExpressionLimit,
         writtenExpressionSectionBLimit: writtenExpressionLimit,
-        mockExamLimit,
       });
 
       setConfig(updated);
@@ -232,28 +223,6 @@ export function AdminD2CConfigView() {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mock Exam Limit (per month)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={mockExamLimit}
-                onChange={(e) => setMockExamLimit(parseInt(e.target.value) || 0)}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white ${
-                  validationErrors.mockExamLimit ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {validationErrors.mockExamLimit && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {validationErrors.mockExamLimit}
-                </p>
-              )}
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Maximum number of mock exams per month for D2C users (Free tier baseline)
-              </p>
-            </div>
           </div>
 
           <div className="flex justify-end space-x-4">

@@ -8,6 +8,8 @@ import { ExpressionOraleTab } from '../components/practice/ExpressionOraleTab';
 import { ExpressionEcritTab } from '../components/practice/ExpressionEcritTab';
 import { ReadingTab } from '../components/practice/ReadingTab';
 import { ListeningTab } from '../components/practice/ListeningTab';
+import { D2CReadingTab } from '../components/practice/D2CReadingTab';
+import { D2CListeningTab } from '../components/practice/D2CListeningTab';
 import { PracticeModuleSelector } from '../components/practice/PracticeModuleSelector';
 import { useUser } from '@clerk/clerk-react';
 import { useIsD2C } from '../utils/userType';
@@ -42,7 +44,7 @@ export function PracticeView() {
   const { user } = useUser();
   const isD2C = useIsD2C();
   usePageTour(isD2C ? user?.id : undefined, 'practice', PRACTICE_STEPS);
-  const limitReachedState = location.state as { limitReached?: boolean; reason?: string; switchTo?: 'oral' | 'written' } | undefined;
+  const limitReachedState = location.state as { limitReached?: boolean; reason?: string; switchTo?: 'oral' | 'written' | 'reading' | 'listening' } | undefined;
   const [dismissedLimitBanner, setDismissedLimitBanner] = useState(false);
   const showLimitBanner = Boolean(limitReachedState?.limitReached && !dismissedLimitBanner);
   // D2C users always land on 'oral', unless the getting-started widget deep-linked to 'written'.
@@ -155,7 +157,7 @@ export function PracticeView() {
         {/* D2C: inline oral/written tab switcher. B2B: module selector grid. */}
         {isD2C ? (
           <>
-            {/* D2C module tabs — Oral / Written */}
+            {/* D2C module tabs — Oral / Written / Reading / Listening */}
             <div
               id="tour-practice-tab-switcher"
               className="flex gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-x-auto scrollbar-hide"
@@ -167,7 +169,10 @@ export function PracticeView() {
                 role="tab"
                 aria-selected={selectedModule === 'oral'}
                 onClick={() => { setSelectedModule('oral'); setPracticeTab('practice'); }}
-                onKeyDown={(e) => { if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedModule('written'); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedModule('written'); }
+                  if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedModule('listening'); }
+                }}
                 className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
                   selectedModule === 'oral'
                     ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
@@ -181,7 +186,10 @@ export function PracticeView() {
                 role="tab"
                 aria-selected={selectedModule === 'written'}
                 onClick={() => { setSelectedModule('written'); setPracticeTab('practice'); }}
-                onKeyDown={(e) => { if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedModule('oral'); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedModule('reading'); }
+                  if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedModule('oral'); }
+                }}
                 className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
                   selectedModule === 'written'
                     ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
@@ -190,13 +198,47 @@ export function PracticeView() {
               >
                 ✍️ {t('practice.writtenExpression')}
               </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedModule === 'reading'}
+                onClick={() => { setSelectedModule('reading'); setPracticeTab('practice'); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedModule('listening'); }
+                  if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedModule('written'); }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
+                  selectedModule === 'reading'
+                    ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                📖 {t('practice.readingComprehension')}
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={selectedModule === 'listening'}
+                onClick={() => { setSelectedModule('listening'); setPracticeTab('practice'); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight') { e.preventDefault(); setSelectedModule('oral'); }
+                  if (e.key === 'ArrowLeft') { e.preventDefault(); setSelectedModule('reading'); }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-all whitespace-nowrap flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 dark:focus:ring-offset-slate-800 ${
+                  selectedModule === 'listening'
+                    ? 'bg-indigo-100 dark:bg-indigo-900/50 text-indigo-400 dark:text-indigo-400 shadow-sm'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                🎧 {t('practice.listeningComprehension')}
+              </button>
             </div>
 
             {/* Practice / History sub-tabs */}
             <PracticeTabNavigation
               activeTab={practiceTab}
               onTabChange={setPracticeTab}
-              module={selectedModule as 'oral' | 'written'}
+              module={selectedModule ?? 'oral'}
             />
 
             {/* Content */}
@@ -204,12 +246,21 @@ export function PracticeView() {
               {practiceTab === 'practice' ? (
                 selectedModule === 'oral' ? (
                   <ExpressionOraleTab onStartExam={(mode) => startExam(mode, false)} />
-                ) : (
+                ) : selectedModule === 'written' ? (
                   <ExpressionEcritTab onStartExam={(mode) => startExam(mode, true)} />
+                ) : selectedModule === 'reading' ? (
+                  <D2CReadingTab />
+                ) : (
+                  <D2CListeningTab />
                 )
               ) : (
                 <div className="flex-1 min-h-0 overflow-hidden">
-                  <HistoryList module={selectedModule === 'oral' ? 'oralExpression' : 'writtenExpression'} />
+                  <HistoryList module={
+                    selectedModule === 'oral' ? 'oralExpression' :
+                    selectedModule === 'written' ? 'writtenExpression' :
+                    selectedModule === 'reading' ? 'reading' :
+                    'listening'
+                  } />
                 </div>
               )}
             </div>

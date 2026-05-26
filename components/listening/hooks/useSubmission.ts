@@ -16,7 +16,7 @@ interface UseSubmissionProps {
   task: ListeningTask;
   questions: ReadingListeningQuestion[];
   answers: (number | null)[];
-  mockExamId: string;
+  mockExamId?: string;
   assignmentId?: string;
   sessionId: string;
   storageKey: string;

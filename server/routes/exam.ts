@@ -442,8 +442,8 @@ router.post('/submit-mcq', requireAuth, mcqSubmissionLimiter, asyncHandler(async
 
   const { taskId, answers, module, mockExamId, sessionId } = req.body;
   
-  if (!taskId || !answers || !module || !mockExamId || !sessionId) {
-    return res.status(400).json({ error: 'taskId, answers, module, mockExamId, and sessionId are required' });
+  if (!taskId || !answers || !module || !sessionId) {
+    return res.status(400).json({ error: 'taskId, answers, module, and sessionId are required' });
   }
   
   if (!Array.isArray(answers) || answers.length > 40) {

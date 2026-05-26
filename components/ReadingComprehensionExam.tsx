@@ -11,7 +11,7 @@ interface ReadingComprehensionExamProps {
   task: ReadingTask;
   questions: ReadingListeningQuestion[];
   sessionId: string;
-  mockExamId: string;
+  mockExamId?: string;
   assignmentId?: string; // Optional: for assignment-based exams
   onComplete: (result: MCQResult) => void;
   onClose?: () => void;
@@ -51,8 +51,8 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
     }
   }, [questions.length, answers.length]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  // For assignments, don't enforce time limit (set to Infinity to indicate no limit)
-  const [timeRemaining, setTimeRemaining] = useState(assignmentId ? Infinity : TIME_LIMIT_SECONDS);
+  // For assignments and free-mode (no mockExamId, no assignmentId), don't enforce time limit
+  const [timeRemaining, setTimeRemaining] = useState((!assignmentId && !mockExamId) ? Infinity : TIME_LIMIT_SECONDS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -83,8 +83,8 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
           if (savedData.startTime) {
             startTimeRef.current = savedData.startTime;
             setHasStarted(true);
-            // Only restore timer for mock exams, not assignments
-            if (!assignmentId) {
+            // Only restore timer for mock exams (has mockExamId), not assignments or free-mode
+            if (!assignmentId && mockExamId) {
               const elapsed = Math.floor((Date.now() - savedData.startTime) / 1000);
               const remaining = Math.max(0, TIME_LIMIT_SECONDS - elapsed);
               setTimeRemaining(remaining);
@@ -116,8 +116,8 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       }
     }
 
-    // Timer countdown - only for mock exams, not assignments
-    if (!assignmentId) {
+    // Timer countdown - only for mock exams (has mockExamId), not assignments or free-mode
+    if (!assignmentId && mockExamId) {
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {

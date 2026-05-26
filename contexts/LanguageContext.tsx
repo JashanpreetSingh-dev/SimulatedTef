@@ -314,6 +314,10 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.dailyRitualTitle': 'Rituel quotidien TEF',
     'practice.dailyRitualDescription':
       'Cartes FR + une ligne EN, vocabulaire et grammaire, deck IA — ~15 min, ton sérieux TEF Canada (B2–C1).',
+    'practice.readingListeningTitle': 'Lecture & Écoute',
+    'practice.readingListeningBadge': 'Gratuit',
+    'practice.readingListeningDescription': 'Entraîne-toi avec des examens complets de style TEF. Tentatives illimitées, aucun crédit IA utilisé.',
+    'nav.readListen': 'Lecture & Écoute',
     
     // Errors
     'errors.error': 'Erreur',
@@ -864,6 +868,10 @@ const translations: Record<Language, Record<string, string>> = {
     'practice.dailyRitualTitle': 'TEF daily ritual',
     'practice.dailyRitualDescription':
       'FR cards plus one English line, vocab & grammar, AI-built deck — ~15 min, serious TEF Canada prep (B2–C1).',
+    'practice.readingListeningTitle': 'Reading & Listening',
+    'practice.readingListeningBadge': 'Free',
+    'practice.readingListeningDescription': 'Practice with full TEF-style tests. Unlimited retries, no AI credits used.',
+    'nav.readListen': 'Read & Listen',
     
     // Errors
     'errors.error': 'Error',

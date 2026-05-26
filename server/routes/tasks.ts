@@ -155,6 +155,74 @@ router.post('/setup-mock', requireAuth, asyncHandler(async (req: Request, res: R
   });
 }));
 
+// GET /api/tasks/active/:type - List all active tasks with user's attempt history
+router.get('/active/:type', requireAuth, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+
+  const { type } = req.params;
+  if (type !== 'reading' && type !== 'listening') {
+    return res.status(400).json({ error: 'Invalid task type. Must be reading or listening' });
+  }
+
+  const db = await connectDB();
+
+  // Fetch all active tasks
+  const tasks = type === 'reading'
+    ? await readingTaskService.getAllActiveTasks()
+    : await listeningTaskService.getAllActiveTasks();
+
+  const taskIds = tasks.map(t => t.taskId);
+
+  // Get question counts per task
+  const qCounts = await db.collection('questions').aggregate([
+    { $match: { taskId: { $in: taskIds } } },
+    { $group: { _id: '$taskId', count: { $sum: 1 } } }
+  ]).toArray();
+
+  const countMap: Record<string, number> = {};
+  for (const q of qCounts) countMap[q._id as string] = q.count;
+
+  // Get user's attempt history for these tasks
+  const userResults = await db.collection('results').find({
+    userId,
+    module: type,
+    'taskReferences.taskA.taskId': { $in: taskIds }
+  }).project({
+    'taskReferences.taskA.taskId': 1,
+    'moduleData.score': 1,
+    'moduleData.totalQuestions': 1,
+    timestamp: 1,
+    _id: 0
+  }).sort({ timestamp: -1 }).toArray();
+
+  const attemptMap: Record<string, { bestScore: number; totalQuestions: number; attemptCount: number }> = {};
+  for (const r of userResults) {
+    const tid = r.taskReferences?.taskA?.taskId as string;
+    if (!tid) continue;
+    if (!attemptMap[tid]) {
+      attemptMap[tid] = { bestScore: r.moduleData?.score ?? 0, totalQuestions: r.moduleData?.totalQuestions ?? 40, attemptCount: 0 };
+    }
+    attemptMap[tid].attemptCount++;
+    if ((r.moduleData?.score ?? 0) > attemptMap[tid].bestScore) {
+      attemptMap[tid].bestScore = r.moduleData.score;
+    }
+  }
+
+  const result = tasks
+    .filter(t => (countMap[t.taskId] ?? 0) > 0)
+    .map(t => ({
+      taskId: t.taskId,
+      questionCount: countMap[t.taskId] ?? 0,
+      attempted: !!attemptMap[t.taskId],
+      bestScore: attemptMap[t.taskId]?.bestScore ?? null,
+      totalQuestions: attemptMap[t.taskId]?.totalQuestions ?? countMap[t.taskId] ?? 40,
+      attemptCount: attemptMap[t.taskId]?.attemptCount ?? 0,
+    }));
+
+  res.json({ tasks: result, type });
+}));
+
 // ============================================
 // Normalized Task Storage Endpoints
 // ============================================

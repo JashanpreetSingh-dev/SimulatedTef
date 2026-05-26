@@ -23,7 +23,7 @@ export const mcqController = {
     taskId: string,
     answers: number[],
     module: 'reading' | 'listening',
-    mockExamId: string,
+    mockExamId: string | undefined,
     sessionId: string
   ): Promise<{
     success: boolean;
@@ -98,11 +98,11 @@ export const mcqController = {
     const result = {
       sessionId,
       userId,
-      resultType: 'mockExam',
+      resultType: mockExamId ? 'mockExam' : 'practice',
       mode: 'full', // MCQ modules are always full
       module: module as 'reading' | 'listening',
-      mockExamId,
-      title: `Mock Exam - ${module === 'reading' ? 'Reading' : 'Listening'}`,
+      ...(mockExamId ? { mockExamId } : {}),
+      title: mockExamId ? `Mock Exam - ${module === 'reading' ? 'Reading' : 'Listening'}` : `${module === 'reading' ? 'Reading' : 'Listening'} Practice`,
       timestamp: Date.now(),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
