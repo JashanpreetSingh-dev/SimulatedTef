@@ -5,7 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
-import { MockExamsCard } from '../components/dashboard/MockExamsCard';
+import { ReadingListeningCard } from '../components/dashboard/ReadingListeningCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
@@ -94,10 +94,10 @@ export function Dashboard() {
         {/* Hero — AI speaking + writing practice */}
         <PracticeCard />
 
-        {/* Secondary row — daily habit + milestone */}
+        {/* Secondary row — daily habit + reading/listening */}
         <div className="grid md:grid-cols-2 gap-6">
           <DailyRitualCard />
-          <MockExamsCard />
+          {isD2C && <ReadingListeningCard />}
         </div>
       </main>
     </DashboardLayout>

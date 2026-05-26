@@ -30,7 +30,6 @@ const ArticleExpressEntry = lazy(() =>
   import('../pages/blog/ArticleExpressEntry').then((m) => ({ default: m.ArticleExpressEntry }))
 );
 const ArticleVsTCF = lazy(() => import('../pages/blog/ArticleVsTCF').then((m) => ({ default: m.ArticleVsTCF })));
-const MockExamRoute = lazy(() => import('./MockExamRoute'));
 const AdminUsageView = lazy(() => import('../pages/AdminUsageView').then((m) => ({ default: m.AdminUsageView })));
 const AdminVoteAnalyticsView = lazy(() =>
   import('../pages/AdminVoteAnalyticsView').then((m) => ({ default: m.AdminVoteAnalyticsView }))
@@ -103,22 +102,6 @@ export function ProtectedRoutes() {
             element={
               <ErrorBoundary context="Exam session">
                 <GuidedWrittenExamView />
-              </ErrorBoundary>
-            }
-          />
-          <Route
-            path="/mock-exam/:mockExamId"
-            element={
-              <ErrorBoundary context="Mock exam">
-                <MockExamRoute />
-              </ErrorBoundary>
-            }
-          />
-          <Route
-            path="/mock-exam"
-            element={
-              <ErrorBoundary context="Mock exam">
-                <MockExamRoute />
               </ErrorBoundary>
             }
           />

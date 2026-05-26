@@ -235,7 +235,7 @@ export function ExamView() {
           <div className="max-w-7xl mx-auto">
             <DetailedResultView 
               result={result} 
-              onBack={() => navigate(result.mockExamId ? `/mock-exam/${result.mockExamId}` : '/history')} 
+              onBack={() => navigate('/history')}
             />
           </div>
         </div>

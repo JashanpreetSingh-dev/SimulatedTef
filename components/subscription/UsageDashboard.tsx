@@ -6,14 +6,12 @@ interface UsageData {
   usage: {
     sectionAUsed: number;
     sectionBUsed: number;
-    mockExamsUsed: number;
     writtenExpressionSectionAUsed?: number;
     writtenExpressionSectionBUsed?: number;
   };
   limits: {
     sectionALimit: number;
     sectionBLimit: number;
-    mockExamLimit: number;
     writtenExpressionSectionALimit?: number;
     writtenExpressionSectionBLimit?: number;
   };
@@ -172,7 +170,6 @@ export function UsageDashboard({ refreshKey }: UsageDashboardProps = {}) {
   const rows: Array<{ label: string; used: number; limit: number; icon: React.ReactNode }> = [
     { label: 'Speaking A', used: usage.sectionAUsed, limit: limits.sectionALimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0V8m0 0V4a2 2 0 012-2h2a2 2 0 012 2v4z" /></svg> },
     { label: 'Speaking B', used: usage.sectionBUsed, limit: limits.sectionBLimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0V8m0 0V4a2 2 0 012-2h2a2 2 0 012 2v4z" /></svg> },
-    { label: 'Mock exams', used: usage.mockExamsUsed, limit: limits.mockExamLimit, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> },
     { label: 'Written A', used: usage.writtenExpressionSectionAUsed ?? 0, limit: limits.writtenExpressionSectionALimit ?? 1, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg> },
     { label: 'Written B', used: usage.writtenExpressionSectionBUsed ?? 0, limit: limits.writtenExpressionSectionBLimit ?? 1, icon: <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg> },
   ];

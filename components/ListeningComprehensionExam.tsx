@@ -42,7 +42,7 @@ interface ListeningComprehensionExamProps {
   questions: ReadingListeningQuestion[];
   audioItems?: AudioItemMetadata[] | null;
   sessionId: string;
-  mockExamId: string;
+  mockExamId?: string;
   assignmentId?: string;
   onComplete: (result: MCQResult) => void;
   onClose?: () => void;
@@ -66,7 +66,7 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
   const hasAudioItems = audioItems && audioItems.length > 0;
 
   // Main state management - hooks must be called unconditionally
-  const examState = useListeningExamState({ questions: questions || [], assignmentId });
+  const examState = useListeningExamState({ questions: questions || [], assignmentId, mockExamId });
 
   // Destructure setters to ensure stable references for callbacks
   const { setAnswers, setCurrentQuestionIndex, setHasStarted, startTimeRef } = examState;

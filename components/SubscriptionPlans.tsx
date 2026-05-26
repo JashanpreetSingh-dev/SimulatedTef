@@ -21,7 +21,6 @@ interface SubscriptionTier {
     sectionBLimit: number;
     writtenExpressionSectionALimit: number;
     writtenExpressionSectionBLimit: number;
-    mockExamLimit: number;
   };
   features: string[];
   highlight?: boolean;
@@ -39,12 +38,10 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       sectionBLimit: 1,
       writtenExpressionSectionALimit: 1,
       writtenExpressionSectionBLimit: 1,
-      mockExamLimit: 1,
     },
     features: [
       '1 speaking practice (total)',
       '1 writing practice (total)',
-      '1 Mock exam (total)',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -59,12 +56,10 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       sectionBLimit: 10,
       writtenExpressionSectionALimit: 10,
       writtenExpressionSectionBLimit: 10,
-      mockExamLimit: 2,
     },
     features: [
       '10 speaking practices/month',
       '10 writing practices/month',
-      '2 Mock exams/month',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -79,12 +74,10 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       sectionBLimit: 30,
       writtenExpressionSectionALimit: 30,
       writtenExpressionSectionBLimit: 30,
-      mockExamLimit: 5,
     },
     features: [
       '30 speaking practices/month',
       '30 writing practices/month',
-      '5 Mock exams/month',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],

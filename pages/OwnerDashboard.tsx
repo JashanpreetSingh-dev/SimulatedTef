@@ -473,7 +473,6 @@ export function OwnerDashboard() {
         { name: 'Speaking',    count: stats.activity.speakingSessions },
         { name: 'Evaluations', count: stats.activity.evaluations },
         { name: 'Writing',     count: stats.activity.writingFeedback },
-        { name: 'Mock Exams',  count: stats.activity.mockExams },
       ].sort((a, b) => b.count - a.count)
     : [];
   const maxTaskCount = taskUsage.length > 0 ? taskUsage[0].count : 1;
