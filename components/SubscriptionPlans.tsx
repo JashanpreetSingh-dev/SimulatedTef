@@ -42,9 +42,12 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 1,
     },
     features: [
-      '1 speaking practice (total)',
-      '1 writing practice (total)',
-      '1 Mock exam (total)',
+      'Unlimited reading practice',
+      'Unlimited listening practice',
+      '1 speaking Sec. A (total)',
+      '1 speaking Sec. B (total)',
+      '1 writing Sec. A (total)',
+      '1 writing Sec. B (total)',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -62,9 +65,12 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 2,
     },
     features: [
-      '10 speaking practices/month',
-      '10 writing practices/month',
-      '2 Mock exams/month',
+      'Unlimited reading practice',
+      'Unlimited listening practice',
+      '10 speaking Sec. A / month',
+      '10 speaking Sec. B / month',
+      '10 writing Sec. A / month',
+      '10 writing Sec. B / month',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -82,9 +88,12 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 5,
     },
     features: [
-      '30 speaking practices/month',
-      '30 writing practices/month',
-      '5 Mock exams/month',
+      'Unlimited reading practice',
+      'Unlimited listening practice',
+      '30 speaking Sec. A / month',
+      '30 speaking Sec. B / month',
+      '30 writing Sec. A / month',
+      '30 writing Sec. B / month',
       'AI-powered evaluation & feedback',
       'Progress tracking & history',
     ],
@@ -121,6 +130,20 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
       });
   }, []);
 
+  const renderFeature = (feature: string) => {
+    const match = feature.match(/^(\d+)\s(.+)$/);
+    if (match) {
+      return (
+        <>
+          <span className="text-indigo-600 dark:text-indigo-400 font-black text-base tabular-nums">{match[1]}</span>
+          {' '}
+          <span>{match[2]}</span>
+        </>
+      );
+    }
+    return feature;
+  };
+
   return (
     <section className="relative py-16 sm:py-24 md:py-32 px-4 sm:px-6 lg:px-12 xl:px-16">
       <div className="max-w-7xl mx-auto">
@@ -129,7 +152,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
             Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Plan</span>
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-            Start free and upgrade anytime. All plans include all 4 TEF modules with AI evaluation.
+            Reading &amp; Listening is free for everyone. Upgrade for unlimited speaking &amp; writing practice.
           </p>
         </div>
 
@@ -197,7 +220,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
                       </svg>
                     </span>
                     <span className="text-slate-600 dark:text-slate-300 text-sm leading-snug">
-                      {feature}
+                      {renderFeature(feature)}
                     </span>
                   </li>
                 ))}
@@ -239,7 +262,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
         {variant === 'landing' && (
           <div className="mt-12 text-center">
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              All plans include access to all 4 TEF Canada modules. No credit card required for free plan.
+              Reading &amp; Listening practice is free for all users — no subscription needed. No credit card required for free plan.
             </p>
           </div>
         )}

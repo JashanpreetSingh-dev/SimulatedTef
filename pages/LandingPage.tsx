@@ -226,6 +226,13 @@ export function LandingPage() {
                   Designed specifically for TEF Canada oral preparation
                 </p>
               </motion.div>
+              <motion.div variants={heroItem} className="flex justify-center px-4">
+                <div className="inline-flex flex-wrap justify-center items-center gap-2 px-4 py-2.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50">
+                  <span className="text-blue-700 dark:text-blue-300 text-sm font-semibold">📖🎧 Reading &amp; Listening practice</span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-bold uppercase tracking-wide">Free for all</span>
+                  <span className="text-slate-500 dark:text-slate-400 text-xs">— no subscription required</span>
+                </div>
+              </motion.div>
               <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-2 w-full px-4">
                 <SignUpButton
                   mode="modal"
@@ -460,7 +467,10 @@ export function LandingPage() {
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
                   40 MCQ questions across 4 sections. Texts range from simple to complex professional content.
                 </p>
-                <div className="pt-2">
+                <div className="pt-2 flex flex-wrap gap-2">
+                  <span className="inline-block px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-bold">
+                    Free for all
+                  </span>
                   <span className="inline-block px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-xs font-semibold">
                     40 Questions
                   </span>
@@ -474,7 +484,10 @@ export function LandingPage() {
                 <p className="text-slate-500 dark:text-slate-400 text-sm leading-[1.5]">
                   40 MCQ questions with AI-generated audio. Practice with various accents and speaking speeds.
                 </p>
-                <div className="pt-2">
+                <div className="pt-2 flex flex-wrap gap-2">
+                  <span className="inline-block px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 text-xs font-bold">
+                    Free for all
+                  </span>
                   <span className="inline-block px-3 py-1 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-700 dark:text-cyan-300 text-xs font-semibold">
                     40 Questions
                   </span>
