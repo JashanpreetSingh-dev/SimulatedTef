@@ -7,15 +7,18 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { ReadingListeningQuestion } from "../../types";
 import { createQuestion } from "../../server/models/Question";
 
-// Get API key
-const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+let _ai: GoogleGenAI | undefined;
 
-if (!apiKey) {
-  console.error('❌ GEMINI_API_KEY is missing!');
-  console.error('Please set GEMINI_API_KEY in your environment variables.');
+function getAI(): GoogleGenAI {
+  if (!_ai) {
+    const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is missing! Please set GEMINI_API_KEY in your environment variables.');
+    }
+    _ai = new GoogleGenAI({ apiKey: apiKey.trim() });
+  }
+  return _ai;
 }
-
-const ai = new GoogleGenAI({ apiKey: apiKey.trim() });
 
 /**
  * Master prompt for TEF Canada reading comprehension question generation
@@ -413,10 +416,6 @@ export async function generateQuestions(
     numberOfQuestions?: number; // For practice assignments
   } = {}
 ): Promise<ReadingListeningQuestion[]> {
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not set. Please set it in your environment variables.');
-  }
-
   const { theme, sections, numberOfQuestions } = options;
   // If numberOfQuestions is provided (not undefined), it's a practice assignment
   // Practice assignments can have any number of questions, including 40
@@ -446,7 +445,7 @@ export async function generateQuestions(
       ? getPracticePrompt(numberOfQuestions!, theme)
       : getMasterPrompt(theme);
     
-    const response = await ai.models.generateContent({
+    const response = await getAI().models.generateContent({
       model: "gemini-2.5-flash",
       contents: [{
         parts: [{
@@ -512,15 +511,19 @@ export async function generateQuestions(
     const formattedQuestions: ReadingListeningQuestion[] = questions.map((q: any, index: number) => {
       // Ensure questionNumber is sequential (1-40)
       const questionNumber = index + 1;
-      
+
+      // Gemini occasionally returns 5 options — truncate to 4
+      const options: string[] = Array.isArray(q.options) ? q.options.slice(0, 4) : q.options;
+      const correctAnswer = Math.min(q.correctAnswer, options.length - 1);
+
       return createQuestion(
         `${taskId}_q${questionNumber}`,
         taskId,
         'reading',
         questionNumber,
         q.question,
-        q.options,
-        q.correctAnswer,
+        options,
+        correctAnswer,
         q.explanation,
         true,
         q.questionText

@@ -11,9 +11,10 @@ export type Phase = 'reading' | 'playing' | 'answering' | 'transitioning';
 interface UseListeningExamStateProps {
   questions: ReadingListeningQuestion[];
   assignmentId?: string;
+  mockExamId?: string;
 }
 
-export function useListeningExamState({ questions, assignmentId }: UseListeningExamStateProps) {
+export function useListeningExamState({ questions, assignmentId, mockExamId }: UseListeningExamStateProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<(number | null)[]>(() => 
     new Array(questions.length).fill(null)
@@ -30,7 +31,7 @@ export function useListeningExamState({ questions, assignmentId }: UseListeningE
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
   const isFirstQuestion = currentQuestionIndex === 0;
-  const isPracticeAssignment = !!assignmentId;
+  const isPracticeAssignment = !!assignmentId || !mockExamId;
   const answeredCount = answers.filter(a => a !== null).length;
 
   const handleAnswerSelect = (answerIndex: number) => {

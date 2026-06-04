@@ -11,7 +11,7 @@ import { join } from 'path';
 import { s3Service } from '../../server/services/s3Service';
 
 const GEMINI_IMAGE_MODEL = 'gemini-2.5-flash-image';
-const GEMINI_TEXT_MODEL = 'gemini-2.0-flash';
+const GEMINI_TEXT_MODEL = 'gemini-2.5-flash';
 
 const PROMPT_SYSTEM = `You are helping create image prompts for a French listening exam (TEF Canada). Section 1 questions ask "Quel dessin correspond à la situation?" (Which drawing matches the situation?). The audio is a short French description. You must output exactly 4 English image prompts: one that correctly illustrates the situation described in the audio, and three plausible distractors (similar style but different situation). Use simple, clear descriptions suitable for line-drawing style images. Output ONLY a JSON array of exactly 4 strings, in order [promptA, promptB, promptC, promptD], with the CORRECT scene at the index given by correctAnswer (0=A, 1=B, 2=C, 3=D). Each prompt must start with: "Simple line drawing, TEF exam style: " and then describe the scene in English. No other text or markdown.`;
 

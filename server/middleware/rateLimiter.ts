@@ -21,11 +21,11 @@ const keyGenerator = (req: Request): string => {
 /**
  * General API rate limiter - applied to all /api routes.
  * Keys by IP (auth runs per-route, so userId not set at this layer).
- * Limit: 200 requests per minute per IP.
+ * Limit: 300 requests per minute per IP.
  */
 export const generalApiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 200,
+  max: 300,
   message: 'Too many requests. Please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -34,24 +34,24 @@ export const generalApiLimiter = rateLimit({
 
 /**
  * Rate limiter for task selection endpoints
- * Limit: 10 requests per minute per user
+ * Limit: 60 requests per minute per user
  */
 export const taskSelectionLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 10, // 10 requests per window
+  windowMs: 60 * 1000,
+  max: 60,
   message: 'Too many task selection requests. Please try again later.',
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
   keyGenerator,
 });
 
 /**
  * Rate limiter for MCQ submission endpoints
- * Limit: 5 requests per minute per user
+ * Limit: 60 requests per minute per user
  */
 export const mcqSubmissionLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // 5 requests per window
+  windowMs: 60 * 1000,
+  max: 60,
   message: 'Too many MCQ submission requests. Please try again later.',
   standardHeaders: true,
   legacyHeaders: false,

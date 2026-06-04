@@ -16,7 +16,7 @@ interface UseSubmissionProps {
   task: ListeningTask;
   questions: ReadingListeningQuestion[];
   answers: (number | null)[];
-  mockExamId: string;
+  mockExamId?: string;
   assignmentId?: string;
   sessionId: string;
   storageKey: string;
@@ -50,26 +50,20 @@ export function useSubmission({
       // Prepare answers array (fill nulls with -1 for incomplete answers)
       const submittedAnswers = answers.map(a => a !== null ? a : -1);
 
-      // Submit to backend - use assignment endpoint if assignmentId is provided
-      const endpoint = assignmentId 
-        ? `${BACKEND_URL}/api/exam/submit-assignment-mcq`
-        : `${BACKEND_URL}/api/exam/submit-mcq`;
-      
-      const requestBody = assignmentId
-        ? {
-            taskId: task.taskId,
-            answers: submittedAnswers,
-            module: 'listening',
-            assignmentId,
-            sessionId,
-          }
-        : {
-            taskId: task.taskId,
-            answers: submittedAnswers,
-            module: 'listening',
-            mockExamId,
-            sessionId,
-          };
+      let endpoint: string;
+      let requestBody: object;
+
+      if (assignmentId) {
+        endpoint = `${BACKEND_URL}/api/exam/submit-assignment-mcq`;
+        requestBody = { taskId: task.taskId, answers: submittedAnswers, module: 'listening', assignmentId, sessionId };
+      } else if (mockExamId) {
+        endpoint = `${BACKEND_URL}/api/exam/submit-mcq`;
+        requestBody = { taskId: task.taskId, answers: submittedAnswers, module: 'listening', mockExamId, sessionId };
+      } else {
+        // Practice mode — standalone, no mock exam, no assignment
+        endpoint = `${BACKEND_URL}/api/tasks/submit-practice`;
+        requestBody = { taskId: task.taskId, type: 'listening', answers: submittedAnswers };
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',

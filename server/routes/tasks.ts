@@ -5,13 +5,14 @@
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth';
 import { asyncHandler } from '../middleware/errorHandler';
-import { taskSelectionLimiter } from '../middleware/rateLimiter';
+import { taskSelectionLimiter, mcqSubmissionLimiter, resultRetrievalLimiter } from '../middleware/rateLimiter';
 import { Request, Response } from 'express';
 import { connectDB } from '../db/connection';
 import { readingTaskService } from '../services/readingTaskService';
 import { listeningTaskService } from '../services/listeningTaskService';
 import { questionService } from '../services/questionService';
 import * as taskService from '../services/taskService';
+import { practiceMCQController } from '../controllers/practiceMCQController';
 import { TaskType } from '../../types/task';
 
 const router = Router();
@@ -39,9 +40,49 @@ router.get('/random/:type', requireAuth, taskSelectionLimiter, asyncHandler(asyn
   res.json(task);
 }));
 
-// GET /api/questions/:taskId - Get all questions for a Reading/Listening task
-// Rate limit: 10 requests per minute (task selection)
-router.get('/questions/:taskId', requireAuth, taskSelectionLimiter, asyncHandler(async (req: Request, res: Response) => {
+// GET /api/tasks/all?type=reading|listening - Get all active tasks by type
+router.get('/all', requireAuth, taskSelectionLimiter, asyncHandler(async (req: Request, res: Response) => {
+  const { type } = req.query;
+
+  if (type !== 'reading' && type !== 'listening') {
+    return res.status(400).json({ error: 'Invalid or missing type. Must be reading or listening' });
+  }
+
+  const tasks = type === 'reading'
+    ? await readingTaskService.getAllActiveTasks()
+    : await listeningTaskService.getAllActiveTasks();
+
+  res.json(tasks);
+}));
+
+// POST /api/tasks/submit-practice - Submit MCQ answers for standalone practice (no limits)
+router.post('/submit-practice', requireAuth, mcqSubmissionLimiter, asyncHandler(async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { taskId, type, answers } = req.body;
+
+  if (!taskId || typeof taskId !== 'string') {
+    return res.status(400).json({ error: 'taskId is required and must be a string' });
+  }
+
+  if (type !== 'reading' && type !== 'listening') {
+    return res.status(400).json({ error: 'type must be reading or listening' });
+  }
+
+  if (!Array.isArray(answers) || answers.length > 40) {
+    return res.status(400).json({ error: 'answers must be an array with at most 40 elements' });
+  }
+
+  const result = await practiceMCQController.submitPracticeMCQ(userId, taskId, type, answers);
+  res.json(result);
+}));
+
+// GET /api/questions/:taskId - Get all questions for a Reading/Listening task (used for result review)
+// Rate limit: 60 requests per minute (result retrieval)
+router.get('/questions/:taskId', requireAuth, resultRetrievalLimiter, asyncHandler(async (req: Request, res: Response) => {
   const { taskId } = req.params;
   
   const questions = await questionService.getQuestionsByTaskId(taskId);
@@ -59,8 +100,8 @@ router.get('/questions/:taskId', requireAuth, taskSelectionLimiter, asyncHandler
 }));
 
 // GET /api/tasks/:taskId/with-questions - Get Reading/Listening task with questions populated
-// Rate limit: 10 requests per minute (task selection)
-router.get('/:taskId/with-questions', requireAuth, taskSelectionLimiter, asyncHandler(async (req: Request, res: Response) => {
+// No per-user rate limit — static task data, covered by the global generalApiLimiter
+router.get('/:taskId/with-questions', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const { taskId } = req.params;
   const db = await connectDB();
   

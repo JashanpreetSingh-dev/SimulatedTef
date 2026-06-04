@@ -11,7 +11,7 @@ interface ReadingComprehensionExamProps {
   task: ReadingTask;
   questions: ReadingListeningQuestion[];
   sessionId: string;
-  mockExamId: string;
+  mockExamId?: string;
   assignmentId?: string; // Optional: for assignment-based exams
   onComplete: (result: MCQResult) => void;
   onClose?: () => void;
@@ -52,7 +52,7 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
   }, [questions.length, answers.length]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   // For assignments, don't enforce time limit (set to Infinity to indicate no limit)
-  const [timeRemaining, setTimeRemaining] = useState(assignmentId ? Infinity : TIME_LIMIT_SECONDS);
+  const [timeRemaining, setTimeRemaining] = useState((assignmentId || !mockExamId) ? Infinity : TIME_LIMIT_SECONDS);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -116,8 +116,8 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       }
     }
 
-    // Timer countdown - only for mock exams, not assignments
-    if (!assignmentId) {
+    // Timer countdown - only for mock exams, not assignments or practice
+    if (!assignmentId && mockExamId) {
       timerRef.current = setInterval(() => {
         setTimeRemaining((prev) => {
           if (prev <= 1) {
@@ -223,26 +223,20 @@ export const ReadingComprehensionExam: React.FC<ReadingComprehensionExamProps> =
       // Prepare answers array (fill nulls with -1 for incomplete answers)
       const submittedAnswers = answers.map(a => a !== null ? a : -1);
 
-      // Submit to backend - use assignment endpoint if assignmentId is provided
-      const endpoint = assignmentId 
-        ? `${BACKEND_URL}/api/exam/submit-assignment-mcq`
-        : `${BACKEND_URL}/api/exam/submit-mcq`;
-      
-      const requestBody = assignmentId
-        ? {
-            taskId: task.taskId,
-            answers: submittedAnswers,
-            module: 'reading',
-            assignmentId,
-            sessionId,
-          }
-        : {
-            taskId: task.taskId,
-            answers: submittedAnswers,
-            module: 'reading',
-            mockExamId,
-            sessionId,
-          };
+      let endpoint: string;
+      let requestBody: object;
+
+      if (assignmentId) {
+        endpoint = `${BACKEND_URL}/api/exam/submit-assignment-mcq`;
+        requestBody = { taskId: task.taskId, answers: submittedAnswers, module: 'reading', assignmentId, sessionId };
+      } else if (mockExamId) {
+        endpoint = `${BACKEND_URL}/api/exam/submit-mcq`;
+        requestBody = { taskId: task.taskId, answers: submittedAnswers, module: 'reading', mockExamId, sessionId };
+      } else {
+        // Practice mode — standalone, no mock exam, no assignment
+        endpoint = `${BACKEND_URL}/api/tasks/submit-practice`;
+        requestBody = { taskId: task.taskId, type: 'reading', answers: submittedAnswers };
+      }
 
       const response = await fetch(endpoint, {
         method: 'POST',

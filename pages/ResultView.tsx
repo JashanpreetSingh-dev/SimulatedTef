@@ -139,10 +139,12 @@ export function ResultView() {
               if (result.mockExamId) {
                 navigate(`/mock-exam/${result.mockExamId}`);
               } else if (result.assignmentId) {
-                // Navigate back to practice for assignment results
                 navigate('/practice');
+              } else if (result.module === 'reading') {
+                navigate('/reading-practice');
+              } else if (result.module === 'listening') {
+                navigate('/listening-practice');
               } else if (result.module === 'writtenExpression' || result.module === 'oralExpression') {
-                // Navigate back to practice, preserving module selection
                 const module = result.module === 'writtenExpression' ? 'written' : 'oral';
                 sessionStorage.setItem('practice_selected_module', module);
                 navigate('/practice');

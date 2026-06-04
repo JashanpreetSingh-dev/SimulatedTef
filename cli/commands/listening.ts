@@ -11,6 +11,7 @@ import { createQuestion } from '../../server/models/Question';
 import { createAudioItem } from '../../server/models/AudioItem';
 import { generateListeningQuestions, validateGeneratedListeningQuestions } from '../services/listeningQuestionGenerator';
 import { generateAudioForTask, generateMissingAudio } from '../services/ttsGenerator';
+import { generateAndSaveSection1Images } from '../services/listeningSection1Images';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -143,9 +144,9 @@ export async function showListeningTaskCommand(argv: any) {
  */
 export async function generateCompleteCommand(argv: any) {
   try {
-    const { taskId, prompt, timeLimit, skipAudio } = argv;
-    
-    console.log('\n🚀 Creating Complete Listening Mock Exam');
+    const { taskId, prompt, timeLimit, skipAudio, skipSection1Images } = argv;
+
+    console.log('\n🚀 Creating Complete Listening Task');
     console.log('═'.repeat(60));
 
     const db = await getDB();
@@ -163,7 +164,7 @@ export async function generateCompleteCommand(argv: any) {
         .filter((n: number) => n > 0);
       const nextNumber = taskNumbers.length > 0 ? Math.max(...taskNumbers) + 1 : 1;
       finalTaskId = `listening_${nextNumber}`;
-      console.log(`\n[1/4] 📝 Auto-generated task ID: ${finalTaskId}`);
+      console.log(`\n[1/5] 📝 Auto-generated task ID: ${finalTaskId}`);
     } else {
       if (!validateTaskId(finalTaskId, 'listening')) {
         console.error('❌ Invalid task ID format. Must be: listening_<number>');
@@ -174,15 +175,15 @@ export async function generateCompleteCommand(argv: any) {
         console.error(`❌ Task ${finalTaskId} already exists`);
         process.exit(1);
       }
-      console.log(`\n[1/4] 📝 Using task ID: ${finalTaskId}`);
+      console.log(`\n[1/5] 📝 Using task ID: ${finalTaskId}`);
     }
 
     // Use default prompt if not provided
     const finalPrompt = prompt || "Écoutez attentivement les enregistrements audio et répondez aux 40 questions qui suivent. Chaque question sera lue deux fois avec un temps de réflexion entre les lectures. Vous avez 40 minutes pour compléter cette section.";
     const timeLimitSec = parseInt(timeLimit) || 2400;
 
-    // Step 1: Create task
-    console.log(`\n[2/4] 📋 Creating listening task...`);
+    // Step 2: Create task
+    console.log(`\n[2/5] 📋 Creating listening task...`);
     const task = createListeningTask(
       finalTaskId,
       finalPrompt,
@@ -193,8 +194,8 @@ export async function generateCompleteCommand(argv: any) {
     await listeningTasksCollection.insertOne(task);
     console.log(`   ✅ Task created`);
 
-    // Step 2: Generate questions
-    console.log(`\n[3/4] 🤖 Generating questions and audio scripts...`);
+    // Step 3: Generate questions
+    console.log(`\n[3/5] 🤖 Generating questions and audio scripts...`);
     const { audioItems, questions } = await generateListeningQuestions(finalTaskId);
 
     // Validate questions
@@ -208,37 +209,60 @@ export async function generateCompleteCommand(argv: any) {
     // Save audio items and questions
     const audioItemsCollection = db.collection('audioItems');
     const questionsCollection = db.collection('questions');
-    
+
     await audioItemsCollection.insertMany(audioItems);
     console.log(`   ✅ Saved ${audioItems.length} audio items with scripts`);
-    
+
     await questionsCollection.insertMany(questions);
     console.log(`   ✅ Saved ${questions.length} questions`);
 
-    // Step 3: Generate audio (unless skipped)
+    // Step 4: Generate audio (unless skipped)
     if (!skipAudio) {
-      console.log(`\n[4/4] 🎵 Generating audio files from scripts (this may take a while)...`);
+      console.log(`\n[4/5] 🎵 Generating audio files from scripts (this may take a while)...`);
       await closeDatabase(); // Close before TTS generation (it will open its own connection)
       const stats = await generateAudioForTask(finalTaskId, false);
-      
+
       if (stats.failed > 0) {
         console.error(`\n⚠️  Warning: ${stats.failed} audio item(s) failed to generate`);
       } else {
         console.log(`\n✅ All audio files generated successfully!`);
       }
     } else {
-      console.log(`\n[4/4] ⏭️  Skipping audio generation (use 'listening questions generate-audio' later)`);
+      console.log(`\n[4/5] ⏭️  Skipping audio generation (use 'listening questions generate-audio' later)`);
       await closeDatabase();
     }
 
-    console.log(`\n🎉 Complete listening mock exam created: ${finalTaskId}`);
+    // Step 5: Generate Section 1 images (unless skipped)
+    if (!skipSection1Images) {
+      console.log(`\n[5/5] 📷 Generating Section 1 option images (Gemini image model)...`);
+      const apiKey = (process.env.GEMINI_API_KEY || process.env.API_KEY || '').trim();
+      if (apiKey) {
+        try {
+          const publicDir = join(process.cwd(), 'public');
+          const { questionsProcessed, filesWritten } = await generateAndSaveSection1Images(finalTaskId, publicDir, apiKey);
+          console.log(`   ✅ Section 1 images: ${questionsProcessed} questions, ${filesWritten} files`);
+        } catch (section1Err: any) {
+          console.warn(`   ⚠️  Section 1 images failed (task still created):`, section1Err.message);
+        }
+      } else {
+        console.warn(`   ⚠️  GEMINI_API_KEY not set; skipping Section 1 images. Run later:`);
+        console.warn(`      npm run cli -- listening section1-images --task-id ${finalTaskId}`);
+      }
+    } else {
+      console.log(`\n[5/5] ⏭️  Section 1 images skipped`);
+    }
+
+    console.log(`\n🎉 Complete listening task created: ${finalTaskId}`);
     if (skipAudio) {
       console.log(`💡 Run 'listening questions generate-audio --task-id ${finalTaskId}' to generate audio files`);
     }
-    
+    if (skipSection1Images) {
+      console.log(`💡 Run 'listening section1-images --task-id ${finalTaskId}' to generate Section 1 images`);
+    }
+
     process.exit(0);
   } catch (error: any) {
-    console.error('\n❌ Error creating complete listening mock exam:', error.message);
+    console.error('\n❌ Error creating complete listening task:', error.message);
     await closeDatabase().catch(() => {});
     process.exit(1);
   }
@@ -643,12 +667,13 @@ export function registerListeningCommands(yargsInstance: ReturnType<typeof yargs
   return yargsInstance
     .strictCommands() // Require exact command matches
     .strictOptions() // Require exact option matches
-    .command('generate', 'Generate complete listening mock exam: create task, generate questions, and audio (one command)', (yargs) => {
+    .command('generate', 'Generate complete listening task: create task, questions, audio, and Section 1 images (one command)', (yargs) => {
       return yargs
         .option('task-id', { type: 'string', describe: 'Task ID (e.g., listening_2) - auto-generated if not provided' })
         .option('prompt', { type: 'string', describe: 'Task prompt/instructions (uses default if not provided)' })
         .option('time-limit', { type: 'number', default: 2400, describe: 'Time limit in seconds' })
-        .option('skip-audio', { type: 'boolean', default: false, describe: 'Skip audio generation (generate later with generate-audio command)' });
+        .option('skip-audio', { type: 'boolean', default: false, describe: 'Skip audio generation (generate later with generate-audio command)' })
+        .option('skip-section1-images', { type: 'boolean', default: false, describe: 'Skip Section 1 (quel dessin) option image generation' });
     }, generateCompleteCommand)
     .command('create', 'Create a new listening task (auto-generates task ID if not provided)', (yargs) => {
       return yargs

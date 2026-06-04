@@ -44,13 +44,11 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
       setLoading(true);
       try {
         // Determine resultType based on module
-        // For oral/written expression: show practice results
-        // For reading/listening: show assignment results (practice assignments, not mock exam results)
-        const resultType = (module === 'oralExpression' || module === 'writtenExpression') 
-          ? 'practice' 
-          : (module === 'reading' || module === 'listening') 
-            ? 'assignment' 
-            : undefined;
+        // For oral/written expression: show practice results only
+        // For reading/listening: show all (practice standalone + assignment) — don't restrict by type
+        const resultType = (module === 'oralExpression' || module === 'writtenExpression')
+          ? 'practice'
+          : undefined;
         
         const skip = currentPage * RESULTS_PER_PAGE;
         const response = await persistenceService.getAllResults(
@@ -160,8 +158,8 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
     if (module === 'oralExpression' || module === 'writtenExpression') {
       return result.module === module && result.resultType === 'practice';
     } else if (module === 'reading' || module === 'listening') {
-      // For reading/listening practice, show only assignment results (not mock exam results)
-      return result.module === module && result.resultType === 'assignment';
+      // Show both standalone practice results and assignment results; exclude mock exam results
+      return result.module === module && (result.resultType === 'practice' || result.resultType === 'assignment');
     } else {
       // Default case - shouldn't happen but filter by module
       return result.module === module;
@@ -521,19 +519,25 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         if (assignment && assignment.taskId) {
           navigate(`/exam/${result.module}?taskId=${assignment.taskId}&assignmentId=${result.assignmentId}`);
         } else {
-          alert('Unable to retake this assignment. Assignment information is missing.');
+          alert(t('errors.retakeAssignmentMissing'));
         }
       } catch (error) {
         console.error('Failed to fetch assignment:', error);
-        alert('Unable to retake this assignment. Please try again.');
+        alert(t('errors.retakeAssignmentFailed'));
       }
     } else if (result.module === 'reading' || result.module === 'listening') {
-      // For reading/listening mock exams - navigate to mock exam view
       const mockExamId = 'mockExamId' in result ? result.mockExamId : undefined;
       if (mockExamId) {
+        // Part of a mock exam — return to mock exam view
         navigate(`/mock-exam/${mockExamId}?module=${result.module}`);
       } else {
-        alert('Unable to retake this exam. Mock exam information is missing.');
+        // Standalone practice — navigate directly to the task page
+        const practiceTaskId = result.taskReferences?.taskA?.taskId;
+        if (practiceTaskId) {
+          navigate(`/practice/${result.module}/${practiceTaskId}`);
+        } else {
+          alert(t('errors.retakeTaskMissing'));
+        }
       }
     }
   };
