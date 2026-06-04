@@ -29,6 +29,14 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argumentez pour convaincre un ami. (8 min)',
     'dashboard.oralExpressionDescription': 'Enchaînez les deux sections pour une simulation réelle. (12 min)',
     'dashboard.mockExamDescription': 'Examen complet en 4 modules : Expression Orale, Compréhension Écrite, Compréhension Orale et Expression Écrite',
+    'dashboard.readingCardDescription': 'Pratiquez la compréhension écrite avec des tests complets au format TEF. Choisissez un test, reprenez-le à tout moment.',
+    'dashboard.listeningCardDescription': 'Pratiquez la compréhension orale avec des tests audio complets au format TEF. Choisissez un test, reprenez-le à tout moment.',
+    'dashboard.subscriptionPlanBadge': 'Forfait {tier}',
+    'common.aiPowered': 'Propulsé par l\'IA',
+    'common.browseTests': 'Voir les tests',
+    'common.retiring': 'Bientôt retiré',
+    'practice.readingTestMeta': '40 questions · 60 min',
+    'practice.listeningTestMeta': '40 questions · 40 min',
 
     'feature.dailyRitualCalloutTitle': 'Nouveau : rituel quotidien TEF',
     'feature.dailyRitualCalloutBody':
@@ -558,6 +566,21 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.limitInfo3': 'Les examens complets comptent comme 1 Section A + 1 Section B',
     'admin.limitInfo4': 'Les utilisateurs ne peuvent pas dépasser leur limite mensuelle',
     
+    // Free practice pages (reading / listening)
+    'practice.freeTestSubtitle': 'Choisissez un test ci-dessous — sans limite, tentatives illimitées.',
+    'practice.noListeningTestsFree': 'Aucun test de compréhension orale disponible.',
+    'practice.noReadingTestsFree': 'Aucun test de compréhension écrite disponible.',
+    'practice.listeningTestTitle': 'Test de Compréhension Orale {number}',
+    'practice.readingTestTitle': 'Test de Compréhension Écrite {number}',
+    'practice.failedToLoadListening': 'Échec du chargement des tests de compréhension orale',
+    'practice.failedToLoadReading': 'Échec du chargement des tests de compréhension écrite',
+    'practice.examNotFound': 'Examen non trouvé',
+    'practice.failedToLoadExam': 'Échec du chargement de l\'examen',
+    'back.toTests': '← Retour aux tests',
+    'errors.retakeTaskMissing': 'Impossible de recommencer cet examen. Les informations de la tâche sont manquantes.',
+    'errors.retakeAssignmentMissing': 'Impossible de recommencer ce devoir. Les informations sont manquantes.',
+    'errors.retakeAssignmentFailed': 'Impossible de recommencer ce devoir. Veuillez réessayer.',
+
     // Common
     'common.cancel': 'Annuler',
   },
@@ -579,6 +602,14 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.sectionBDescription': 'Argue to convince a friend. (8 min)',
     'dashboard.oralExpressionDescription': 'Chain both sections for a real simulation. (12 min)',
     'dashboard.mockExamDescription': 'Complete 4-module exam: Oral Expression, Written Expression, Reading, and Listening',
+    'dashboard.readingCardDescription': 'Practise reading comprehension with full TEF-style tests. Pick any test, redo it anytime.',
+    'dashboard.listeningCardDescription': 'Practise listening comprehension with full TEF-style audio tests. Pick any test, redo it anytime.',
+    'dashboard.subscriptionPlanBadge': '{tier} Plan',
+    'common.aiPowered': 'AI-Powered',
+    'common.browseTests': 'Browse tests',
+    'common.retiring': 'Retiring soon',
+    'practice.readingTestMeta': '40 questions · 60 min',
+    'practice.listeningTestMeta': '40 questions · 40 min',
 
     'feature.dailyRitualCalloutTitle': 'New: TEF daily ritual',
     'feature.dailyRitualCalloutBody':
@@ -1108,6 +1139,21 @@ const translations: Record<Language, Record<string, string>> = {
     'admin.limitInfo3': 'Full exams count as 1 Section A + 1 Section B usage',
     'admin.limitInfo4': 'Users cannot exceed their monthly limit',
     
+    // Free practice pages (reading / listening)
+    'practice.freeTestSubtitle': 'Pick any test below — no limits, unlimited attempts.',
+    'practice.noListeningTestsFree': 'No listening tests available yet.',
+    'practice.noReadingTestsFree': 'No reading tests available yet.',
+    'practice.listeningTestTitle': 'Listening Test {number}',
+    'practice.readingTestTitle': 'Reading Test {number}',
+    'practice.failedToLoadListening': 'Failed to load listening tests',
+    'practice.failedToLoadReading': 'Failed to load reading tests',
+    'practice.examNotFound': 'Exam not found',
+    'practice.failedToLoadExam': 'Failed to load exam',
+    'back.toTests': '← Back to tests',
+    'errors.retakeTaskMissing': 'Unable to retake this exam. Task information is missing.',
+    'errors.retakeAssignmentMissing': 'Unable to retake this assignment. Assignment information is missing.',
+    'errors.retakeAssignmentFailed': 'Unable to retake this assignment. Please try again.',
+
     // Common
     'common.cancel': 'Cancel',
   },

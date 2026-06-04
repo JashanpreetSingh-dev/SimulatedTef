@@ -5,28 +5,31 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-// S3 Configuration
-const region = process.env.AWS_REGION || 'us-east-1';
-const bucket = process.env.AWS_S3_BUCKET || '';
-const urlExpirySeconds = parseInt(process.env.S3_URL_EXPIRY_SECONDS || '3600', 10);
+// All config is read at call time so dotenv can run before these values are captured
+function getBucket(): string { return process.env.AWS_S3_BUCKET || ''; }
+function getRegion(): string { return process.env.AWS_REGION || 'us-east-1'; }
+function getUrlExpirySeconds(): number { return parseInt(process.env.S3_URL_EXPIRY_SECONDS || '3600', 10); }
 
-// Initialize S3 client
-// AWS SDK v3 automatically uses AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from environment
-const s3Client = new S3Client({
-  region,
-  ...(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY && {
-    credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    },
-  }),
-});
+let _s3Client: S3Client | undefined;
+function getS3Client(): S3Client {
+  if (!_s3Client) {
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    _s3Client = new S3Client({
+      region: getRegion(),
+      ...(accessKeyId && secretAccessKey && {
+        credentials: { accessKeyId, secretAccessKey },
+      }),
+    });
+  }
+  return _s3Client;
+}
 
 /**
  * Check if S3 is configured
  */
 export function isS3Configured(): boolean {
-  return !!(bucket && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
+  return !!(getBucket() && process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
 }
 
 /**
@@ -41,6 +44,7 @@ export async function uploadFile(
   key: string,
   contentType: string
 ): Promise<string> {
+  const bucket = getBucket();
   if (!bucket) {
     throw new Error('AWS_S3_BUCKET environment variable is not set');
   }
@@ -52,7 +56,7 @@ export async function uploadFile(
     ContentType: contentType,
   });
 
-  await s3Client.send(command);
+  await getS3Client().send(command);
   console.log(`✅ Uploaded to S3: ${key} (${(buffer.length / 1024).toFixed(2)} KB)`);
   return key;
 }
@@ -74,8 +78,9 @@ export async function uploadAudio(
  */
 export async function getPresignedUrl(
   key: string,
-  expiresIn: number = urlExpirySeconds
+  expiresIn: number = getUrlExpirySeconds()
 ): Promise<string> {
+  const bucket = getBucket();
   if (!bucket) {
     throw new Error('AWS_S3_BUCKET environment variable is not set');
   }
@@ -85,7 +90,7 @@ export async function getPresignedUrl(
     Key: key,
   });
 
-  const url = await getSignedUrl(s3Client, command, { expiresIn });
+  const url = await getSignedUrl(getS3Client(), command, { expiresIn });
   return url;
 }
 
@@ -94,6 +99,7 @@ export async function getPresignedUrl(
  * @param key - S3 object key to delete
  */
 export async function deleteAudio(key: string): Promise<void> {
+  const bucket = getBucket();
   if (!bucket) {
     throw new Error('AWS_S3_BUCKET environment variable is not set');
   }
@@ -103,7 +109,7 @@ export async function deleteAudio(key: string): Promise<void> {
     Key: key,
   });
 
-  await s3Client.send(command);
+  await getS3Client().send(command);
   console.log(`🗑️ Deleted audio from S3: ${key}`);
 }
 

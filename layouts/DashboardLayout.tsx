@@ -111,6 +111,24 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Mock Exam
                 </button>
                 <button
+                  onClick={() => navigate('/reading-practice')}
+                  className={
+                    location.pathname.startsWith('/reading-practice') || location.pathname.startsWith('/practice/reading')
+                      ? 'text-indigo-400 dark:text-indigo-400'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }>
+                  Reading
+                </button>
+                <button
+                  onClick={() => navigate('/listening-practice')}
+                  className={
+                    location.pathname.startsWith('/listening-practice') || location.pathname.startsWith('/practice/listening')
+                      ? 'text-indigo-400 dark:text-indigo-400'
+                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }>
+                  Listening
+                </button>
+                <button
                   onClick={() => navigate('/practice/daily-ritual')}
                   className={isActive('/practice/daily-ritual') ? 'text-indigo-400 dark:text-indigo-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}>
                   Daily Ritual
@@ -308,6 +326,26 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     }`}
                   >
                     Mock Exam
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/reading-practice')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      location.pathname.startsWith('/reading-practice') || location.pathname.startsWith('/practice/reading')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Reading
+                  </button>
+                  <button
+                    onClick={() => handleNavigate('/listening-practice')}
+                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
+                      location.pathname.startsWith('/listening-practice') || location.pathname.startsWith('/practice/listening')
+                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    Listening
                   </button>
                   <button
                     onClick={() => handleNavigate('/practice/daily-ritual')}

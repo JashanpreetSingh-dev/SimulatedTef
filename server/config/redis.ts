@@ -4,88 +4,89 @@
 
 import { Redis } from 'ioredis';
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+function getRedisUrl(): string {
+  return process.env.REDIS_URL || 'redis://localhost:6379';
+}
 
-/**
- * Create Redis connection for BullMQ
- */
-export const redis = new Redis(redisUrl, {
-  maxRetriesPerRequest: 3,
-  retryStrategy: (times) => {
-    if (times > 3) {
-      console.error('Redis connection failed after 3 retries');
-      return null; // Stop retrying
-    }
-    return Math.min(times * 200, 2000); // Exponential backoff
-  },
-  reconnectOnError: (err) => {
-    const targetError = 'READONLY';
-    if (err.message.includes(targetError)) {
-      return true; // Reconnect on READONLY error
-    }
-    return false;
-  },
-});
-
-redis.on('connect', async () => {
-  console.log('Connected to Redis');
-  
-  // Check eviction policy (BullMQ requires 'noeviction')
+function parseRedisUrl(url: string) {
   try {
-    const maxmemoryPolicy = await redis.config('GET', 'maxmemory-policy');
-    const policy = maxmemoryPolicy[1];
-    
-    if (policy !== 'noeviction') {
-      console.warn('WARNING: Redis eviction policy is set to:', policy);
-      console.warn('BullMQ requires "noeviction" policy to prevent job data loss.');
-      console.warn('For cloud Redis: Check your provider dashboard (Railway/Redis Cloud/Upstash)');
-      console.warn('For local Redis: Run: redis-cli CONFIG SET maxmemory-policy noeviction');
-      console.warn('See REDIS_CLOUD_SETUP.md for detailed instructions');
-    } else {
-      console.log('Redis eviction policy is correctly set to "noeviction"');
-    }
-    
-    // Check memory usage
-    try {
-      const info = await redis.info('memory');
-      const maxmemoryMatch = info.match(/maxmemory:(\d+)/);
-      const usedMemoryMatch = info.match(/used_memory:(\d+)/);
-      
-      if (maxmemoryMatch && usedMemoryMatch) {
-        const maxMemory = parseInt(maxmemoryMatch[1]);
-        const usedMemory = parseInt(usedMemoryMatch[1]);
-        const usagePercent = ((usedMemory / maxMemory) * 100).toFixed(1);
-        
-        console.log(`📊 Redis memory: ${(usedMemory / 1024 / 1024).toFixed(2)} MB / ${(maxMemory / 1024 / 1024).toFixed(2)} MB (${usagePercent}%)`);
-        
-        if (parseFloat(usagePercent) > 80) {
-          console.warn(`⚠️  Redis memory usage is high (${usagePercent}%). Consider cleaning up old jobs or increasing Redis memory.`);
-        }
+    const parsed = new URL(url);
+    return {
+      host: parsed.hostname || 'localhost',
+      port: parseInt(parsed.port || '6379', 10),
+      ...(parsed.password && { password: decodeURIComponent(parsed.password) }),
+    };
+  } catch {
+    return { host: 'localhost', port: 6379 };
+  }
+}
+
+// Derived from URL at call time — no Redis client created at import time
+export const connection = new Proxy({} as ReturnType<typeof parseRedisUrl>, {
+  get(_target, prop) {
+    return parseRedisUrl(getRedisUrl())[prop as keyof ReturnType<typeof parseRedisUrl>];
+  },
+});
+
+let _redis: Redis | undefined;
+
+function createRedis(): Redis {
+  const url = getRedisUrl();
+  const client = new Redis(url, {
+    maxRetriesPerRequest: 3,
+    retryStrategy: (times) => {
+      if (times > 3) {
+        console.error('Redis connection failed after 3 retries');
+        return null;
       }
-    } catch (error) {
-      // Ignore if info command fails
+      return Math.min(times * 200, 2000);
+    },
+    reconnectOnError: (err) => {
+      return err.message.includes('READONLY');
+    },
+  });
+
+  client.on('connect', async () => {
+    console.log('Connected to Redis');
+    try {
+      const maxmemoryPolicy = await client.config('GET', 'maxmemory-policy');
+      const policy = maxmemoryPolicy[1];
+      if (policy !== 'noeviction') {
+        console.warn('WARNING: Redis eviction policy is set to:', policy);
+        console.warn('BullMQ requires "noeviction" policy to prevent job data loss.');
+      } else {
+        console.log('Redis eviction policy is correctly set to "noeviction"');
+      }
+    } catch {
+      // Ignore if config command fails (may not have admin permissions)
     }
-  } catch (error) {
-    // Ignore if config command fails (might not have permissions)
-    console.warn('Could not check Redis eviction policy (may need admin permissions)');
+  });
+
+  client.on('error', (err) => {
+    console.error('Redis error:', err.message);
+    if (!url.includes('localhost')) {
+      console.error('Make sure Redis is running or REDIS_URL is set correctly');
+    }
+  });
+
+  client.on('close', () => {
+    console.log('Redis connection closed');
+  });
+
+  return client;
+}
+
+export function getRedis(): Redis {
+  if (!_redis) {
+    _redis = createRedis();
   }
-});
+  return _redis;
+}
 
-redis.on('error', (err) => {
-  console.error('Redis error:', err.message);
-  if (!redisUrl.includes('localhost')) {
-    console.error('Make sure Redis is running or REDIS_URL is set correctly');
-  }
+// Lazy proxy so existing `import { redis }` callers work without change
+export const redis = new Proxy({} as Redis, {
+  get(_target, prop) {
+    return (getRedis() as any)[prop];
+  },
 });
-
-redis.on('close', () => {
-  console.log('Redis connection closed');
-});
-
-// Export connection object for BullMQ
-export const connection = {
-  host: redis.options.host || 'localhost',
-  port: redis.options.port || 6379,
-  ...(redis.options.password && { password: redis.options.password }),
-};
 

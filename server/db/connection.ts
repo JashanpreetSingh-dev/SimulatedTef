@@ -5,9 +5,6 @@
 
 import { MongoClient, Db } from 'mongodb';
 
-const uri = process.env.MONGODB_URI || "";
-const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
-
 let client: MongoClient | null = null;
 let isConnected = false;
 
@@ -15,6 +12,7 @@ let isConnected = false;
  * Get or create MongoDB client with connection pooling
  */
 function getClient(): MongoClient {
+  const uri = process.env.MONGODB_URI || "";
   if (!uri) {
     throw new Error('MONGODB_URI is not set');
   }
@@ -38,12 +36,13 @@ function getClient(): MongoClient {
  * Reuses existing connection if available
  */
 export async function connectDB(): Promise<Db> {
+  const uri = process.env.MONGODB_URI || "";
   if (!uri) {
     throw new Error('MONGODB_URI environment variable is not set. Please add it to your .env file.');
   }
 
   const mongoClient = getClient();
-  
+
   try {
     // Connect if not already connected
     // MongoDB's connect() is idempotent (safe to call multiple times)
@@ -53,7 +52,8 @@ export async function connectDB(): Promise<Db> {
       isConnected = true;
       console.log('Connected to MongoDB with connection pooling');
     }
-    
+
+    const dbName = process.env.MONGODB_DB_NAME || 'tef_master';
     const db = mongoClient.db(dbName);
     
     return db;

@@ -81,8 +81,9 @@ export function validateGeneratedListeningQuestions(
 
   // Validate each question
   questions.forEach((q: any, index: number) => {
-    if (q.options.length !== 4) {
-      errors.push(`Question ${index + 1}: Must have exactly 4 options, got ${q.options.length}`);
+    const optionCount = Array.isArray(q.options) ? q.options.length : Object.keys(q.options || {}).length;
+    if (optionCount < 4) {
+      errors.push(`Question ${index + 1}: Must have at least 4 options, got ${optionCount}`);
     }
     if (q.correctAnswer < 0 || q.correctAnswer > 3) {
       errors.push(`Question ${index + 1}: Correct answer must be 0-3, got ${q.correctAnswer}`);

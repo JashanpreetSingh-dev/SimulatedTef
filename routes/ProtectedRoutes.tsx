@@ -44,6 +44,9 @@ const AdminD2CConfigView = lazy(() =>
 const SubscriptionView = lazy(() => import('../pages/SubscriptionView').then((m) => ({ default: m.SubscriptionView })));
 const DailyRitualView = lazy(() => import('../pages/DailyRitualView').then((m) => ({ default: m.DailyRitualView })));
 const OwnerDashboard = lazy(() => import('../pages/OwnerDashboard').then((m) => ({ default: m.OwnerDashboard })));
+const ReadingPracticeView = lazy(() => import('../pages/ReadingPracticeView').then((m) => ({ default: m.ReadingPracticeView })));
+const ListeningPracticeView = lazy(() => import('../pages/ListeningPracticeView').then((m) => ({ default: m.ListeningPracticeView })));
+const TaskPracticeExamView = lazy(() => import('../pages/TaskPracticeExamView').then((m) => ({ default: m.TaskPracticeExamView })));
 
 function RouteFallback() {
   return (
@@ -64,6 +67,24 @@ export function ProtectedRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/practice" element={<PracticeView />} />
           <Route path="/practice/daily-ritual" element={<DailyRitualView />} />
+          <Route path="/reading-practice" element={<ReadingPracticeView />} />
+          <Route path="/listening-practice" element={<ListeningPracticeView />} />
+          <Route
+            path="/practice/reading/:taskId"
+            element={
+              <ErrorBoundary context="Reading practice">
+                <TaskPracticeExamView />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/practice/listening/:taskId"
+            element={
+              <ErrorBoundary context="Listening practice">
+                <TaskPracticeExamView />
+              </ErrorBoundary>
+            }
+          />
           <Route path="/history" element={<HistoryView />} />
           <Route path="/results/:id" element={<ResultView />} />
           <Route

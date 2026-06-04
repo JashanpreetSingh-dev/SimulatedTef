@@ -6,6 +6,8 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
+import { ReadingPracticeCard } from '../components/dashboard/ReadingPracticeCard';
+import { ListeningPracticeCard } from '../components/dashboard/ListeningPracticeCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
@@ -84,7 +86,7 @@ export function Dashboard() {
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs md:text-sm font-semibold hover:bg-indigo-200 dark:hover:bg-indigo-900/50 transition-colors"
               >
                 <span>⭐</span>
-                <span>{subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1)} Plan</span>
+                <span>{t('dashboard.subscriptionPlanBadge', { tier: subscription.tier.charAt(0).toUpperCase() + subscription.tier.slice(1) })}</span>
               </button>
             )}
           </div>
@@ -94,7 +96,13 @@ export function Dashboard() {
         {/* Hero — AI speaking + writing practice */}
         <PracticeCard />
 
-        {/* Secondary row — daily habit + milestone */}
+        {/* Reading & Listening practice */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <ReadingPracticeCard />
+          <ListeningPracticeCard />
+        </div>
+
+        {/* Secondary row — daily habit + mock exam (retiring) */}
         <div className="grid md:grid-cols-2 gap-6">
           <DailyRitualCard />
           <MockExamsCard />

@@ -17,7 +17,7 @@ export function PracticeCard() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 text-white text-xs font-bold tracking-wide uppercase">
-              AI-Powered
+              {t('common.aiPowered')}
             </span>
           </div>
           <h3 className="text-xl md:text-2xl font-bold text-white mb-2">

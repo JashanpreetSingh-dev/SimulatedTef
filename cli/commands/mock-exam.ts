@@ -506,14 +506,20 @@ export async function generateMockExamCommand(argv: any) {
     }
 
     // Auto-generate listening task ID
+    // Also check audioItems to detect orphaned partials from previous failed runs
     console.log('\n[3/9] Generating listening task ID...');
     const existingListeningTasks = await listeningTasksCollection.find({}).toArray();
-    const listeningNumbers = existingListeningTasks
-      .map((task: any) => {
+    const existingAudioItems = await audioItemsCollection.distinct('taskId');
+    const listeningNumbers = [
+      ...existingListeningTasks.map((task: any) => {
         const match = task.taskId?.match(/^listening_(\d+)$/);
         return match ? parseInt(match[1]) : 0;
-      })
-      .filter((n: number) => n > 0);
+      }),
+      ...existingAudioItems.map((taskId: string) => {
+        const match = taskId?.match(/^listening_(\d+)$/);
+        return match ? parseInt(match[1]) : 0;
+      }),
+    ].filter((n: number) => n > 0);
     const nextListeningNumber = listeningNumbers.length > 0 ? Math.max(...listeningNumbers) + 1 : 1;
     const finalListening = `listening_${nextListeningNumber}`;
     console.log(`   ✅ Generated: ${finalListening}`);

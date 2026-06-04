@@ -15,32 +15,30 @@ import {
 // TTS Provider Initialization
 // ============================================================================
 
-let ttsProvider: TTSService;
-let providerName: string;
-
-function initializeTTSProvider(): void {
-  try {
-    ttsProvider = getTTSProvider();
-    providerName = getProviderName();
-    console.log(`TTS Provider initialized: ${providerName}`);
-  } catch (error: any) {
-    console.error(`Failed to initialize TTS provider: ${error.message}`);
-    throw error;
-  }
-}
+let ttsProvider: TTSService | undefined;
 
 function getProviderName(): string {
   const provider = (process.env.TTS_PROVIDER || '').toLowerCase().trim();
   const hasServiceAccount = process.env.GOOGLE_APPLICATION_CREDENTIALS !== undefined;
-  
+
   if (provider === 'gcp' || provider === 'google-cloud' || (hasServiceAccount && provider !== 'gemini')) {
     return 'Google Cloud TTS';
   }
   return 'Gemini TTS';
 }
 
-// Initialize on module load
-initializeTTSProvider();
+function getProvider(): TTSService {
+  if (!ttsProvider) {
+    try {
+      ttsProvider = getTTSProvider();
+      console.log(`TTS Provider initialized: ${getProviderName()}`);
+    } catch (error: any) {
+      console.error(`Failed to initialize TTS provider: ${error.message}`);
+      throw error;
+    }
+  }
+  return ttsProvider;
+}
 
 // ============================================================================
 // Public API - Re-export with provider injected
@@ -54,7 +52,7 @@ export async function generateAudioForItem(
   taskId: string,
   overwrite: boolean = false
 ) {
-  return generateAudioForItemDB(ttsProvider, audioItemId, taskId, overwrite);
+  return generateAudioForItemDB(getProvider(), audioItemId, taskId, overwrite);
 }
 
 /**
@@ -64,7 +62,7 @@ export async function generateAudioForTask(
   taskId: string,
   overwrite: boolean = false
 ) {
-  return generateAudioForTaskDB(ttsProvider, taskId, overwrite);
+  return generateAudioForTaskDB(getProvider(), taskId, overwrite);
 }
 
 /**
@@ -73,5 +71,5 @@ export async function generateAudioForTask(
 export async function generateMissingAudio(
   taskId?: string
 ) {
-  return generateMissingAudioDB(ttsProvider, taskId);
+  return generateMissingAudioDB(getProvider(), taskId);
 }

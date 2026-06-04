@@ -374,10 +374,103 @@ export async function addQuestionCommand(argv: any) {
 }
 
 /**
+ * Generate a complete reading task: auto-create task document + AI questions in one shot
+ */
+export async function generateReadingCommand(argv: any) {
+  const startTime = Date.now();
+  try {
+    const { taskId, theme, timeLimit } = argv;
+
+    console.log('\n🚀 Generating Complete Reading Task');
+    console.log('═'.repeat(60));
+
+    const db = await getDB();
+    const readingTasksCollection = db.collection('readingTasks');
+    const questionsCollection = db.collection('questions');
+
+    // Auto-generate task ID if not provided
+    let finalTaskId = taskId;
+    if (!finalTaskId) {
+      const existingTasks = await readingTasksCollection.find({}).toArray();
+      const taskNumbers = existingTasks
+        .map((t: any) => {
+          const match = t.taskId?.match(/^reading_(\d+)$/);
+          return match ? parseInt(match[1]) : 0;
+        })
+        .filter((n: number) => n > 0);
+      const nextNumber = taskNumbers.length > 0 ? Math.max(...taskNumbers) + 1 : 1;
+      finalTaskId = `reading_${nextNumber}`;
+      console.log(`\n[1/3] 📝 Auto-generated task ID: ${finalTaskId}`);
+    } else {
+      if (!validateTaskId(finalTaskId, 'reading')) {
+        console.error('❌ Invalid task ID format. Must be: reading_<number>');
+        process.exit(1);
+      }
+      const existing = await readingTasksCollection.findOne({ taskId: finalTaskId });
+      if (existing) {
+        console.error(`❌ Task ${finalTaskId} already exists`);
+        process.exit(1);
+      }
+      console.log(`\n[1/3] 📝 Using task ID: ${finalTaskId}`);
+    }
+
+    if (theme) console.log(`   Theme: ${theme}`);
+
+    // Create task document
+    console.log(`\n[2/3] 📋 Creating reading task...`);
+    const prompt = "Lisez attentivement les textes et répondez aux questions. Vous avez 60 minutes pour compléter cette section.";
+    const content = theme
+      ? `Reading comprehension task ${finalTaskId} — generated with theme: ${theme}.`
+      : `Reading comprehension task ${finalTaskId} — generated using AI.`;
+    const timeLimitSec = timeLimit || 3600;
+
+    const task = createReadingTask(finalTaskId, prompt, content, timeLimitSec, true);
+    await readingTasksCollection.insertOne(task);
+    console.log(`   ✅ Task created`);
+
+    // Generate questions
+    console.log(`\n[3/3] 🤖 Generating 40 questions using AI...`);
+    if (theme) console.log(`   Theme: ${theme}`);
+
+    const questions = await generateQuestions(finalTaskId, { theme });
+
+    const validation = validateGeneratedQuestions(questions);
+    if (!validation.valid) {
+      console.error('❌ Question validation failed:');
+      validation.errors.forEach(err => console.error(`   - ${err}`));
+      await readingTasksCollection.deleteOne({ taskId: finalTaskId });
+      await closeDatabase();
+      process.exit(1);
+    }
+
+    await questionsCollection.insertMany(questions);
+    console.log(`   ✅ Saved ${questions.length} questions`);
+
+    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+    console.log('\n' + '═'.repeat(60));
+    console.log(`✅ Reading task generated: ${finalTaskId} (${questions.length} questions, ${duration}s)`);
+    console.log('═'.repeat(60));
+
+    await closeDatabase();
+    process.exit(0);
+  } catch (error: any) {
+    console.error('\n❌ Error generating reading task:', error.message);
+    await closeDatabase().catch(() => {});
+    process.exit(1);
+  }
+}
+
+/**
  * Register reading commands with yargs
  */
 export function registerReadingCommands(yargsInstance: ReturnType<typeof yargs>) {
   return yargsInstance
+    .command('generate', 'Generate complete reading task: auto-create task + AI questions in one shot', (yargs) => {
+      return yargs
+        .option('task-id', { type: 'string', describe: 'Task ID (e.g., reading_2) — auto-generated if not provided' })
+        .option('theme', { type: 'string', describe: 'Optional theme for AI question generation (e.g., "Télétravail")' })
+        .option('time-limit', { type: 'number', default: 3600, describe: 'Time limit in seconds (default: 3600)' });
+    }, generateReadingCommand)
     .command('create', 'Create a new reading task', (yargs) => {
       return yargs
         .option('task-id', { type: 'string', demandOption: true, describe: 'Task ID (e.g., reading_2)' })
