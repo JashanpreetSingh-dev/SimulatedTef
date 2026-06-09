@@ -18,7 +18,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_1.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Club De Marche"
   },
   {
     "id": 2,
@@ -39,7 +40,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_2.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Agence Évenementielle"
   },
   {
     "id": 3,
@@ -60,7 +62,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_3.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cours De Cuisine"
   },
   {
     "id": 4,
@@ -81,7 +84,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_4.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Formation Au Numérique"
   },
   {
     "id": 5,
@@ -102,7 +106,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_5.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Club De Lecture"
   },
   {
     "id": 6,
@@ -123,7 +128,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_6.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Emploi Client Mystère"
   },
   {
     "id": 7,
@@ -144,7 +150,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_7.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Randonnées En Scooter Des Mers"
   },
   {
     "id": 8,
@@ -165,7 +172,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_8.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bénévolat"
   },
   {
     "id": 9,
@@ -186,7 +194,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_9.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Circuit En Train"
   },
   {
     "id": 10,
@@ -207,7 +216,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_10.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Une Activité Intéressante Pour Le Week-End"
   },
   {
     "id": 11,
@@ -228,7 +238,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_11.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Visite Nocturne Musée"
   },
   {
     "id": 12,
@@ -249,7 +260,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_12.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Activité Originale Dans Votre Ville"
   },
   {
     "id": 13,
@@ -270,7 +282,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_13.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vente De Vêtements"
   },
   {
     "id": 14,
@@ -290,7 +303,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_14.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bibliothèque Municipale"
   },
   {
     "id": 15,
@@ -311,7 +325,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_15.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Atelier Découverte Animaux"
   },
   {
     "id": 16,
@@ -332,7 +347,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_16.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cette Exposition D’art Culinaire"
   },
   {
     "id": 17,
@@ -353,7 +369,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_17.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Chorale Internationale"
   },
   {
     "id": 18,
@@ -374,7 +391,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_18.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Radio Portes Ouvertes"
   },
   {
     "id": 19,
@@ -395,7 +413,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_19.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cours De Roller"
   },
   {
     "id": 20,
@@ -416,7 +435,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_20.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "École De Voile"
   },
   {
     "id": 21,
@@ -437,7 +457,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_21.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Stages D’escalade"
   },
   {
     "id": 22,
@@ -458,7 +479,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_22.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Concert"
   },
   {
     "id": 23,
@@ -479,7 +501,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_23.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Visite"
   },
   {
     "id": 24,
@@ -499,8 +522,9 @@
       "Dossier ?"
     ],
     "time_limit_sec": 240,
-      "image": "/section_a_images/section_a_image_24.png",
-    "difficulty": "medium"
+    "image": "/section_a_images/section_a_image_24.png",
+    "difficulty": "medium",
+    "theme": "Service D’entretien De Voitures"
   },
   {
     "id": 25,
@@ -521,7 +545,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_25.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Louer Un Scooter Sous-Marin"
   },
   {
     "id": 26,
@@ -542,7 +567,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_26.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Randonnées En Traîneau"
   },
   {
     "id": 27,
@@ -563,7 +589,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_27.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Louer Un Orchestre"
   },
   {
     "id": 28,
@@ -584,7 +611,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_28.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Activité En Famille"
   },
   {
     "id": 29,
@@ -605,7 +633,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_29.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Faire Garder Votre Animal De Compagnie"
   },
   {
     "id": 30,
@@ -626,7 +655,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_30.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Passer Le Permis Moto"
   },
   {
     "id": 31,
@@ -647,7 +677,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_31.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "La Garde De Chats"
   },
   {
     "id": 32,
@@ -667,7 +698,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_32.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Garage"
   },
   {
     "id": 33,
@@ -688,7 +720,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_33.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Initiation Au Parapente"
   },
   {
     "id": 34,
@@ -709,7 +742,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_34.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Ferme"
   },
   {
     "id": 35,
@@ -730,7 +764,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_35.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Lunettes En Ligne"
   },
   {
     "id": 36,
@@ -750,7 +785,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_36.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Rachat De Bijoux"
   },
   {
     "id": 37,
@@ -771,7 +807,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_37.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Circuits En Bateaux"
   },
   {
     "id": 38,
@@ -792,7 +829,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_38.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Location Voitures Rétro"
   },
   {
     "id": 39,
@@ -813,7 +851,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_39.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "École De Voile"
   },
   {
     "id": 40,
@@ -834,7 +873,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_40.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cours De Guitare"
   },
   {
     "id": 41,
@@ -855,7 +895,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_41.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Agence De Bateaux"
   },
   {
     "id": 42,
@@ -876,7 +917,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_42.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Fête D'Anniversaire"
   },
   {
     "id": 43,
@@ -897,7 +939,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_43.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Agence De Déménagement"
   },
   {
     "id": 44,
@@ -918,7 +961,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_44.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Observer Des Baleines"
   },
   {
     "id": 45,
@@ -939,7 +983,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_45.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Musée"
   },
   {
     "id": 46,
@@ -960,7 +1005,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_46.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Balade En Bateau"
   },
   {
     "id": 47,
@@ -981,7 +1027,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_47.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Testeurs D'Émissions Télé"
   },
   {
     "id": 48,
@@ -1002,7 +1049,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_48.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "L’aide Aux Devoirs"
   },
   {
     "id": 49,
@@ -1023,7 +1071,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_49.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Centre Équestre"
   },
   {
     "id": 50,
@@ -1044,7 +1093,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_50.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Location D’appartement"
   },
   {
     "id": 51,
@@ -1064,7 +1114,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_51.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Atelier"
   },
   {
     "id": 52,
@@ -1085,7 +1136,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_52.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Offres De Voyages"
   },
   {
     "id": 53,
@@ -1106,7 +1158,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_53.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Spectacle Enfants"
   },
   {
     "id": 54,
@@ -1127,7 +1180,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_54.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "École De Ski"
   },
   {
     "id": 55,
@@ -1147,7 +1201,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_55.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Agence Évenementielle"
   },
   {
     "id": 56,
@@ -1168,7 +1223,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_56.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Location De Costumes"
   },
   {
     "id": 57,
@@ -1189,7 +1245,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_57.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Technologie Pour Tous"
   },
   {
     "id": 58,
@@ -1210,7 +1267,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_58.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Stages De Pilotage"
   },
   {
     "id": 59,
@@ -1231,7 +1289,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_59.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "École De Ski"
   },
   {
     "id": 60,
@@ -1252,7 +1311,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_60.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Randonnées En Quad"
   },
   {
     "id": 61,
@@ -1282,7 +1342,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_61.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Faire Du Saut À L’élastique"
   },
   {
     "id": 63,
@@ -1303,7 +1364,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_63.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Centre De Formation En Arts Martiaux"
   },
   {
     "id": 64,
@@ -1324,7 +1386,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_64.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Visites Guidées À Vélo"
   },
   {
     "id": 65,
@@ -1345,7 +1408,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_65.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cours De Danse"
   },
   {
     "id": 66,
@@ -1366,7 +1430,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_66.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Aventure En Forêt"
   },
   {
     "id": 67,
@@ -1387,7 +1452,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_67.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Stages D’escalade"
   },
   {
     "id": 68,
@@ -1408,7 +1474,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_68.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Services De Jardinage"
   },
   {
     "id": 69,
@@ -1429,7 +1496,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_69.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Anniversaire Au Zoo"
   },
   {
     "id": 70,
@@ -1450,7 +1518,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_70.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Golf Miniature"
   },
   {
     "id": 71,
@@ -1471,7 +1540,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_71.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Stages De Snowboard"
   },
   {
     "id": 72,
@@ -1492,7 +1562,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_72.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Livraison De Petit Déjeuner"
   },
   {
     "id": 73,
@@ -1513,7 +1584,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_73.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Restaurant Pique-nique"
   },
   {
     "id": 74,
@@ -1534,7 +1606,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_74.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vols Personnalisés"
   },
   {
     "id": 75,
@@ -1555,7 +1628,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_75.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Parc Animalier"
   },
   {
     "id": 76,
@@ -1576,7 +1650,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_76.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Soirée D'échange Vêtements"
   },
   {
     "id": 77,
@@ -1597,7 +1672,8 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_77.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Musée"
   },
   {
     "id": 78,
@@ -1618,6 +1694,7 @@
     ],
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_78.png",
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Chanson Personnalisée"
   }
 ]

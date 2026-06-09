@@ -19,7 +19,8 @@
     ],
     "image": "/section_b_images/section_b_image_1.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Week-End Sportif"
   },
   {
     "id": 2,
@@ -41,7 +42,8 @@
     ],
     "image": "/section_b_images/section_b_image_2.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Chien D’aveugles"
   },
   {
     "id": 3,
@@ -63,7 +65,8 @@
     ],
     "image": "/section_b_images/section_b_image_3.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cuisine Communautaire"
   },
   {
     "id": 4,
@@ -85,7 +88,8 @@
     ],
     "image": "/section_b_images/section_b_image_4.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Journées De La Culture"
   },
   {
     "id": 5,
@@ -107,7 +111,8 @@
     ],
     "image": "/section_b_images/section_b_image_5.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Un Chat Pour Combattre Le Stress"
   },
   {
     "id": 6,
@@ -129,7 +134,8 @@
     ],
     "image": "/section_b_images/section_b_image_6.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Centre Communautaire"
   },
   {
     "id": 7,
@@ -151,7 +157,8 @@
     ],
     "image": "/section_b_images/section_b_image_7.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Un Chef Dans Votre Cuisine"
   },
   {
     "id": 8,
@@ -173,7 +180,8 @@
     ],
     "image": "/section_b_images/section_b_image_8.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Apprenez A Jardiner"
   },
   {
     "id": 9,
@@ -195,7 +203,8 @@
     ],
     "image": "/section_b_images/section_b_image_9.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bénévolat À La Maison Des Jouets"
   },
   {
     "id": 10,
@@ -217,7 +226,8 @@
     ],
     "image": "/section_b_images/section_b_image_10.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Musiciens Du Metro"
   },
   {
     "id": 11,
@@ -239,7 +249,8 @@
     ],
     "image": "/section_b_images/section_b_image_11.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Friperie Ephemere"
   },
   {
     "id": 12,
@@ -261,7 +272,8 @@
     ],
     "image": "/section_b_images/section_b_image_12.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bénévoles Pour Seniors"
   },
   {
     "id": 13,
@@ -283,7 +295,8 @@
     ],
     "image": "/section_b_images/section_b_image_13.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Échanges De Services Entre Particuliers"
   },
   {
     "id": 14,
@@ -305,7 +318,8 @@
     ],
     "image": "/section_b_images/section_b_image_14.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vide Grenier De Quartier"
   },
   {
     "id": 15,
@@ -327,7 +341,8 @@
     ],
     "image": "/section_b_images/section_b_image_15.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Location (vêtements Et Accessoires)"
   },
   {
     "id": 16,
@@ -350,7 +365,8 @@
     ],
     "image": "/section_b_images/section_b_image_16.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Concours De Contes"
   },
   {
     "id": 17,
@@ -372,7 +388,8 @@
     ],
     "image": "/section_b_images/section_b_image_17.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Consommation Collaborative"
   },
   {
     "id": 18,
@@ -394,7 +411,8 @@
     ],
     "image": "/section_b_images/section_b_image_18.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Experience Dormir Avec Des Loups"
   },
   {
     "id": 19,
@@ -416,7 +434,8 @@
     ],
     "image": "/section_b_images/section_b_image_19.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vaincre Sa Timidité Par Le Théâtre"
   },
   {
     "id": 20,
@@ -438,7 +457,8 @@
     ],
     "image": "/section_b_images/section_b_image_20.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Sondages En Ligne Rémunérés"
   },
   {
     "id": 21,
@@ -460,7 +480,8 @@
     ],
     "image": "/section_b_images/section_b_image_21.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Espace Bricolage"
   },
   {
     "id": 22,
@@ -482,7 +503,8 @@
     ],
     "image": "/section_b_images/section_b_image_22.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vendeur À Domicile Embal’plast"
   },
   {
     "id": 23,
@@ -504,7 +526,8 @@
     ],
     "image": "/section_b_images/section_b_image_23.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Repas Chez L’habitant"
   },
   {
     "id": 24,
@@ -526,7 +549,8 @@
     ],
     "image": "/section_b_images/section_b_image_24.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Devenez Critique De Cinéma"
   },
   {
     "id": 25,
@@ -548,7 +572,8 @@
     ],
     "image": "/section_b_images/section_b_image_25.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bibliothèque Numérique"
   },
   {
     "id": 26,
@@ -570,7 +595,8 @@
     ],
     "image": "/section_b_images/section_b_image_26.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Randonnee En Chiens De Traineau"
   },
   {
     "id": 27,
@@ -592,7 +618,8 @@
     ],
     "image": "/section_b_images/section_b_image_27.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Patrimoine-Restauration"
   },
   {
     "id": 28,
@@ -614,7 +641,8 @@
     ],
     "image": "/section_b_images/section_b_image_28.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Enquêtes Monopinion"
   },
   {
     "id": 29,
@@ -636,7 +664,8 @@
     ],
     "image": "/section_b_images/section_b_image_29.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cyber École De Musique"
   },
   {
     "id": 30,
@@ -658,7 +687,8 @@
     ],
     "image": "/section_b_images/section_b_image_30.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Achetez Vos Médicaments En Ligne"
   },
   {
     "id": 31,
@@ -680,7 +710,8 @@
     ],
     "image": "/section_b_images/section_b_image_31.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vivez L’experience De La Chute Libre"
   },
   {
     "id": 32,
@@ -702,7 +733,8 @@
     ],
     "image": "/section_b_images/section_b_image_32.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Les Clefs Du Jardin"
   },
   {
     "id": 33,
@@ -724,7 +756,8 @@
     ],
     "image": "/section_b_images/section_b_image_33.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Ville Sans Voitures"
   },
   {
     "id": 34,
@@ -746,7 +779,8 @@
     ],
     "image": "/section_b_images/section_b_image_34.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Le Micro Est À Vous"
   },
   {
     "id": 35,
@@ -768,7 +802,8 @@
     ],
     "image": "/section_b_images/section_b_image_35.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Association Danses Regionales"
   },
   {
     "id": 36,
@@ -791,7 +826,8 @@
     ],
     "image": "/section_b_images/section_b_image_36.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Location De Bateaux Sans Permis"
   },
   {
     "id": 37,
@@ -813,7 +849,8 @@
     ],
     "image": "/section_b_images/section_b_image_37.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Séjour Canot Camping"
   },
   {
     "id": 38,
@@ -835,7 +872,8 @@
     ],
     "image": "/section_b_images/section_b_image_38.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Visitez Bruxelles En Tuk Tuk"
   },
   {
     "id": 39,
@@ -857,7 +895,8 @@
     ],
     "image": "/section_b_images/section_b_image_39.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bénévolat Solidaire"
   },
   {
     "id": 40,
@@ -879,7 +918,8 @@
     ],
     "image": "/section_b_images/section_b_image_40.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Vide Dressing"
   },
   {
     "id": 41,
@@ -901,7 +941,8 @@
     ],
     "image": "/section_b_images/section_b_image_41.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Chef À Domicile"
   },
   {
     "id": 42,
@@ -923,7 +964,8 @@
     ],
     "image": "/section_b_images/section_b_image_42.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Croisière En Méditerranée"
   },
   {
     "id": 43,
@@ -945,7 +987,8 @@
     ],
     "image": "/section_b_images/section_b_image_43.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Ateliers D’ecriture Poetique"
   },
   {
     "id": 44,
@@ -967,7 +1010,8 @@
     ],
     "image": "/section_b_images/section_b_image_44.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Artisanat Pour Tous"
   },
   {
     "id": 45,
@@ -989,7 +1033,8 @@
     ],
     "image": "/section_b_images/section_b_image_45.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Club De Lecture"
   },
   {
     "id": 46,
@@ -1011,7 +1056,8 @@
     ],
     "image": "/section_b_images/section_b_image_46.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Partez En Voyage En Combi"
   },
   {
     "id": 47,
@@ -1033,7 +1079,8 @@
     ],
     "image": "/section_b_images/section_b_image_47.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Atelier Théâtre"
   },
   {
     "id": 48,
@@ -1055,7 +1102,8 @@
     ],
     "image": "/section_b_images/section_b_image_48.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Organismes De Séjours Linguistiques"
   },
   {
     "id": 49,
@@ -1077,7 +1125,8 @@
     ],
     "image": "/section_b_images/section_b_image_49.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Association Pour La Sauvegarde De La Montagne"
   },
   {
     "id": 50,
@@ -1099,7 +1148,8 @@
     ],
     "image": "/section_b_images/section_b_image_50.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Restaurant Le Criquet"
   },
   {
     "id": 51,
@@ -1121,7 +1171,8 @@
     ],
     "image": "/section_b_images/section_b_image_51.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Modèles Pour Artistes"
   },
   {
     "id": 52,
@@ -1143,7 +1194,8 @@
     ],
     "image": "/section_b_images/section_b_image_52.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Sport Sur Internet"
   },
   {
     "id": 53,
@@ -1165,7 +1217,8 @@
     ],
     "image": "/section_b_images/section_b_image_53.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Garage Solidaire"
   },
   {
     "id": 54,
@@ -1187,7 +1240,8 @@
     ],
     "image": "/section_b_images/section_b_image_54.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Des Cours Pour Aider.com"
   },
   {
     "id": 55,
@@ -1209,7 +1263,8 @@
     ],
     "image": "/section_b_images/section_b_image_55.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Défi Cycliste Pour La Planète"
   },
   {
     "id": 56,
@@ -1231,7 +1286,8 @@
     ],
     "image": "/section_b_images/section_b_image_56.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Les Chaudrons Gourmands"
   },
   {
     "id": 57,
@@ -1253,7 +1309,8 @@
     ],
     "image": "/section_b_images/section_b_image_57.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Accompagnants D’enfants"
   },
   {
     "id": 58,
@@ -1275,7 +1332,8 @@
     ],
     "image": "/section_b_images/section_b_image_58.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Festival En Plein Air"
   },
   {
     "id": 59,
@@ -1297,7 +1355,8 @@
     ],
     "image": "/section_b_images/section_b_image_59.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Danse Du Cœur"
   },
   {
     "id": 60,
@@ -1319,7 +1378,8 @@
     ],
     "image": "/section_b_images/section_b_image_60.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Camp Équestre"
   },
   {
     "id": 61,
@@ -1341,7 +1401,8 @@
     ],
     "image": "/section_b_images/section_b_image_61.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bienvenue Au Club De Marche"
   },
   {
     "id": 62,
@@ -1363,7 +1424,8 @@
     ],
     "image": "/section_b_images/section_b_image_62.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Saut En Parachute"
   },
   {
     "id": 63,
@@ -1385,7 +1447,8 @@
     ],
     "image": "/section_b_images/section_b_image_63.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "La Campagne En Roulotte"
   },
   {
     "id": 64,
@@ -1407,7 +1470,8 @@
     ],
     "image": "/section_b_images/section_b_image_64.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Séjour De Détox Numérique"
   },
   {
     "id": 65,
@@ -1429,7 +1493,8 @@
     ],
     "image": "/section_b_images/section_b_image_65.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Devenez Gardien De Maisons"
   },
   {
     "id": 66,
@@ -1451,7 +1516,8 @@
     ],
     "image": "/section_b_images/section_b_image_66.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Je Me Propose"
   },
   {
     "id": 67,
@@ -1473,7 +1539,8 @@
     ],
     "image": "/section_b_images/section_b_image_67.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Restaurez Un Site Historique"
   },
   {
     "id": 68,
@@ -1495,7 +1562,8 @@
     ],
     "image": "/section_b_images/section_b_image_68.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Visites Guidées À Vélo"
   },
   {
     "id": 69,
@@ -1517,7 +1585,8 @@
     ],
     "image": "/section_b_images/section_b_image_69.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Animateurs De Kermesse"
   },
   {
     "id": 70,
@@ -1539,7 +1608,8 @@
     ],
     "image": "/section_b_images/section_b_image_70.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Partez En Week-End … Dans Votre Bulle"
   },
   {
     "id": 71,
@@ -1560,7 +1630,8 @@
     ],
     "image": "/section_b_images/section_b_image_71.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bouge Et Donne"
   },
   {
     "id": 72,
@@ -1582,7 +1653,8 @@
     ],
     "image": "/section_b_images/section_b_image_72.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Nutritionnistes En Ligne"
   },
   {
     "id": 73,
@@ -1604,7 +1676,8 @@
     ],
     "image": "/section_b_images/section_b_image_73.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Venteco.com"
   },
   {
     "id": 74,
@@ -1626,7 +1699,8 @@
     ],
     "image": "/section_b_images/section_b_image_74.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Des Moniteurs Et Des Animateurs"
   },
   {
     "id": 75,
@@ -1648,7 +1722,8 @@
     ],
     "image": "/section_b_images/section_b_image_75.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Devenez Testeur De Voyages"
   },
   {
     "id": 76,
@@ -1670,7 +1745,8 @@
     ],
     "image": "/section_b_images/section_b_image_76.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Guide Local Pour Etudiants Etrangers"
   },
   {
     "id": 77,
@@ -1692,7 +1768,8 @@
     ],
     "image": "/section_b_images/section_b_image_77.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Cours De Langue Par Téléphone"
   },
   {
     "id": 78,
@@ -1714,7 +1791,8 @@
     ],
     "image": "/section_b_images/section_b_image_78.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Flash Mob"
   },
   {
     "id": 79,
@@ -1736,7 +1814,8 @@
     ],
     "image": "/section_b_images/section_b_image_79.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Bénévolat Dans Un Refuge Animalier"
   },
   {
     "id": 80,
@@ -1758,7 +1837,8 @@
     ],
     "image": "/section_b_images/section_b_image_80.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Reporter Photo Pour Le Magazine De La Ville"
   },
   {
     "id": 81,
@@ -1782,6 +1862,7 @@
     ],
     "image": "/section_b_images/section_b_image_81.png",
     "time_limit_sec": 480,
-    "difficulty": "medium"
+    "difficulty": "medium",
+    "theme": "Séjour Au Ski"
   }
 ]

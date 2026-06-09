@@ -13,6 +13,7 @@
     "worker": "tsx server/workers/evaluationWorker.ts",
     "start": "tsx server/server.ts",
     "generate-instructions": "tsx scripts/generate-instructions-audio.ts",
+    "extract-themes": "tsx scripts/extract-task-themes.ts",
     "migrate-reading-listening": "tsx server/scripts/migrateReadingListeningToDB.ts",
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",

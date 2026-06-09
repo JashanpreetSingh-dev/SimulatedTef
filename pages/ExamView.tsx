@@ -11,9 +11,11 @@ import { ExamWarningModal } from '../components/ExamWarningModal';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { BackNavButton } from '../components/navigation/BackNavButton';
 import { getRandomTasks } from '../services/tasks';
+import { TEFTask } from '../types';
 import { persistenceService } from '../services/persistence';
 import { useExamResult } from '../hooks/useExamResult';
 import { useUsage } from '../hooks/useUsage';
+import { PreExamTaskSelector } from '../components/exam/PreExamTaskSelector';
 import LogRocket from 'logrocket';
 
 const ORAL_EXAM_STEPS = [
@@ -50,6 +52,8 @@ export function ExamView() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [showWarning, setShowWarning] = useState(false);
   const [hasSeenWarning, setHasSeenWarning] = useState(false);
+  const [taskSelected, setTaskSelected] = useState(false);
+  const [completedTaskIds, setCompletedTaskIds] = useState<number[]>([]);
   const { startExam, validateSession } = useUsage();
   // Tour fires after warning modal is confirmed — OralExpressionLive is mounted by then
   usePageTour(isD2C && hasSeenWarning ? user?.id : undefined, 'oral_exam', ORAL_EXAM_STEPS);
@@ -161,7 +165,8 @@ export function ExamView() {
             if ('taskPartA' in result && result.taskPartA?.id) completedIds.push(result.taskPartA.id);
             if ('taskPartB' in result && result.taskPartB?.id) completedIds.push(result.taskPartB.id);
           });
-          
+          setCompletedTaskIds(completedIds);
+
           const { partA, partB } = getRandomTasks(completedIds);
           const newScenario = {
             title: mode === 'full' ? t('practice.completeExam') : (mode === 'partA' ? t('practice.sectionA') : t('practice.sectionB')),
@@ -192,7 +197,7 @@ export function ExamView() {
           initializedModeRef.current = mode;
         }
         };
-        
+
         loadCompletedTaskIds();
       }
     }
@@ -206,17 +211,31 @@ export function ExamView() {
     }
   }, [mode]);
 
-  // Reset warning when mode changes
+  // Reset warning and task selection when mode changes
   useEffect(() => {
     setHasSeenWarning(false);
+    setTaskSelected(false);
   }, [mode]);
 
-  // Show warning modal first when scenario is ready (only once, and only if user hasn't seen it)
+  // Show warning modal only after the user has confirmed their task selection
   useEffect(() => {
-    if (scenario && !showWarning && hasInitialized && !hasSeenWarning) {
+    if (scenario && !showWarning && hasInitialized && !hasSeenWarning && taskSelected) {
       setShowWarning(true);
     }
-  }, [scenario, showWarning, hasInitialized, hasSeenWarning]);
+  }, [scenario, showWarning, hasInitialized, hasSeenWarning, taskSelected]);
+
+  const handleChangeTask = (section: 'A' | 'B', newTask: TEFTask) => {
+    if (!scenario) return;
+    const newScenario = {
+      ...scenario,
+      officialTasks: {
+        ...scenario.officialTasks,
+        [section === 'A' ? 'partA' : 'partB']: newTask,
+      },
+    };
+    setScenario(newScenario);
+    sessionStorage.setItem(`exam_scenario_${mode}`, JSON.stringify(newScenario));
+  };
 
   // Show loading state if result is loading
   if (isLoading) {
@@ -281,6 +300,7 @@ export function ExamView() {
     setShowWarning(false);
     setHasSeenWarning(true);
     setScenario(null);
+    setTaskSelected(false);
     handleBack();
   };
 
@@ -292,7 +312,21 @@ export function ExamView() {
             onClick={handleBack}
             label={location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
           />
-          {scenario && !showWarning && <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} mode={mode!} />}
+          {/* Step 1: task selection / preview (before user has confirmed) */}
+          {scenario && !taskSelected && !showWarning && (
+            <PreExamTaskSelector
+              mode={mode!}
+              taskA={scenario.officialTasks.partA}
+              taskB={scenario.officialTasks.partB}
+              completedTaskIds={completedTaskIds}
+              onConfirm={() => setTaskSelected(true)}
+              onChangeTask={handleChangeTask}
+            />
+          )}
+          {/* Step 2: live exam (after warning modal confirmed) */}
+          {scenario && taskSelected && !showWarning && (
+            <OralExpressionLive scenario={scenario} onFinish={handleResult} onSessionStart={startExam} mode={mode!} />
+          )}
           <ExamWarningModal
             isOpen={showWarning}
             onConfirm={handleConfirmWarning}
