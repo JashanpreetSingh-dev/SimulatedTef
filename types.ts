@@ -34,11 +34,14 @@ export interface TEFTask {
   section: string;
   prompt: string;
   title?: string | null;
+  theme?: string;
   image: string;
   time_limit_sec: number;
   difficulty: string;
   suggested_questions?: string[];
+  expanded_questions?: string[];
   counter_arguments?: string[];
+  suggested_counters?: string[];
 }
 
 export interface WrittenTask {

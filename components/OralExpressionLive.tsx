@@ -11,6 +11,7 @@ import {
 } from '../services/oralEvaluationContract';
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
+import { HintsCarousel } from './exam/HintsCarousel';
 
 /**
  * Live outputTranscription often sends incremental fragments (a few words), not the full line each time.
@@ -1693,6 +1694,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         )}
         </div>
       </div>
+
+      <HintsCarousel task={currentTask} section={currentPart} />
 
       {showImageFull && (
         <div className="fixed inset-0 z-50 bg-slate-950/98 flex items-center justify-center p-6 md:p-12 backdrop-blur-md" onClick={() => setShowImageFull(false)}>

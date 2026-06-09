@@ -19,7 +19,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_1.png",
     "difficulty": "medium",
-    "theme": "Club De Marche"
+    "theme": "Club De Marche",
+    "expanded_questions": [
+      "J'aimerais savoir quelle est la durée habituelle de vos différentes sorties de marche.",
+      "Proposez-vous des parcours adaptés à différents niveaux de difficulté pour les participants ?",
+      "Pourriez-vous m'indiquer quels sont les tarifs d'adhésion ou les frais de participation aux activités ?",
+      "L'assurance est-elle incluse dans les frais d'inscription, ou faut-il avoir sa propre couverture ?",
+      "Est-ce que toutes les randonnées sont encadrées par des guides qualifiés et expérimentés ?",
+      "À quelle fréquence organisez-vous vos sorties, par semaine ou par mois par exemple ?",
+      "Quel est l'effectif maximum de participants que vous acceptez par groupe de marche ?",
+      "Pourriez-vous me donner des exemples de types de circuits ou de régions que vous explorez ?",
+      "Est-ce que certaines de vos marches incluent des visites culturelles ou des découvertes de sites ?",
+      "Y a-t-il un équipement particulier ou obligatoire à prévoir pour participer aux randonnées ?"
+    ]
   },
   {
     "id": 2,
@@ -41,7 +53,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_2.png",
     "difficulty": "medium",
-    "theme": "Agence Évenementielle"
+    "theme": "Agence Évenementielle",
+    "expanded_questions": [
+      "Est-ce que votre agence propose l'organisation d'événements dans des lieux privés, comme un appartement ?",
+      "Y a-t-il des plages horaires spécifiques pour les événements ou est-ce flexible selon nos besoins ?",
+      "Les décorations sont-elles comprises dans vos forfaits, ou faut-il prévoir un budget supplémentaire pour cela ?",
+      "Pourriez-vous m'expliquer un peu les différentes formules ou les forfaits que vous proposez pour les événements ?",
+      "Concernant la musique, proposez-vous un DJ, un groupe ou est-ce à nous de gérer cet aspect ?",
+      "Si des enfants participent à l'événement, est-ce que des animations spécifiques sont prévues pour eux ?",
+      "Pour la réservation, quel est le processus habituel et quel est le délai à prévoir à l'avance ?",
+      "Les boissons sont-elles incluses dans vos formules ou proposez-vous une sélection à la carte pour les événements ?",
+      "Quels types d'ambiances ou de thèmes événementiels proposez-vous, et est-il possible de personnaliser cela ?",
+      "Pourriez-vous me donner une estimation des tarifs ou m'expliquer comment sont établis vos devis ?"
+    ]
   },
   {
     "id": 3,
@@ -63,7 +87,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_3.png",
     "difficulty": "medium",
-    "theme": "Cours De Cuisine"
+    "theme": "Cours De Cuisine",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse précise de l'endroit où se tiendront les cours ?",
+      "Quelles sont les modalités pour réserver une place pour ces cours de cuisine ?",
+      "Pourriez-vous me donner les jours et les plages horaires disponibles pour suivre les cours ?",
+      "J'aimerais savoir quelle est la durée habituelle de chaque cours de cuisine, s'il vous plaît ?",
+      "Quels types de cuisine ou de spécialités culinaires sont proposés lors de ces ateliers ?",
+      "Est-ce que des visites de producteurs locaux ou de marchés sont organisées en complément des cours ?",
+      "Proposez-vous des cours de cuisine adaptés aux enfants ou peuvent-ils assister aux vôtres ?",
+      "Pourriez-vous m'indiquer le coût d'une session ou si vous avez différentes formules tarifaires ?",
+      "Y a-t-il une tenue particulière à prévoir pour les cours de cuisine ?",
+      "Est-ce que les ustensiles et le matériel de cuisine sont fournis sur place ?"
+    ]
   },
   {
     "id": 4,
@@ -85,7 +121,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_4.png",
     "difficulty": "medium",
-    "theme": "Formation Au Numérique"
+    "theme": "Formation Au Numérique",
+    "expanded_questions": [
+      "Pourriez-vous m'expliquer quelles sont les différentes formules ou parcours de formation que vous proposez ?",
+      "Est-ce que l'emploi du temps est flexible, ou y a-t-il des horaires fixes pour les cours ?",
+      "Est-il possible de suivre la formation entièrement à domicile, ou faut-il se déplacer ?",
+      "Quel type de matériel informatique est nécessaire pour suivre la formation et est-il fourni ?",
+      "Pourriez-vous m'expliquer si les cours sont en direct, enregistrés ou si c'est plutôt des ateliers pratiques ?",
+      "Quelle est la durée totale de la formation que vous proposez, et combien de temps durent les modules ?",
+      "Si ce n'est pas uniquement à distance, où se déroulent précisément les cours en présentiel ?",
+      "Y a-t-il des tests d'évaluation pour entrer en formation ou une certification à la fin du parcours ?",
+      "Pourriez-vous me renseigner sur les tarifs des différentes formules de formation et les modalités de paiement ?",
+      "Quel type de connexion internet est recommandé pour suivre la formation à distance dans de bonnes conditions ?"
+    ]
   },
   {
     "id": 5,
@@ -107,7 +155,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_5.png",
     "difficulty": "medium",
-    "theme": "Club De Lecture"
+    "theme": "Club De Lecture",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer la date de votre prochaine rencontre, s'il vous plaît ?",
+      "Est-ce que votre club s'adresse aussi bien aux lecteurs expérimentés qu'aux amateurs ?",
+      "Pourriez-vous me préciser s'il y a un coût pour l'adhésion ou pour chaque séance ?",
+      "Y a-t-il des documents spécifiques que je devrais préparer pour mon inscription ?",
+      "Comment se déroule le processus de sélection des livres que vous lisez ?",
+      "Pourriez-vous me dire quel est le livre que vous lirez ce mois-ci ou le prochain ?",
+      "Est-il nécessaire d'acheter les livres, ou existe-t-il des options pour les emprunter ?",
+      "Sont les participants autorisés à apporter de quoi grignoter ou boire durant la séance ?",
+      "Est-ce que votre local est facilement accessible en voiture et y a-t-il un parking ?",
+      "Y a-t-il une pause prévue pendant les discussions, étant donné la durée de la rencontre ?"
+    ]
   },
   {
     "id": 6,
@@ -129,7 +189,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_6.png",
     "difficulty": "medium",
-    "theme": "Emploi Client Mystère"
+    "theme": "Emploi Client Mystère",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de votre agence ou le lieu des entretiens ?",
+      "Quel type de contrat proposez-vous habituellement pour les missions de client mystère ?",
+      "Quels sont les différents types de missions que je pourrais être amené(e) à réaliser ?",
+      "J'aimerais connaître les compétences spécifiques que vous attendez des clients mystères.",
+      "Faut-il disposer d'un matériel spécifique, comme un appareil photo ou un enregistreur, pour ces missions ?",
+      "Combien de temps faut-il prévoir en moyenne pour la réalisation d'une mission de client mystère ?",
+      "À quelle fréquence peut-on espérer obtenir des missions avec votre agence de client mystère ?",
+      "Pourriez-vous m'éclairer sur le mode de rémunération et la fourchette tarifaire par mission ?",
+      "Quel est le délai de paiement habituel après la soumission et la validation d'un rapport de mission ?",
+      "Est-il possible de refuser une mission proposée si elle ne correspond pas à mes disponibilités ou préférences ?"
+    ]
   },
   {
     "id": 7,
@@ -151,7 +223,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_7.png",
     "difficulty": "medium",
-    "theme": "Randonnées En Scooter Des Mers"
+    "theme": "Randonnées En Scooter Des Mers",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer quels sont les tarifs pour participer à ces randonnées en scooter des mers ?",
+      "J'aimerais savoir s'il y a un âge minimum requis pour prendre part à ces excursions.",
+      "Pourriez-vous me préciser combien de temps dure en général une randonnée en scooter des mers ?",
+      "J'aimerais savoir où se situe le point de départ exact de ces randonnées.",
+      "Pourriez-vous me donner des détails sur les parcours que vous empruntez lors de ces excursions ?",
+      "Est-ce qu'un certificat médical récent est nécessaire pour pouvoir participer à l'activité ?",
+      "Je voudrais savoir si une assurance spécifique est incluse ou si je dois en prévoir une.",
+      "Y a-t-il des dangers particuliers à connaître et quelles sont les mesures de sécurité mises en place ?",
+      "Pourriez-vous m'indiquer la vitesse approximative que l'on peut atteindre pendant la randonnée ?",
+      "Est-ce qu'un permis de conduire spécifique ou un permis bateau est nécessaire pour participer ?"
+    ]
   },
   {
     "id": 8,
@@ -173,7 +257,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_8.png",
     "difficulty": "medium",
-    "theme": "Bénévolat"
+    "theme": "Bénévolat",
+    "expanded_questions": [
+      "Pourriez-vous me détailler un peu plus les missions exactes que les bénévoles effectuent ?",
+      "Pourriez-vous m'indiquer l'adresse exacte ou le quartier où se situe votre organisme ?",
+      "Pourriez-vous me donner quelques exemples des tâches concrètes que je serais amené(e) à réaliser ?",
+      "Quel est le nombre d'heures de bénévolat demandé par semaine ou par mois en général ?",
+      "Y a-t-il une durée d'engagement minimale requise ou une certaine flexibilité est-elle possible ?",
+      "Quelles sont les compétences ou les qualités que vous recherchez plus particulièrement chez vos bénévoles ?",
+      "Demandez-vous des références de précédents engagements ou des lettres de recommandation ?",
+      "Pourriez-vous me préciser quel est le public ou la clientèle spécifique que vous accompagnez ?",
+      "Concernant les jouets mentionnés dans l'annonce, quels types sont collectés ou distribués par les bénévoles ?",
+      "Acceptez-vous également des dons de jouets de la part de particuliers ou d'entreprises ?"
+    ]
   },
   {
     "id": 9,
@@ -195,7 +291,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_9.png",
     "difficulty": "medium",
-    "theme": "Circuit En Train"
+    "theme": "Circuit En Train",
+    "expanded_questions": [
+      "Pourriez-vous me donner plus de détails sur les différents circuits que vous proposez ?",
+      "Quelle est la durée moyenne des circuits ou est-ce que cela varie selon les destinations ?",
+      "De quelle gare ou de quelle ville les circuits en train partent-ils habituellement ?",
+      "Pourriez-vous m'indiquer quels sont les horaires de départ et d'arrivée des trains ?",
+      "Pourriez-vous me donner une idée des tarifs et ce qui est inclus dans le prix du billet ?",
+      "Les circuits incluent-ils des escales ou des arrêts pour visiter certaines villes ou sites ?",
+      "Quel type de repas est servi à bord et y a-t-il des options pour régimes spéciaux ?",
+      "L'hébergement est-il prévu et inclus si certains circuits durent plus d'une journée ?",
+      "Est-ce qu'un guide est présent à bord pour commenter le parcours et les différentes étapes ?",
+      "Quelles sont les modalités de réservation et est-il possible de le faire directement en ligne ?"
+    ]
   },
   {
     "id": 10,
@@ -217,7 +325,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_10.png",
     "difficulty": "medium",
-    "theme": "Une Activité Intéressante Pour Le Week-End"
+    "theme": "Une Activité Intéressante Pour Le Week-End",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte où se déroule cette activité ?",
+      "Je souhaiterais connaître la durée approximative prévue pour cette activité.",
+      "Y a-t-il un âge minimum requis pour les participants à cette activité ?",
+      "Est-ce que le matériel nécessaire est fourni ou devons-nous l'apporter nous-mêmes ?",
+      "Quel est le tarif pour participer à l'activité et que comprend-il exactement ?",
+      "Combien de personnes peuvent participer ensemble dans un même groupe ?",
+      "Proposez-vous des réductions pour les familles, les groupes ou les étudiants par exemple ?",
+      "Y a-t-il des risques particuliers liés à cette activité ou des consignes de sécurité ?",
+      "Les personnes qui accompagnent peuvent-elles assister à l'activité sans participer ?",
+      "Est-ce qu'une dégustation de produits ou une collation est incluse dans l'activité ?"
+    ]
   },
   {
     "id": 11,
@@ -239,7 +359,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_11.png",
     "difficulty": "medium",
-    "theme": "Visite Nocturne Musée"
+    "theme": "Visite Nocturne Musée",
+    "expanded_questions": [
+      "Pourriez-vous me dire quelles sont les dates prévues pour ces visites nocturnes ?",
+      "Quels sont les horaires précis de ces visites en soirée ?",
+      "Y a-t-il des informations particulières concernant l'accès au musée en soirée ?",
+      "La réservation est-elle obligatoire et si oui, comment procéder ?",
+      "Pourriez-vous me donner des précisions sur les tarifs d'entrée pour ces soirées spéciales ?",
+      "Les abonnements annuels donnent-ils droit à des réductions pour ces visites nocturnes ?",
+      "Est-ce que toutes les expositions sont ouvertes pendant la visite nocturne, ou seulement certaines ?",
+      "Des conférences ou des présentations spécifiques sont-elles prévues lors de ces soirées ?",
+      "Ces visites nocturnes sont-elles adaptées aux enfants, et à partir de quel âge ?",
+      "Proposez-vous un service de restauration ou un coin café pendant la durée de la visite en soirée ?"
+    ]
   },
   {
     "id": 12,
@@ -261,7 +393,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_12.png",
     "difficulty": "medium",
-    "theme": "Activité Originale Dans Votre Ville"
+    "theme": "Activité Originale Dans Votre Ville",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte du lieu où se pratique le lancer de hache, s'il vous plaît ?",
+      "Est-ce facile de s'y rendre en transports en commun, ou recommandez-vous un autre moyen de transport ?",
+      "Quel est le tarif par personne pour participer à cette activité de lancer de hache, s'il vous plaît ?",
+      "Combien de temps faut-il prévoir pour une séance complète de lancer de hache ?",
+      "Y a-t-il un nombre minimum ou maximum de participants requis pour une réservation ?",
+      "Y a-t-il un âge minimum requis pour pouvoir participer en toute sécurité à cette activité ?",
+      "Devons-nous prévoir des équipements spécifiques ou une tenue particulière pour l'activité ?",
+      "Faut-il avoir une condition physique particulière pour pratiquer le lancer de hache ?",
+      "Serons-nous accompagnés et encadrés par des professionnels qualifiés pendant la séance ?",
+      "Est-ce que cette activité présente des dangers, et quelles sont vos mesures de sécurité ?"
+    ]
   },
   {
     "id": 13,
@@ -283,7 +427,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_13.png",
     "difficulty": "medium",
-    "theme": "Vente De Vêtements"
+    "theme": "Vente De Vêtements",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de la vente, s'il vous plaît ?",
+      "Pourriez-vous me préciser les heures d'ouverture de la vente ?",
+      "Pourriez-vous me dire d'où proviennent les vêtements mis en vente ?",
+      "Pourriez-vous m'indiquer la gamme de prix habituelle pour les vêtements ?",
+      "Y a-t-il des marques de vêtements spécifiques parmi celles proposées à la vente ?",
+      "Outre les vêtements, quels types d'accessoires seront disponibles à la vente ?",
+      "La vente propose-t-elle aussi des vêtements pour enfants de différents âges ?",
+      "Y a-t-il un large éventail de tailles disponibles pour toutes les morphologies ?",
+      "Quelles sont les modalités de paiement acceptées lors de cette vente ?",
+      "Une partie des bénéfices de cette vente est-elle reversée à des organismes caritatifs ?"
+    ]
   },
   {
     "id": 14,
@@ -304,7 +460,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_14.png",
     "difficulty": "medium",
-    "theme": "Bibliothèque Municipale"
+    "theme": "Bibliothèque Municipale",
+    "expanded_questions": [
+      "Je voudrais m'y rendre, pourriez-vous me préciser quelle est l'adresse exacte de la bibliothèque ?",
+      "Pourriez-vous m'indiquer quels sont les horaires d'ouverture de la bibliothèque tout au long de la semaine ?",
+      "Je voulais savoir s'il y a des frais d'abonnement et quelles sont les différentes formules proposées.",
+      "Pourriez-vous me dire quels sont les documents nécessaires pour finaliser une inscription à la bibliothèque ?",
+      "J'aimerais savoir quelle est la durée maximale pour emprunter des livres ou d'autres documents.",
+      "En cas de retard, y a-t-il des pénalités ou des frais supplémentaires à prévoir pour les prêts ?",
+      "La bibliothèque dispose-t-elle d'une section dédiée aux livres pour enfants et aux jeunes lecteurs ?",
+      "L'établissement propose-t-il des conférences thématiques et comment peut-on connaître la programmation ?",
+      "Y a-t-il des ateliers ou des activités pour le public et comment peut-on s'inscrire ?"
+    ]
   },
   {
     "id": 15,
@@ -326,7 +493,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_15.png",
     "difficulty": "medium",
-    "theme": "Atelier Découverte Animaux"
+    "theme": "Atelier Découverte Animaux",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte où aura lieu cet atelier découverte ?",
+      "Quels jours de la semaine sont disponibles pour participer à l'atelier des animaux ?",
+      "Y a-t-il une tranche d'âge spécifique pour les enfants qui peuvent s'inscrire à l'atelier ?",
+      "Quelle est la durée moyenne d'une séance de l'atelier découverte des animaux, s'il vous plaît ?",
+      "Quel est le tarif pour l'inscription d'un enfant à l'atelier et y a-t-il des forfaits ?",
+      "Quel type d'encadrement est prévu pour les enfants durant les activités avec les animaux ?",
+      "Quels sont les différents animaux que les enfants auront l'opportunité de découvrir et d'approcher ?",
+      "Quelles activités concrètes que les enfants feront durant cet atelier découverte animale ?",
+      "Doit-on prévoir ou apporter du matériel spécifique pour la participation des enfants à l'atelier ?",
+      "Les parents sont-ils autorisés à rester et à assister aux activités de l'atelier avec leurs enfants ?"
+    ]
   },
   {
     "id": 16,
@@ -348,7 +527,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_16.png",
     "difficulty": "medium",
-    "theme": "Cette Exposition D’art Culinaire"
+    "theme": "Cette Exposition D’art Culinaire",
+    "expanded_questions": [
+      "Pourriez-vous me dire où se déroule exactement cette exposition d'art culinaire, s'il vous plaît ?",
+      "Comment peut-on se rendre à l'exposition, y a-t-il un accès facile en transport en commun ou un parking ?",
+      "Quels sont les tarifs d'entrée pour cette exposition, et existe-t-il des forfaits spéciaux ?",
+      "Quels sont les horaires d'ouverture et de fermeture de l'exposition durant toute sa durée ?",
+      "L'exposition est-elle adaptée aux enfants, et y a-t-il des activités ou des tarifs pour eux ?",
+      "Y aura-t-il des chefs étoilés présents à l'exposition, et si oui, lesquels participeront ?",
+      "Combien de chefs au total sont attendus pour présenter leurs créations culinaires ?",
+      "Des dégustations sont-elles prévues, et si oui, sont-elles incluses dans le prix d'entrée ?",
+      "Sera-t-il possible d'acheter des boissons sur place, et quel type de rafraîchissements sera proposé ?",
+      "Avez-vous un site internet ou une page où je pourrais trouver plus de détails sur l'événement ?"
+    ]
   },
   {
     "id": 17,
@@ -370,7 +561,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_17.png",
     "difficulty": "medium",
-    "theme": "Chorale Internationale"
+    "theme": "Chorale Internationale",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte du lieu où se déroulent les répétitions ?",
+      "J'aimerais connaître les tarifs d'adhésion ou les frais de participation à la chorale, s'il vous plaît.",
+      "Pourriez-vous me préciser les jours et les créneaux horaires habituels des répétitions hebdomadaires ?",
+      "Y a-t-il une limite d'âge pour les participants ou la chorale est-elle ouverte à tous les âges ?",
+      "Quel genre de répertoire musical explorez-vous, étant donné que c'est une chorale internationale ?",
+      "Faut-il avoir un niveau de chant particulier ou est-ce accessible aux débutants et expérimentés ?",
+      "Quelles sont les différentes langues que vous utilisez pour le chant et la communication au sein du groupe ?",
+      "Pourriez-vous me donner une idée du nombre actuel de choristes qui font partie du groupe ?",
+      "La chorale donne-t-elle des concerts ou des représentations publiques, et si oui, à quelle fréquence ?",
+      "Est-ce qu'une formation musicale préalable est nécessaire pour rejoindre la chorale, comme le solfège ?"
+    ]
   },
   {
     "id": 18,
@@ -392,7 +595,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_18.png",
     "difficulty": "medium",
-    "theme": "Radio Portes Ouvertes"
+    "theme": "Radio Portes Ouvertes",
+    "expanded_questions": [
+      "Y a-t-il une limite d'âge pour pouvoir participer à cette émission de radio ?",
+      "Pourriez-vous me préciser l'adresse exacte où l'émission de radio est enregistrée ou diffusée ?",
+      "Pourriez-vous m'expliquer quelles seraient les tâches ou les activités concrètes des participants ?",
+      "Quelle est la durée prévue pour chaque séance ou pour l'ensemble du projet ?",
+      "La participation à l'émission est-elle rémunérée ou s'agit-il d'une opportunité bénévole ?",
+      "Est-ce qu'il y a des cadeaux ou des compensations symboliques prévus pour les participants ?",
+      "Y a-t-il une possibilité de s'approcher des invités ou d'échanger avec eux pendant l'émission ?",
+      "Des pauses sont-elles prévues durant l'enregistrement ou la diffusion de l'émission de radio ?",
+      "Y a-t-il une tenue spécifique ou un code vestimentaire à respecter pour participer à l'émission ?",
+      "Quelles compétences spécifiques ou qualités sont recherchées pour être sélectionné(e) pour ce rôle ?"
+    ]
   },
   {
     "id": 19,
@@ -414,7 +629,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_19.png",
     "difficulty": "medium",
-    "theme": "Cours De Roller"
+    "theme": "Cours De Roller",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte où se déroulent les cours de roller ?",
+      "Pouvez-vous m'indiquer les dates de début et de fin des prochaines sessions de cours de roller ?",
+      "J'aimerais connaître les horaires détaillés des cours de roller, notamment en semaine et le week-end.",
+      "Pourriez-vous me renseigner sur les différents tarifs des cours et si des forfaits sont disponibles ?",
+      "Existe-t-il un âge minimum requis pour s'inscrire à ces cours de roller que vous proposez ?",
+      "Pouvez-vous me donner des informations sur la qualification des moniteurs qui encadrent les cours de roller ?",
+      "Faut-il apporter son propre équipement de roller ou est-il possible d'en louer sur place ?",
+      "Est-ce qu'une assurance est incluse dans le prix de l'inscription ou faut-il en prévoir une ?",
+      "Proposez-vous également des sorties ou des balades de groupe en roller en plus des leçons classiques ?",
+      "Pourriez-vous me préciser si les cours sont adaptés et divisés par groupes d'âge ou de niveau ?"
+    ]
   },
   {
     "id": 20,
@@ -436,7 +663,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_20.png",
     "difficulty": "medium",
-    "theme": "École De Voile"
+    "theme": "École De Voile",
+    "expanded_questions": [
+      "Pourriez-vous me renseigner sur les différents tarifs que vous proposez pour les cours de voile ?",
+      "J'aimerais savoir quels sont les différents lieux où vous proposez vos formations.",
+      "Pourriez-vous m'indiquer quels sont les types de bateaux disponibles pour l'apprentissage ?",
+      "Pourriez-vous me préciser quelle est la durée habituelle de vos sessions de formation ?",
+      "Pourriez-vous me donner quelques informations sur la qualification de vos moniteurs ?",
+      "Délivrez-vous un certificat de compétence après avoir terminé vos formations ?",
+      "Est-ce que l'école fournit tout l'équipement nécessaire pour les séances de voile ?",
+      "L'assurance est-elle comprise dans les frais d'inscription ou faut-il en prévoir une à part ?",
+      "Faut-il fournir un certificat médical pour participer aux activités de l'école ?",
+      "Quelles sont les mesures de sécurité mises en place pour minimiser les risques pendant les cours ?"
+    ]
   },
   {
     "id": 21,
@@ -458,7 +697,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_21.png",
     "difficulty": "medium",
-    "theme": "Stages D’escalade"
+    "theme": "Stages D’escalade",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte où se déroulent vos stages d'escalade, s'il vous plaît ?",
+      "Quels sont les différents tarifs pour les stages d'escalade et qu'est-ce qu'ils incluent ?",
+      "Est-ce que le lieu des stages est facilement accessible en transports en commun, ou y a-t-il un service de navette ?",
+      "Est-ce qu'un certificat médical récent est exigé pour s'inscrire et participer aux activités d'escalade ?",
+      "Est-ce que tout l'équipement d'escalade, comme les baudriers et les cordes, est fourni par vos services ?",
+      "Pourriez-vous m'expliquer quel est le niveau de qualification des moniteurs qui encadrent les stages ?",
+      "Les stages sont-ils proposés pour différents niveaux de difficulté, du débutant au confirmé, par exemple ?",
+      "Y a-t-il une limite d'âge minimale ou maximale pour pouvoir participer à ces stages d'escalade ?",
+      "Les stages se déroulent-ils en salle d'escalade en ville ou plutôt sur des sites naturels à l'extérieur ?",
+      "Proposez-vous également des stages d'escalade plus intensifs, d'une durée d'une semaine par exemple ?"
+    ]
   },
   {
     "id": 22,
@@ -480,7 +731,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_22.png",
     "difficulty": "medium",
-    "theme": "Concert"
+    "theme": "Concert",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte du lieu du concert, s'il vous plaît ?",
+      "Quels sont les groupes et les artistes confirmés qui se produiront lors de cet événement ?",
+      "Pourriez-vous m'expliquer le fonctionnement des différents pass disponibles pour le concert ?",
+      "Pourriez-vous me renseigner sur les types de restauration disponibles sur place durant l'événement ?",
+      "Quels sont les tarifs des billets ou des différents pass d'entrée pour le concert ?",
+      "Existe-t-il des options de stationnement à proximité du lieu du concert et sont-elles payantes ?",
+      "Quels types de stands seront présents sur le site, comme des stands de merchandising ou autres ?",
+      "Avez-vous des suggestions d'hébergement à proximité du lieu du concert pour les visiteurs ?",
+      "Y a-t-il des conditions spécifiques pour la présence des enfants et un tarif réduit pour eux ?",
+      "Est-il possible de rencontrer les artistes ou d'obtenir des dédicaces à un moment donné ?"
+    ]
   },
   {
     "id": 23,
@@ -502,7 +765,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_23.png",
     "difficulty": "medium",
-    "theme": "Visite"
+    "theme": "Visite",
+    "expanded_questions": [
+      "J'aimerais savoir où se situe précisément le lieu de la visite.",
+      "Quels sont vos horaires d'ouverture et de fermeture pour les visites du château ?",
+      "La visite proposée est-elle guidée ou est-ce une découverte libre du site ?",
+      "Combien de temps faut-il prévoir pour effectuer l'intégralité de la visite ?",
+      "Pourriez-vous m'expliquer plus en détail le fonctionnement de l'atelier proposé ?",
+      "Quel est le prix d'entrée pour la visite de base, sans option supplémentaire ?",
+      "À quelle époque historique remonte la construction du château que vous faites visiter ?",
+      "Pourriez-vous me détailler les différents tarifs disponibles pour cette visite ?",
+      "Proposez-vous des tarifs réduits pour les étudiants, les seniors ou les familles ?",
+      "Est-il nécessaire de réserver à l'avance pour participer à la visite ou à l'atelier ?"
+    ]
   },
   {
     "id": 24,
@@ -524,7 +799,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_24.png",
     "difficulty": "medium",
-    "theme": "Service D’entretien De Voitures"
+    "theme": "Service D’entretien De Voitures",
+    "expanded_questions": [
+      "Pourriez-vous me préciser vos horaires d'ouverture et de fermeture, s'il vous plaît ?",
+      "Pourriez-vous me détailler les différents types de services d'entretien automobile que vous proposez ?",
+      "Quelle est la durée typique pour un entretien courant de véhicule chez vous ?",
+      "Est-ce que vous fournissez un devis détaillé avant de commencer les travaux d'entretien ?",
+      "Êtes-vous assuré en cas de dommages éventuels sur mon véhicule pendant l'entretien ?",
+      "Quels sont les types d'interventions ou de réparations spécifiques que vous pouvez réaliser sur les véhicules ?",
+      "Pourriez-vous me donner une fourchette de prix pour un entretien de base, s'il vous plaît ?",
+      "Est-ce que vous entretenez tous les types et toutes les marques de véhicules, même les plus anciens ?",
+      "Proposez-vous un suivi régulier ou un carnet d'entretien pour les véhicules clients ?",
+      "Est-ce que vous conservez un dossier client avec l'historique des entretiens de chaque véhicule ?"
+    ]
   },
   {
     "id": 25,
@@ -546,7 +833,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_25.png",
     "difficulty": "medium",
-    "theme": "Louer Un Scooter Sous-Marin"
+    "theme": "Louer Un Scooter Sous-Marin",
+    "expanded_questions": [
+      "Pourriez-vous me donner une idée des tarifs pour la location de ces scooters sous-marins ?",
+      "Dans quelles régions ou sur quels plans d'eau peut-on utiliser vos scooters sous-marins ?",
+      "Quelle est la durée standard d'une session de location de scooter sous-marin ?",
+      "Une formation préalable est-elle nécessaire pour piloter le scooter, ou en proposez-vous une sur place ?",
+      "Est-il possible de consulter des photos ou des vidéos de l'expérience sur votre site web ?",
+      "Y a-t-il un âge minimum requis pour pouvoir piloter un scooter sous-marin ?",
+      "Faut-il prévoir une tenue vestimentaire spécifique, ou le matériel est-il fourni sur place ?",
+      "Y a-t-il des exigences ou des contre-indications en termes de préparation physique ou de santé ?",
+      "Est-ce que l'utilisation de ces scooters est possible en rivière ou uniquement en mer ?",
+      "L'assurance est-elle incluse dans le prix de la location, ou faut-il en souscrire une ?"
+    ]
   },
   {
     "id": 26,
@@ -568,7 +867,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_26.png",
     "difficulty": "medium",
-    "theme": "Randonnées En Traîneau"
+    "theme": "Randonnées En Traîneau",
+    "expanded_questions": [
+      "Pourriez-vous me renseigner sur les tarifs appliqués pour les différentes durées de randonnées proposées ?",
+      "Est-ce qu'un musher expérimenté accompagne chaque traîneau tout au long du parcours ?",
+      "À quelle saison de l'année ces randonnées en traîneau sont-elles généralement disponibles ?",
+      "Dans quelle région ou à quels endroits spécifiques se déroulent ces randonnées en traîneau ?",
+      "Quel est le nombre maximal de personnes pouvant prendre place à bord d'un traîneau ?",
+      "Faut-il prévoir des vêtements spéciaux ou de l'équipement particulier pour participer à la randonnée ?",
+      "Est-ce que vous proposez également des randonnées en traîneau durant la nuit ou au crépuscule ?",
+      "À partir de quel âge les enfants peuvent-ils participer à ces activités de randonnée en traîneau ?",
+      "Y a-t-il des conditions médicales ou des restrictions de santé à considérer avant de s'inscrire ?",
+      "Quelles sont les mesures de sécurité mises en place pour assurer la sûreté des participants ?"
+    ]
   },
   {
     "id": 27,
@@ -590,7 +901,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_27.png",
     "difficulty": "medium",
-    "theme": "Louer Un Orchestre"
+    "theme": "Louer Un Orchestre",
+    "expanded_questions": [
+      "Pourriez-vous me préciser si vous vous déplacez partout ou si vous avez des lieux de prestation privilégiés ?",
+      "Pourriez-vous me donner une fourchette de prix ou me parler de vos différentes formules tarifaires ?",
+      "Quelle est la durée habituelle d'une prestation d'orchestre et peut-on la moduler ?",
+      "Avez-vous des programmes musicaux spécifiques adaptés à des événements particuliers comme des mariages ou des anniversaires ?",
+      "Votre orchestre comprend-il des chanteurs ou des choristes, et est-ce une option ?",
+      "En plus de la performance musicale, proposez-vous d'autres types d'animations pour les invités ?",
+      "Pourriez-vous me décrire le genre musical de votre répertoire et si on peut faire des demandes spéciales ?",
+      "Qui prend en charge l'installation technique, comme la sonorisation et l'éclairage, le jour de l'événement ?",
+      "Disposez-vous d'une assurance responsabilité civile professionnelle pour couvrir d'éventuels incidents ?",
+      "Serait-il possible d'intégrer une session karaoké à la prestation de l'orchestre ?"
+    ]
   },
   {
     "id": 28,
@@ -612,7 +935,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_28.png",
     "difficulty": "medium",
-    "theme": "Activité En Famille"
+    "theme": "Activité En Famille",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte du zoo pour que je puisse m'organiser ?",
+      "Est-il facile de s'y rendre en transport en commun, ou recommandez-vous plutôt la voiture ?",
+      "Quel est le tarif pour une nuit, et est-ce que cela inclut le dîner ou d'autres services ?",
+      "Combien de cabines ou d'unités d'hébergement avez-vous de disponibles pour les familles ?",
+      "Y a-t-il un restaurant sur place où nous pourrions dîner ou prendre le petit-déjeuner ?",
+      "Y a-t-il un âge minimum requis pour les enfants pour participer à cette activité nocturne ?",
+      "Pourriez-vous me détailler les activités spécifiques qui sont proposées pendant cette expérience en famille ?",
+      "Pourriez-vous m'expliquer un peu plus ce qu'est exactement la cabine protégée mentionnée dans l'annonce ?",
+      "Dans cette partie du zoo, combien d'espèces animales différentes pourrons-nous observer durant notre séjour ?",
+      "Quelles sont les modalités de réservation et est-il possible de le faire directement en ligne ?"
+    ]
   },
   {
     "id": 29,
@@ -634,7 +969,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_29.png",
     "difficulty": "medium",
-    "theme": "Faire Garder Votre Animal De Compagnie"
+    "theme": "Faire Garder Votre Animal De Compagnie",
+    "expanded_questions": [
+      "Pourriez-vous m'expliquer comment vos tarifs sont structurés et ce qu'ils incluent exactement ?",
+      "Avez-vous des préférences ou des restrictions concernant les types d'animaux que vous accueillez ?",
+      "Comment assurez-vous la qualité et la fiabilité des familles d'accueil avec lesquelles vous travaillez ?",
+      "Concernant la nourriture, devons-nous l'apporter ou est-ce que vous la fournissez pour l'animal ?",
+      "Quel genre d'espace et d'environnement proposez-vous pour le bien-être des animaux ?",
+      "Comment gérez-vous les urgences médicales ou les imprévus si mon animal tombe malade ou a un accident ?",
+      "Comment garantissez-vous que l'animal aura suffisamment de compagnie et d'attention pendant la garde ?",
+      "Quelle est la durée minimale et maximale de la période de garde que vous proposez ?",
+      "Est-ce que votre service dispose d'une assurance pour couvrir d'éventuels incidents pendant la garde ?",
+      "Comment assurez-vous que le personnel ou les familles d'accueil sont qualifiés pour s'occuper des animaux ?"
+    ]
   },
   {
     "id": 30,
@@ -656,7 +1003,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_30.png",
     "difficulty": "medium",
-    "theme": "Passer Le Permis Moto"
+    "theme": "Passer Le Permis Moto",
+    "expanded_questions": [
+      "Pourriez-vous me détailler les différents forfaits que vous proposez pour le permis moto ?",
+      "Pourriez-vous m'indiquer la durée totale de la formation pour l'obtention du permis A ?",
+      "Pourriez-vous me donner vos horaires et les jours où il est possible de suivre les cours de moto ?",
+      "Pourriez-vous me préciser combien de temps dure chaque séance de conduite pratique ?",
+      "Quels types de motos utilisez-vous pour la formation et les épreuves pratiques du permis ?",
+      "Quels sont les documents que je devrai fournir pour mon inscription au permis moto ?",
+      "Disposez-vous de simulateurs pour les premières heures de formation à la conduite moto ?",
+      "Comment se déroule l'inscription aux examens théorique et pratique du permis moto ?",
+      "Proposez-vous un entraînement spécifique pour la préparation de l'examen du code de la route ?",
+      "Est-ce qu'une visite médicale est obligatoire pour s'inscrire au permis de conduire moto ?"
+    ]
   },
   {
     "id": 31,
@@ -678,7 +1037,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_31.png",
     "difficulty": "medium",
-    "theme": "La Garde De Chats"
+    "theme": "La Garde De Chats",
+    "expanded_questions": [
+      "J'aimerais savoir quels sont vos prix pour les services de garde de chats.",
+      "Proposez-vous différentes formules de garde, par exemple à la journée ou à la semaine, et quels sont les détails ?",
+      "Est-ce à moi de fournir la nourriture de mon chat, ou est-ce inclus dans le service ?",
+      "Quelle est la durée minimale ou maximale pour faire garder un chat chez vous ?",
+      "J'ai plusieurs chats, y a-t-il une limite quant au nombre de félins qu'on peut vous confier ?",
+      "Les personnes qui s'occupent des chats sont-elles spécifiquement formées ou expérimentées avec les félins ?",
+      "Si mon chat a besoin de médicaments, est-ce que vous pouvez lui administrer des soins médicaux ?",
+      "Combien de fois par jour vos intervenants visitent-ils ou s'occupent-ils des chats en garde ?",
+      "Est-ce que le service inclut du temps de jeu et des interactions régulières avec le chat ?",
+      "Avez-vous l'expérience nécessaire pour gérer des chats ayant un comportement plus difficile ou agressif ?"
+    ]
   },
   {
     "id": 32,
@@ -699,7 +1070,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_32.png",
     "difficulty": "medium",
-    "theme": "Garage"
+    "theme": "Garage",
+    "expanded_questions": [
+      "Pourriez-vous me confirmer l'adresse complète de votre établissement, s'il vous plaît ?",
+      "J'aimerais connaître vos horaires d'ouverture et de fermeture pour la semaine et le week-end.",
+      "Pourriez-vous m'expliquer plus en détail comment fonctionne exactement votre concept de garage ?",
+      "Est-il possible d'acheter les pièces nécessaires directement chez vous, ou faut-il les apporter ?",
+      "Y a-t-il une tenue particulière à prévoir ou recommandez-vous des vêtements spécifiques pour travailler ?",
+      "Quels types d'équipements et d'outils spécifiques sont mis à la disposition des clients ?",
+      "Proposez-vous une assistance ou une petite formation pour les personnes moins expérimentées en mécanique ?",
+      "Y a-t-il du personnel qualifié sur place pour nous conseiller et nous aider en cas de besoin ?",
+      "Pourriez-vous m'indiquer la grille tarifaire de vos services et la location de vos équipements ?"
+    ]
   },
   {
     "id": 33,
@@ -721,7 +1103,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_33.png",
     "difficulty": "medium",
-    "theme": "Initiation Au Parapente"
+    "theme": "Initiation Au Parapente",
+    "expanded_questions": [
+      "Pourriez-vous me donner des précisions sur les différents tarifs pour l'initiation au parapente ?",
+      "Y a-t-il un âge minimum requis pour participer à l'initiation au parapente ?",
+      "À quelle période de l'année est-il possible de faire cette initiation au parapente ?",
+      "Y a-t-il des restrictions de poids ou de taille à prendre en compte pour participer ?",
+      "L'assurance est-elle comprise dans le prix de l'initiation ou faut-il en souscrire une ?",
+      "Quels sont les dangers potentiels liés à la pratique du parapente pour les débutants ?",
+      "L'initiation se fait-elle en solo dès le début ou est-ce un saut en tandem accompagné ?",
+      "Si le participant est mineur, une autorisation parentale est-elle nécessaire pour l'inscription ?",
+      "Comment se déroule concrètement l'initiation, et quel est le niveau d'encadrement prévu ?",
+      "Quelles sont les conditions d'annulation ou de report en cas de mauvaise météo ou d'empêchement ?"
+    ]
   },
   {
     "id": 34,
@@ -743,7 +1137,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_34.png",
     "difficulty": "medium",
-    "theme": "Ferme"
+    "theme": "Ferme",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de la ferme, s'il vous plaît ?",
+      "Est-ce facile d'accéder à votre ferme en voiture ou y a-t-il des transports en commun à proximité ?",
+      "Quels sont vos horaires d'ouverture et de fermeture pour les visites ou la vente directe, s'il vous plaît ?",
+      "La ferme est-elle ouverte toute l'année ou seulement à certaines saisons spécifiques ?",
+      "Pourriez-vous me donner plus de détails sur les types de produits que vous proposez à la vente ?",
+      "Y a-t-il des quantités minimales ou maximales pour l'achat de vos produits ?",
+      "Pourriez-vous me donner une idée des prix des produits que vous vendez directement à la ferme ?",
+      "Vos produits bénéficient-ils d'une certification biologique ou d'un label spécifique ?",
+      "Si nous venons cueillir, devons-nous apporter notre propre équipement ou le fournissez-vous ?",
+      "En dehors des produits mentionnés dans votre publicité, avez-vous d'autres articles ou services à proposer ?"
+    ]
   },
   {
     "id": 35,
@@ -765,7 +1171,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_35.png",
     "difficulty": "medium",
-    "theme": "Lunettes En Ligne"
+    "theme": "Lunettes En Ligne",
+    "expanded_questions": [
+      "Pourriez-vous me décrire brièvement comment se déroule la commande de lunettes sur votre site internet ?",
+      "Pourriez-vous me donner une idée des tarifs moyens pour une paire de lunettes avec correction ?",
+      "Vos lunettes sont-elles éligibles à un remboursement par la sécurité sociale ou ma mutuelle ?",
+      "Comment fonctionne votre service après-vente en cas de problème avec les lunettes ou si j'ai besoin d'un ajustement ?",
+      "Est-ce que vous proposez un service de conseils personnalisés pour m'aider à choisir la bonne monture ?",
+      "Pourriez-vous me donner plus de détails sur la qualité des verres et des montures que vous proposez ?",
+      "J'aimerais savoir si vous proposez un large éventail de montures et de marques différentes sur votre site.",
+      "Pourriez-vous m'informer sur les options de livraison, les délais et les éventuels frais associés ?",
+      "Vendez-vous également des lunettes de soleil correctrices ou non, en plus des lunettes de vue ?",
+      "Est-ce que votre offre comprend des lunettes adaptées spécifiquement pour les enfants ?"
+    ]
   },
   {
     "id": 36,
@@ -786,7 +1204,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_36.png",
     "difficulty": "medium",
-    "theme": "Rachat De Bijoux"
+    "theme": "Rachat De Bijoux",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de votre boutique pour que je puisse vous trouver facilement ?",
+      "Pourriez-vous me préciser vos horaires d'ouverture et de fermeture, s'il vous plaît ?",
+      "Combien de temps faut-il généralement prévoir pour une estimation et la finalisation de la transaction ?",
+      "Quels types de bijoux rachetez-vous exactement, par exemple des bagues, colliers ou bracelets ?",
+      "Y a-t-il un montant maximal que vous pouvez payer pour un lot de bijoux ou une pièce spécifique ?",
+      "Pourriez-vous m'expliquer concrètement comment se déroule le processus de rachat une fois sur place ?",
+      "Quels sont les différents matériaux précieux ou pierres que vous rachetez habituellement ?",
+      "Est-ce que vous rachetez aussi les bijoux qui sont cassés, abîmés ou incomplets ?",
+      "Proposez-vous un service d'envoi sécurisé pour les bijoux si je ne peux pas me rendre en boutique ?"
+    ]
   },
   {
     "id": 37,
@@ -808,7 +1237,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_37.png",
     "difficulty": "medium",
-    "theme": "Circuits En Bateaux"
+    "theme": "Circuits En Bateaux",
+    "expanded_questions": [
+      "Pourriez-vous me dire où se situent les points de départ de vos circuits en bateau ?",
+      "Faut-il réserver les circuits en avance, et si oui, comment puis-je le faire ?",
+      "J'aimerais savoir quelle est la durée moyenne de vos circuits en bateau, s'il vous plaît.",
+      "J'aimerais savoir à quelle période de l'année vos circuits sont-ils disponibles ?",
+      "Est-il nécessaire d'avoir un permis bateau pour les circuits, ou y a-t-il un skipper ?",
+      "Quelle est la capacité maximale de passagers par bateau pour vos circuits, s'il vous plaît ?",
+      "L'assurance est-elle comprise dans le tarif des circuits, ou faut-il souscrire une assurance supplémentaire ?",
+      "Pourriez-vous m'éclairer sur les tarifs des différents circuits que vous proposez, s'il vous plaît ?",
+      "Est-ce qu'un guide accompagne les participants à bord de chaque bateau pendant les circuits ?",
+      "J'aimerais savoir si les enfants sont acceptés et s'il y a des conditions ou tarifs particuliers pour eux."
+    ]
   },
   {
     "id": 38,
@@ -830,7 +1271,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_38.png",
     "difficulty": "medium",
-    "theme": "Location Voitures Rétro"
+    "theme": "Location Voitures Rétro",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse précise de votre agence, s'il vous plaît ?",
+      "Pourriez-vous me décrire les modèles, marques et couleurs de voitures rétro que vous avez en stock ?",
+      "Quelles sont les durées de location possibles pour ces voitures rétro ?",
+      "J'aimerais connaître vos tarifs ; comment sont calculés les prix de location ?",
+      "Y a-t-il un supplément tarifaire si l'on souhaite louer une voiture avec un chauffeur ?",
+      "Faites-vous des rabais pour certaines périodes ou pour des locations de plus longue durée ?",
+      "Avez-vous d'autres services additionnels liés à la location de ces voitures rétro ?",
+      "Comment puis-je faire une réservation et quels sont les délais nécessaires ?",
+      "Proposez-vous un catalogue en ligne pour visualiser tous vos modèles de voitures rétro ?",
+      "Quelles sont les assurances incluses avec la location, et y a-t-il des options supplémentaires ?"
+    ]
   },
   {
     "id": 39,
@@ -852,7 +1305,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_39.png",
     "difficulty": "medium",
-    "theme": "École De Voile"
+    "theme": "École De Voile",
+    "expanded_questions": [
+      "Je souhaiterais savoir où se déroulent précisément les cours de voile.",
+      "Pourriez-vous me donner des informations sur les tarifs et les différentes formules d'abonnement ?",
+      "Combien de séances sont prévues par jour ou par semaine dans vos programmes de formation ?",
+      "Quels sont les différents types de cours que vous proposez et sur quels voiliers enseigne-t-on ?",
+      "Quelle est la qualité de votre matériel pédagogique et l'expérience de vos moniteurs ?",
+      "Faut-il signaler des allergies ou d'autres conditions médicales avant de s'inscrire aux cours ?",
+      "Quelles sont vos conditions en cas d'annulation d'une inscription ou d'un cours ?",
+      "Selon quels critères évaluez-vous la progression des élèves et l'obtention des différents niveaux ?",
+      "Est-il possible de choisir le type de voile ou le niveau de cours que l'on souhaite suivre ?",
+      "Quelles sont les mesures de sécurité et les assurances prévues en cas de maladie ou d'accident ?"
+    ]
   },
   {
     "id": 40,
@@ -874,7 +1339,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_40.png",
     "difficulty": "medium",
-    "theme": "Cours De Guitare"
+    "theme": "Cours De Guitare",
+    "expanded_questions": [
+      "J'aimerais connaître vos tarifs pour les différents types de cours de guitare.",
+      "Est-ce que vous proposez une séance d'essai gratuite pour découvrir votre approche ?",
+      "Est-il nécessaire d'avoir son propre instrument pour suivre les cours ou en prêtez-vous ?",
+      "Vos cours de guitare sont-ils destinés aux débutants ou sont-ils adaptés à tous les niveaux ?",
+      "Pourriez-vous me parler un peu du profil et de l'expérience de l'enseignant ?",
+      "Est-ce que les cours se donnent dans des salles individuelles ou des espaces séparés ?",
+      "Pourriez-vous me préciser combien de temps dure exactement une séance de cours de guitare ?",
+      "Pourriez-vous m'expliquer quelles sont les étapes de progression ou le plan d'apprentissage ?",
+      "J'aimerais en savoir plus sur la méthode d'enseignement que vous utilisez pour la guitare.",
+      "Proposez-vous uniquement des cours individuels ou est-il possible de suivre des cours en groupe ?"
+    ]
   },
   {
     "id": 41,
@@ -896,7 +1373,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_41.png",
     "difficulty": "medium",
-    "theme": "Agence De Bateaux"
+    "theme": "Agence De Bateaux",
+    "expanded_questions": [
+      "Pourriez-vous me dire où se trouve l'agence ou le point de départ des bateaux ?",
+      "Jusqu'à combien de personnes est-il possible d'embarquer sur vos bateaux ?",
+      "Est-ce que la conduite des bateaux est simple, même sans expérience préalable ?",
+      "Quelle est la vitesse moyenne des bateaux que vous proposez à la location ?",
+      "L'assurance est-elle comprise dans le tarif de location ou faut-il en prendre une séparément ?",
+      "Quels équipements de sécurité sont fournis à bord de chaque bateau ?",
+      "Est-ce que les enfants sont autorisés à bord et y a-t-il des conditions spécifiques ?",
+      "Quelles sont les différentes durées de location proposées pour les bateaux ?",
+      "Pourriez-vous me donner une idée des tarifs de location, s'il vous plaît ?",
+      "Comment procède-t-on pour la réservation et faut-il s'y prendre à l'avance ?"
+    ]
   },
   {
     "id": 42,
@@ -918,7 +1407,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_42.png",
     "difficulty": "medium",
-    "theme": "Fête D'Anniversaire"
+    "theme": "Fête D'Anniversaire",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer où se trouve exactement votre établissement, s'il vous plaît ?",
+      "Pourriez-vous me donner une idée des tarifs pour l'organisation d'un anniversaire ?",
+      "Quels sont les créneaux horaires disponibles pour organiser une fête d'anniversaire ?",
+      "Proposez-vous différentes formules ou options pour les fêtes d'anniversaire ?",
+      "Quelles activités proposez-vous pour divertir les enfants pendant la fête ?",
+      "Quel est le nombre maximum d'enfants que vous pouvez accueillir pour un anniversaire ?",
+      "Jusqu'à quel âge vos formules d'anniversaire sont-elles adaptées aux enfants ?",
+      "Est-ce que la restauration est incluse ou proposez-vous des options pour le goûter ?",
+      "Des animateurs sont-ils prévus pour encadrer les enfants pendant la fête d'anniversaire ?",
+      "Comment procède-t-on pour effectuer une réservation, et quels sont les délais à prévoir ?"
+    ]
   },
   {
     "id": 43,
@@ -940,7 +1441,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_43.png",
     "difficulty": "medium",
-    "theme": "Agence De Déménagement"
+    "theme": "Agence De Déménagement",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer comment sont établis vos tarifs ou me donner une idée des coûts ?",
+      "Pourriez-vous me détailler les différents services que vous proposez pour un déménagement ?",
+      "J'aimerais savoir quelles sont vos capacités en termes de volume ou de distance de déménagement.",
+      "Avez-vous des formules de déménagement prédéfinies et que comprennent-elles exactement ?",
+      "Pourriez-vous m'expliquer le déroulement typique d'un déménagement de l'estimation à la livraison ?",
+      "Fournissez-vous le matériel d'emballage et de protection nécessaire pour le déménagement ?",
+      "Pourriez-vous me préciser les différentes modalités de paiement et leur échéancier ?",
+      "Quelles assurances sont incluses dans vos services en cas de dommages ou de perte ?",
+      "Quel est le délai de réservation à prévoir et combien de temps dure le déménagement ?",
+      "Pourriez-vous me détailler le déroulement de la journée du déménagement elle-même ?"
+    ]
   },
   {
     "id": 44,
@@ -962,7 +1475,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_44.png",
     "difficulty": "medium",
-    "theme": "Observer Des Baleines"
+    "theme": "Observer Des Baleines",
+    "expanded_questions": [
+      "Pourriez-vous me communiquer le prix de l'excursion pour l'observation des baleines, s'il vous plaît ?",
+      "Est-ce que l'excursion est guidée et si oui, un spécialiste fournit-il des informations sur les baleines ?",
+      "Est-ce que vous offrez des réductions, par exemple pour les étudiants ou les familles nombreuses ?",
+      "Comment fonctionne le processus de réservation et est-ce qu'il est nécessaire de réserver bien en avance ?",
+      "Quelle est la distance de sécurité que le bateau maintient par rapport aux baleines durant l'observation ?",
+      "Est-ce que vous proposez un tarif spécial ou réduit pour les enfants participants à l'excursion ?",
+      "Pourriez-vous m'informer sur les règles de sécurité spécifiques à respecter à bord du bateau ?",
+      "Est-ce qu'un repas est inclus ou y a-t-il des options pour déjeuner pendant ou après l'excursion ?",
+      "Quel est le point de départ exact de l'excursion et à quelle heure doit-on se présenter ?",
+      "Y a-t-il une tenue particulière ou des équipements spécifiques à prévoir pour l'observation des baleines ?"
+    ]
   },
   {
     "id": 45,
@@ -984,7 +1509,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_45.png",
     "difficulty": "medium",
-    "theme": "Musée"
+    "theme": "Musée",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de votre musée et m'indiquer comment s'y rendre ?",
+      "Comment peut-on se rendre au musée, notamment en transport en commun ou en voiture ?",
+      "Le musée est-il ouvert toute l'année ou seulement à certaines périodes spécifiques ?",
+      "Quels sont les horaires d'ouverture du musée, aussi bien en semaine que le week-end ?",
+      "Pourriez-vous me renseigner sur les tarifs d'entrée, notamment pour les adultes et les enfants ?",
+      "Est-ce qu'il y a des produits à déguster sur place, peut-être en lien avec la thématique du musée ?",
+      "Pourriez-vous me donner une idée de la durée moyenne pour visiter l'ensemble du musée ?",
+      "Y a-t-il des ateliers ou des activités interactives prévues pour les visiteurs ?",
+      "Le musée dispose-t-il d'une boutique où l'on pourrait trouver des souvenirs ou des livres ?",
+      "Est-il nécessaire de réserver sa visite ou ses billets à l'avance, ou est-ce facultatif ?"
+    ]
   },
   {
     "id": 46,
@@ -1006,7 +1543,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_46.png",
     "difficulty": "medium",
-    "theme": "Balade En Bateau"
+    "theme": "Balade En Bateau",
+    "expanded_questions": [
+      "Pourriez-vous me renseigner sur les différents tarifs de vos balades en bateau ?",
+      "J'aimerais savoir d'où partent les balades et quels sont les lieux que vous visitez.",
+      "Y a-t-il des escales prévues durant la balade ou est-ce une navigation continue ?",
+      "Pourriez-vous me préciser la durée exacte de chaque balade en bateau que vous proposez ?",
+      "Est-ce qu'une caution est demandée pour la location du bateau ou la participation aux balades ?",
+      "Quelles sont les mesures de sécurité mises en place pendant les balades en bateau ?",
+      "Est-ce qu'un moniteur ou un guide expérimenté accompagne les groupes pendant la sortie ?",
+      "Est-ce que des repas ou des rafraîchissements sont inclus ou peuvent être achetés à bord ?",
+      "Proposez-vous des activités spécifiques pendant la balade, comme la baignade ou la plongée ?",
+      "Quel est le nombre minimum et maximum de personnes acceptées par bateau pour ces balades ?"
+    ]
   },
   {
     "id": 47,
@@ -1028,7 +1577,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_47.png",
     "difficulty": "medium",
-    "theme": "Testeurs D'Émissions Télé"
+    "theme": "Testeurs D'Émissions Télé",
+    "expanded_questions": [
+      "Pourriez-vous me préciser où se déroulera exactement le visionnage des émissions à évaluer ?",
+      "Est-ce une activité que l'on peut exercer à domicile, depuis son propre téléviseur ou ordinateur ?",
+      "Comment se déroulent concrètement les séances de visionnage et d'évaluation des programmes télévisés ?",
+      "Bénéficie-t-on d'un encadrement ou de consignes spécifiques pour savoir comment évaluer les programmes ?",
+      "Combien de temps faut-il consacrer à chaque séance de test d'émissions télévisées ?",
+      "Est-ce que nous avons la possibilité de choisir les programmes à visionner ou sont-ils imposés ?",
+      "Quels sont les types ou les genres d'émissions télévisées que l'on peut être amené à tester ?",
+      "Quel est le processus de sélection pour devenir testeur d'émissions de télévision ?",
+      "Pourriez-vous me donner plus de détails sur la valeur ou l'utilisation des bons d'achat mentionnés ?",
+      "Y a-t-il un contrat ou un engagement formel à signer pour participer à ces sessions de test ?"
+    ]
   },
   {
     "id": 48,
@@ -1050,7 +1611,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_48.png",
     "difficulty": "medium",
-    "theme": "L’aide Aux Devoirs"
+    "theme": "L’aide Aux Devoirs",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte de l'endroit où se déroulent les séances d'aide aux devoirs ?",
+      "J'aimerais savoir quels sont les jours de la semaine où vous proposez votre service d'aide aux devoirs.",
+      "Concernant les horaires, à quelles heures précises ont lieu les différentes séances d'accompagnement ?",
+      "Pourriez-vous me donner la liste des matières scolaires pour lesquelles vous offrez de l'aide et du soutien ?",
+      "Quelle est la durée habituelle d'une séance d'aide aux devoirs que vous proposez ?",
+      "Pour quels âges ou quels niveaux scolaires votre service d'aide aux devoirs est-il principalement destiné ?",
+      "Proposez-vous des séances individuelles ou en groupe ? Si oui, quelle est la taille maximale des groupes ?",
+      "Pourriez-vous me donner des informations sur le profil et l'expérience de vos professeurs ou tuteurs ?",
+      "Quels sont les tarifs pour les séances d'aide aux devoirs, et proposez-vous des forfaits spécifiques ?",
+      "Est-il nécessaire de réserver une place à l'avance et comment se passe le processus de réservation des séances ?"
+    ]
   },
   {
     "id": 49,
@@ -1072,7 +1645,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_49.png",
     "difficulty": "medium",
-    "theme": "Centre Équestre"
+    "theme": "Centre Équestre",
+    "expanded_questions": [
+      "J'aimerais savoir où se situe exactement votre centre équestre et comment vous rejoindre facilement.",
+      "Pourriez-vous m'indiquer quels sont les tarifs de vos différentes prestations et activités équestres ?",
+      "Quels sont les différents types d'activités équestres que vous proposez exactement au sein de votre centre ?",
+      "Proposez-vous des formules spécifiques, des abonnements ou des forfaits pour des cours réguliers ou des stages ?",
+      "À partir de quel âge les participants peuvent-ils s'inscrire à vos activités équestres ?",
+      "Quel équipement spécifique est nécessaire pour les activités et est-ce que vous en louez sur place ?",
+      "Combien de participants comptez-vous généralement par groupe pour les cours ou les balades à cheval ?",
+      "Vos activités s'adressent-elles à tous les niveaux, des débutants aux cavaliers confirmés ?",
+      "Pourriez-vous me renseigner sur les qualifications et l'expérience de vos moniteurs équestres ?",
+      "Est-ce que vous proposez une préparation aux compétitions ou en organisez-vous au centre ?"
+    ]
   },
   {
     "id": 50,
@@ -1094,7 +1679,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_50.png",
     "difficulty": "medium",
-    "theme": "Location D’appartement"
+    "theme": "Location D’appartement",
+    "expanded_questions": [
+      "Pourriez-vous me préciser la localisation exacte de l'appartement ou le quartier où il se trouve ?",
+      "Pourriez-vous me confirmer le montant exact du loyer mensuel et si les charges sont incluses ?",
+      "J'aimerais savoir si je pourrais visiter l'appartement prochainement, quelles seraient vos disponibilités pour cela ?",
+      "Pourriez-vous m'indiquer quels documents sont nécessaires pour constituer le dossier de candidature de location ?",
+      "Pourriez-vous me préciser à partir de quelle date exacte l'appartement est disponible à la location ?",
+      "Pourriez-vous me confirmer la surface exacte de l'appartement, en mètres carrés, s'il vous plaît ?",
+      "L'appartement est-il loué meublé ou semi-meublé, et quels équipements sont inclus dans le loyer ?",
+      "Y a-t-il un ascenseur dans l'immeuble, et à quel étage se trouve l'appartement exactement ?",
+      "Pourriez-vous me donner une idée de l'ambiance générale du voisinage et des environs de l'immeuble ?",
+      "Pourriez-vous me décrire un peu le quartier, notamment en termes de commerces, transports et commodités ?"
+    ]
   },
   {
     "id": 51,
@@ -1115,7 +1712,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_51.png",
     "difficulty": "medium",
-    "theme": "Atelier"
+    "theme": "Atelier",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte où aura lieu l'atelier, s'il vous plaît ?",
+      "Quel est le nombre de participants que vous prévoyez par groupe pour cet atelier ?",
+      "Le matériel nécessaire pour participer à l'atelier est-il entièrement fourni sur place ?",
+      "Y a-t-il des matériaux à recycler spécifiques que les participants devraient apporter de chez eux ?",
+      "Est-ce qu'une tenue particulière est recommandée, compte tenu du type d'activités proposées pendant l'atelier ?",
+      "Pourriez-vous m'indiquer la durée totale de cet atelier, ou de chaque séance si applicable ?",
+      "Quels sont les types de matériaux spécifiques qui seront mis à la disposition des participants pendant l'atelier ?",
+      "J'aimerais en savoir un peu plus sur les formateurs ou animateurs qui dirigeront cet atelier.",
+      "Quelles sont les modalités pour s'inscrire à cet atelier et y a-t-il une date limite d'inscription ?"
+    ]
   },
   {
     "id": 52,
@@ -1137,7 +1745,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_52.png",
     "difficulty": "medium",
-    "theme": "Offres De Voyages"
+    "theme": "Offres De Voyages",
+    "expanded_questions": [
+      "Pourriez-vous me préciser quels sont les pays de destination inclus dans cette publicité ?",
+      "L'assurance voyage est-elle comprise dans le prix du forfait, ou proposez-vous des options supplémentaires ?",
+      "J'aimerais connaître les différents moyens de paiement que vous acceptez pour régler ce séjour.",
+      "Y a-t-il des réductions applicables pour les réservations anticipées, les familles ou les groupes ?",
+      "Est-ce que le départ est garanti, ou un nombre minimum de participants est-il requis pour le voyage ?",
+      "Quelle est la procédure exacte pour effectuer la réservation et quels documents sont nécessaires ?",
+      "Est-il possible de choisir notre hôtel ou les établissements sont-ils déjà définis par l'offre proposée ?",
+      "Les repas sont-ils inclus dans le forfait et, si oui, quelle formule (demi-pension, pension complète) est proposée ?",
+      "S'agit-il d'un voyage organisé en groupe avec un itinéraire fixe, ou des départs individuels sont-ils possibles ?",
+      "Un guide est-il prévu pour accompagner le groupe pendant tout le séjour, et en quelle langue ?"
+    ]
   },
   {
     "id": 53,
@@ -1159,7 +1779,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_53.png",
     "difficulty": "medium",
-    "theme": "Spectacle Enfants"
+    "theme": "Spectacle Enfants",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer quels jours vous proposez ce spectacle pour enfants ?",
+      "Pourriez-vous me dire combien de temps dure en moyenne le spectacle pour enfants ?",
+      "Pourriez-vous me confirmer le lieu exact de la représentation au sein du théâtre ?",
+      "À partir de quel âge vos experts recommandent-ils ce spectacle pour enfants ?",
+      "Est-ce que les parents doivent également prendre un billet pour accompagner les enfants ?",
+      "Quels sont les tarifs précis pour les enfants et les adultes qui souhaitent assister au spectacle ?",
+      "Est-ce que vous proposez des tarifs réduits ou des abonnements pour plusieurs spectacles ou pour les familles ?",
+      "Quelles sont vos conditions d'annulation ou de remboursement si un imprévu survient ?",
+      "Est-ce qu'il y a plusieurs dates de représentation ou s'agit-il d'un événement unique ?",
+      "Y a-t-il des informations sur les comédiens ou les artistes qui joueront dans ce spectacle ?"
+    ]
   },
   {
     "id": 54,
@@ -1181,7 +1813,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_54.png",
     "difficulty": "medium",
-    "theme": "École De Ski"
+    "theme": "École De Ski",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte de l'école ou comment m'y rendre ?",
+      "Pourriez-vous me renseigner sur les différents tarifs de vos cours de ski, s'il vous plaît ?",
+      "Quels sont les horaires précis des cours de ski disponibles, et leur fréquence ?",
+      "Pourriez-vous me préciser combien de temps dure une séance de cours de ski en moyenne ?",
+      "À partir de quel âge vos cours de ski sont-ils accessibles aux enfants ?",
+      "Vos moniteurs sont-ils tous certifiés et quelle est leur expérience en enseignement du ski ?",
+      "Proposez-vous des cours spécifiques ou un entraînement pour les compétitions de ski ?",
+      "Est-ce que la location de l'équipement de ski est incluse dans le prix des cours ?",
+      "Est-ce que votre école propose des options pour les repas ou l'hébergement durant le séjour ?",
+      "Offrez-vous la possibilité de prendre des cours privés ou uniquement des cours de groupe ?"
+    ]
   },
   {
     "id": 55,
@@ -1202,7 +1846,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_55.png",
     "difficulty": "medium",
-    "theme": "Agence Évenementielle"
+    "theme": "Agence Évenementielle",
+    "expanded_questions": [
+      "Pourriez-vous me fournir des informations concernant vos différentes formules tarifaires pour l'organisation d'événements ?",
+      "J'aimerais connaître vos horaires d'ouverture et de fermeture habituels, s'il vous plaît.",
+      "Quel est le mode de communication que vous privilégiez pour les échanges futurs concernant un projet ?",
+      "Quelles sont les formalités ou les étapes à suivre pour démarrer l'organisation d'un événement avec votre agence ?",
+      "Proposez-vous un service de conseiller dédié pour accompagner les clients tout au long de leur projet ?",
+      "Existe-t-il des conditions spécifiques ou des prérequis pour pouvoir bénéficier de vos services d'organisation ?",
+      "Proposez-vous des facilités de paiement ou des options de financement pour les événements de grande envergure ?",
+      "Acceptez-vous les paiements en espèces ou les règlements par chèque pour les services événementiels ?",
+      "Y a-t-il d'autres avantages ou services exclusifs que votre agence propose à ses clients ?"
+    ]
   },
   {
     "id": 56,
@@ -1224,7 +1879,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_56.png",
     "difficulty": "medium",
-    "theme": "Location De Costumes"
+    "theme": "Location De Costumes",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse de votre boutique pour que je puisse m'y rendre ?",
+      "Faut-il réserver un costume à l'avance, et si oui, quel est le délai recommandé ?",
+      "Pourriez-vous me donner une idée générale de vos tarifs de location ?",
+      "Quels modes de paiement acceptez-vous pour la location des costumes ?",
+      "Quelle est la durée standard d'une location de costume chez vous ?",
+      "Est-ce que vous proposez également des costumes pour des soirées thématiques ?",
+      "Est-ce que vous avez des costumes disponibles pour les enfants et même les bébés ?",
+      "Proposez-vous des accessoires pour compléter les costumes, et sont-ils inclus ?",
+      "Est-il possible de faire des retouches si un costume ne convient pas parfaitement ?",
+      "Est-ce que des frais de nettoyage sont inclus dans le prix ou facturés séparément ?"
+    ]
   },
   {
     "id": 57,
@@ -1246,7 +1913,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_57.png",
     "difficulty": "medium",
-    "theme": "Technologie Pour Tous"
+    "theme": "Technologie Pour Tous",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte où je peux me rendre pour ces services ?",
+      "Quels sont les horaires d'ouverture des locaux pour l'emprunt de matériel et les ateliers ?",
+      "Quelle est la durée maximale pendant laquelle on peut conserver le matériel emprunté ?",
+      "Pourriez-vous me détailler les conditions requises pour pouvoir bénéficier de ce programme ?",
+      "Quelles sont les modalités d'inscription pour participer et y a-t-il des documents à fournir ?",
+      "Une caution est-elle demandée pour l'emprunt d'un appareil informatique ?",
+      "Les équipements prêtés incluent-ils déjà des logiciels de base ou spécifiques ?",
+      "Quels sont les types ou les marques d'ordinateurs et tablettes disponibles à l'emprunt ?",
+      "Pourriez-vous m'expliquer les différentes opportunités de bénévolat que vous proposez ?",
+      "Comment puis-je vérifier la disponibilité du matériel ou des places pour les prochains ateliers ?"
+    ]
   },
   {
     "id": 58,
@@ -1268,7 +1947,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_58.png",
     "difficulty": "medium",
-    "theme": "Stages De Pilotage"
+    "theme": "Stages De Pilotage",
+    "expanded_questions": [
+      "Pourriez-vous me préciser quels sont les tarifs de vos stages de pilotage ?",
+      "Une caution est-elle nécessaire pour réserver un stage et, si oui, de quel montant ?",
+      "Est-ce qu'un instructeur accompagne les participants tout au long du stage de pilotage ?",
+      "Pourriez-vous m'indiquer la durée moyenne de chaque stage de pilotage que vous proposez ?",
+      "Existe-t-il un âge minimum requis pour pouvoir participer à vos stages de pilotage ?",
+      "Une assurance est-elle comprise dans le stage ou devons-nous souscrire la nôtre ?",
+      "Est-il nécessaire de posséder un permis de conduire ou une licence de pilotage particulière ?",
+      "Quel est le nombre maximum de participants par stage pour assurer un bon encadrement ?",
+      "Pourriez-vous me dire quelles sont les vitesses maximales que nous pourrions atteindre durant ces stages ?",
+      "Quels sont les éventuels dangers associés à ce type de pilotage et comment gérez-vous la sécurité ?"
+    ]
   },
   {
     "id": 59,
@@ -1290,7 +1981,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_59.png",
     "difficulty": "medium",
-    "theme": "École De Ski"
+    "theme": "École De Ski",
+    "expanded_questions": [
+      "Pourriez-vous me donner plus de détails sur les différents forfaits que vous proposez ?",
+      "Y a-t-il un âge minimum requis pour pouvoir s'inscrire aux cours de ski ?",
+      "Est-ce qu'un certificat médical est nécessaire pour participer aux activités de l'école ?",
+      "L'assurance en cas d'accident est-elle comprise dans les forfaits ou faut-il en souscrire une ?",
+      "Est-il possible de faire une séance d'essai gratuite avant de s'engager pour un forfait ?",
+      "Quelles sont vos conditions d'annulation si je dois annuler une réservation de cours de ski ?",
+      "L'équipement de ski est-il fourni ou devons-nous prévoir le nôtre pour les cours ?",
+      "Pourriez-vous me dire quelques mots sur le profil et les qualifications de vos moniteurs ?",
+      "Une autorisation parentale est-elle requise pour l'inscription des enfants mineurs aux cours ?",
+      "Organisez-vous également des stages de ski intensifs pour progresser plus rapidement ?"
+    ]
   },
   {
     "id": 60,
@@ -1312,7 +2015,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_60.png",
     "difficulty": "medium",
-    "theme": "Randonnées En Quad"
+    "theme": "Randonnées En Quad",
+    "expanded_questions": [
+      "J'aimerais connaître le détail de vos tarifs pour les différentes options.",
+      "Est-ce que les randonnées sont toujours encadrées par un guide expérimenté ?",
+      "Dois-je prévoir une caution et si oui, quel en est le montant ?",
+      "Faut-il avoir une condition physique particulière pour cette activité ?",
+      "Quelle est la couverture d'assurance en cas d'accident pendant l'activité ?",
+      "Pouvez-vous me dire quelle est la vitesse maximale que l'on peut atteindre ?",
+      "Un permis de conduire classique est-il suffisant ou faut-il un permis spécial ?",
+      "Devez-vous fournir des vêtements de protection ou dois-je les apporter ?",
+      "Quels sont les éventuels risques ou dangers de cette activité ?",
+      "Est-il nécessaire de réserver à l'avance et comment puis-je le faire ?"
+    ]
   },
   {
     "id": 61,
@@ -1343,7 +2058,28 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_61.png",
     "difficulty": "medium",
-    "theme": "Faire Du Saut À L’élastique"
+    "theme": "Faire Du Saut À L’élastique",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer quel est le tarif de base pour un saut à l'élastique ?",
+      "Est-ce qu'il y a des restrictions d'âge pour participer à cette activité ?",
+      "Durant quelle saison de l'année est-il possible de faire du saut à l'élastique ?",
+      "Y a-t-il des conditions physiques spécifiques à remplir pour pouvoir sauter ?",
+      "Est-ce qu'une assurance est incluse dans le prix ou faut-il en prévoir une ?",
+      "Quels sont les principaux dangers ou risques associés à ce type d'activité ?",
+      "Comment procède-t-on pour effectuer une réservation pour une date donnée ?",
+      "Un mineur peut-il participer et si oui, quel type d'accompagnement est requis ?",
+      "Est-ce qu'une petite formation ou un briefing est prévu avant le saut ?",
+      "Pourriez-vous me donner l'adresse exacte du lieu de rendez-vous pour le saut ?",
+      "Dans quelle région ou ville se situe le site où se déroulent les sauts ?",
+      "Comment peut-on se rendre au site du saut, et y a-t-il des options de transport ?",
+      "Quel est le prix pour un saut individuel et qu'est-ce qui est inclus exactement ?",
+      "Proposez-vous un service de chauffeur ou de navette pour se rendre sur le site ?",
+      "Faut-il verser une caution pour la réservation ou pour le matériel utilisé ?",
+      "Y a-t-il une limite quant au nombre de personnes pouvant venir m'accompagner sur le site ?",
+      "Pourriez-vous m'indiquer les horaires d'ouverture et de fermeture du site de saut ?",
+      "Est-ce qu'il y a un service de rafraîchissements ou une petite buvette sur place ?",
+      "Est-ce qu'on peut apporter des éléments de décoration pour un événement spécial sur le site ?"
+    ]
   },
   {
     "id": 63,
@@ -1365,7 +2101,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_63.png",
     "difficulty": "medium",
-    "theme": "Centre De Formation En Arts Martiaux"
+    "theme": "Centre De Formation En Arts Martiaux",
+    "expanded_questions": [
+      "Pourriez-vous me donner l'adresse exacte de votre centre de formation, s'il vous plaît ?",
+      "J'aimerais connaître vos tarifs, proposez-vous différentes formules d'abonnement ou des cours à la séance ?",
+      "Quels sont les horaires de vos cours et y a-t-il des sessions le soir ou le week-end ?",
+      "Quelles sont les disciplines d'arts martiaux spécifiques que vous proposez pour les débutants ou les avancés ?",
+      "À partir de quel âge est-il possible de s'inscrire à vos cours, notamment pour les jeunes ?",
+      "Faut-il avoir une condition physique particulière pour commencer ou vos cours sont-ils adaptés à tous les niveaux ?",
+      "Offrez-vous la possibilité de faire une séance d'essai gratuite avant toute inscription définitive ?",
+      "Est-il nécessaire d'acheter un équipement spécifique et pouvez-vous me conseiller sur ce point ?",
+      "Pouvez-vous me donner des informations sur les qualifications et l'expérience de vos formateurs ?",
+      "Le centre offre-t-il la possibilité de participer à des compétitions ou des championnats pour les élèves avancés ?"
+    ]
   },
   {
     "id": 64,
@@ -1387,7 +2135,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_64.png",
     "difficulty": "medium",
-    "theme": "Visites Guidées À Vélo"
+    "theme": "Visites Guidées À Vélo",
+    "expanded_questions": [
+      "J'aimerais savoir, en général, combien de temps durent vos visites guidées à vélo ?",
+      "Pourriez-vous me préciser quels sont les tarifs des visites guidées à vélo que vous offrez ?",
+      "Y a-t-il une idée de la distance que l'on parcourt généralement pendant la balade à vélo ?",
+      "Proposez-vous la location de vélos si nous n'avons pas le nôtre, et quel en serait le coût ?",
+      "Offrez-vous la possibilité de créer un circuit personnalisé selon nos envies ou nos centres d'intérêt ?",
+      "Les itinéraires que vous proposez utilisent-ils majoritairement des pistes cyclables ou des routes partagées ?",
+      "Est-ce qu'un guide qualifié nous accompagne et fournit des informations sur les lieux visités ?",
+      "Vos visites guidées à vélo sont-elles adaptées aux enfants, et à partir de quel âge minimum ?",
+      "Faut-il prévoir une assurance personnelle, ou une couverture est-elle incluse avec la prestation ?",
+      "Proposez-vous des tarifs spéciaux ou des visites privées si nous sommes un groupe ?"
+    ]
   },
   {
     "id": 65,
@@ -1409,7 +2169,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_65.png",
     "difficulty": "medium",
-    "theme": "Cours De Danse"
+    "theme": "Cours De Danse",
+    "expanded_questions": [
+      "Pourriez-vous me dire où se trouve votre studio, s'il vous plaît ?",
+      "Pourriez-vous m'indiquer quels sont les tarifs de vos différents cours ?",
+      "Quels sont les jours de la semaine où les cours de danse sont disponibles ?",
+      "Pourriez-vous me donner plus de détails sur les horaires des cours ?",
+      "Quelle est la durée habituelle d'une séance de cours de danse ?",
+      "Quels sont les différents styles de danse que vous proposez dans vos cours ?",
+      "Organisez-vous parfois des soirées dansantes ou des événements pour les élèves ?",
+      "J'aimerais en savoir un peu plus sur l'expérience de vos professeurs.",
+      "Proposez-vous également des cours de danse adaptés spécifiquement aux enfants ?",
+      "Y a-t-il un spectacle de fin d'année pour les élèves qui le souhaitent ?"
+    ]
   },
   {
     "id": 66,
@@ -1431,7 +2203,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_66.png",
     "difficulty": "medium",
-    "theme": "Aventure En Forêt"
+    "theme": "Aventure En Forêt",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'emplacement exact de cette aventure en forêt ?",
+      "Pourriez-vous m'expliquer les modalités d'accès, notamment si c'est desservi par les transports en commun ?",
+      "Je voulais savoir si cette activité est disponible toute l'année ou seulement à certaines périodes ?",
+      "Pourriez-vous m'indiquer les différents tarifs proposés pour cette aventure en forêt ?",
+      "Quelle est la durée moyenne de l'activité ou des différents parcours proposés ?",
+      "Proposez-vous des services sur place, comme de la restauration ou des aires de pique-nique ?",
+      "Existe-t-il un âge minimum requis pour participer à cette aventure en forêt ?",
+      "Est-ce que des accompagnateurs ou des guides sont prévus pendant le parcours ?",
+      "Y a-t-il un équipement spécifique à prévoir, ou est-il fourni sur place ?",
+      "Quelles sont les principales consignes de sécurité à respecter pendant l'aventure en forêt ?"
+    ]
   },
   {
     "id": 67,
@@ -1453,7 +2237,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_67.png",
     "difficulty": "medium",
-    "theme": "Stages D’escalade"
+    "theme": "Stages D’escalade",
+    "expanded_questions": [
+      "Pourriez-vous me donner des précisions sur le lieu exact où se déroulent ces stages d'escalade ?",
+      "Y a-t-il des indications spécifiques pour se rendre au site, notamment en transports en commun ?",
+      "Pourriez-vous m'indiquer le tarif de ces stages d'escalade et ce qu'il inclut exactement ?",
+      "Pourriez-vous me préciser la durée d'une séance ou d'un stage complet d'escalade ?",
+      "J'aimerais savoir combien de participants sont acceptés par groupe pour chaque session d'escalade.",
+      "Y a-t-il un âge minimum requis pour s'inscrire à ces stages d'initiation à l'escalade ?",
+      "Quels équipements personnels devons-nous apporter ou sont-ils fournis par l'organisation des stages ?",
+      "Y a-t-il des exigences particulières concernant la forme physique ou le niveau des participants ?",
+      "Les stages sont-ils encadrés par des professionnels qualifiés en escalade et diplômés ?",
+      "Quelles sont les mesures de sécurité mises en place pour minimiser les risques liés à l'escalade ?"
+    ]
   },
   {
     "id": 68,
@@ -1475,7 +2271,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_68.png",
     "difficulty": "medium",
-    "theme": "Services De Jardinage"
+    "theme": "Services De Jardinage",
+    "expanded_questions": [
+      "Dans quelles régions est-ce que vous vous déplacez pour vos services de jardinage ?",
+      "Pourriez-vous me donner plus de détails sur les différentes prestations que vous proposez ?",
+      "Est-ce que vous proposez également des aménagements paysagers ou floraux pour des événements comme les mariages ?",
+      "Est-ce que vous intervenez aussi pour l'entretien d'espaces verts autour d'entrepôts ou de locaux commerciaux ?",
+      "Est-ce que vos jardiniers peuvent aussi nous donner des conseils personnalisés pour l'entretien de notre jardin ?",
+      "Proposez-vous des contrats d'entretien régulier pour les jardins, à la semaine ou au mois, par exemple ?",
+      "Pourriez-vous me donner une idée générale de vos tarifs horaires ou de vos forfaits pour l'entretien d'un jardin ?",
+      "Est-ce possible d'obtenir un devis détaillé et personnalisé avant de s'engager pour vos services ?",
+      "Quels sont vos horaires d'intervention habituels pour les travaux de jardinage chez les particuliers ?",
+      "Est-ce que vous travaillez avec des variétés de plantes spécifiques ou pouvez-vous nous conseiller sur le choix ?"
+    ]
   },
   {
     "id": 69,
@@ -1497,7 +2305,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_69.png",
     "difficulty": "medium",
-    "theme": "Anniversaire Au Zoo"
+    "theme": "Anniversaire Au Zoo",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'endroit précis où la fête d'anniversaire aura lieu au sein du zoo ?",
+      "Pourriez-vous me détailler les tarifs de vos forfaits d'anniversaire et ce qu'ils incluent exactement ?",
+      "Quels sont les créneaux horaires disponibles pour célébrer l'anniversaire de mon enfant au zoo ?",
+      "Combien de temps dure habituellement une fête d'anniversaire complète avec les activités proposées ?",
+      "Pourriez-vous me décrire les types d'animations et les activités thématiques qui sont incluses dans le forfait ?",
+      "Y a-t-il une limite concernant le nombre minimum ou maximum d'enfants pouvant participer à la fête ?",
+      "Est-ce que la présence des parents est requise ou est-ce que vous proposez une surveillance par votre équipe ?",
+      "Est-ce que vous fournissez le goûter et le gâteau d'anniversaire, ou est-ce à la charge des parents ?",
+      "Est-ce que des moniteurs ou des animateurs spécialisés dans l'encadrement des enfants sont présents pendant la fête ?",
+      "Quelles mesures de sécurité sont mises en place pour assurer le bien-être et la surveillance des enfants au zoo ?"
+    ]
   },
   {
     "id": 70,
@@ -1519,7 +2339,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_70.png",
     "difficulty": "medium",
-    "theme": "Golf Miniature"
+    "theme": "Golf Miniature",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse précise de votre mini-golf pour que je puisse le localiser facilement ?",
+      "Comment peut-on accéder à votre site ? Y a-t-il des transports en commun à proximité ou un parking ?",
+      "Pourriez-vous me renseigner sur les tarifs actuels pour une partie, et si vous proposez des forfaits ?",
+      "Y a-t-il des formules d'abonnement pour ceux qui souhaitent venir régulièrement jouer au mini-golf ?",
+      "Pourriez-vous me communiquer vos horaires précis pour les jours de semaine et le week-end, s'il vous plaît ?",
+      "Je me demandais combien de temps il faut compter pour effectuer un parcours entier de mini-golf.",
+      "Je voulais savoir s'il y a un âge minimum conseillé ou obligatoire pour les enfants.",
+      "Y a-t-il la possibilité de se restaurer ou d'acheter des boissons directement sur votre site ?",
+      "Proposez-vous des cours d'initiation au mini-golf ou des ateliers pour améliorer son jeu ?",
+      "Serait-il possible de réserver l'ensemble du parcours pour un événement privé ou un anniversaire ?"
+    ]
   },
   {
     "id": 71,
@@ -1541,7 +2373,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_71.png",
     "difficulty": "medium",
-    "theme": "Stages De Snowboard"
+    "theme": "Stages De Snowboard",
+    "expanded_questions": [
+      "Pourriez-vous me donner plus de détails sur les forfaits disponibles et leurs tarifs ?",
+      "Y a-t-il un âge minimum requis pour s'inscrire à vos stages de snowboard ?",
+      "Y a-t-il des conditions médicales particulières ou des contre-indications à connaître avant de s'inscrire ?",
+      "L'assurance est-elle comprise dans le prix du stage ou devons-nous prévoir notre propre couverture ?",
+      "Dans quelles stations de ski ont lieu précisément ces stages de snowboard ?",
+      "Est-il nécessaire d'acheter son propre équipement ou est-il possible de le louer sur place ?",
+      "Quelles sont les qualifications des moniteurs et combien d'élèves y a-t-il par groupe ?",
+      "Une autorisation parentale est-elle obligatoire pour les participants mineurs aux stages ?",
+      "Proposez-vous également des stages plus intensifs et quels sont les objectifs spécifiques ?",
+      "Est-ce que l'hébergement est inclus dans les forfaits ou proposez-vous des options d'hébergement ?"
+    ]
   },
   {
     "id": 72,
@@ -1563,7 +2407,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_72.png",
     "difficulty": "medium",
-    "theme": "Livraison De Petit Déjeuner"
+    "theme": "Livraison De Petit Déjeuner",
+    "expanded_questions": [
+      "Pourriez-vous me dire quels types de produits de petit-déjeuner vous proposez exactement ?",
+      "Pourriez-vous me renseigner sur vos différentes formules et leurs tarifs respectifs ?",
+      "Votre service s'adresse-t-il aussi bien aux particuliers qu'aux entreprises ?",
+      "Est-il possible de souscrire à un abonnement régulier pour bénéficier de vos services ?",
+      "La livraison est-elle incluse dans le prix ou y a-t-il des frais supplémentaires ?",
+      "Pourriez-vous m'indiquer quels sont vos horaires de livraison habituels pour le petit-déjeuner ?",
+      "Offrez-vous des réductions pour les commandes groupées ou les clients fidèles ?",
+      "Comment garantissez-vous la fraîcheur et la qualité de vos produits livrés ?",
+      "En dehors du petit-déjeuner, proposez-vous d'autres types de repas ou de collations à livrer ?",
+      "Vos petits-déjeuners peuvent-ils être commandés pour un nombre variable de personnes ?"
+    ]
   },
   {
     "id": 73,
@@ -1585,7 +2441,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_73.png",
     "difficulty": "medium",
-    "theme": "Restaurant Pique-nique"
+    "theme": "Restaurant Pique-nique",
+    "expanded_questions": [
+      "Pourriez-vous me préciser l'adresse exacte de votre restaurant ou si c'est un service de livraison uniquement ?",
+      "Est-ce que vous proposez un service de livraison à domicile pour vos paniers pique-nique ?",
+      "Pourriez-vous me préciser quels sont vos horaires de livraison et les jours où vous livrez ?",
+      "J'aimerais connaître les tarifs de vos différents paniers pique-nique, s'il vous plaît.",
+      "Pourriez-vous me décrire un peu la composition typique d'un panier pique-nique ?",
+      "Est-ce qu'il est possible de choisir le contenu du menu ou s'agit-il d'un menu fixe ?",
+      "Est-ce que les boissons sont comprises directement dans le prix des paniers pique-nique ?",
+      "Proposez-vous une variété de paniers pique-nique avec des thèmes ou des options différentes ?",
+      "Avez-vous des options de menus spéciaux pour les végétariens ou les personnes avec des allergies ?",
+      "Proposez-vous des réductions ou des offres spéciales, notamment pour les commandes importantes ?"
+    ]
   },
   {
     "id": 74,
@@ -1607,7 +2475,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_74.png",
     "difficulty": "medium",
-    "theme": "Vols Personnalisés"
+    "theme": "Vols Personnalisés",
+    "expanded_questions": [
+      "Pourriez-vous me donner une idée des tarifs pour ce type de vol personnalisé ?",
+      "Quelles sont les destinations possibles avec vos vols personnalisés et y a-t-il des limites ?",
+      "Pourriez-vous me préciser les règles concernant les bagages inclus sur un vol personnalisé ?",
+      "Quelles sont vos conditions pour l'échange ou le remboursement d'un billet de vol personnalisé ?",
+      "Y a-t-il des formalités administratives ou des documents spécifiques requis pour ces vols ?",
+      "Est-il permis de voyager avec un animal de compagnie et quelles sont les modalités ?",
+      "Pourriez-vous m'expliquer les mesures de sécurité spécifiques appliquées à ces vols personnalisés ?",
+      "Pouvons-nous choisir l'aéroport de départ et d'arrivée, ou y a-t-il des aéroports spécifiques ?",
+      "Des repas sont-ils inclus à bord et est-ce possible de personnaliser le service de restauration ?",
+      "Quelles options de divertissement proposez-vous aux passagers durant les vols personnalisés ?"
+    ]
   },
   {
     "id": 75,
@@ -1629,7 +2509,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_75.png",
     "difficulty": "medium",
-    "theme": "Parc Animalier"
+    "theme": "Parc Animalier",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer l'adresse exacte du parc ou sa localisation précise, s'il vous plaît ?",
+      "J'aimerais savoir comment on peut accéder au parc, notamment en transport en commun.",
+      "Quels sont vos horaires d'ouverture et de fermeture habituels pour les visiteurs ?",
+      "Pourriez-vous m'estimer la durée moyenne d'une visite pour bien profiter de toutes les attractions ?",
+      "Le parc est-il ouvert toute l'année ou y a-t-il une saison plus propice à la visite ?",
+      "Pourriez-vous me préciser les tarifs d'entrée, y compris les éventuelles réductions pour familles ?",
+      "J'aimerais connaître les principales espèces animales que vous hébergez au sein du parc.",
+      "Existe-t-il différents parcours ou itinéraires pour explorer le parc et ses différentes zones thématiques ?",
+      "Quelles sont les animations ou activités spéciales que vous proposez aux visiteurs durant la journée ?",
+      "Proposez-vous des visites guidées et comment doit-on s'inscrire pour y participer ?"
+    ]
   },
   {
     "id": 76,
@@ -1651,7 +2543,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_76.png",
     "difficulty": "medium",
-    "theme": "Soirée D'échange Vêtements"
+    "theme": "Soirée D'échange Vêtements",
+    "expanded_questions": [
+      "Pourriez-vous me confirmer l'adresse exacte de cette soirée d'échange, s'il vous plaît ?",
+      "Serait-il possible de m'indiquer les meilleurs moyens d'accès au lieu, surtout en transports en commun ?",
+      "Je voulais savoir si d'autres dates étaient prévues pour de futures soirées d'échange de vêtements.",
+      "Y a-t-il un stationnement disponible à proximité ou des facilités pour se garer aux alentours ?",
+      "Y a-t-il des restrictions concernant les types ou styles de vêtements que nous pouvons apporter ?",
+      "Est-ce que des accessoires, comme des sacs, des chaussures ou des bijoux, sont également acceptés ?",
+      "Y a-t-il des critères particuliers concernant la valeur ou l'état général des vêtements à échanger ?",
+      "Pourriez-vous me dire combien de personnes sont déjà inscrites ou quel est le nombre maximum de participants ?",
+      "Pourriez-vous me préciser les modalités d'inscription et s'il y a des frais à régler pour participer ?",
+      "Est-ce qu'il y a une quantité minimum de vêtements à apporter pour pouvoir participer à l'échange ?"
+    ]
   },
   {
     "id": 77,
@@ -1673,7 +2577,19 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_77.png",
     "difficulty": "medium",
-    "theme": "Musée"
+    "theme": "Musée",
+    "expanded_questions": [
+      "Pourriez-vous m'indiquer quels sont les tarifs d'entrée pour les différentes formules de visite ?",
+      "Pourriez-vous me confirmer l'adresse exacte du musée, s'il vous plaît ?",
+      "Est-ce que vous proposez différentes formules de visite ou des parcours thématiques ?",
+      "Pourriez-vous me dire combien de temps il faut prévoir pour visiter le musée ?",
+      "L'annonce mentionnait une expérience unique; pourriez-vous m'expliquer ce qu'elle implique exactement ?",
+      "Proposez-vous un service de restauration ou un espace pour se restaurer sur place ?",
+      "Quels sont les principaux thèmes que le musée aborde dans ses expositions permanentes ou temporaires ?",
+      "En plus des vins, proposez-vous d'autres types d'alcools ou des boissons régionales à la dégustation ?",
+      "Pourriez-vous m'indiquer l'origine des produits que vous mettez en avant ou proposez à la vente ?",
+      "Est-il possible d'inclure une visite du vignoble dans la formule de visite du musée ?"
+    ]
   },
   {
     "id": 78,
@@ -1695,6 +2611,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_78.png",
     "difficulty": "medium",
-    "theme": "Chanson Personnalisée"
+    "theme": "Chanson Personnalisée",
+    "expanded_questions": [
+      "J'aimerais connaître le coût d'une chanson personnalisée, pourriez-vous me donner une idée des tarifs ?",
+      "J'aimerais savoir si l'on peut choisir le style de musique pour la chanson personnalisée.",
+      "La chanson peut-elle être écrite et chantée dans une autre langue que le français ?",
+      "Est-il possible de choisir si la chanson est interprétée par un homme ou une femme ?",
+      "Serait-il envisageable d'adapter la chanson personnalisée sur un air déjà connu du public ?",
+      "Proposez-vous également de chanter la chanson en direct lors d'un événement ou d'un spectacle ?",
+      "Combien de temps faut-il prévoir pour la création et la livraison de la chanson personnalisée ?",
+      "Proposez-vous des facilités de paiement, par exemple la possibilité de payer en plusieurs fois ?",
+      "Où est située votre agence ou votre studio si l'on souhaite vous rencontrer pour discuter du projet ?",
+      "Quelle est votre politique de remboursement si jamais le client n'est pas entièrement satisfait du résultat ?"
+    ]
   }
 ]
