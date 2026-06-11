@@ -97,18 +97,21 @@ Example: ["Pourriez-vous me préciser combien de temps dure chaque séance ?", .
 
 // ── Section B: generate spoken counter-responses for each examiner argument ──
 
-async function generateSuggestedCounters(
+async function generateCounterBatch(
   ai: GoogleGenAI,
-  task: TEFTask
+  topic: string,
+  batch: string[],
+  offset: number
 ): Promise<string[]> {
-  // Skip the header line (index 0)
-  const args = (task.counter_arguments ?? []).slice(1);
-  if (args.length === 0) return [];
-
-  const numbered = args.map((a, i) => `${i + 1}. ${a}`).join('\n');
+  const numbered = batch.map((a, i) => `${offset + i + 1}. ${a}`).join('\n');
 
   const response = await ai.models.generateContent({
     model: 'gemini-2.5-flash',
+    config: {
+      maxOutputTokens: 8192,
+      thinkingConfig: { thinkingBudget: 0 },
+      responseMimeType: 'application/json',
+    },
     contents: [
       {
         parts: [
@@ -116,7 +119,7 @@ async function generateSuggestedCounters(
             text: `You are a TEF Canada oral exam coach helping a B2-level French learner prepare for Section B (EO2).
 
 Context:
-- Topic: ${task.theme ?? task.prompt}
+- Topic: ${topic}
 - Situation: The candidate saw an ad and wants to convince a skeptical friend to try it.
 - The "friend" (examiner) will raise objections — the candidate must counter them persuasively.
 
@@ -132,7 +135,7 @@ Rules:
 Objections:
 ${numbered}
 
-Return ONLY a valid JSON array of strings (one response per objection, same order, ${args.length} items). No other text.`,
+Return ONLY a valid JSON array of strings (one response per objection, same order, ${batch.length} items). No other text.`,
           },
         ],
       },
@@ -140,10 +143,36 @@ Return ONLY a valid JSON array of strings (one response per objection, same orde
   });
 
   const result = parseJsonArray(response.text ?? '');
-  if (!result || result.length !== args.length) {
-    throw new Error(`Bad response shape (expected ${args.length}): ${(response.text ?? '').substring(0, 200)}`);
+  if (!result || result.length !== batch.length) {
+    throw new Error(`Bad response shape (expected ${batch.length}): ${(response.text ?? '').substring(0, 200)}`);
   }
   return result;
+}
+
+async function generateSuggestedCounters(
+  ai: GoogleGenAI,
+  task: TEFTask
+): Promise<string[]> {
+  // Skip the header line (index 0)
+  const args = (task.counter_arguments ?? []).slice(1);
+  if (args.length === 0) return [];
+
+  const topic = task.theme ?? task.prompt;
+  const BATCH_SIZE = 4;
+
+  if (args.length <= BATCH_SIZE) {
+    return generateCounterBatch(ai, topic, args, 0);
+  }
+
+  // Split into batches to avoid output truncation on large argument lists
+  const results: string[] = [];
+  for (let i = 0; i < args.length; i += BATCH_SIZE) {
+    const batch = args.slice(i, i + BATCH_SIZE);
+    if (i > 0) await sleep(600);
+    const batchResults = await generateCounterBatch(ai, topic, batch, i);
+    results.push(...batchResults);
+  }
+  return results;
 }
 
 // ── main ─────────────────────────────────────────────────────────────────────
