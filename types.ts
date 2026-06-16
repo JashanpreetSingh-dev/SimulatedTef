@@ -29,6 +29,13 @@ export interface ReadingListeningQuestion {
   updatedAt: string;
 }
 
+export interface AdsCounter {
+  acknowledge: string;
+  defend: string;
+  solve: string;
+  fullResponse: string;
+}
+
 export interface TEFTask {
   id: number;
   section: string;
@@ -41,7 +48,7 @@ export interface TEFTask {
   suggested_questions?: string[];
   expanded_questions?: string[];
   counter_arguments?: string[];
-  suggested_counters?: string[];
+  suggested_counters?: AdsCounter[];
 }
 
 export interface WrittenTask {

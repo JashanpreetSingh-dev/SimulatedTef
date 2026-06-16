@@ -8,6 +8,7 @@ import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
 import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { ReadingPracticeCard } from '../components/dashboard/ReadingPracticeCard';
 import { ListeningPracticeCard } from '../components/dashboard/ListeningPracticeCard';
+import { OralBStrategyCard } from '../components/dashboard/OralBStrategyCard';
 import { batchService } from '../services/batchService';
 import { Batch } from '../types';
 import { useIsD2C } from '../utils/userType';
@@ -106,6 +107,11 @@ export function Dashboard() {
         <div className="grid md:grid-cols-2 gap-6">
           <DailyRitualCard />
           <MockExamsCard />
+        </div>
+
+        {/* Section B universal strategy guide */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <OralBStrategyCard />
         </div>
       </main>
     </DashboardLayout>

@@ -1,0 +1,182 @@
+[
+  {
+    "id": "cost",
+    "category": "Coût et budget",
+    "icon": "💰",
+    "exampleObjection": "C’est sûrement hors de prix.",
+    "acknowledge": "Ouais, je comprends, le prix c'est toujours quelque chose qu'on regarde en premier.",
+    "defend": "Mais honnêtement, quand tu vois tout ce qui est inclus — l'hébergement, les repas, l'encadrement — c'est vraiment un bon rapport qualité-prix. Tu paies pas pour rien.",
+    "solve": "Et si c'est encore trop cher d'un coup, demande s'ils font des paiements en plusieurs fois, beaucoup le proposent.",
+    "fullResponse": "Ouais, je comprends, le prix c'est toujours quelque chose qu'on regarde en premier. Mais honnêtement, quand tu vois tout ce qui est inclus — l'hébergement, les repas, l'encadrement — c'est vraiment un bon rapport qualité-prix. Tu paies pas pour rien. Et si c'est encore trop cher d'un coup, demande s'ils font des paiements en plusieurs fois, beaucoup le proposent."
+  },
+  {
+    "id": "time_commitment",
+    "category": "Engagement de temps",
+    "icon": "⏳",
+    "exampleObjection": "Je n’ai pas beaucoup de temps.",
+    "acknowledge": "Je vois, c'est vrai qu'on a tous un emploi du temps chargé et trouver le temps, c'est un défi.",
+    "defend": "Cependant, cette activité ne demande pas un investissement énorme. Tu peux y aller à ton rythme, quelques heures par semaine suffisent pour voir des résultats.",
+    "solve": "Commence petit, et si tu aimes, tu pourras toujours augmenter ton implication. L'important c'est de faire le premier pas.",
+    "fullResponse": "Je vois, c'est vrai qu'on a tous un emploi du temps chargé et trouver le temps, c'est un défi. Cependant, cette activité ne demande pas un investissement énorme. Tu peux y aller à ton rythme, quelques heures par semaine suffisent pour voir des résultats. Commence petit, et si tu aimes, tu pourras toujours augmenter ton implication. L'important c'est de faire le premier pas."
+  },
+  {
+    "id": "skill_experience",
+    "category": "Compétences et expérience",
+    "icon": "🧠",
+    "exampleObjection": "Je n’ai pas de formation dans ce domaine.",
+    "acknowledge": "C'est une bonne question, c'est normal de se demander si on a les bonnes compétences pour ça.",
+    "defend": "Mais ne t'inquiète pas, l'idée c'est d'apprendre et de s'améliorer. Il y aura sûrement un encadrement ou des ressources pour t'aider à démarrer, sans pression.",
+    "solve": "Tu peux même commencer par des tâches simples pour te familiariser et prendre confiance avant de te lancer pleinement.",
+    "fullResponse": "C'est une bonne question, c'est normal de se demander si on a les bonnes compétences pour ça. Mais ne t'inquiète pas, l'idée c'est d'apprendre et de s'améliorer. Il y aura sûrement un encadrement ou des ressources pour t'aider à t'aider à démarrer, sans pression. Tu peux même commencer par des tâches simples pour te familiariser et prendre confiance avant de te lancer pleinement."
+  },
+  {
+    "id": "fear_failure",
+    "category": "Peur de l'échec/jugement",
+    "icon": "😟",
+    "exampleObjection": "J’ai peur de ne pas réussir à lui apprendre ce qu’il faut faire.",
+    "acknowledge": "Je comprends que tu puisses douter de toi, c'est une réaction humaine d'avoir peur de ne pas être à la hauteur.",
+    "defend": "Mais ce n'est pas une compétition, le but c'est de s'amuser et d'apprendre. Il n'y a pas de mauvais résultats, juste des expériences.",
+    "solve": "Si vraiment tu galères, on peut essayer ensemble, ou tu peux demander des conseils à d'autres participants. On est là pour s'entraider.",
+    "fullResponse": "Je comprends que tu puisses douter de toi, c'est une réaction humaine d'avoir peur de ne pas être à la hauteur. Mais ce n'est pas une compétition, le but c'est de s'amuser et d'apprendre. Il n'y a pas de mauvais résultats, juste des expériences. Si vraiment tu galères, on peut essayer ensemble, ou tu peux demander des conseils à d'autres participants. On est là pour s'entraider."
+  },
+  {
+    "id": "social_interaction",
+    "category": "Interaction sociale",
+    "icon": "🤝",
+    "exampleObjection": "Je suis timide, je n’oserai jamais parler aux autres.",
+    "acknowledge": "Ah oui, je vois ce que tu veux dire, c'est pas toujours facile d'aller vers les autres quand on est un peu timide.",
+    "defend": "Mais souvent, ces activités sont conçues pour faciliter les échanges, avec des petits groupes ou des moments informels. Les gens viennent aussi pour rencontrer du monde.",
+    "solve": "Et si tu as du mal, on peut y aller ensemble la première fois, ou je peux te présenter à d'autres personnes pour que ce soit plus simple.",
+    "fullResponse": "Ah oui, je vois ce que tu veux dire, c'est pas toujours facile d'aller vers les autres quand on est un peu timide. Mais souvent, ces activités sont conçues pour faciliter les échanges, avec des petits groupes ou des moments informels. Les gens viennent aussi pour rencontrer du monde. Et si tu as du mal, on peut y aller ensemble la première fois, ou je peux te présenter à d'autres personnes pour que ce soit plus simple."
+  },
+  {
+    "id": "logistics_practicality",
+    "category": "Logistique et aspects pratiques",
+    "icon": "⚙️",
+    "exampleObjection": "Il faut acheter toutes les fournitures pour chien.",
+    "acknowledge": "Hmm, c'est vrai que la logistique peut parfois sembler compliquée ou demander du matériel.",
+    "defend": "Cependant, il existe souvent des solutions simples. Pour le matériel, tu peux demander à en emprunter, ou peut-être qu'il y en a de mis à disposition.",
+    "solve": "On peut aussi regarder ensemble s'il y a des alternatives plus faciles ou moins coûteuses pour commencer, avant de tout acheter.",
+    "fullResponse": "Hmm, c'est vrai que la logistique peut parfois sembler compliquée ou demander du matériel. Cependant, il existe souvent des solutions simples. Pour le matériel, tu peux demander à en emprunter, ou peut-être qu'il y en a de mis à disposition. On peut aussi regarder ensemble s'il y a des alternatives plus faciles ou moins coûteuses pour commencer, avant de tout acheter."
+  },
+  {
+    "id": "safety_risks",
+    "category": "Sécurité et risques",
+    "icon": "⚠️",
+    "exampleObjection": "Certains sports proposés sont dangereux.",
+    "acknowledge": "Je comprends ton inquiétude, la sécurité c'est super important et c'est normal d'y penser.",
+    "defend": "Mais la plupart des activités sont très encadrées, avec des professionnels qui s'assurent que tout est sécurisé. Ils ne te laisseraient pas faire quelque chose de dangereux.",
+    "solve": "Si tu as vraiment peur, tu peux poser toutes les questions sur les mesures de sécurité avant de t'engager, pour être totalement rassuré(e).",
+    "fullResponse": "Je comprends ton inquiétude, la sécurité c'est super important et c'est normal d'y penser. Mais la plupart des activités sont très encadrées, avec des professionnels qui s'assurent que tout est sécurisé. Ils ne te laisseraient pas faire quelque chose de dangereux. Si tu as vraiment peur, tu peux poser toutes les questions sur les mesures de sécurité avant de t'engager, pour être totalement rassuré(e)."
+  },
+  {
+    "id": "personal_discomfort",
+    "category": "Inconfort personnel",
+    "icon": "😌",
+    "exampleObjection": "Je n’aime pas l’idée de porter des vêtements d’occasion.",
+    "acknowledge": "Oui, je vois ce que tu veux dire, c'est une préférence personnelle et c'est tout à fait légitime.",
+    "defend": "Mais parfois, il faut essayer pour voir. Ce n'est pas parce que ce n'est pas ta tasse de thé habituellement que ça ne peut pas te surprendre positivement cette fois.",
+    "solve": "Si l'idée te déplaît vraiment, tu peux toujours te concentrer sur d'autres aspects de l'activité ou choisir une option qui te convient mieux.",
+    "fullResponse": "Oui, je vois ce que tu veux dire, c'est une préférence personnelle et c'est tout à fait légitime. Mais parfois, il faut essayer pour voir. Ce n'est pas parce que ce n'est pas ta tasse de thé habituellement que ça ne peut pas te surprendre positivement cette fois. Si l'idée te déplaît vraiment, tu peux toujours te concentrer sur d'autres aspects de l'activité ou choisir une option qui te convient mieux."
+  },
+  {
+    "id": "impact_on_life",
+    "category": "Impact sur la vie perso/pro",
+    "icon": "🗓️",
+    "exampleObjection": "Je ne pourrai plus partir en vacances.",
+    "acknowledge": "C'est vrai que ça peut sembler changer pas mal de choses dans ta vie habituelle.",
+    "defend": "Mais souvent, ces activités sont flexibles. L'idée n'est pas de tout abandonner, mais d'intégrer ça dans ton quotidien sans tout bouleverser.",
+    "solve": "On peut voir ensemble comment aménager ton emploi du temps ou tes projets pour que tu puisses profiter des deux, ou trouver des solutions pour tes vacances.",
+    "fullResponse": "C'est vrai que ça peut sembler changer pas mal de choses dans ta vie habituelle. Mais souvent, ces activités sont flexibles. L'idée n'est pas de tout abandonner, mais d'intégrer ça dans ton quotidien sans tout bouleverser. On peut voir ensemble comment aménager ton emploi du temps ou tes projets pour que tu puisses profiter des deux, ou trouver des solutions pour tes vacances."
+  },
+  {
+    "id": "environmental_ethics",
+    "category": "Environnement et éthique",
+    "icon": "🌍",
+    "exampleObjection": "Le bateau, ça pollue !",
+    "acknowledge": "Je te rejoins là-dessus, c'est important de penser à l'impact sur l'environnement, surtout aujourd'hui.",
+    "defend": "Cependant, beaucoup d'initiatives essaient de minimiser leur empreinte carbone. Et même un petit geste, c'est déjà ça. Ça peut aussi sensibiliser d'autres personnes.",
+    "solve": "Tu peux te renseigner sur les actions éco-responsables mises en place par l'organisation, ou choisir des options qui sont plus respectueuses de l'environnement.",
+    "fullResponse": "Je te rejoins là-dessus, c'est important de penser à l'impact sur l'environnement, surtout aujourd'hui. Cependant, beaucoup d'initiatives essaient de minimiser leur empreinte carbone. Et même un petit geste, c'est déjà ça. Ça peut aussi sensibiliser d'autres personnes. Tu peux te renseigner sur les actions éco-responsables mises en place par l'organisation, ou choisir des options qui sont plus respectueuses de l'environnement."
+  },
+  {
+    "id": "value_purpose",
+    "category": "Valeur et utilité",
+    "icon": "✨",
+    "exampleObjection": "Ça ne sert à rien de nettoyer les sentiers, il y a sans arrêt des déchets jetés par les gens.",
+    "acknowledge": "Je comprends que tu aies l'impression que c'est un peu un coup d'épée dans l'eau, que ça ne changera pas grand-chose.",
+    "defend": "Mais c'est aussi un moyen de montrer l'exemple et de sensibiliser. Chaque petite action compte, et même si ça ne résout pas tout, ça aide à améliorer les choses.",
+    "solve": "Pense aux bénéfices immédiats, comme se sentir utile ou passer un bon moment, et à l'impact positif que ça peut avoir, même modeste, sur les autres.",
+    "fullResponse": "Je comprends que tu aies l'impression que c'est un peu un coup d'épée dans l'eau, que ça ne changera pas grand-chose. Mais c'est aussi un moyen de montrer l'exemple et de sensibiliser. Chaque petite action compte, et même si ça ne résout pas tout, ça aide à améliorer les choses. Pense aux bénéfices immédiats, comme se sentir utile ou passer un bon moment, et à l'impact positif que ça peut avoir, même modeste, sur les autres."
+  },
+  {
+    "id": "weather_conditions",
+    "category": "Conditions météorologiques",
+    "icon": "🌦️",
+    "exampleObjection": "Si la météo est mauvaise, c’est la catastrophe.",
+    "acknowledge": "C'est vrai que la météo, on ne peut pas la contrôler, et ça peut gâcher certains plans, c'est dommage.",
+    "defend": "Mais pour beaucoup d'activités, il y a des plans B ou des solutions adaptées. On n'est pas obligé de tout annuler s'il pleut un peu, par exemple.",
+    "solve": "Tu peux toujours te renseigner sur les options de repli ou les équipements nécessaires pour être prêt(e) à toute éventualité. On s'organise et c'est bon!",
+    "fullResponse": "C'est vrai que la météo, on ne peut pas la contrôler, et ça peut gâcher certains plans, c'est dommage. Mais pour beaucoup d'activités, il y a des plans B ou des solutions adaptées. On n'est pas obligé de tout annuler s'il pleut un peu, par exemple. Tu peux toujours te renseigner sur les options de repli ou les équipements nécessaires pour être prêt(e) à toute éventualité. On s'organise et c'est bon!"
+  },
+  {
+    "id": "health_fitness",
+    "category": "Santé et condition physique",
+    "icon": "💪",
+    "exampleObjection": "Ça demande une grosse préparation physique.",
+    "acknowledge": "Je vois ton point, on n'est pas tous des athlètes, et c'est normal de s'interroger sur sa forme physique.",
+    "defend": "Mais beaucoup d'activités proposent des niveaux différents, ou ne demandent pas une condition extrême. Le but c'est de participer, pas de faire une performance olympique.",
+    "solve": "Commence en douceur, écoute ton corps, et si ça devient trop intense, tu peux toujours adapter le rythme ou chercher des alternatives plus adaptées à ta forme actuelle.",
+    "fullResponse": "Je vois ton point, on n'est pas tous des athlètes, et c'est normal de s'interroger sur sa forme physique. Mais beaucoup d'activités proposent des niveaux différents, ou ne demandent pas une condition extrême. Le but c'est de participer, pas de faire une performance olympique. Commence en douceur, écoute ton corps, et si ça devient trop intense, tu peux toujours adapter le rythme ou chercher des alternatives plus adaptées à ta forme actuelle."
+  },
+  {
+    "id": "animal_care",
+    "category": "Soins et responsabilités envers les animaux",
+    "icon": "🐾",
+    "exampleObjection": "Je n’ai jamais entendu parler de ce chef.",
+    "acknowledge": "Je vois que l'idée d'être responsable d'un animal te préoccupe, surtout si tu n'en as pas l'habitude.",
+    "defend": "Mais l'accompagnement est souvent prévu pour ça : tu ne seras pas seul(e). Et puis, c'est une occasion unique d'apprendre et de développer un lien spécial.",
+    "solve": "Tu peux commencer par un rôle moins exigeant, comme aider un bénévole plus expérimenté, ou te documenter un peu avant de te lancer complètement.",
+    "fullResponse": "Je vois que l'idée d'être responsable d'un animal te préoccupe, surtout si tu n'en as pas l'habitude. Mais l'accompagnement est souvent prévu pour ça : tu ne seras pas seul(e). Et puis, c'est une occasion unique d'apprendre et de développer un lien spécial. Tu peux commencer par un rôle moins exigeant, comme aider un bénévole plus expérimenté, ou te documenter un peu avant de te lancer complètement."
+  },
+  {
+    "id": "lack_of_control",
+    "category": "Manque de contrôle et imprévus",
+    "icon": "🎲",
+    "exampleObjection": "On peut me donner une mission qui ne me plaît pas.",
+    "acknowledge": "C'est frustrant de ne pas avoir le contrôle sur tout, on préfère choisir ce qui nous plaît, c'est normal.",
+    "defend": "Souvent, il y a une certaine flexibilité, tu peux exprimer tes préférences. Et parfois, se laisser surprendre par une activité inattendue, c'est aussi une belle découverte.",
+    "solve": "Si la mission ne te convient vraiment pas, n'hésite pas à en parler, il y a sûrement moyen de trouver un arrangement ou de changer si c'est possible.",
+    "fullResponse": "C'est frustrant de ne pas avoir le contrôle sur tout, on préfère choisir ce qui nous plaît, c'est normal. Souvent, il y a une certaine flexibilité, tu peux exprimer tes préférences. Et parfois, se laisser surprendre par une activité inattendue, c'est aussi une belle découverte. Si la mission ne te convient vraiment pas, n'hésite pas à en parler, il y a sûrement moyen de trouver un arrangement ou de changer si c'est possible."
+  },
+  {
+    "id": "data_privacy_security",
+    "category": "Confidentialité et sécurité des données",
+    "icon": "🔒",
+    "exampleObjection": "Je crains que mon ordinateur ne soit piraté.",
+    "acknowledge": "Ton inquiétude est tout à fait légitime, la sécurité de nos données, c'est un sujet délicat aujourd'hui.",
+    "defend": "Heureusement, la plupart des plateformes sont très vigilantes et utilisent des protocoles de sécurité avancés pour protéger les informations des utilisateurs. C'est leur réputation qui est en jeu.",
+    "solve": "Pour être sûr(e), tu peux toujours vérifier les avis des autres utilisateurs et les certifications de sécurité du site avant de t'engager, pour avoir l'esprit tranquille.",
+    "fullResponse": "Ton inquiétude est tout à fait légitime, la sécurité de nos données, c'est un sujet délicat aujourd'hui. Heureusement, la plupart des plateformes sont très vigilantes et utilisent des protocoles de sécurité avancés pour protéger les informations des utilisateurs. C'est leur réputation qui est en jeu. Pour être sûr(e), tu peux toujours vérifier les avis des autres utilisateurs et les certifications de sécurité du site avant de t'engager, pour avoir l'esprit tranquille."
+  },
+  {
+    "id": "motivation_engagement",
+    "category": "Motivation et engagement",
+    "icon": "💡",
+    "exampleObjection": "Seul, je vais me démotiver rapidement.",
+    "acknowledge": "Oui, c'est vrai que la motivation, ça vient et ça part, surtout quand on est seul(e) face à un défi.",
+    "defend": "Mais il y a plein de façons de rester motivé(e) : tu peux trouver un partenaire, rejoindre un groupe en ligne, ou te fixer des petits objectifs réguliers pour ne pas te décourager.",
+    "solve": "Et si tu sens que tu perds pied, on peut en discuter, je suis là pour te remotiver et t'aider à trouver des solutions pour garder le cap.",
+    "fullResponse": "Oui, c'est vrai que la motivation, ça vient et ça part, surtout quand on est seul(e) face à un défi. Mais il y a plein de façons de rester motivé(e) : tu peux trouver un partenaire, rejoindre un groupe en ligne, ou te fixer des petits objectifs réguliers pour ne pas te décourager. Et si tu sens que tu perds pied, on peut en discuter, je suis là pour te remotiver et t'aider à trouver des solutions pour garder le cap."
+  },
+  {
+    "id": "professional_ethics_competition",
+    "category": "Éthique professionnelle et concurrence",
+    "icon": "⚖️",
+    "exampleObjection": "On prend le travail des véritables professionnels.",
+    "acknowledge": "Je comprends que tu t'interroges sur l'impact de ces initiatives sur les professionnels, c'est une considération importante.",
+    "defend": "Cependant, souvent, ces actions ne visent pas à remplacer les métiers, mais plutôt à compléter les services existants, à répondre à des besoins non couverts ou à valoriser des compétences différentes.",
+    "solve": "Tu peux voir cela comme une opportunité de collaboration plutôt que de concurrence, ou de soutien à des causes qui n'ont pas forcément les moyens d'embaucher des professionnels à temps plein.",
+    "fullResponse": "Je comprends que tu t'interroges sur l'impact de ces initiatives sur les professionnels, c'est une considération importante. Cependant, souvent, ces actions ne visent pas à remplacer les métiers, mais plutôt à compléter les services existants, à répondre à des besoins non couverts ou à valoriser des compétences différentes. Tu peux voir cela comme une opportunité de collaboration plutôt que de concurrence, ou de soutien à des causes qui n'ont pas forcément les moyens d'embaucher des professionnels à temps plein."
+  }
+]

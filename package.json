@@ -15,6 +15,7 @@
     "generate-instructions": "tsx scripts/generate-instructions-audio.ts",
     "extract-themes": "tsx scripts/extract-task-themes.ts",
     "generate-oral-hints": "tsx scripts/generate-oral-hints.ts",
+    "generate-oral-b-strategy": "tsx scripts/generate-oral-b-strategy.ts",
     "migrate-reading-listening": "tsx server/scripts/migrateReadingListeningToDB.ts",
     "seed-mock-exams": "tsx server/scripts/seedMockExams.ts",
     "create-mock": "tsx server/scripts/createMockExam.ts",
