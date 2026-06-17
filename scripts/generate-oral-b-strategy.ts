@@ -67,13 +67,23 @@ ADS structure:
 - Defend: 1–2 sentences countering with a concrete argument
 - Solve: 1 sentence offering a practical resolution or safety net
 
-Rules for the responses:
+Language rules — CRITICAL:
 - INFORMAL spoken French between friends ("tu", contractions, natural rhythm)
-- B2 level vocabulary only (CLB/NCLC 7–8) — clear, everyday words; NO advanced C1 vocabulary or rare expressions
-- Varied but accessible: the kind of French a confident B2 speaker actually uses in conversation
-- Full response = Acknowledge + Defend + Solve combined (~60-80 words)
+- CLB/NCLC 7 vocabulary ONLY — the simplest words that still sound natural. NO C1 words.
+- Preferred verbs: comprendre, voir, savoir, pouvoir, vouloir, faire, trouver, aller, essayer, penser — reuse these, avoid fancy synonyms.
+- Short sentences. No subordinate clauses longer than one idea.
+- Full response = Acknowledge + Defend + Solve combined (~55-70 words)
 - Generic enough to work across all topics, yet concrete and persuasive
-- Start each "acknowledge" differently (don't always use the same opener)
+
+Acknowledge openers — rotate through these across categories (pick the most natural, vary them):
+  • "Je comprends que [paraphrase concern],"
+  • "Ouais, je vois ce que tu veux dire,"
+  • "C'est vrai que [paraphrase concern],"
+  • "Non, je comprends, [paraphrase concern],"
+  • "Honnêtement, je te comprends,"
+
+Defend: always start with "Mais" + one short concrete point.
+Solve: always start with "Et si jamais" OR "Et de toute façon" + a simple safety net.
 
 Full objection list:
 ${argList}

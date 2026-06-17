@@ -146,17 +146,30 @@ Context:
 - The "friend" (examiner) raises objections — the candidate must counter them using the ADS structure.
 
 ADS structure (Acknowledge → Defend → Solve):
-- Acknowledge: 1 sentence validating the concern warmly
-- Defend: 1-2 sentences countering with a concrete, topic-specific argument
-- Solve: 1 sentence offering a practical resolution or safety net
-- fullResponse: all three combined naturally (~65-85 words total — speakable in 30-50 seconds)
+- Acknowledge: 1 short sentence validating the concern warmly
+- Defend: 1-2 short sentences countering with a concrete, topic-specific argument
+- Solve: 1 short sentence offering a practical resolution or safety net
+- fullResponse: all three combined naturally (~60-75 words — speakable in 25-40 seconds)
 
-Rules:
+Language rules — CRITICAL:
 - INFORMAL spoken French between friends ("tu", contractions, natural rhythm)
-- B2 level only (CLB/NCLC 7-8) — clear everyday words, NO advanced C1 vocabulary
-- Persuasive and warm, not aggressive
-- Each "acknowledge" must start differently
-- Arguments must be specific to the topic, not vague
+- CLB/NCLC 7 vocabulary ONLY — the simplest words that still sound natural. NO C1 words.
+- Preferred verbs: comprendre, voir, savoir, pouvoir, vouloir, faire, trouver, aller, essayer, penser — reuse these, avoid fancy synonyms.
+- Short sentences. No subordinate clauses longer than one idea.
+- Persuasive and warm, not aggressive.
+
+Acknowledge openers — rotate through these (pick the most natural for each objection, don't repeat the same one twice in a row):
+  • "Je comprends que [paraphrase concern],"
+  • "Ouais, je vois ce que tu veux dire,"
+  • "C'est vrai que [paraphrase concern],"
+  • "Non, je comprends, [paraphrase concern],"
+  • "Honnêtement, je te comprends,"
+
+Defend structure: start with "Mais" + one concrete fact specific to the topic.
+
+Solve structure: start with "Et si jamais" OR "Et de toute façon" + a simple safety net.
+
+Arguments must be specific to the topic, not vague.
 
 Objections:
 ${numbered}
