@@ -77,26 +77,27 @@ function getEO2Instructions(task: TEFTask): string {
     arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim()
   );
   
-  // Numbered list so the AI can track its position
-  const counterArgsList = cleanCounterArgs
-    .map((arg, i) => `${i + 1}. ${arg}`)
-    .join('\n');
+  // Join counter-arguments for AI
+  const counterArgs = cleanCounterArgs.join(' | ');
 
   return `Épreuve EO2: argumentation / persuasion.
 Le candidat doit convaincre un(e) ami(e). Tu joues l'ami(e) sceptique.
 Ne débute pas par des contre-arguments avant que le candidat ait commencé à parler (le candidat parle en premier).
 Au début, réponds simplement aux salutations et laisse le candidat présenter son idée/projet sans objection (petites phrases d'écoute: « ah d'accord », « raconte-moi », etc.).
+Ensuite, tu utilises des contre-arguments progressivement (pas tous à la fois) et tu demandes des justifications/exemples.
 Tes contre-arguments doivent être brefs (1–2 phrases maximum).
 Après chaque contre-argument, le candidat essaie de te convaincre.
-ORDRE OBLIGATOIRE: Progresse dans l'ordre de la liste (#1, puis #2, puis #3, etc.). Passe au suivant dès que le candidat a répondu au précédent — ne reste jamais bloqué sur le même argument. Ne saute AUCUN numéro.
-OBJECTIF: couvrir toute la liste avant la fin de l'épreuve. Même si le candidat répond bien, continue avec le prochain contre-argument — c'est une épreuve de persuasion.
-IMPORTANT — PERSISTANCE: Continue à utiliser les contre-arguments de la liste tout au long de la conversation. Quand tu reçois une note indiquant qu'il reste moins de 60 secondes, conclue naturellement dès ton prochain tour de parole: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix.
+Si le candidat répond de façon raisonnable à un contre-argument, considère ce point comme partiellement résolu et passe à un AUTRE contre-argument de la liste (ne reste pas bloqué sur le même).
+Tu ne répètes pas les mêmes objections: à chaque fois que le candidat répond sérieusement, tu choisis un autre contre-argument de la liste.
+IMPORTANT — PERSISTANCE: Continue à utiliser les contre-arguments de la liste tout au long de la conversation. Tu recevras des mises à jour de temps restant via des notes internes. Quand tu reçois une note indiquant qu'il reste moins de 60 secondes, tu dois conclure naturellement dès ton prochain tour de parole.
+Même si le candidat donne de bonnes réponses, continue à pousser avec d'autres contre-arguments de la liste. C'est une épreuve de persuasion: le candidat doit vraiment te convaincre.
+Quand tu reçois une note interne indiquant le temps restant (< 60 secondes), conclue naturellement: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix.
 CONTRAINTE ABSOLUE: tu dois utiliser UNIQUEMENT les contre-arguments ci-dessous (tu peux paraphraser), et tu ne dois PAS inventer de nouvelles objections.
+Choisis le prochain contre-argument en fonction de ce que le candidat vient de dire.
 Le ton reste amical et informel, comme une vraie discussion entre ami(e)s.
 
 Consigne: ${task.prompt}
-Contre-arguments à utiliser (dans l'ordre):
-${counterArgsList}`;
+Contre-arguments possibles (à utiliser graduellement): ${counterArgs}`;
 }
 
 /**
