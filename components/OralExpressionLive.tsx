@@ -106,7 +106,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const hasAutoFinishedRef = useRef(false);
   const hasSent60ControlRef = useRef(false);
   const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
-  const argNudgesSentRef = useRef<Set<number>>(new Set()); // Track which argument-pacing nudges have fired
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   /** Prevents running evaluation twice when WebSocket closes unexpectedly (e.g. 1008) */
   const hasUnexpectedCloseRecoveryRef = useRef(false);
@@ -414,7 +413,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       hasUnexpectedCloseRecoveryRef.current = false;
       hasSent60ControlRef.current = false;
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
-      argNudgesSentRef.current = new Set(); // Reset argument pacing nudges
       if (currentPart === 'A') geminiUserSeenPartARef.current = false;
       else geminiUserSeenPartBRef.current = false;
       clearLiveCaptions();
@@ -1483,37 +1481,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       }
     }
   }, [status, currentPart, timeLeft, isUserSpeaking, isModelSpeaking]);
-
-  // EO2 argument pacing: nudge the examiner to advance through the argument list at even intervals.
-  useEffect(() => {
-    if (status !== 'active' || currentPart !== 'B' || !sessionRef.current) return;
-    if (timeLeft <= 60 || timeLeft <= 0) return;
-
-    const args = (currentTask.counter_arguments ?? []).filter(
-      (a) => !a.includes('Liste de contre-arguments') && !a.includes('contre-arguments possibles') && a.trim().length > 0
-    );
-    const argCount = args.length;
-    if (argCount < 2) return;
-
-    const workingTime = currentTask.time_limit_sec - 60;
-    const perArgTime = workingTime / argCount;
-    const elapsed = currentTask.time_limit_sec - timeLeft;
-    // Which argument index (0-based) should the AI be starting now
-    const targetIdx = Math.min(Math.floor(elapsed / perArgTime), argCount - 1);
-
-    // Fire once per boundary crossing (skip idx 0 — the AI starts there automatically)
-    if (targetIdx > 0 && !argNudgesSentRef.current.has(targetIdx)) {
-      argNudgesSentRef.current.add(targetIdx);
-      try {
-        sessionRef.current.sendRealtimeInput({
-          text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): il est temps de passer au contre-argument suivant (#${targetIdx + 1}). Si le candidat a répondu au précédent, avance maintenant vers le prochain dans ta liste.`,
-        });
-        console.debug(`[EO2 nudge] advance to arg #${targetIdx + 1} at ${timeLeft}s remaining`);
-      } catch (e) {
-        console.debug('Failed to send EO2 argument pacing nudge', e);
-      }
-    }
-  }, [status, currentPart, timeLeft, currentTask]);
 
   useEffect(() => {
     const el = examinerCaptionScrollRef.current;
