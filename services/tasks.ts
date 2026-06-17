@@ -67,14 +67,26 @@ export function getRandomSectionBTask(completedTaskIds: number[] = []): TEFTask 
     selectedTask = availableTasks[Math.floor(Math.random() * availableTasks.length)];
   }
   
-  // Randomize the order of counter_arguments if they exist
-  if (selectedTask.counter_arguments && selectedTask.counter_arguments.length > 0) {
+  // Randomize the order of counter_arguments (keeping header at index 0)
+  // and shuffle suggested_counters with the same permutation to stay aligned
+  if (selectedTask.counter_arguments && selectedTask.counter_arguments.length > 1) {
+    const [header, ...args] = selectedTask.counter_arguments;
+    const counters = selectedTask.suggested_counters ?? [];
+
+    // Build a shuffled permutation index
+    const indices = args.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+
     return {
       ...selectedTask,
-      counter_arguments: shuffleArray(selectedTask.counter_arguments)
+      counter_arguments: [header, ...indices.map((i) => args[i])],
+      suggested_counters: indices.map((i) => counters[i]).filter(Boolean) as typeof counters,
     };
   }
-  
+
   return selectedTask;
 }
 
@@ -108,10 +120,18 @@ export function getTaskById(section: 'A' | 'B', taskId: number): TEFTask | null 
     };
   }
   
-  if (section === 'B' && task.counter_arguments && task.counter_arguments.length > 0) {
+  if (section === 'B' && task.counter_arguments && task.counter_arguments.length > 1) {
+    const [header, ...args] = task.counter_arguments;
+    const counters = task.suggested_counters ?? [];
+    const indices = args.map((_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
     return {
       ...task,
-      counter_arguments: shuffleArray(task.counter_arguments)
+      counter_arguments: [header, ...indices.map((i) => args[i])],
+      suggested_counters: indices.map((i) => counters[i]).filter(Boolean) as typeof counters,
     };
   }
   
