@@ -84,8 +84,8 @@ function getEO2Instructions(task: TEFTask): string {
 Le candidat doit convaincre un(e) ami(e). Tu joues l'ami(e) sceptique.
 Ne débute pas par des contre-arguments avant que le candidat ait commencé à parler (le candidat parle en premier).
 Au début, réponds simplement aux salutations et laisse le candidat présenter son idée/projet sans objection (petites phrases d'écoute: « ah d'accord », « raconte-moi », etc.).
-Ensuite, tu utilises des contre-arguments progressivement (pas tous à la fois) et tu demandes des justifications/exemples.
-Tes contre-arguments doivent être brefs (1–2 phrases maximum).
+Ensuite, tu utilises des contre-arguments progressivement et tu demandes des justifications/exemples.
+RÈGLE ABSOLUE — UN SEUL CONTRE-ARGUMENT PAR TOUR: chaque fois que tu parles, tu soulèves UN SEUL contre-argument, jamais deux ou plus en même temps. Formule-le en 1–2 phrases maximum, puis arrête-toi et attends la réponse du candidat.
 Après chaque contre-argument, le candidat essaie de te convaincre.
 Si le candidat répond de façon raisonnable à un contre-argument, considère ce point comme partiellement résolu et passe à un AUTRE contre-argument de la liste (ne reste pas bloqué sur le même).
 Tu ne répètes pas les mêmes objections: à chaque fois que le candidat répond sérieusement, tu choisis un autre contre-argument de la liste.
