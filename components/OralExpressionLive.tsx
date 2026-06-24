@@ -104,8 +104,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const geminiUserSeenPartBRef = useRef(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const hasAutoFinishedRef = useRef(false);
-  const hasSent60ControlRef = useRef(false);
+  const hasSent30ControlRef = useRef(false);
   const hasSentTimeUpdateRef = useRef<number>(0); // Track last sent time update to prevent duplicates
+  const lastKeepGoingInjectionRef = useRef<number>(0); // Track last "keep going" injection time
   const userSilenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   /** Prevents running evaluation twice when WebSocket closes unexpectedly (e.g. 1008) */
   const hasUnexpectedCloseRecoveryRef = useRef(false);
@@ -411,8 +412,9 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setTimeLeft(currentTask.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag when starting a new session
       hasUnexpectedCloseRecoveryRef.current = false;
-      hasSent60ControlRef.current = false;
+      hasSent30ControlRef.current = false;
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking
+      lastKeepGoingInjectionRef.current = 0;
       if (currentPart === 'A') geminiUserSeenPartARef.current = false;
       else geminiUserSeenPartBRef.current = false;
       clearLiveCaptions();
@@ -646,13 +648,14 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                   if (userSilenceTimeoutRef.current) {
                     clearTimeout(userSilenceTimeoutRef.current);
                   }
-                  if (currentPart === 'B' && sessionRef.current && timeLeft < 60 && timeLeft > 0 && timeLeft !== hasSentTimeUpdateRef.current) {
-                    hasSentTimeUpdateRef.current = timeLeft;
+                  // Gate with hasSent30ControlRef to avoid duplicate "conclude now" messages alongside the useEffect
+                  if (currentPart === 'B' && sessionRef.current && timeLeft < 30 && timeLeft > 0 && !hasSent30ControlRef.current) {
+                    hasSent30ControlRef.current = true;
                     try {
                       sessionRef.current.sendRealtimeInput({
-                        text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Il reste exactement ${timeLeft} secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`
+                        text: `NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Il reste moins de 30 secondes à l'épreuve EO2. Tu dois conclure naturellement dès maintenant: soit tu te montres vraiment convaincu(e) par les arguments du candidat, soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix. Sois concis et conclus rapidement.`
                       });
-                      console.log(`⏰ Injected time remaining: ${timeLeft}s for Section B`);
+                      console.log(`⏰ Injected conclusion signal for Section B`);
                     } catch (err) {
                       console.debug('Failed to send time update', err);
                     }
@@ -1080,6 +1083,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       setTimeLeft(scenario.officialTasks.partB.time_limit_sec);
       hasAutoFinishedRef.current = false; // Reset auto-finish flag for Part B
       hasSentTimeUpdateRef.current = 0; // Reset time update tracking for Part B
+      hasSent30ControlRef.current = false;
+      lastKeepGoingInjectionRef.current = 0;
       console.log('✅ Ready for Part B - user can click mic to start');
       // Part A chunks are now saved in recordedChunksPartARef, Part B will start fresh
     } else {
@@ -1464,20 +1469,42 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     }
   }, [status, timeLeft]);
 
-  // EO2 time awareness for examiner: single internal signal when about 60 seconds remain.
+  // EO2: periodic "keep going" injections every ~60s to prevent premature conclusion.
   useEffect(() => {
     if (status !== 'active' || currentPart !== 'B' || !sessionRef.current) return;
-    if (timeLeft <= 60 && timeLeft > 0 && !hasSent60ControlRef.current && !isUserSpeaking && !isModelSpeaking) {
-      hasSent60ControlRef.current = true;
+    if (timeLeft <= 30 || timeLeft === 0) return;
+    // Send a keep-going note every 60 seconds of elapsed time (tracked via timeLeft)
+    const elapsed = (currentTask.time_limit_sec || 480) - timeLeft;
+    const injectionNumber = Math.floor(elapsed / 60);
+    if (injectionNumber > 0 && injectionNumber !== lastKeepGoingInjectionRef.current && !isUserSpeaking && !isModelSpeaking) {
+      lastKeepGoingInjectionRef.current = injectionNumber;
       try {
         sessionRef.current.sendRealtimeInput({
           text:
-            "NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): il reste environ une minute à l'épreuve EO2. " +
-            "Prépare une conclusion naturelle: soit tu te montres vraiment convaincu(e) par les arguments du candidat, " +
+            "NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Continue à pousser des contre-arguments de la liste — NE CONCLUS PAS encore. " +
+            "Reste sceptique même si le candidat a donné de bonnes réponses.",
+        });
+        console.log(`⏰ EO2 keep-going injection at ${elapsed}s elapsed (${timeLeft}s remaining)`);
+      } catch (e) {
+        console.debug('Failed to send EO2 keep-going message', e);
+      }
+    }
+  }, [status, currentPart, timeLeft, currentTask, isUserSpeaking, isModelSpeaking]);
+
+  // EO2: final conclusion signal when ~30 seconds remain.
+  useEffect(() => {
+    if (status !== 'active' || currentPart !== 'B' || !sessionRef.current) return;
+    if (timeLeft <= 30 && timeLeft > 0 && !hasSent30ControlRef.current && !isUserSpeaking && !isModelSpeaking) {
+      hasSent30ControlRef.current = true;
+      try {
+        sessionRef.current.sendRealtimeInput({
+          text:
+            "NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): il reste environ 30 secondes à l'épreuve EO2. " +
+            "Conclus maintenant naturellement: soit tu te montres vraiment convaincu(e) par les arguments du candidat, " +
             "soit tu dis que tu vas réfléchir et que tu lui donneras ta réponse plus tard. Ne fais qu'un seul de ces choix.",
         });
       } catch (e) {
-        console.debug('Failed to send 60s internal EO2 control message', e);
+        console.debug('Failed to send 30s internal EO2 control message', e);
       }
     }
   }, [status, currentPart, timeLeft, isUserSpeaking, isModelSpeaking]);
