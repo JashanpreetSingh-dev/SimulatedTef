@@ -340,9 +340,20 @@ router.get('/tiers', requireAuth, asyncHandler(async (req: Request, res: Respons
 router.get('/usage', requireAuth, asyncHandler(async (req: Request, res: Response) => {
   const userId = req.userId;
   const orgId = req.orgId || null;
-  
+
   if (!userId) {
     return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  // Owner account gets unlimited everything
+  if (process.env.OWNER_USER_ID && userId === process.env.OWNER_USER_ID) {
+    return res.json({
+      usage: { sectionAUsed: 0, sectionBUsed: 0, writtenExpressionSectionAUsed: 0, writtenExpressionSectionBUsed: 0, mockExamsUsed: 0 },
+      limits: { sectionALimit: -1, sectionBLimit: -1, writtenExpressionSectionALimit: -1, writtenExpressionSectionBLimit: -1, mockExamLimit: -1 },
+      resetDate: null,
+      currentPeriod: 'unlimited',
+      cancelAtPeriodEnd: false,
+    });
   }
 
   // Get limits and usage based on user type
