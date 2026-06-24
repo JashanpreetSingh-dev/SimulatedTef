@@ -357,9 +357,13 @@ export async function checkCanStartSection(
   orgId: string | null,
   section: 'A' | 'B'
 ): Promise<CanStartResult> {
+  if (process.env.OWNER_USER_ID && userId === process.env.OWNER_USER_ID) {
+    return { canStart: true, currentUsage: 0, limit: Infinity };
+  }
+
   let usage: MonthlyUsage;
   let limit: number;
-  
+
   if (orgId) {
     // B2B user - use org config and calendar month
     const currentMonth = getCurrentMonth();
@@ -583,9 +587,13 @@ export async function checkCanStartWrittenExpression(
   orgId: string | null,
   section: 'A' | 'B'
 ): Promise<CanStartResult> {
+  if (process.env.OWNER_USER_ID && userId === process.env.OWNER_USER_ID) {
+    return { canStart: true, currentUsage: 0, limit: Infinity };
+  }
+
   let currentUsage: number;
   let limit: number;
-  
+
   if (orgId) {
     // B2B user - unlimited for now (can be configured later)
     limit = -1; // -1 indicates unlimited for B2B
@@ -739,9 +747,13 @@ export async function checkCanStartMockExam(
   userId: string,
   orgId: string | null
 ): Promise<CanStartResult> {
+  if (process.env.OWNER_USER_ID && userId === process.env.OWNER_USER_ID) {
+    return { canStart: true, currentUsage: 0, limit: Infinity };
+  }
+
   let currentUsage: number;
   let limit: number;
-  
+
   if (orgId) {
     // B2B users - unlimited mock exams, use calendar month for tracking
     const currentMonth = getCurrentMonth();
