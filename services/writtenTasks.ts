@@ -23,7 +23,7 @@ interface WrittenTaskJSON {
 }
 
 // Load tasks from JSON files
-const SECTION_A_TASKS: WrittenTask[] = (writtenSectionA as WrittenTaskJSON).topics.map(topic => ({
+export const WRITTEN_SECTION_A_TASKS: WrittenTask[] = (writtenSectionA as WrittenTaskJSON).topics.map(topic => ({
   id: `written_${topic.id}`,
   section: 'A',
   subject: topic.prompt,
@@ -32,7 +32,7 @@ const SECTION_A_TASKS: WrittenTask[] = (writtenSectionA as WrittenTaskJSON).topi
   modelAnswer: topic.model_answer?.text,
 }));
 
-const SECTION_B_TASKS: WrittenTask[] = (writtenSectionB as WrittenTaskJSON).topics.map(topic => ({
+export const WRITTEN_SECTION_B_TASKS: WrittenTask[] = (writtenSectionB as WrittenTaskJSON).topics.map(topic => ({
   id: `written_${topic.id}`,
   section: 'B',
   subject: topic.prompt,
@@ -45,14 +45,13 @@ const SECTION_B_TASKS: WrittenTask[] = (writtenSectionB as WrittenTaskJSON).topi
  * Get a random task from Section A, excluding completed task IDs
  */
 export function getRandomWrittenSectionATask(completedTaskIds: string[] = []): WrittenTask {
-  const availableTasks = SECTION_A_TASKS.filter(task => !completedTaskIds.includes(task.id));
-  
+  const availableTasks = WRITTEN_SECTION_A_TASKS.filter(task => !completedTaskIds.includes(task.id));
+
   if (availableTasks.length === 0) {
-    // If all tasks are completed, reset and use all tasks
     console.warn('All Section A written tasks completed, resetting available tasks');
-    return SECTION_A_TASKS[Math.floor(Math.random() * SECTION_A_TASKS.length)];
+    return WRITTEN_SECTION_A_TASKS[Math.floor(Math.random() * WRITTEN_SECTION_A_TASKS.length)];
   }
-  
+
   return availableTasks[Math.floor(Math.random() * availableTasks.length)];
 }
 
@@ -60,14 +59,13 @@ export function getRandomWrittenSectionATask(completedTaskIds: string[] = []): W
  * Get a random task from Section B, excluding completed task IDs
  */
 export function getRandomWrittenSectionBTask(completedTaskIds: string[] = []): WrittenTask {
-  const availableTasks = SECTION_B_TASKS.filter(task => !completedTaskIds.includes(task.id));
-  
+  const availableTasks = WRITTEN_SECTION_B_TASKS.filter(task => !completedTaskIds.includes(task.id));
+
   if (availableTasks.length === 0) {
-    // If all tasks are completed, reset and use all tasks
     console.warn('All Section B written tasks completed, resetting available tasks');
-    return SECTION_B_TASKS[Math.floor(Math.random() * SECTION_B_TASKS.length)];
+    return WRITTEN_SECTION_B_TASKS[Math.floor(Math.random() * WRITTEN_SECTION_B_TASKS.length)];
   }
-  
+
   return availableTasks[Math.floor(Math.random() * availableTasks.length)];
 }
 
@@ -85,6 +83,6 @@ export function getRandomWrittenTasks(completedTaskIds: string[] = []): { taskA:
  * Get a specific task by ID
  */
 export function getWrittenTaskById(taskId: string): WrittenTask | null {
-  const allTasks = [...SECTION_A_TASKS, ...SECTION_B_TASKS];
+  const allTasks = [...WRITTEN_SECTION_A_TASKS, ...WRITTEN_SECTION_B_TASKS];
   return allTasks.find(task => task.id === taskId) || null;
 }

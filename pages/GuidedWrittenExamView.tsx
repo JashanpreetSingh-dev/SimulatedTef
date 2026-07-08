@@ -5,6 +5,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useIsD2C } from '../utils/userType';
 import { usePageTour } from '../hooks/usePageTour';
 import { GuidedWritingExam } from '../components/guidedWriting/GuidedWritingExam';
+import { PreWrittenTaskSelector } from '../components/exam/PreWrittenTaskSelector';
 import { LoadingResult } from '../components/LoadingResult';
 import { DetailedResultView } from '../components/results';
 import { DashboardLayout } from '../layouts/DashboardLayout';
@@ -57,7 +58,8 @@ export function GuidedWrittenExamView() {
   const isD2C = useIsD2C();
   // Tour fires once tasks are loaded (GuidedWritingEditor DOM elements exist by then)
   const [tasks, setTasks] = useState<{ taskA: WrittenTask; taskB: WrittenTask } | null>(null);
-  usePageTour(isD2C && !!tasks ? user?.id : undefined, 'written_exam', WRITTEN_EXAM_STEPS);
+  const [taskConfirmed, setTaskConfirmed] = useState(false);
+  usePageTour(isD2C && !!tasks && taskConfirmed ? user?.id : undefined, 'written_exam', WRITTEN_EXAM_STEPS);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [limitCheckPassed, setLimitCheckPassed] = useState<boolean | null>(isD2C ? null : true);
   const initializedModeRef = useRef<string | null>(null);
@@ -280,6 +282,16 @@ export function GuidedWrittenExamView() {
     return t('guidedWriting.guidedSectionB');
   };
 
+  const activeTask = mode === 'partA' ? tasks.taskA : tasks.taskB;
+
+  const handleChangeTask = (task: WrittenTask) => {
+    if (mode === 'partA') {
+      setTasks({ ...tasks, taskA: task });
+    } else {
+      setTasks({ ...tasks, taskB: task });
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-indigo-100 dark:bg-slate-900 p-2 md:p-3 lg:p-6 transition-colors">
@@ -289,7 +301,14 @@ export function GuidedWrittenExamView() {
             label={location.state?.from === '/practice' ? t('back.practice') : t('back.back')}
             marginClassName="mb-2 md:mb-3 lg:mb-6"
           />
-          {tasks && (
+          {!taskConfirmed ? (
+            <PreWrittenTaskSelector
+              mode={mode as 'partA' | 'partB'}
+              task={activeTask}
+              onConfirm={() => setTaskConfirmed(true)}
+              onChangeTask={handleChangeTask}
+            />
+          ) : (
             <GuidedWritingExam
               taskA={tasks.taskA}
               taskB={tasks.taskB}
