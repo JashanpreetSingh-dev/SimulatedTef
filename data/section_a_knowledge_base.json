@@ -1288,7 +1288,7 @@
   {
     "id": 39,
     "section": "EO1",
-    "prompt": "Vous avez lu cette publicité pour une école de voile et vous êtes intéressé(e). Vous téléphonez pour avoir plus d’informations.",
+    "prompt": "Vous avez lu cette annonce pour devenir testeur de produits alimentaires et vous êtes intéressé(e). Vous téléphonez pour avoir plus d’informations.",
     "title": null,
     "suggested_questions": [
       "Lieu du test ?",
@@ -1305,18 +1305,18 @@
     "time_limit_sec": 240,
     "image": "/section_a_images/section_a_image_39.png",
     "difficulty": "medium",
-    "theme": "École De Voile",
+    "theme": "Testeurs De Produits Alimentaires",
     "expanded_questions": [
-      "Je souhaiterais savoir où se déroulent précisément les cours de voile.",
-      "Pourriez-vous me donner des informations sur les tarifs et les différentes formules d'abonnement ?",
-      "Combien de séances sont prévues par jour ou par semaine dans vos programmes de formation ?",
-      "Quels sont les différents types de cours que vous proposez et sur quels voiliers enseigne-t-on ?",
-      "Quelle est la qualité de votre matériel pédagogique et l'expérience de vos moniteurs ?",
-      "Faut-il signaler des allergies ou d'autres conditions médicales avant de s'inscrire aux cours ?",
-      "Quelles sont vos conditions en cas d'annulation d'une inscription ou d'un cours ?",
-      "Selon quels critères évaluez-vous la progression des élèves et l'obtention des différents niveaux ?",
-      "Est-il possible de choisir le type de voile ou le niveau de cours que l'on souhaite suivre ?",
-      "Quelles sont les mesures de sécurité et les assurances prévues en cas de maladie ou d'accident ?"
+      "Je souhaiterais savoir où se déroulent précisément les séances de test de produits.",
+      "Quelle est la rémunération prévue pour les testeurs et sous quelle forme est-elle versée ?",
+      "Combien de produits environ faut-il tester par jour ou par session ?",
+      "Quels types de produits alimentaires sont proposés à la dégustation ?",
+      "Comment la qualité et la fraîcheur des produits sont-elles garanties ?",
+      "Est-il nécessaire de signaler des allergies alimentaires ou des intolérances avant de participer ?",
+      "Quelles sont les conditions d’annulation si je ne peux pas me présenter à une session ?",
+      "Sur quels critères les testeurs sont-ils évalués et comment les résultats sont-ils utilisés ?",
+      "A-t-on la possibilité de choisir les catégories de produits que l’on souhaite tester ?",
+      "Quelles protections sont prévues en cas de malaise ou d’indigestion suite à un test ?"
     ]
   },
   {
