@@ -6861,64 +6861,65 @@
     "theme": "Éolienne Domestique",
     "suggested_counters": [
       {
-        "acknowledge": "Je comprends que tu penses que c’est cher,",
-        "defend": "Mais tu peux alimenter tes appareils et même revendre le surplus au réseau. Tu récupères l’argent petit à petit.",
-        "solve": "Et de toute façon, tu peux commencer par un petit modèle, pas besoin de tout installer d’un coup.",
-        "fullResponse": "Je comprends que tu penses que c’est cher, mais tu peux alimenter tes appareils et même revendre le surplus au réseau. Tu récupères l’argent petit à petit. Et de toute façon, tu peux commencer par un petit modèle, pas besoin de tout installer d’un coup."
+        "acknowledge": "Ouais, franchement je te comprends, au début, quand tu vois le prix, ça peut vraiment faire un choc pour un simple truc de maison,",
+        "defend": "mais si tu regardes bien, il faut que tu penses à ce que ça te fait gagner chaque année. L’article dit qu’en utilisant toi-même l’électricité et en revendant le reste, tu récupères ton argent en quelques années. J’ai un ami qui en a mis une l’an dernier, et il m’a dit que sa facture avait déjà baissé de moitié.",
+        "solve": "Et puis, si jamais le budget te faisait vraiment peur, tu pourrais commencer par un petit modèle, ou même demander une aide de l’État — en cherchant un peu, on trouve pas mal de solutions.",
+        "fullResponse": "Ouais, franchement je te comprends, au début, quand tu vois le prix, ça peut vraiment faire un choc pour un simple truc de maison, mais si tu regardes bien, il faut que tu penses à ce que ça te fait gagner chaque année. L’article dit qu’en utilisant toi-même l’électricité et en revendant le reste, tu récupères ton argent en quelques années. J’ai un ami qui en a mis une l’an dernier, et il m’a dit que sa facture avait déjà baissé de moitié. Et puis, si jamais le budget te faisait vraiment peur, tu pourrais commencer par un petit modèle, ou même demander une aide de l’État — en cherchant un peu, on trouve pas mal de solutions."
       },
       {
-        "acknowledge": "Ouais, je vois ce que tu veux dire, pas de vent partout,",
-        "defend": "Mais il y a deux types : verticale et horizontale. La verticale marche même avec un vent plus faible, près des maisons.",
-        "solve": "Et si jamais chez toi le vent est vraiment trop faible, tu peux demander une étude avant d’acheter.",
-        "fullResponse": "Ouais, je vois ce que tu veux dire, pas de vent partout, mais il y a deux types : verticale et horizontale. La verticale marche même avec un vent plus faible, près des maisons. Et si jamais chez toi le vent est vraiment trop faible, tu peux demander une étude avant d’acheter."
+        "acknowledge": "C’est vrai, je vois ce que tu veux dire, tout le monde n’a pas le même vent chez soi,",
+        "defend": "mais tu sais, l’article parle de deux types d’éoliennes : la verticale et l’horizontale. La verticale, elle est faite pour marcher même avec du vent faible, en ville ou tout près des maisons. Et même quelques rafales par jour, c’est déjà suffisant pour produire pas mal d’énergie.",
+        "solve": "Et si jamais tu avais un doute, tu pourrais demander une petite étude avant d’acheter. Comme ça, en vérifiant à l’avance, tu serais sûr que ça marche bien chez toi, sans prendre de risque.",
+        "fullResponse": "C’est vrai, je vois ce que tu veux dire, tout le monde n’a pas le même vent chez soi, mais tu sais, l’article parle de deux types d’éoliennes : la verticale et l’horizontale. La verticale, elle est faite pour marcher même avec du vent faible, en ville ou tout près des maisons. Et même quelques rafales par jour, c’est déjà suffisant pour produire pas mal d’énergie. Et si jamais tu avais un doute, tu pourrais demander une petite étude avant d’acheter. Comme ça, en vérifiant à l’avance, tu serais sûr que ça marche bien chez toi, sans prendre de risque."
       },
       {
-        "acknowledge": "C’est vrai que tu t’inquiètes pour le bruit,",
-        "defend": "Mais les éoliennes domestiques d’aujourd’hui sont beaucoup plus silencieuses, surtout les verticales.",
-        "solve": "Et de toute façon, tu peux en parler aux voisins avant, pour voir ce qu’ils en pensent.",
-        "fullResponse": "C’est vrai que tu t’inquiètes pour le bruit, mais les éoliennes domestiques d’aujourd’hui sont beaucoup plus silencieuses, surtout les verticales. Et de toute façon, tu peux en parler aux voisins avant, pour voir ce qu’ils en pensent."
+        "acknowledge": "Franchement, ton inquiétude, je la comprends, personne n’a envie de se fâcher avec les voisins pour une histoire de bruit,",
+        "defend": "mais les nouvelles éoliennes de maison, elles sont vraiment faites pour être silencieuses. L’article dit que le bruit ne dépasse pas celui d’une conversation normale, même quand elles tournent fort. C’est vraiment loin des grosses éoliennes qu’on voit dans les champs.",
+        "solve": "Et pour être sûr, tu pourrais en parler à tes voisins avant, ou choisir un endroit à l’arrière du jardin. En la plaçant bien, même s’ils étaient un peu sensibles au bruit, ils ne l’entendraient même pas.",
+        "fullResponse": "Franchement, ton inquiétude, je la comprends, personne n’a envie de se fâcher avec les voisins pour une histoire de bruit, mais les nouvelles éoliennes de maison, elles sont vraiment faites pour être silencieuses. L’article dit que le bruit ne dépasse pas celui d’une conversation normale, même quand elles tournent fort. C’est vraiment loin des grosses éoliennes qu’on voit dans les champs. Et pour être sûr, tu pourrais en parler à tes voisins avant, ou choisir un endroit à l’arrière du jardin. En la plaçant bien, même s’ils étaient un peu sensibles au bruit, ils ne l’entendraient même pas."
       },
       {
-        "acknowledge": "Non, je comprends, tu ne veux pas que ça défigure ta maison.",
-        "defend": "Mais le modèle vertical est petit et discret, ça ne ressemble pas aux grandes éoliennes des champs.",
-        "solve": "Et si jamais tu n’aimes pas le look, tu peux le mettre un peu plus loin dans le jardin.",
-        "fullResponse": "Non, je comprends, tu ne veux pas que ça défigure ta maison. Mais le modèle vertical est petit et discret, ça ne ressemble pas aux grandes éoliennes des champs. Et si jamais tu n’aimes pas le look, tu peux le mettre un peu plus loin dans le jardin."
+        "acknowledge": "Bah, c’est vrai, ta maison c’est important, tu n’as pas envie que ça devienne moche à cause d’un truc pareil,",
+        "defend": "mais tu serais surpris, aujourd’hui il y a plein de modèles design qui vont bien avec les maisons modernes. L’article parle même de modèles verticaux qui ressemblent à des sculptures, on dirait presque des objets décoratifs posés dans le jardin.",
+        "solve": "Et si tu voulais vraiment que ça reste discret, tu pourrais choisir un petit modèle et le mettre derrière la maison, ou le peindre pour qu’il aille bien avec la façade. En choisissant bien la couleur, ça pourrait même donner du charme à ta maison.",
+        "fullResponse": "Bah, c’est vrai, ta maison c’est important, tu n’as pas envie que ça devienne moche à cause d’un truc pareil, mais tu serais surpris, aujourd’hui il y a plein de modèles design qui vont bien avec les maisons modernes. L’article parle même de modèles verticaux qui ressemblent à des sculptures, on dirait presque des objets décoratifs posés dans le jardin. Et si tu voulais vraiment que ça reste discret, tu pourrais choisir un petit modèle et le mettre derrière la maison, ou le peindre pour qu’il aille bien avec la façade. En choisissant bien la couleur, ça pourrait même donner du charme à ta maison."
       },
       {
-        "acknowledge": "Honnêtement, je te comprends, la paperasse ça fait peur.",
-        "defend": "Mais pour les petits modèles, souvent tu n’as pas besoin d’un gros permis. C’est plus simple que tu penses.",
-        "solve": "Et de toute façon, on peut appeler la mairie ensemble pour demander avant.",
-        "fullResponse": "Honnêtement, je te comprends, la paperasse ça fait peur. Mais pour les petits modèles, souvent tu n’as pas besoin d’un gros permis. C’est plus simple que tu penses. Et de toute façon, on peut appeler la mairie ensemble pour demander avant."
+        "acknowledge": "Ouais, c’est vrai, la paperasse, ça n’a jamais été super fun,",
+        "defend": "mais pour les petits modèles, ce n’est pas si compliqué. Souvent, il suffit d’une simple déclaration à la mairie, pas d’un gros permis. L’article dit d’ailleurs que la plupart des demandes passent sans souci, à condition que tu respectes les règles du quartier.",
+        "solve": "Et puis, si tu voulais te faire aider, il y a plein d’entreprises qui font toutes les démarches pour toi. En passant par eux, tu n’aurais qu’à signer, ils s’occuperaient de tout, sans que tu aies à te prendre la tête.",
+        "fullResponse": "Ouais, c’est vrai, la paperasse, ça n’a jamais été super fun, mais pour les petits modèles, ce n’est pas si compliqué. Souvent, il suffit d’une simple déclaration à la mairie, pas d’un gros permis. L’article dit d’ailleurs que la plupart des demandes passent sans souci, à condition que tu respectes les règles du quartier. Et puis, si tu voulais te faire aider, il y a plein d’entreprises qui font toutes les démarches pour toi. En passant par eux, tu n’aurais qu’à signer, ils s’occuperaient de tout, sans que tu aies à te prendre la tête."
       },
       {
-        "acknowledge": "Je comprends que tu n’es pas bricoleur,",
-        "defend": "Mais tu n’as pas à l’installer toi-même. Des pros s’occupent de tout.",
-        "solve": "Et si jamais tu veux comprendre comment ça marche, ils t’expliquent à la pose.",
-        "fullResponse": "Je comprends que tu n’es pas bricoleur, mais tu n’as pas à l’installer toi-même. Des pros s’occupent de tout. Et si jamais tu veux comprendre comment ça marche, ils t’expliquent à la pose."
+        "acknowledge": "Écoute, je te comprends bien, quand on n’est pas bricoleur, tout ça peut faire peur, c’est logique,"
+,
+        "defend": "mais bonne nouvelle, tu n’as pas à le faire toi-même. L’article dit que l’installation est faite par des pros, en quelques heures. Ils font tout, du montage au branchement. Ma cousine a fait installer la sienne, et elle m’a dit que ça avait pris juste une matinée.",
+        "solve": "Et pour l’entretien, c’est un petit contrôle une fois par an, c’est tout. En passant par le même technicien qui a posé le système, tu n’aurais rien à gérer, il ferait tout à ta place.",
+        "fullResponse": "Écoute, je te comprends bien, quand on n’est pas bricoleur, tout ça peut faire peur, c’est logique, mais bonne nouvelle, tu n’as pas à le faire toi-même. L’article dit que l’installation est faite par des pros, en quelques heures. Ils font tout, du montage au branchement. Ma cousine a fait installer la sienne, et elle m’a dit que ça avait pris juste une matinée. Et pour l’entretien, c’est un petit contrôle une fois par an, c’est tout. En passant par le même technicien qui a posé le système, tu n’aurais rien à gérer, il ferait tout à ta place."
       },
       {
-        "acknowledge": "Ouais, je vois ce que tu veux dire, tu as peur que ça ne suffise pas,",
-        "defend": "Mais l’article dit que ça alimente tes appareils, et que tu peux même revendre le surplus. Ça aide vraiment.",
-        "solve": "Et de toute façon, tu restes branché au réseau, tu n’es pas tout seul si le vent manque.",
-        "fullResponse": "Ouais, je vois ce que tu veux dire, tu as peur que ça ne suffise pas, mais l’article dit que ça alimente tes appareils, et que tu peux même revendre le surplus. Ça aide vraiment. Et de toute façon, tu restes branché au réseau, tu n’es pas tout seul si le vent manque."
+        "acknowledge": "C’est vrai, il ne faut pas croire que tu vas tout produire dès le premier jour, ta remarque est juste,",
+        "defend": "mais le but, ce n’est pas de tout couvrir. Il faut que tu voies ça comme un plus à côté du réseau normal. L’article dit qu’une éolienne de maison peut couvrir entre 30 et 60% de ce que tu consommes, ce qui est déjà énorme sur une année.",
+        "solve": "Et si jamais tu voulais aller plus loin, tu pourrais mettre aussi des panneaux solaires ou une batterie. En combinant les deux, tu pourrais vraiment arriver à être presque indépendant en quelques années.",
+        "fullResponse": "C’est vrai, il ne faut pas croire que tu vas tout produire dès le premier jour, ta remarque est juste, mais le but, ce n’est pas de tout couvrir. Il faut que tu voies ça comme un plus à côté du réseau normal. L’article dit qu’une éolienne de maison peut couvrir entre 30 et 60% de ce que tu consommes, ce qui est déjà énorme sur une année. Et si jamais tu voulais aller plus loin, tu pourrais mettre aussi des panneaux solaires ou une batterie. En combinant les deux, tu pourrais vraiment arriver à être presque indépendant en quelques années."
       },
       {
-        "acknowledge": "C’est vrai que tu as peur en cas de tempête,",
-        "defend": "Mais les modèles sont testés pour résister au vent fort. Ils s’arrêtent tout seuls s’il y a trop de vent.",
-        "solve": "Et si jamais tu t’inquiètes, tu peux prendre une assurance habitation qui couvre ça.",
-        "fullResponse": "C’est vrai que tu as peur en cas de tempête, mais les modèles sont testés pour résister au vent fort. Ils s’arrêtent tout seuls s’il y a trop de vent. Et si jamais tu t’inquiètes, tu peux prendre une assurance habitation qui couvre ça."
+        "acknowledge": "Non mais je te comprends, personne n’a envie de voir son éolienne s’envoler ou casser pendant un gros orage,",
+        "defend": "mais tu sais, les modèles d’aujourd’hui sont faits pour tenir même avec des vents très forts. L’article explique qu’ils ont un système qui se met en marche tout seul dès qu’il y a une tempête, et l’éolienne s’arrête. Donc elle est bloquée bien avant que ça devienne dangereux.",
+        "solve": "Et si jamais tu avais encore un doute, tu pourrais prendre une assurance en plus, ça coûte vraiment pas cher. En étant assuré, quoi qu’il arrive, tu serais couvert et tu n’aurais pas à t’inquiéter au moindre coup de vent.",
+        "fullResponse": "Non mais je te comprends, personne n’a envie de voir son éolienne s’envoler ou casser pendant un gros orage, mais tu sais, les modèles d’aujourd’hui sont faits pour tenir même avec des vents très forts. L’article explique qu’ils ont un système qui se met en marche tout seul dès qu’il y a une tempête, et l’éolienne s’arrête. Donc elle est bloquée bien avant que ça devienne dangereux. Et si jamais tu avais encore un doute, tu pourrais prendre une assurance en plus, ça coûte vraiment pas cher. En étant assuré, quoi qu’il arrive, tu serais couvert et tu n’aurais pas à t’inquiéter au moindre coup de vent."
       },
       {
-        "acknowledge": "Non, je comprends, tu as peur des frais d’entretien.",
-        "defend": "Mais une éolienne domestique, c’est assez simple : un contrôle de temps en temps, pas tous les mois.",
-        "solve": "Et de toute façon, beaucoup de vendeurs proposent un contrat d’entretien, tu n’as rien à gérer.",
-        "fullResponse": "Non, je comprends, tu as peur des frais d’entretien. Mais une éolienne domestique, c’est assez simple : un contrôle de temps en temps, pas tous les mois. Et de toute façon, beaucoup de vendeurs proposent un contrat d’entretien, tu n’as rien à gérer."
+        "acknowledge": "Franchement, ton point je le vois, on n’a jamais envie d’acheter un truc qui coûte encore plus cher à entretenir qu’à l’achat,",
+        "defend": "mais rassure-toi, l’entretien d’une éolienne de maison, c’est vraiment pas grand-chose. L’article parle d’un contrôle par an, plus quelques pièces à changer tous les cinq à dix ans. À côté de ce que tu économiserais sur ta facture, c’est un tout petit budget.",
+        "solve": "Et si tu voulais être encore plus tranquille, tu pourrais prendre un contrat d’entretien avec l’installateur. Comme ça, en payant un forfait fixe par an, tu n’aurais aucune mauvaise surprise, et le système serait toujours suivi par un pro.",
+        "fullResponse": "Franchement, ton point je le vois, on n’a jamais envie d’acheter un truc qui coûte encore plus cher à entretenir qu’à l’achat, mais rassure-toi, l’entretien d’une éolienne de maison, c’est vraiment pas grand-chose. L’article parle d’un contrôle par an, plus quelques pièces à changer tous les cinq à dix ans. À côté de ce que tu économiserais sur ta facture, c’est un tout petit budget. Et si tu voulais être encore plus tranquille, tu pourrais prendre un contrat d’entretien avec l’installateur. Comme ça, en payant un forfait fixe par an, tu n’aurais aucune mauvaise surprise, et le système serait toujours suivi par un pro."
       },
       {
-        "acknowledge": "Honnêtement, je te comprends, les panneaux solaires c’est bien aussi,",
-        "defend": "Mais l’éolienne marche aussi la nuit et en hiver, pas seulement quand il y a du soleil. Et tu peux même les combiner.",
-        "solve": "Et de toute façon, tu n’es pas obligé de choisir : tu peux commencer par l’éolienne et voir.",
-        "fullResponse": "Honnêtement, je te comprends, les panneaux solaires c’est bien aussi, mais l’éolienne marche aussi la nuit et en hiver, pas seulement quand il y a du soleil. Et tu peux même les combiner. Et de toute façon, tu n’es pas obligé de choisir : tu peux commencer par l’éolienne et voir."
+        "acknowledge": "Ouais, c’est vrai, les panneaux solaires, on les connaît mieux, et ça a l’air plus simple à mettre,",
+        "defend": "mais le truc bien avec l’éolienne, c’est qu’elle marche aussi la nuit et en hiver, quand les panneaux ne font pas grand-chose. C’est vraiment complémentaire. L’article dit d’ailleurs qu’en mettant les deux ensemble, c’est le meilleur combo pour être presque indépendant toute l’année.",
+        "solve": "Et si tu hésitais encore, rien ne t’empêcherait de commencer par l’éolienne et d’ajouter des panneaux plus tard. En essayant petit à petit, tu verrais ce qui marche le mieux chez toi avant de te lancer plus grand.",
+        "fullResponse": "Ouais, c’est vrai, les panneaux solaires, on les connaît mieux, et ça a l’air plus simple à mettre, mais le truc bien avec l’éolienne, c’est qu’elle marche aussi la nuit et en hiver, quand les panneaux ne font pas grand-chose. C’est vraiment complémentaire. L’article dit d’ailleurs qu’en mettant les deux ensemble, c’est le meilleur combo pour être presque indépendant toute l’année. Et si tu hésitais encore, rien ne t’empêcherait de commencer par l’éolienne et d’ajouter des panneaux plus tard. En essayant petit à petit, tu verrais ce qui marche le mieux chez toi avant de te lancer plus grand."
       }
     ]
   }
