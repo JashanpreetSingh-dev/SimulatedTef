@@ -6836,5 +6836,90 @@
       "Oh là là, mais qu'est-ce que tu racontes ! Justement, l'annonce propose des cours pour débutants avec des moniteurs super patients. Tu serais surpris de voir à quel point on progresse vite et les premières glisses, même si elles ne sont pas parfaites, sont vraiment grisantes.",
       "C'est vrai que le froid peut freiner, mais avec les équipements modernes, tu ne le sens presque pas ! Et puis, l'effort en ski te réchauffe vite. Imagine le soleil sur les pistes, l'air pur... C'est hyper revigorant, bien plus que de rester enfermé chez soi, tu verras !"
     ]
+  },
+  {
+    "id": 82,
+    "section": "EO2",
+    "prompt": "Vous avez lu cet article. Vous en parlez à un(e) ami(e) qui habite une maison et qui veut réduire sa facture d’électricité.",
+    "title": null,
+    "counter_arguments": [
+      "ÉOLIENNE DOMESTIQUE – Liste de contre-arguments possibles (des examinateurs) :",
+      "C’est trop cher à l’achat.",
+      "Il n’y a pas assez de vent là où j’habite.",
+      "Ça va faire du bruit, les voisins ne vont pas aimer.",
+      "C’est moche, ça va défigurer ma maison.",
+      "Il faut sûrement l’autorisation de la mairie.",
+      "Je ne suis pas bricoleur, l’installation a l’air compliquée.",
+      "Ça ne produira jamais assez d’électricité pour toute la maison.",
+      "C’est dangereux s’il y a une tempête.",
+      "L’entretien va coûter cher.",
+      "Autant mettre des panneaux solaires, c’est plus simple."
+    ],
+    "image": "/section_b_images/section_b_image_82.png",
+    "time_limit_sec": 480,
+    "difficulty": "medium",
+    "theme": "Éolienne Domestique",
+    "suggested_counters": [
+      {
+        "acknowledge": "Je comprends que tu penses que c’est cher,",
+        "defend": "Mais tu peux alimenter tes appareils et même revendre le surplus au réseau. Tu récupères l’argent petit à petit.",
+        "solve": "Et de toute façon, tu peux commencer par un petit modèle, pas besoin de tout installer d’un coup.",
+        "fullResponse": "Je comprends que tu penses que c’est cher, mais tu peux alimenter tes appareils et même revendre le surplus au réseau. Tu récupères l’argent petit à petit. Et de toute façon, tu peux commencer par un petit modèle, pas besoin de tout installer d’un coup."
+      },
+      {
+        "acknowledge": "Ouais, je vois ce que tu veux dire, pas de vent partout,",
+        "defend": "Mais il y a deux types : verticale et horizontale. La verticale marche même avec un vent plus faible, près des maisons.",
+        "solve": "Et si jamais chez toi le vent est vraiment trop faible, tu peux demander une étude avant d’acheter.",
+        "fullResponse": "Ouais, je vois ce que tu veux dire, pas de vent partout, mais il y a deux types : verticale et horizontale. La verticale marche même avec un vent plus faible, près des maisons. Et si jamais chez toi le vent est vraiment trop faible, tu peux demander une étude avant d’acheter."
+      },
+      {
+        "acknowledge": "C’est vrai que tu t’inquiètes pour le bruit,",
+        "defend": "Mais les éoliennes domestiques d’aujourd’hui sont beaucoup plus silencieuses, surtout les verticales.",
+        "solve": "Et de toute façon, tu peux en parler aux voisins avant, pour voir ce qu’ils en pensent.",
+        "fullResponse": "C’est vrai que tu t’inquiètes pour le bruit, mais les éoliennes domestiques d’aujourd’hui sont beaucoup plus silencieuses, surtout les verticales. Et de toute façon, tu peux en parler aux voisins avant, pour voir ce qu’ils en pensent."
+      },
+      {
+        "acknowledge": "Non, je comprends, tu ne veux pas que ça défigure ta maison.",
+        "defend": "Mais le modèle vertical est petit et discret, ça ne ressemble pas aux grandes éoliennes des champs.",
+        "solve": "Et si jamais tu n’aimes pas le look, tu peux le mettre un peu plus loin dans le jardin.",
+        "fullResponse": "Non, je comprends, tu ne veux pas que ça défigure ta maison. Mais le modèle vertical est petit et discret, ça ne ressemble pas aux grandes éoliennes des champs. Et si jamais tu n’aimes pas le look, tu peux le mettre un peu plus loin dans le jardin."
+      },
+      {
+        "acknowledge": "Honnêtement, je te comprends, la paperasse ça fait peur.",
+        "defend": "Mais pour les petits modèles, souvent tu n’as pas besoin d’un gros permis. C’est plus simple que tu penses.",
+        "solve": "Et de toute façon, on peut appeler la mairie ensemble pour demander avant.",
+        "fullResponse": "Honnêtement, je te comprends, la paperasse ça fait peur. Mais pour les petits modèles, souvent tu n’as pas besoin d’un gros permis. C’est plus simple que tu penses. Et de toute façon, on peut appeler la mairie ensemble pour demander avant."
+      },
+      {
+        "acknowledge": "Je comprends que tu n’es pas bricoleur,",
+        "defend": "Mais tu n’as pas à l’installer toi-même. Des pros s’occupent de tout.",
+        "solve": "Et si jamais tu veux comprendre comment ça marche, ils t’expliquent à la pose.",
+        "fullResponse": "Je comprends que tu n’es pas bricoleur, mais tu n’as pas à l’installer toi-même. Des pros s’occupent de tout. Et si jamais tu veux comprendre comment ça marche, ils t’expliquent à la pose."
+      },
+      {
+        "acknowledge": "Ouais, je vois ce que tu veux dire, tu as peur que ça ne suffise pas,",
+        "defend": "Mais l’article dit que ça alimente tes appareils, et que tu peux même revendre le surplus. Ça aide vraiment.",
+        "solve": "Et de toute façon, tu restes branché au réseau, tu n’es pas tout seul si le vent manque.",
+        "fullResponse": "Ouais, je vois ce que tu veux dire, tu as peur que ça ne suffise pas, mais l’article dit que ça alimente tes appareils, et que tu peux même revendre le surplus. Ça aide vraiment. Et de toute façon, tu restes branché au réseau, tu n’es pas tout seul si le vent manque."
+      },
+      {
+        "acknowledge": "C’est vrai que tu as peur en cas de tempête,",
+        "defend": "Mais les modèles sont testés pour résister au vent fort. Ils s’arrêtent tout seuls s’il y a trop de vent.",
+        "solve": "Et si jamais tu t’inquiètes, tu peux prendre une assurance habitation qui couvre ça.",
+        "fullResponse": "C’est vrai que tu as peur en cas de tempête, mais les modèles sont testés pour résister au vent fort. Ils s’arrêtent tout seuls s’il y a trop de vent. Et si jamais tu t’inquiètes, tu peux prendre une assurance habitation qui couvre ça."
+      },
+      {
+        "acknowledge": "Non, je comprends, tu as peur des frais d’entretien.",
+        "defend": "Mais une éolienne domestique, c’est assez simple : un contrôle de temps en temps, pas tous les mois.",
+        "solve": "Et de toute façon, beaucoup de vendeurs proposent un contrat d’entretien, tu n’as rien à gérer.",
+        "fullResponse": "Non, je comprends, tu as peur des frais d’entretien. Mais une éolienne domestique, c’est assez simple : un contrôle de temps en temps, pas tous les mois. Et de toute façon, beaucoup de vendeurs proposent un contrat d’entretien, tu n’as rien à gérer."
+      },
+      {
+        "acknowledge": "Honnêtement, je te comprends, les panneaux solaires c’est bien aussi,",
+        "defend": "Mais l’éolienne marche aussi la nuit et en hiver, pas seulement quand il y a du soleil. Et tu peux même les combiner.",
+        "solve": "Et de toute façon, tu n’es pas obligé de choisir : tu peux commencer par l’éolienne et voir.",
+        "fullResponse": "Honnêtement, je te comprends, les panneaux solaires c’est bien aussi, mais l’éolienne marche aussi la nuit et en hiver, pas seulement quand il y a du soleil. Et tu peux même les combiner. Et de toute façon, tu n’es pas obligé de choisir : tu peux commencer par l’éolienne et voir."
+      }
+    ]
   }
 ]
