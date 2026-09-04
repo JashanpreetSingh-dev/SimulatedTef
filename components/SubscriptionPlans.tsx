@@ -42,8 +42,7 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 1,
     },
     features: [
-      'Unlimited reading practice',
-      'Unlimited listening practice',
+      'Reading & listening practice included',
       '1 speaking Sec. A (total)',
       '1 speaking Sec. B (total)',
       '1 writing Sec. A (total)',
@@ -65,8 +64,7 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 2,
     },
     features: [
-      'Unlimited reading practice',
-      'Unlimited listening practice',
+      'Reading & listening practice included',
       '10 speaking Sec. A / month',
       '10 speaking Sec. B / month',
       '10 writing Sec. A / month',
@@ -88,8 +86,7 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
       mockExamLimit: 5,
     },
     features: [
-      'Unlimited reading practice',
-      'Unlimited listening practice',
+      'Reading & listening practice included',
       '30 speaking Sec. A / month',
       '30 speaking Sec. B / month',
       '30 writing Sec. A / month',
@@ -152,7 +149,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
             Choose Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Plan</span>
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-            Reading &amp; Listening is free for everyone. Upgrade for unlimited speaking &amp; writing practice.
+            Reading &amp; Listening is free for everyone, and we keep adding new tests. Upgrade for speaking &amp; writing practice.
           </p>
         </div>
 
@@ -262,7 +259,7 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
         {variant === 'landing' && (
           <div className="mt-12 text-center">
             <p className="text-slate-500 dark:text-slate-400 text-sm">
-              Reading &amp; Listening practice is free for all users — no subscription needed. No credit card required for free plan.
+              Reading &amp; Listening practice is free for all users — we keep adding new tests. No subscription needed. No credit card required for free plan.
             </p>
           </div>
         )}

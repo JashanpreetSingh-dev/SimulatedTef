@@ -233,7 +233,7 @@ export function SubscriptionView() {
               Available Plans
             </h2>
             <p className="text-slate-600 dark:text-slate-400 text-base max-w-xl">
-              Choose a plan that fits your learning needs. Upgrade or downgrade anytime.
+              Choose a plan that fits your learning needs. Reading and listening are included, and we keep adding new tests. Upgrade or downgrade anytime.
             </p>
           </div>
 
@@ -307,6 +307,17 @@ export function SubscriptionView() {
                   </div>
 
                   <ul className="space-y-4 mb-6 flex-1">
+                    <li className="flex items-start gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300" aria-hidden>
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reading &amp; listening</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                          Included — we keep adding new tests
+                        </p>
+                      </div>
+                    </li>
                     <li className="flex items-start gap-3">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300" aria-hidden>
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0V8m0 0V4a2 2 0 012-2h2a2 2 0 012 2v4z" /></svg>
