@@ -581,6 +581,20 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.retakeAssignmentMissing': 'Impossible de recommencer ce devoir. Les informations sont manquantes.',
     'errors.retakeAssignmentFailed': 'Impossible de recommencer ce devoir. Veuillez réessayer.',
 
+    // Oral Expression Live - PTT mode
+    'oral.ptt.chipPTT': 'PTT',
+    'oral.ptt.chipAuto': 'Auto',
+    'oral.ptt.tooltipTitlePTT': 'Maintenir pour parler',
+    'oral.ptt.tooltipTitleAuto': 'Microphone ouvert',
+    'oral.ptt.tooltipDescPTT': 'Appuyez et maintenez le bouton pour parler. Relâchez quand vous avez terminé — l\'examinateur répond à votre tour.',
+    'oral.ptt.tooltipDescAuto': 'Le microphone est toujours ouvert. L\'examinateur répond automatiquement quand il détecte un silence — peut vous couper lors d\'une longue pause.',
+    'oral.ptt.tooltipSwitch': 'Cliquez pour changer de mode.',
+    'oral.ptt.statusHold': 'Maintenez pour parler',
+    'oral.ptt.statusSpeaking': 'Vous parlez…',
+    'oral.ptt.buttonHold': '🎙 Maintenez pour parler',
+    'oral.ptt.buttonSpeaking': '🎙 En train de parler…',
+    'oral.ptt.releaseHint': 'Relâchez pour laisser l\'examinateur répondre',
+
     // Common
     'common.cancel': 'Annuler',
   },
@@ -1153,6 +1167,20 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.retakeTaskMissing': 'Unable to retake this exam. Task information is missing.',
     'errors.retakeAssignmentMissing': 'Unable to retake this assignment. Assignment information is missing.',
     'errors.retakeAssignmentFailed': 'Unable to retake this assignment. Please try again.',
+
+    // Oral Expression Live - PTT mode
+    'oral.ptt.chipPTT': 'PTT',
+    'oral.ptt.chipAuto': 'Auto',
+    'oral.ptt.tooltipTitlePTT': 'Hold to Speak',
+    'oral.ptt.tooltipTitleAuto': 'Open Mic',
+    'oral.ptt.tooltipDescPTT': 'Hold the button while speaking. Release when done — the examiner responds on your cue.',
+    'oral.ptt.tooltipDescAuto': 'The mic is always open. The examiner responds automatically after detecting silence — may cut in on long pauses.',
+    'oral.ptt.tooltipSwitch': 'Click to switch mode.',
+    'oral.ptt.statusHold': 'Hold to speak',
+    'oral.ptt.statusSpeaking': 'Speaking…',
+    'oral.ptt.buttonHold': '🎙 Hold to speak',
+    'oral.ptt.buttonSpeaking': '🎙 Speaking…',
+    'oral.ptt.releaseHint': 'Release for the examiner to respond',
 
     // Common
     'common.cancel': 'Cancel',
