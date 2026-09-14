@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useUser, useAuth } from '@clerk/clerk-react';
-import { useLanguage } from '../contexts/LanguageContext';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
 import { TEFTask, SavedResult } from '../types';
 import { persistenceService } from '../services/persistence';
@@ -69,7 +68,6 @@ interface Props {
 export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSessionStart, mode }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
-  const { t } = useLanguage();
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active' | 'evaluating'>('idle');
   const [showLiveCaptions, setShowLiveCaptions] = useState(() => {
@@ -79,16 +77,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       return false;
     }
   });
-  const [isPTTMode, setIsPTTMode] = useState(() => {
-    try {
-      return typeof localStorage !== 'undefined' && localStorage.getItem('tef-oral-ptt-mode') === '1';
-    } catch {
-      return false;
-    }
-  });
-  const [isPTTActive, setIsPTTActive] = useState(false);
-  const isPTTModeRef = useRef(false);
-  const isPTTActiveRef = useRef(false);
   const [examinerCaptionDisplay, setExaminerCaptionDisplay] = useState('');
   const [isModelSpeaking, setIsModelSpeaking] = useState(false);
   const [isUserSpeaking, setIsUserSpeaking] = useState(false);
@@ -170,43 +158,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
       }
       return next;
     });
-  }, []);
-
-  const togglePTTMode = useCallback(() => {
-    setIsPTTMode((prev) => {
-      const next = !prev;
-      isPTTModeRef.current = next;
-      try {
-        localStorage.setItem('tef-oral-ptt-mode', next ? '1' : '0');
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }, []);
-
-  // Keep refs in sync with state so AudioWorklet callback always sees current values
-  useEffect(() => { isPTTModeRef.current = isPTTMode; }, [isPTTMode]);
-  useEffect(() => { isPTTActiveRef.current = isPTTActive; }, [isPTTActive]);
-
-  const handlePTTToggle = useCallback(() => {
-    if (!isPTTModeRef.current) return;
-    const next = !isPTTActiveRef.current;
-    setIsPTTActive(next);
-    isPTTActiveRef.current = next;
-    if (sessionRef.current) {
-      try {
-        if (next) {
-          // Punching in — tell Gemini user is starting to speak
-          sessionRef.current.sendRealtimeInput({ activityStart: {} });
-        } else {
-          // Punching out — tell Gemini user is done, respond now
-          sessionRef.current.sendRealtimeInput({ activityEnd: {} });
-        }
-      } catch (e) {
-        console.debug('PTT activity signal not supported or failed:', e);
-      }
-    }
   }, []);
 
   // Helper function to stop MediaRecorder and wait for final chunks
@@ -724,10 +675,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
                 }
               }
 
-              // In PTT mode, only forward audio to Gemini while the user holds the button.
-              // Recording (MediaRecorder) is unaffected — it captures everything regardless.
-              if (isPTTModeRef.current && !isPTTActiveRef.current) return;
-
               const pcmBlob = createPcmBlob(inputData, inputAudioCtxRef.current!.sampleRate);
               sessionPromise.then(session => {
                 if (!isLiveRef.current || !session) return;
@@ -1080,7 +1027,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         // Optional: Configure response timeouts
         // responseTimeout: 30000, // 30 seconds - uncomment to customize
         // turnDetectionTimeout: 800, // 800ms - uncomment to customize (default from LIVE_API_CONFIG)
-        pttMode: isPTTModeRef.current, // Disables server-side VAD so Gemini won't respond mid-turn
       });
 
       clearTimeout(connectionTimeout);
@@ -1624,35 +1570,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             </div>
           )}
           {status === 'active' && <div className="text-[9px] md:text-[10px] font-black text-rose-300 dark:text-rose-400 flex items-center gap-1"><span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-rose-300 dark:bg-rose-400 rounded-full animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" /> LIVE</div>}
-          <div className="relative group">
-            <button
-              type="button"
-              onClick={togglePTTMode}
-              disabled={status === 'active' || status === 'connecting'}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
-                isPTTMode
-                  ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white shadow-md'
-                  : 'bg-slate-100 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-500'
-              }`}
-            >
-              🎙 {isPTTMode ? t('oral.ptt.chipPTT') : t('oral.ptt.chipAuto')}
-              <span className={`text-[8px] rounded-full w-3.5 h-3.5 flex items-center justify-center font-black border ${isPTTMode ? 'border-white/60 text-white/80' : 'border-slate-400 dark:border-slate-500 text-slate-400 dark:text-slate-500'}`}>?</span>
-            </button>
-            {/* Tooltip */}
-            <div className="pointer-events-none absolute right-0 top-full mt-2 w-64 z-50 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-              <div className="bg-slate-900 dark:bg-slate-800 border border-slate-700 dark:border-slate-600 rounded-xl shadow-xl p-3 text-left">
-                <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-1.5">
-                  {isPTTMode ? t('oral.ptt.tooltipTitlePTT') : t('oral.ptt.tooltipTitleAuto')}
-                </p>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  {isPTTMode ? t('oral.ptt.tooltipDescPTT') : t('oral.ptt.tooltipDescAuto')}
-                </p>
-                <p className="text-[10px] text-slate-500 mt-2 border-t border-slate-700 pt-2">
-                  {t('oral.ptt.tooltipSwitch')}
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1748,15 +1665,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
 
           <div className="text-left md:text-center space-y-1.5 md:space-y-2 z-10 flex-1 md:flex-none">
             <h4 className="text-white font-black text-base md:text-xl tracking-tight">
-              {status === 'active'
-                ? isModelSpeaking
-                  ? 'L\'examinateur répond...'
-                  : isAiThinking
-                  ? 'L\'examinateur réfléchit...'
-                  : isPTTMode
-                  ? (isPTTActive ? t('oral.ptt.statusSpeaking') : t('oral.ptt.statusHold'))
-                  : 'À vous de parler'
-                : 'Prêt pour l\'épreuve ?'}
+              {status === 'active' ? (isModelSpeaking ? 'L\'examinateur répond...' : isAiThinking ? 'L\'examinateur réfléchit...' : 'À vous de parler') : 'Prêt pour l\'épreuve ?'}
             </h4>
             <p className="text-indigo-100 text-[8px] md:text-[10px] uppercase font-black tracking-[0.4em]">TEF AI Master Simulator</p>
           </div>
@@ -1812,28 +1721,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         )}
         </div>
       </div>
-
-      {status === 'active' && isPTTMode && (
-        <div className="flex flex-col items-center gap-2">
-          <button
-            type="button"
-            onClick={handlePTTToggle}
-            disabled={isModelSpeaking}
-            className={`select-none w-full max-w-sm py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-150 border-2 cursor-pointer ${
-              isModelSpeaking
-                ? 'opacity-40 cursor-not-allowed bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-400'
-                : isPTTActive
-                ? 'bg-emerald-400 dark:bg-emerald-500 border-emerald-300 dark:border-emerald-400 text-white shadow-lg shadow-emerald-400/40 scale-[0.98]'
-                : 'bg-indigo-100/70 dark:bg-slate-700/50 border-indigo-300 dark:border-indigo-500 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-200/70 dark:hover:bg-slate-600/50 active:scale-[0.98]'
-            }`}
-          >
-            {isPTTActive ? t('oral.ptt.buttonSpeaking') : t('oral.ptt.buttonHold')}
-          </button>
-          <p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase tracking-widest font-bold">
-            {t('oral.ptt.releaseHint')}
-          </p>
-        </div>
-      )}
 
       <HintsCarousel task={currentTask} section={currentPart} />
 

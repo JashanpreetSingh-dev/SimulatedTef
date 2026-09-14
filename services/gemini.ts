@@ -415,14 +415,13 @@ export const geminiService = {
   },
 
   async connectLive(
-    callbacks: any,
-    task: TEFTask,
-    part: 'A' | 'B',
+    callbacks: any, 
+    task: TEFTask, 
+    part: 'A' | 'B', 
     ocrFacts?: string[],
     options?: {
-      responseTimeout?: number;
-      turnDetectionTimeout?: number;
-      pttMode?: boolean; // Disable server-side VAD; use manual activityStart/activityEnd signals
+      responseTimeout?: number; // Timeout for waiting for AI response (ms)
+      turnDetectionTimeout?: number; // Timeout for detecting user turn end (ms)
     }
   ) {
     // Use the new prompt system
@@ -451,10 +450,13 @@ export const geminiService = {
       /** Emits serverContent.outputTranscription for model audio (examiner captions + evaluation refs). */
       outputAudioTranscription: {},
       // inputAudioTranscription omitted: inputTranscription / Web Speech already cover user text; avoids duplicate streams.
-      // PTT mode: disable server-side VAD so Gemini only responds to explicit activityStart/activityEnd signals.
-      ...(options?.pttMode ? { realtimeInputConfig: { automaticActivityDetection: { disabled: true } } } : {}),
       ...(!isGemini31LiveModel() ? { contextWindowCompression: contextWindowConfig } : {}),
     };
+
+    // Do not set responseTimeout / turnDetectionTimeout on Live config — not in LiveConnectConfig;
+    // sending them causes WebSocket 1007 on stricter Live models. Use LIVE_API_CONFIG client-side only.
+
+    void options;
 
     return ai.live.connect({
       model: GEMINI_LIVE_MODEL,
