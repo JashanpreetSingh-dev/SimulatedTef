@@ -194,12 +194,17 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     const next = !isPTTActiveRef.current;
     setIsPTTActive(next);
     isPTTActiveRef.current = next;
-    if (!next && sessionRef.current) {
-      // Punching out — signal end of user turn so Gemini responds immediately
+    if (sessionRef.current) {
       try {
-        sessionRef.current.sendRealtimeInput({ activityEnd: {} });
+        if (next) {
+          // Punching in — tell Gemini user is starting to speak
+          sessionRef.current.sendRealtimeInput({ activityStart: {} });
+        } else {
+          // Punching out — tell Gemini user is done, respond now
+          sessionRef.current.sendRealtimeInput({ activityEnd: {} });
+        }
       } catch (e) {
-        console.debug('activityEnd not supported or failed:', e);
+        console.debug('PTT activity signal not supported or failed:', e);
       }
     }
   }, []);
@@ -1075,6 +1080,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         // Optional: Configure response timeouts
         // responseTimeout: 30000, // 30 seconds - uncomment to customize
         // turnDetectionTimeout: 800, // 800ms - uncomment to customize (default from LIVE_API_CONFIG)
+        pttMode: isPTTModeRef.current, // Disables server-side VAD so Gemini won't respond mid-turn
       });
 
       clearTimeout(connectionTimeout);
@@ -1622,7 +1628,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
             <button
               type="button"
               onClick={togglePTTMode}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer ${
+              disabled={status === 'active' || status === 'connecting'}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-wider border transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
                 isPTTMode
                   ? 'bg-indigo-400 dark:bg-indigo-500 border-indigo-400 dark:border-indigo-500 text-white shadow-md'
                   : 'bg-slate-100 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-400 hover:border-indigo-300 dark:hover:border-indigo-500'
