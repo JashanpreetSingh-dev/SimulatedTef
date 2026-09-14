@@ -189,18 +189,13 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   useEffect(() => { isPTTModeRef.current = isPTTMode; }, [isPTTMode]);
   useEffect(() => { isPTTActiveRef.current = isPTTActive; }, [isPTTActive]);
 
-  const handlePTTPress = useCallback(() => {
+  const handlePTTToggle = useCallback(() => {
     if (!isPTTModeRef.current) return;
-    setIsPTTActive(true);
-    isPTTActiveRef.current = true;
-  }, []);
-
-  const handlePTTRelease = useCallback(() => {
-    if (!isPTTModeRef.current) return;
-    setIsPTTActive(false);
-    isPTTActiveRef.current = false;
-    // Signal end of user turn so Gemini responds immediately instead of waiting on VAD
-    if (sessionRef.current) {
+    const next = !isPTTActiveRef.current;
+    setIsPTTActive(next);
+    isPTTActiveRef.current = next;
+    if (!next && sessionRef.current) {
+      // Punching out — signal end of user turn so Gemini responds immediately
       try {
         sessionRef.current.sendRealtimeInput({ activityEnd: {} });
       } catch (e) {
@@ -1815,12 +1810,7 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         <div className="flex flex-col items-center gap-2">
           <button
             type="button"
-            onMouseDown={handlePTTPress}
-            onMouseUp={handlePTTRelease}
-            onMouseLeave={handlePTTRelease}
-            onTouchStart={(e) => { e.preventDefault(); handlePTTPress(); }}
-            onTouchEnd={(e) => { e.preventDefault(); handlePTTRelease(); }}
-            onTouchCancel={(e) => { e.preventDefault(); handlePTTRelease(); }}
+            onClick={handlePTTToggle}
             disabled={isModelSpeaking}
             className={`select-none w-full max-w-sm py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-150 border-2 cursor-pointer ${
               isModelSpeaking
