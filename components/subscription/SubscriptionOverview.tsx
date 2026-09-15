@@ -62,7 +62,7 @@ export function SubscriptionOverview({ subscription, currentTier, onSubscription
   }
 
   const isFreeTier = subscription.tier === 'free';
-  const isPaidTier = !isFreeTier && subscription.status === 'active';
+  const isPaidTier = !isFreeTier && (subscription.status === 'active' || subscription.status === 'past_due');
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border-2 border-indigo-500 dark:border-indigo-400 p-6 mb-6">
