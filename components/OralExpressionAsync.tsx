@@ -27,14 +27,6 @@ interface Props {
 const MAX_USER_TURNS = 12;
 const MAX_RECORDING_SECONDS = 90;
 
-/** Collapse hallucinated filler repetitions (e.g. "hmm hmm hmm hmm" → "hmm"). */
-function cleanHallucinations(text: string): string {
-  return text
-    .replace(/\b(\w{1,6})\b(\s+\1){3,}/gi, '$1') // 4+ repeats of any short word → 1
-    .replace(/([.…,!?])\1{3,}/g, '$1')             // repeated punctuation
-    .trim();
-}
-
 export const OralExpressionAsync: React.FC<Props> = ({
   scenario,
   onFinish,
@@ -159,10 +151,9 @@ export const OralExpressionAsync: React.FC<Props> = ({
       const { transcript: rawTx } = await geminiService.transcribeAudio(blob);
       // Extract only the User lines from the diarized transcript
       const userLines = rawTx.split('\n').filter(l => /^User:/i.test(l));
-      const rawUserText = userLines.length > 0
+      const userText = userLines.length > 0
         ? userLines.map(l => l.replace(/^User:\s*/i, '')).join(' ').trim()
         : rawTx.trim();
-      const userText = cleanHallucinations(rawUserText);
 
       if (!userText) {
         setError('Transcription vide — réenregistrez votre argument.');

@@ -370,8 +370,6 @@ export const geminiService = {
         }],
         config: {
           responseMimeType: "application/json",
-          // Cap output to prevent hallucination loops during silence (90s speech ≈ 600 tokens max)
-          maxOutputTokens: 1500,
           responseSchema: {
             type: Type.OBJECT,
             properties: {
