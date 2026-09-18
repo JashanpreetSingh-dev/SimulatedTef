@@ -1482,7 +1482,8 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
         sessionRef.current.sendRealtimeInput({
           text:
             "NOTE INTERNE POUR L'EXAMINATEUR (ne pas dire au candidat): Continue à pousser des contre-arguments de la liste — NE CONCLUS PAS encore. " +
-            "Reste sceptique même si le candidat a donné de bonnes réponses.",
+            "Reste sceptique même si le candidat a donné de bonnes réponses. " +
+            "RAPPEL ABSOLU: UN SEUL contre-argument ce tour, pas deux, pas trois — un seul, puis tu t'arrêtes.",
         });
         console.log(`⏰ EO2 keep-going injection at ${elapsed}s elapsed (${timeLeft}s remaining)`);
       } catch (e) {
