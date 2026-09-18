@@ -12,7 +12,6 @@ import {
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
 import { HintsCarousel } from './exam/HintsCarousel';
-import { OralExpressionAsync } from './OralExpressionAsync';
 
 /**
  * Live outputTranscription often sends incremental fragments (a few words), not the full line each time.
@@ -71,9 +70,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
   const { getToken } = useAuth();
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active' | 'evaluating'>('idle');
-  const [turnMode, setTurnMode] = useState<'live' | 'async'>(() => {
-    try { return (localStorage.getItem('eo2TurnMode') as 'live' | 'async') || 'live'; } catch { return 'live'; }
-  });
   const [showLiveCaptions, setShowLiveCaptions] = useState(() => {
     try {
       return typeof localStorage !== 'undefined' && localStorage.getItem('tef-oral-live-captions') === '1';
@@ -1546,22 +1542,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     return path;
   };
 
-  // Async turn-taking mode for Section B practice
-  if (mode === 'partB' && turnMode === 'async') {
-    return (
-      <OralExpressionAsync
-        scenario={scenario}
-        onFinish={onFinish}
-        onSessionStart={onSessionStart}
-        mode={mode}
-        onSwitchMode={() => {
-          setTurnMode('live');
-          try { localStorage.setItem('eo2TurnMode', 'live'); } catch {}
-        }}
-      />
-    );
-  }
-
   // Show loading screen during evaluation
   if (status === 'evaluating') {
     return <LoadingResult />;
@@ -1579,26 +1559,6 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           )}
         </div>
         <div className="flex items-center gap-2 md:gap-3">
-          {mode === 'partB' && status === 'idle' && (
-            <div className="flex gap-0.5 bg-slate-100 dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700">
-              {(['live', 'async'] as const).map(m => (
-                <button
-                  key={m}
-                  onClick={() => {
-                    setTurnMode(m);
-                    try { localStorage.setItem('eo2TurnMode', m); } catch {}
-                  }}
-                  className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer ${
-                    turnMode === m
-                      ? 'bg-indigo-400 dark:bg-indigo-500 text-white shadow'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
-                  }`}
-                >
-                  {m === 'live' ? 'Live' : 'Manuel'}
-                </button>
-              ))}
-            </div>
-          )}
           {status === 'active' && timeLeft > 0 && (
             <div className={`px-4 md:px-5 py-1.5 md:py-2 rounded-xl md:rounded-xl text-base md:text-base font-black tabular-nums transition-all ${
               timeLeft <= 60 

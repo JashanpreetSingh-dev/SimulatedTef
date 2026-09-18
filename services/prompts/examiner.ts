@@ -163,41 +163,6 @@ export function getWarning10Prompt(): string {
 }
 
 /**
- * System prompt for async (turn-by-turn) EO2 mode — no timer/injection logic.
- */
-export function makeAsyncEO2SystemPrompt(task: TEFTask): string {
-  const base = getBaseInstructions();
-
-  const validCounterArgs = task.counter_arguments?.filter(arg =>
-    !arg.includes('Liste de contre-arguments') &&
-    !arg.includes('contre-arguments possibles') &&
-    arg.trim().length > 0
-  ) || [];
-
-  const cleanCounterArgs = validCounterArgs.map(arg =>
-    arg.replace(/\[(?:ID|COUNTER_ID):[^\]]+\]/gi, '').trim()
-  );
-
-  const counterArgs = cleanCounterArgs.join(' | ');
-
-  const sectionSpecific = `Épreuve EO2 — mode tour par tour asynchrone.
-RÈGLE ABSOLUE — UN SEUL CONTRE-ARGUMENT PAR TOUR: formule UN SEUL contre-argument en 1–2 phrases, puis arrête-toi.
-EXEMPLE INTERDIT: « C'est cher, et en plus c'est risqué, et puis tu n'as pas le temps » → trois objections = violation.
-EXEMPLE CORRECT: « Mais ça coûte vraiment cher, non ? » → une seule objection.
-Le candidat doit convaincre un(e) ami(e). Tu joues l'ami(e) sceptique.
-Premier tour: réponds simplement aux salutations et laisse le candidat présenter son idée (phrases d'écoute: « ah d'accord », « raconte-moi »).
-Ensuite: un seul contre-argument par tour, en 1–2 phrases. Arrête-toi et attends la réponse.
-Si le candidat répond bien, choisis un AUTRE contre-argument de la liste — ne reviens pas sur le même.
-Continue à être sceptique; ne conclus pas spontanément.
-Ton amical et informel, comme une vraie discussion entre ami(e)s.
-CONTRAINTE ABSOLUE: utilise UNIQUEMENT les contre-arguments ci-dessous (paraphrase OK). Ne génère pas de nouvelles objections.
-Consigne: ${task.prompt}
-Contre-arguments possibles: ${counterArgs}`;
-
-  return `${base}\n\n${sectionSpecific}`;
-}
-
-/**
  * Timeout prompt
  */
 export function getTimeoutPrompt(): string {
