@@ -1,7 +1,7 @@
 
 import { GoogleGenAI, Type, Modality, Blob } from "@google/genai";
 import { TEFSection, EvaluationResult, TEFTask } from "../types";
-import { makeExamInstructions } from "./prompts/examiner";
+import { makeExamInstructions, makeAsyncEO2SystemPrompt } from "./prompts/examiner";
 import { buildRubricSystemPrompt, buildEvaluationUserMessage } from "./prompts/evaluation";
 
 /**
@@ -492,6 +492,54 @@ export const geminiService = {
       }
     });
     return response.text;
+  },
+
+  /**
+   * Generate a single EO2 counter-argument turn + TTS audio (async mode).
+   * Returns text always; audioBase64 is best-effort (omitted if TTS fails).
+   */
+  async generateEO2Response(
+    history: { role: 'user' | 'examiner'; text: string }[],
+    task: TEFTask,
+  ): Promise<{ text: string; audioBase64?: string; audioMimeType?: string }> {
+    const systemInstruction = makeAsyncEO2SystemPrompt(task);
+
+    const contents = history.map(turn => ({
+      role: (turn.role === 'user' ? 'user' : 'model') as 'user' | 'model',
+      parts: [{ text: turn.text }],
+    }));
+
+    // Step 1: Generate text counter-argument
+    const textResponse = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents,
+      config: { systemInstruction } as any,
+    });
+
+    const text = (textResponse.text ?? '').trim();
+    if (!text) throw new Error('Empty counter-argument from Gemini');
+
+    // Step 2: TTS — best-effort, falls back gracefully
+    try {
+      const ttsResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-preview-tts',
+        contents: [{ parts: [{ text }] }],
+        config: {
+          responseModalities: [Modality.AUDIO],
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
+        } as any,
+      });
+
+      const parts: any[] = (ttsResponse as any).candidates?.[0]?.content?.parts ?? [];
+      const audioPart = parts.find((p: any) => p.inlineData?.mimeType?.startsWith('audio/'));
+      if (audioPart?.inlineData) {
+        return { text, audioBase64: audioPart.inlineData.data, audioMimeType: audioPart.inlineData.mimeType };
+      }
+    } catch (ttsErr) {
+      console.warn('[generateEO2Response] TTS failed, text-only fallback:', ttsErr);
+    }
+
+    return { text };
   },
 
   async evaluateResponse(
