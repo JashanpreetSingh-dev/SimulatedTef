@@ -5,6 +5,7 @@
 import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
 import type { Document } from 'mongodb';
+import { analytics } from '@heycatch/sdk';
 import { asyncHandler } from '../middleware/errorHandler';
 import { subscriptionService } from '../services/subscriptionService';
 import { stripeService, type SubWithItems } from '../services/stripeService';
@@ -25,6 +26,8 @@ if (!stripeSecretKey) {
 const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
   apiVersion: '2025-12-15.clover',
 }) : null;
+
+analytics.init({ projectKey: 'hck_pk_vqsEOmoqdUnwRUMxhby2rkoa3PxynZj5' });
 
 /** Subscription with billing period fields (SDK Subscription type may omit these in some API versions) */
 type SubscriptionWithPeriod = Stripe.Subscription & { current_period_start?: number; current_period_end?: number };
@@ -398,6 +401,7 @@ async function handleSubscriptionCreated(subscription: SubscriptionWithPeriod) {
       console.error('Failed to enqueue subscription congrats email:', error?.message || error);
     }
   }
+  await analytics.trackEvent('subscription_started', { plan: tier.id }, { userId });
   console.log(`✅ Subscription created for user ${userId}, tier ${tier.id}, status ${status}`);
 }
 
@@ -482,9 +486,7 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   // Downgrade to free tier: record when they went free so free-tier usage only counts from this date,
   // and clear usageCountingFromDate so a future resubscribe gets a fresh usage period
   const now = new Date().toISOString();
-  // #region agent log
-  fetch('http://127.0.0.1:7243/ingest/2bfb38eb-3761-41c7-8a6d-6153bb8601f3', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'stripeWebhooks.ts:handleSubscriptionDeleted', message: 'Subscription deleted', data: { userId: userSubscription.userId, downgradedToFreeAt: now, stripeSubId: subscription.id }, timestamp: Date.now(), hypothesisId: 'H1-H5' }) }).catch(() => {});
-  // #endregion
+  await analytics.trackEvent('subscription_canceled', {}, { userId: userSubscription.userId });
   await subscriptionService.updateSubscription(userSubscription.userId, {
     tier: 'free',
     status: 'canceled',

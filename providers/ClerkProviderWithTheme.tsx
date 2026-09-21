@@ -2,6 +2,7 @@ import React from 'react';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { getClerkAppearance } from '../utils/clerkTheme';
 import { LogRocketIdentify } from '../components/LogRocketIdentify';
+import { HeyCatchIdentify } from '../components/HeyCatchIdentify';
 
 const PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
 
@@ -61,6 +62,7 @@ export function ClerkProviderWithTheme({ children }: { children: React.ReactNode
       afterSignInUrl="/dashboard"
     >
       <LogRocketIdentify />
+      <HeyCatchIdentify />
       {children}
     </ClerkProvider>
   );
