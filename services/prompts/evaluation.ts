@@ -218,10 +218,15 @@ For OralExpression (EO1/Section A), also include:
 - actual_questions_count: Integer count of relevant questions the candidate asked in Section A (target: 9-10). Count only questions that help gather information about the scenario.
 
 For OralExpression Section B / EO2 (mode: partB or full), also include:
-- argument_breakdown: Array of 3-6 objects analyzing every key argument point the candidate should have made.
-  For EACH item: { "expected_argument": "English description of what should have been argued or which counter was to be handled", "candidate_addressed": true/false, "candidate_said": "exact French quote from their transcript, or null if not addressed", "quality": one of "strong"|"adequate"|"weak"|"missing", "feedback": "one English sentence — praise if strong, specific tip if weak/missing" }
-  Cover: (a) their main supporting arguments for the assigned position, (b) how they handled each counter-argument raised by the examiner.
-  Return [] for partA-only evaluations (EO1 has no persuasion structure to break down).
+- argument_breakdown: Array of 3-6 objects, one per counter-argument or key persuasion point.
+  For EACH item:
+  { "examiner_said": "French: the exact or close paraphrase of what the examiner said (the counter-argument or point raised)",
+    "candidate_said": "French: verbatim quote from the candidate's transcript responding to this point, or null if they did not address it",
+    "ideal_response": "French: a concise model response that would earn full marks — ONLY include this when quality is 'adequate', 'weak', or 'missing'; set to null when quality is 'strong'",
+    "quality": one of "strong"|"adequate"|"weak"|"missing",
+    "feedback": "one English sentence — praise what was done well if strong, or explain specifically what was missing/how to improve" }
+  Cover every counter-argument raised by the examiner plus 1-2 main supporting arguments the candidate needed to make.
+  Return [] for partA-only evaluations.
 
 For WrittenExpression, also include:
 - actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)

@@ -143,9 +143,9 @@ export interface UpgradedSentence {
 }
 
 export interface ArgumentBreakdownItem {
-  expected_argument: string;      // English: what the candidate should have argued/addressed
-  candidate_addressed: boolean;   // Did they cover this point?
-  candidate_said: string | null;  // French verbatim quote from transcript, or null if missing
+  examiner_said: string;          // French: what the examiner said (counter-argument or key point raised)
+  candidate_said: string | null;  // French: verbatim quote from candidate's transcript, or null if not addressed
+  ideal_response: string | null;  // French: model response shown only when quality is not 'strong'
   quality: 'strong' | 'adequate' | 'weak' | 'missing';
   feedback: string;               // English: short tip or confirmation
 }

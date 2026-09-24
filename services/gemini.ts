@@ -74,13 +74,16 @@ function normalizeEvaluationResult(
 
   // OralExpression EO2 specific - argument breakdown
   if (section === 'OralExpression' && Array.isArray(result.argument_breakdown) && result.argument_breakdown.length > 0) {
-    normalized.argument_breakdown = result.argument_breakdown.map((item: any) => ({
-      expected_argument: item.expected_argument || '',
-      candidate_addressed: Boolean(item.candidate_addressed),
-      candidate_said: item.candidate_said && item.candidate_said.trim() ? item.candidate_said.trim() : null,
-      quality: ['strong', 'adequate', 'weak', 'missing'].includes(item.quality) ? item.quality : 'missing',
-      feedback: item.feedback || '',
-    }));
+    normalized.argument_breakdown = result.argument_breakdown.map((item: any) => {
+      const quality = ['strong', 'adequate', 'weak', 'missing'].includes(item.quality) ? item.quality : 'missing';
+      return {
+        examiner_said:  item.examiner_said?.trim() || '',
+        candidate_said: item.candidate_said?.trim() || null,
+        ideal_response: quality !== 'strong' && item.ideal_response?.trim() ? item.ideal_response.trim() : null,
+        quality,
+        feedback: item.feedback || '',
+      };
+    });
   }
 
   // OralExpression EO1 specific - AI-counted questions
@@ -659,13 +662,13 @@ export const geminiService = {
               items: {
                 type: Type.OBJECT,
                 properties: {
-                  expected_argument: { type: Type.STRING },
-                  candidate_addressed: { type: Type.BOOLEAN },
-                  candidate_said: { type: Type.STRING },
-                  quality: { type: Type.STRING },
-                  feedback: { type: Type.STRING }
+                  examiner_said:   { type: Type.STRING },
+                  candidate_said:  { type: Type.STRING },
+                  ideal_response:  { type: Type.STRING },
+                  quality:         { type: Type.STRING },
+                  feedback:        { type: Type.STRING }
                 },
-                required: ["expected_argument", "candidate_addressed", "quality", "feedback"]
+                required: ["examiner_said", "quality", "feedback"]
               }
             },
             // OralExpression EO1 specific - AI-counted questions
