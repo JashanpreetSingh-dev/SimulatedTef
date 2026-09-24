@@ -72,6 +72,17 @@ function normalizeEvaluationResult(
     normalized.corrections_sectionB = Array.isArray(result.corrections_sectionB) ? result.corrections_sectionB : [];
   }
 
+  // OralExpression EO2 specific - argument breakdown
+  if (section === 'OralExpression' && Array.isArray(result.argument_breakdown) && result.argument_breakdown.length > 0) {
+    normalized.argument_breakdown = result.argument_breakdown.map((item: any) => ({
+      expected_argument: item.expected_argument || '',
+      candidate_addressed: Boolean(item.candidate_addressed),
+      candidate_said: item.candidate_said && item.candidate_said.trim() ? item.candidate_said.trim() : null,
+      quality: ['strong', 'adequate', 'weak', 'missing'].includes(item.quality) ? item.quality : 'missing',
+      feedback: item.feedback || '',
+    }));
+  }
+
   // OralExpression EO1 specific - AI-counted questions
   if (section === 'OralExpression' && typeof result.actual_questions_count === 'number') {
     normalized.actual_questions_count = result.actual_questions_count;
@@ -642,6 +653,21 @@ export const geminiService = {
               }
             },
             model_answer: { type: Type.STRING },
+            // OralExpression EO2 specific - argument-by-argument breakdown
+            argument_breakdown: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  expected_argument: { type: Type.STRING },
+                  candidate_addressed: { type: Type.BOOLEAN },
+                  candidate_said: { type: Type.STRING },
+                  quality: { type: Type.STRING },
+                  feedback: { type: Type.STRING }
+                },
+                required: ["expected_argument", "candidate_addressed", "quality", "feedback"]
+              }
+            },
             // OralExpression EO1 specific - AI-counted questions
             actual_questions_count: { type: Type.NUMBER },
             // WrittenExpression specific - AI-counted words

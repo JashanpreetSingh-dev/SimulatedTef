@@ -142,6 +142,14 @@ export interface UpgradedSentence {
   why: string;
 }
 
+export interface ArgumentBreakdownItem {
+  expected_argument: string;      // English: what the candidate should have argued/addressed
+  candidate_addressed: boolean;   // Did they cover this point?
+  candidate_said: string | null;  // French verbatim quote from transcript, or null if missing
+  quality: 'strong' | 'adequate' | 'weak' | 'missing';
+  feedback: string;               // English: short tip or confirmation
+}
+
 export interface EvaluationResult {
   score: number;           // Overall TEF score (0-699) - Full TEF scoring scale
   clbLevel: string;        // Canadian Language Benchmark - single level only (e.g., "CLB 7", "CLB 5") - NO RANGES
@@ -162,6 +170,8 @@ export interface EvaluationResult {
   model_answer_sectionB?: string;   // Model answer for Section B (argumentation)
   corrections_sectionA?: UpgradedSentence[];  // Corrections for Section A
   corrections_sectionB?: UpgradedSentence[];  // Corrections for Section B
+  // EO2 (Section B) specific - argument-by-argument breakdown
+  argument_breakdown?: ArgumentBreakdownItem[];
   // EO1 (Section A) specific - AI-counted questions
   actual_questions_count?: number;  // Number of relevant questions counted by Gemini in EO1
   // WrittenExpression specific - AI-counted words

@@ -217,6 +217,12 @@ Required keys: score, clbLevel, cecrLevel, overall_comment, criteria, strengths,
 For OralExpression (EO1/Section A), also include:
 - actual_questions_count: Integer count of relevant questions the candidate asked in Section A (target: 9-10). Count only questions that help gather information about the scenario.
 
+For OralExpression Section B / EO2 (mode: partB or full), also include:
+- argument_breakdown: Array of 3-6 objects analyzing every key argument point the candidate should have made.
+  For EACH item: { "expected_argument": "English description of what should have been argued or which counter was to be handled", "candidate_addressed": true/false, "candidate_said": "exact French quote from their transcript, or null if not addressed", "quality": one of "strong"|"adequate"|"weak"|"missing", "feedback": "one English sentence — praise if strong, specific tip if weak/missing" }
+  Cover: (a) their main supporting arguments for the assigned position, (b) how they handled each counter-argument raised by the examiner.
+  Return [] for partA-only evaluations (EO1 has no persuasion structure to break down).
+
 For WrittenExpression, also include:
 - actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)
 - actual_word_count_sectionB: Integer word count for Section B (target: 200-250 words)
@@ -488,10 +494,20 @@ fluency_comment: ${fluencyAnalysis.fluency_comment ?? 'N/A'}`
 This run did not include objective audio fluency metrics. The transcript may be from live session transcription. Base fluency and interaction judgments on the dialogue text (including fillers and self-corrections if present); do not invent pause durations or metrics not evidenced in the transcript.`
       : '';
 
+  // For EO2 (partB or full oral), pass the task's counter_arguments so the AI can reference them in argument_breakdown
+  const eo2CounterArgContext =
+    section === 'OralExpression' && (mode === 'partB' || mode === 'full') && taskPartB?.counter_arguments?.length
+      ? `\n\n=== EO2 COUNTER-ARGUMENTS (from examiner script) ===
+The examiner used the following counter-arguments during the persuasion task:
+${(taskPartB.counter_arguments as string[]).map((ca: string, i: number) => `${i + 1}. ${ca}`).join('\n')}
+
+For argument_breakdown: map each of these counter-arguments to how the candidate responded. Also identify 1-2 main supporting arguments they should have made for their assigned position.`
+      : '';
+
   return `Section: ${section}
 Scenario ID: ${scenarioId}
 Time limit (sec): ${timeLimitSec}
-Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${singleSectionContext}${fullExamContext}${eo2TimeContext}${fluencyContext}${liveTranscriptOnlyNote}
+Prompt (French): ${prompt}${eo1Metrics}${writtenMetrics}${singleSectionContext}${fullExamContext}${eo2TimeContext}${fluencyContext}${liveTranscriptOnlyNote}${eo2CounterArgContext}
 
 Candidate ${section === 'WrittenExpression' ? 'text' : 'transcript'} (French):
 ${candidateText || "(empty)"}`;

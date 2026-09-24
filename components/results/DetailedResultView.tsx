@@ -16,6 +16,7 @@ import { WrittenExpressionTabs } from './components/WrittenExpressionTabs';
 import { StrengthsWeaknesses } from './components/StrengthsWeaknesses';
 import { QuestionCount } from './components/QuestionCount';
 import { ResultVoting } from './components/ResultVoting';
+import { ArgumentBreakdown } from './components/ArgumentBreakdown';
 
 interface DetailedResultViewProps {
   result: SavedResult;
@@ -86,6 +87,7 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
   const strengths = useMemo(() => evaluationResult.strengths || [], [evaluationResult.strengths]);
   const weaknesses = useMemo(() => evaluationResult.weaknesses || [], [evaluationResult.weaknesses]);
   const actualQuestionsCount = useMemo(() => evaluationResult.actual_questions_count, [evaluationResult.actual_questions_count]);
+  const argumentBreakdown = useMemo(() => evaluationResult.argument_breakdown || [], [evaluationResult.argument_breakdown]);
   
   // Memoize tasks to display - fetch from taskReferences or fallback to legacy fields
   const tasksToDisplay = useMemo(() => {
@@ -184,6 +186,11 @@ export const DetailedResultView: React.FC<DetailedResultViewProps> = ({ result, 
       {/* Question Count (for oral expression Section A only) */}
       {displayResult.module === 'oralExpression' && (displayResult.mode === 'partA' || displayResult.mode === 'full') && typeof actualQuestionsCount === 'number' && (
         <QuestionCount actualCount={actualQuestionsCount} />
+      )}
+
+      {/* Argument Breakdown (for oral expression Section B / EO2) */}
+      {displayResult.module === 'oralExpression' && (displayResult.mode === 'partB' || displayResult.mode === 'full') && argumentBreakdown.length > 0 && (
+        <ArgumentBreakdown items={argumentBreakdown} />
       )}
 
       {/* Strengths & Weaknesses (for non-written expression) */}
