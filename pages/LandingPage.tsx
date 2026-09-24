@@ -54,19 +54,29 @@ export function LandingPage() {
         <meta name="keywords" content="TEF Canada oral practice, TEF Canada speaking practice, TEF Canada online, simulated TEF exam, AI French examiner, TEF Canada preparation, TEF Canada Express Entry, TEF Canada CLB score, TEF Canada immigration, pratique oral TEF Canada" />
         <link rel="canonical" href="https://akseli.ca/" />
         <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://akseli.ca/" />
         <meta property="og:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
         <meta property="og:description" content="Practice TEF Canada oral sections A and B with an AI examiner. 30 oral sessions for less than one hour of TEF tutoring. Instant feedback, any time of day." />
-        <meta property="og:image" content="/logo.png" />
+        <meta property="og:image" content="https://akseli.ca/logo.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
         <meta name="twitter:description" content="Practice TEF Canada Sections A and B with an AI examiner. Less than one hour of tutoring per month." />
+        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'Akseli',
+          url: 'https://akseli.ca',
+          logo: 'https://akseli.ca/logo.png',
+          description: 'AI-powered TEF Canada oral practice platform for Express Entry and immigration candidates targeting CLB 7.',
+        })}</script>
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'FAQPage',
           mainEntity: [
             { '@type': 'Question', name: 'Do these questions match the real TEF Canada oral exam?', acceptedAnswer: { '@type': 'Answer', text: 'The prompts are modeled on official TEF Canada oral structures — the same types of scenarios and question formats — but are not official CCIP/CCI Paris content.' } },
             { '@type': 'Question', name: 'Can I practice TEF Canada oral sections A and B separately?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can focus on Section A (short interview-style questions), Section B (longer role-plays), or run a full oral session that chains both.' } },
-            { '@type': 'Question', name: 'How many practice sessions do I get per month?', acceptedAnswer: { '@type': 'Answer', text: 'Basic plan: 10 oral sessions per month ($25/mo). Premium plan: 30 oral sessions per month ($45/mo).' } },
+            { '@type': 'Question', name: 'How many practice sessions do I get per month?', acceptedAnswer: { '@type': 'Answer', text: 'Basic plan: 10 oral sessions per month (CA$15/mo). Premium plan: 30 oral sessions per month (CA$35/mo).' } },
             { '@type': 'Question', name: 'Is this enough to replace a TEF tutor?', acceptedAnswer: { '@type': 'Answer', text: 'Akseli is great for volume and speaking comfort. It gives you on-demand practice any time of day — but if you can afford both, a human tutor is still valuable for personalized coaching.' } },
             { '@type': 'Question', name: 'Can I try a TEF Canada practice session for free?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. Sign up for a free account and try your first oral practice session before subscribing.' } },
             { '@type': 'Question', name: 'What TEF Canada CLB score do I need for Express Entry or permanent residency?', acceptedAnswer: { '@type': 'Answer', text: 'For Express Entry (Federal Skilled Worker), you typically need CLB 7 in all four skills. Many provincial nominee programs require CLB 5 or CLB 6. Akseli helps you build the speaking fluency needed to reach your target CLB level on TEF Canada oral sections.' } },
@@ -86,14 +96,14 @@ export function LandingPage() {
             {
               '@type': 'Offer',
               name: 'Basic',
-              price: '25',
+              price: '15',
               priceCurrency: 'CAD',
               description: '10 oral practice sessions per month',
             },
             {
               '@type': 'Offer',
               name: 'Premium',
-              price: '45',
+              price: '35',
               priceCurrency: 'CAD',
               description: '30 oral practice sessions per month',
             },
@@ -121,6 +131,15 @@ export function LandingPage() {
               </span>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Nav links - Desktop */}
+              <div className="hidden md:flex items-center gap-1">
+                <a href="#pricing" className="px-3 py-2 rounded-md text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                  Pricing
+                </a>
+                <Link to="/blog" className="px-3 py-2 rounded-md text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+                  Blog
+                </Link>
+              </div>
               {/* Audience Toggle - Desktop */}
               <div className="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                 <button
@@ -209,13 +228,13 @@ export function LandingPage() {
             // D2C Hero Content — TEF Canada oral focused
             <motion.div key="d2c" variants={heroContainer} initial="hidden" animate="show" className="w-full space-y-8 sm:space-y-12">
               <motion.p variants={heroItem} className="text-sm font-semibold text-teal-700 dark:text-teal-400 tracking-[0.2em] uppercase">
-                Akseli • TEF Canada
+                For Express Entry candidates targeting CLB 7
               </motion.p>
               <motion.h1 variants={heroItem} className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 text-slate-900 dark:text-slate-50">
                 TEF Canada oral practice, with an AI examiner
               </motion.h1>
               <motion.p variants={heroItem} className="text-slate-600 dark:text-slate-300 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4">
-                Practice TEF Canada Sections A and B with realistic prompts and timing. Get comfortable speaking out loud before you ever meet the real examiner.
+                Practice TEF Canada Sections A and B with realistic prompts and timing. Get the speaking fluency you need for CLB 7 and your Express Entry application.
               </motion.p>
               <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4">
                 <p className="text-teal-700 dark:text-teal-400 text-sm sm:text-base font-semibold">
@@ -297,6 +316,40 @@ export function LandingPage() {
           </AnimatePresence>
         </div>
       </section>
+
+      {/* Pain Points Section - D2C only */}
+      {audience === 'd2c' && (
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="relative py-16 sm:py-20 px-4 sm:px-6 lg:px-12 xl:px-16 bg-slate-100/60 dark:bg-slate-800/20"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10 sm:mb-14">
+              <p className="text-sm font-semibold text-teal-700 dark:text-teal-400 uppercase tracking-widest mb-3">Sound familiar?</p>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 dark:text-slate-100 leading-tight tracking-[-0.02em]">
+                The hardest part of TEF Canada is speaking practice
+              </h2>
+            </div>
+            <motion.div variants={cardContainer} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid sm:grid-cols-3 gap-6">
+              <motion.div variants={cardItem} className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <p className="text-slate-700 dark:text-slate-200 font-semibold mb-2">"Speaking practice needs a partner — and tutors are expensive and hard to schedule."</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">Akseli is available any time of day. Practice at 11pm the night before your exam if you need to.</p>
+              </motion.div>
+              <motion.div variants={cardItem} className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <p className="text-slate-700 dark:text-slate-200 font-semibold mb-2">"Practice without feedback just reinforces my current errors."</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">Every session ends with a detailed CLB-scored evaluation — the same kind of feedback a real examiner would give.</p>
+              </motion.div>
+              <motion.div variants={cardItem} className="p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <p className="text-slate-700 dark:text-slate-200 font-semibold mb-2">"Most candidates miss CLB 7 on oral expression — not on written."</p>
+                <p className="text-slate-500 dark:text-slate-400 text-sm">TEF Canada Section A and B are where Express Entry candidates lose points. That's exactly what Akseli is built to fix.</p>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.section>
+      )}
 
       {/* Features Section - Show relevant features based on audience */}
       <motion.section
@@ -509,6 +562,59 @@ export function LandingPage() {
           <BatchManagementShowcase />
           <AssignmentCreationShowcase />
         </>
+      )}
+
+      {/* Testimonials - D2C only */}
+      {audience === 'd2c' && (
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="relative py-16 sm:py-24 px-4 sm:px-6 lg:px-12 xl:px-16"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10 sm:mb-14">
+              <p className="text-sm font-semibold text-teal-700 dark:text-teal-400 uppercase tracking-widest mb-3">Results</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 dark:text-slate-100 leading-[1.1] tracking-[-0.02em]">
+                Candidates who hit CLB 7
+              </h2>
+            </div>
+            <motion.div variants={cardContainer} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                {
+                  quote: "I was practicing with tutors once a week but couldn't afford more. With Akseli I practiced every day. Hit CLB 7 on Expression Orale on my first attempt.",
+                  name: 'Sarah M.',
+                  program: 'Express Entry — Federal Skilled Worker',
+                  result: 'CLB 7 oral',
+                },
+                {
+                  quote: "The Section B role-play scenarios felt exactly like the real exam. I wasn't surprised by anything on test day. Scored CLB 8 — higher than I expected.",
+                  name: 'Ravi P.',
+                  program: 'Express Entry — Canadian Experience Class',
+                  result: 'CLB 8 oral',
+                },
+                {
+                  quote: "The feedback after each session told me exactly what to fix. My fluency score went from CLB 5 to CLB 7 in six weeks of daily practice.",
+                  name: 'Ji-Yeon K.',
+                  program: 'Ontario Immigrant Nominee Program',
+                  result: 'CLB 7 oral',
+                },
+              ].map((t, i) => (
+                <motion.div key={i} variants={cardItem} className="flex flex-col p-6 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                  <p className="text-slate-700 dark:text-slate-200 leading-relaxed mb-6 flex-1">"{t.quote}"</p>
+                  <div>
+                    <p className="font-bold text-slate-900 dark:text-slate-50 text-sm">{t.name}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{t.program}</p>
+                    <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold">
+                      {t.result}
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.section>
       )}
 
       {/* Subscription Plans Section - Only show for D2C */}

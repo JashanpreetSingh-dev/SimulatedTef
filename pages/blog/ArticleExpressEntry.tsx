@@ -22,6 +22,11 @@ export const ArticleExpressEntry: React.FC = () => {
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://akseli.ca/blog/${post.slug}`} />
+        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.description} />
+        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
         <meta name="keywords" content="TEF Canada Express Entry, TEF Canada CLB score, TEF Canada permanent residency, TEF Canada immigration, TEF Canada CLB 7, TEF Canada Federal Skilled Worker" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

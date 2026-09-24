@@ -1,0 +1,25 @@
+# Akseli
+
+> AI-powered TEF Canada oral practice for Express Entry candidates targeting CLB 7.
+
+Akseli is a web app that simulates TEF Canada oral exam sections A and B with an AI examiner. Candidates practice speaking French with realistic prompts, timed responses, and instant CLB-scored feedback — without needing to schedule a tutor.
+
+## Key URLs
+
+- Homepage: https://akseli.ca/
+- Blog: https://akseli.ca/blog
+- Pricing: https://akseli.ca/#pricing
+
+## Key pages
+
+- https://akseli.ca/blog/how-to-prepare-tef-canada-oral
+- https://akseli.ca/blog/tef-canada-clb-score-express-entry
+- https://akseli.ca/blog/tef-canada-vs-tcf-canada
+
+## Value proposition
+
+TEF Canada oral practice (Sections A and B) with an AI examiner. Designed for immigration candidates applying through Express Entry who need CLB 7 in speaking. 30 practice sessions per month for less than the cost of one tutoring hour.
+
+## Audience
+
+Canadian immigration applicants preparing for the TEF Canada oral exam — primarily Express Entry (Federal Skilled Worker) and provincial nominee program candidates.

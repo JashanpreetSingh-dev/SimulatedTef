@@ -22,6 +22,11 @@ export const ArticleOralPreparation: React.FC = () => {
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://akseli.ca/blog/${post.slug}`} />
+        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.description} />
+        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
         <meta name="keywords" content="TEF Canada oral preparation, TEF Canada section A practice, TEF Canada section B practice, TEF Canada speaking practice, prepare TEF Canada oral" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

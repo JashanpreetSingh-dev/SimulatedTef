@@ -22,6 +22,11 @@ export const ArticleVsTCF: React.FC = () => {
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://akseli.ca/blog/${post.slug}`} />
+        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={post.title} />
+        <meta name="twitter:description" content={post.description} />
+        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
         <meta name="keywords" content="TEF Canada vs TCF, TEF Canada or TCF for immigration, French test for Canadian immigration, TEF vs TCF Express Entry, TEF Canada TCF Canada comparison" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

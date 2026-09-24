@@ -54,7 +54,7 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
   {
     id: 'basic',
     name: 'Basic',
-    price: '$10',
+    price: 'CA$15',
     priceSubtext: 'per month',
     limits: {
       sectionALimit: 10,
@@ -76,7 +76,7 @@ const DEFAULT_TIERS: SubscriptionTier[] = [
   {
     id: 'premium',
     name: 'Premium',
-    price: '$30',
+    price: 'CA$35',
     priceSubtext: 'per month',
     limits: {
       sectionALimit: 30,
@@ -256,8 +256,46 @@ export function SubscriptionPlans({ variant = 'landing', showCTA = true }: Subsc
           ))}
         </div>
 
+        {/* Comparison table */}
+        <div className="mt-12 overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-slate-200 dark:border-slate-700">
+                <th className="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">Feature</th>
+                <th className="text-center py-3 px-4 font-semibold text-slate-700 dark:text-slate-300">Free</th>
+                <th className="text-center py-3 px-4 font-semibold text-indigo-600 dark:text-indigo-400">Basic</th>
+                <th className="text-center py-3 px-4 font-semibold text-indigo-600 dark:text-indigo-400">Premium</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              {[
+                { feature: 'Reading & listening', free: 'Unlimited', basic: 'Unlimited', premium: 'Unlimited' },
+                { feature: 'Speaking Sec. A / month', free: '1 total', basic: '10', premium: '30' },
+                { feature: 'Speaking Sec. B / month', free: '1 total', basic: '10', premium: '30' },
+                { feature: 'Writing Sec. A / month', free: '1 total', basic: '10', premium: '30' },
+                { feature: 'Writing Sec. B / month', free: '1 total', basic: '10', premium: '30' },
+                { feature: 'AI evaluation & feedback', free: '✓', basic: '✓', premium: '✓' },
+                { feature: 'Progress tracking', free: '✓', basic: '✓', premium: '✓' },
+              ].map((row, i) => (
+                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                  <td className="py-3 px-4 text-slate-600 dark:text-slate-300">{row.feature}</td>
+                  <td className="py-3 px-4 text-center text-slate-500 dark:text-slate-400">{row.free}</td>
+                  <td className="py-3 px-4 text-center font-medium text-slate-700 dark:text-slate-200">{row.basic}</td>
+                  <td className="py-3 px-4 text-center font-medium text-indigo-600 dark:text-indigo-400">{row.premium}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Money-back guarantee */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+          <span className="text-emerald-600 dark:text-emerald-400 text-base">✓</span>
+          <span>14-day money-back guarantee on all paid plans — if you are not satisfied, email <a href="mailto:support@akseli.ca" className="text-teal-700 dark:text-teal-400 hover:underline">support@akseli.ca</a> for a full refund.</span>
+        </div>
+
         {variant === 'landing' && (
-          <div className="mt-12 text-center">
+          <div className="mt-6 text-center">
             <p className="text-slate-500 dark:text-slate-400 text-sm">
               Reading &amp; Listening practice is free for all users — we keep adding new tests. No subscription needed. No credit card required for free plan.
             </p>

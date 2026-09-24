@@ -30,8 +30,8 @@ export const Footer: React.FC<FooterProps> = ({ variant = 'dark' }) => {
             <Link
               to="/terms"
               className={`transition-colors ${
-                isDark 
-                  ? 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200' 
+                isDark
+                  ? 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >

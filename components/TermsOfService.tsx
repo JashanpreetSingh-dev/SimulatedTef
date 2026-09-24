@@ -44,7 +44,8 @@ function TermsOfServiceContent() {
                 <li>Pay all fees associated with your subscription or pack purchase</li>
                 <li>Abide by Stripe's terms of service and privacy policy</li>
                 <li>Understand that payments are processed securely through Stripe and we do not store your payment card information</li>
-                <li>Accept that all fees are non-refundable unless otherwise stated or required by law</li>
+                <li>Accept that paid subscription plans (Basic and Premium) include a 14-day money-back guarantee — if you are not satisfied within 14 days of your first payment, email support@akseli.ca for a full refund</li>
+                <li>Accept that after the 14-day guarantee window, fees are non-refundable unless required by law</li>
               </ul>
             </section>
 
