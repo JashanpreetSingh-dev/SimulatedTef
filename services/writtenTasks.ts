@@ -30,6 +30,7 @@ export const WRITTEN_SECTION_A_TASKS: WrittenTask[] = (writtenSectionA as Writte
   instruction: 'Rédigez un fait divers de 80 à 120 mots en vous inspirant de cette situation.',
   minWords: 80,
   modelAnswer: topic.model_answer?.text,
+  themeCategory: (topic as any).themeCategory,
 }));
 
 export const WRITTEN_SECTION_B_TASKS: WrittenTask[] = (writtenSectionB as WrittenTaskJSON).topics.map(topic => ({
@@ -39,6 +40,7 @@ export const WRITTEN_SECTION_B_TASKS: WrittenTask[] = (writtenSectionB as Writte
   instruction: 'Rédigez une argumentation de 200 à 250 mots sur ce sujet.',
   minWords: 200,
   modelAnswer: topic.model_answer?.text,
+  themeCategory: (topic as any).themeCategory,
 }));
 
 /**
