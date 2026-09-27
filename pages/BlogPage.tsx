@@ -44,7 +44,7 @@ export const BlogPage: React.FC = () => {
             TEF Canada Preparation Guides
           </h1>
           <p className="text-xl text-slate-500 dark:text-slate-400 leading-relaxed">
-            Practical guides for TEF Canada oral preparation, CLB score requirements, and French language testing for Canadian immigration.
+            The Akseli blog is a collection of practical guides to TEF Canada preparation — oral exam structure, CLB score requirements for Express Entry, and how to choose between TEF Canada and TCF Canada for immigration.
           </p>
         </header>
 

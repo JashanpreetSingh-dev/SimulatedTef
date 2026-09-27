@@ -6,6 +6,7 @@ interface BlogPostLayoutProps {
   title: string;
   publishedDate: string;
   readingTimeMin: number;
+  slug: string;
   children: React.ReactNode;
 }
 
@@ -13,6 +14,7 @@ export const BlogPostLayout: React.FC<BlogPostLayoutProps> = ({
   title,
   publishedDate,
   readingTimeMin,
+  slug,
   children,
 }) => {
   const formatted = new Date(publishedDate).toLocaleDateString('en-CA', {
@@ -47,9 +49,14 @@ export const BlogPostLayout: React.FC<BlogPostLayoutProps> = ({
         {/* Article */}
         <article className="prose prose-slate dark:prose-invert prose-headings:font-black prose-h1:text-4xl prose-h1:leading-tight prose-h2:text-2xl prose-h2:mt-10 prose-h3:text-xl prose-p:leading-relaxed prose-li:leading-relaxed max-w-none">
           <header className="not-prose mb-10">
-            <div className="text-sm text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-3">
+            <nav aria-label="Breadcrumb" className="text-sm text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-1.5">
+              <Link to="/" className="hover:text-teal-700 dark:hover:text-teal-400 transition-colors">Home</Link>
+              <span aria-hidden="true">/</span>
               <Link to="/blog" className="hover:text-teal-700 dark:hover:text-teal-400 transition-colors">Blog</Link>
-              <span>·</span>
+              <span aria-hidden="true">/</span>
+              <span className="text-slate-600 dark:text-slate-300 truncate max-w-[240px]">{title}</span>
+            </nav>
+            <div className="text-sm text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-3">
               <time dateTime={publishedDate}>{formatted}</time>
               <span>·</span>
               <span>{readingTimeMin} min read</span>

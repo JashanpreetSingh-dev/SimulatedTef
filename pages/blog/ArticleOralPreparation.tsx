@@ -39,15 +39,25 @@ export const ArticleOralPreparation: React.FC = () => {
           dateModified: post.modifiedDate,
           author: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
           publisher: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `https://akseli.ca/blog/${post.slug}` },
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://akseli.ca/' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://akseli.ca/blog' },
+            { '@type': 'ListItem', position: 3, name: post.title, item: `https://akseli.ca/blog/${post.slug}` },
+          ],
         })}</script>
       </Helmet>
 
-      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin}>
+      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin} slug={post.slug}>
         <p>
-          TEF Canada Expression Orale is the spoken French component of the TEF Canada exam, scored out of 450 points and converted to a CLB level recognized by IRCC for immigration applications. It is the section most candidates find hardest to prepare for on their own — speaking practice requires a conversation partner, and finding one who can simulate a real exam setting is expensive and hard to schedule.
+          TEF Canada Expression Orale is the spoken French component of the TEF Canada exam. It is scored out of 450 points and converted to a CLB level recognized by IRCC for immigration applications. It is also the section most candidates find hardest to prepare for on their own. Speaking practice requires a conversation partner, and finding one who can simulate a real exam is expensive and hard to schedule.
         </p>
         <p>
-          This guide covers exactly what to expect in both oral sections, how they are scored, and the most effective ways to build the fluency you need before exam day.
+          This guide covers what to expect in both oral sections, how they are scored, and the most effective ways to build fluency before exam day.
         </p>
 
         <h2>What is the TEF Canada Oral Exam?</h2>
@@ -104,7 +114,7 @@ export const ArticleOralPreparation: React.FC = () => {
           <li>Coherence and argument structure</li>
         </ul>
 
-        <h2>How the Oral Sections Are Scored (CLB)</h2>
+        <h2>How Are the Oral Sections Scored?</h2>
         <p>
           TEF Canada oral expression is scored out of 450 points. These raw scores are then converted to Canadian Language Benchmark (CLB) levels, which is what IRCC uses for immigration purposes.
         </p>

@@ -39,12 +39,22 @@ export const ArticleExpressEntry: React.FC = () => {
           dateModified: post.modifiedDate,
           author: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
           publisher: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `https://akseli.ca/blog/${post.slug}` },
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://akseli.ca/' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://akseli.ca/blog' },
+            { '@type': 'ListItem', position: 3, name: post.title, item: `https://akseli.ca/blog/${post.slug}` },
+          ],
         })}</script>
       </Helmet>
 
-      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin}>
+      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin} slug={post.slug}>
         <p>
-          TEF Canada CLB scores are the numeric Canadian Language Benchmark levels that IRCC uses to determine whether your French proficiency meets the requirements for Express Entry and other immigration programs. Your TEF Canada oral expression score converts directly to a CLB level, and that level controls both your eligibility and the number of Comprehensive Ranking System (CRS) points you earn.
+          TEF Canada CLB scores are the Canadian Language Benchmark levels that IRCC uses to check whether your French proficiency meets the requirements for Express Entry and other immigration programs. Your TEF Canada oral expression score converts directly to a CLB level. That level controls both your eligibility and the number of Comprehensive Ranking System (CRS) points you earn.
         </p>
         <p>
           This article explains the CLB requirements for each Express Entry stream, how TEF Canada scores convert to CLB levels, and why the oral sections deserve particular attention in your preparation.
@@ -74,7 +84,7 @@ export const ArticleExpressEntry: React.FC = () => {
           Minimum CLB 5 for speaking and listening, CLB 4 for reading and writing.
         </p>
 
-        <h2>How TEF Canada Scores Convert to CLB</h2>
+        <h2>How Do TEF Canada Scores Convert to CLB?</h2>
         <p>
           IRCC publishes official conversion tables for TEF Canada. The oral expression section (Expression Orale) is scored out of 450 points and maps to CLB levels as follows:
         </p>
@@ -111,12 +121,12 @@ export const ArticleExpressEntry: React.FC = () => {
           Scores are approximate. Always verify against the current IRCC TEF Canada conversion chart before submitting your application.
         </p>
 
-        <h2>How Language Scores Affect Your CRS Points</h2>
+        <h2>How Do Language Scores Affect Your CRS Points?</h2>
         <p>
           Language ability is one of the largest point categories in the Comprehensive Ranking System. A candidate with a spouse can earn up to 128 CRS points from their first official language alone. A single candidate can earn up to 136 points.
         </p>
         <p>
-          The difference between CLB 7 and CLB 9 on oral expression alone is roughly 25–30 CRS points. At current invitation cutoffs, that gap can mean the difference between receiving an Invitation to Apply (ITA) in a regular draw and waiting months or years for a lower cutoff.
+          The difference between CLB 7 and CLB 9 on oral expression alone is roughly 25–30 CRS points. At current invitation cutoffs, that gap can be the difference between receiving an ITA in a regular draw and waiting months — or years — for a lower cutoff.
         </p>
         <p>
           This is why it pays to prepare for the highest score you can realistically achieve — not just the minimum to qualify.
@@ -136,7 +146,7 @@ export const ArticleExpressEntry: React.FC = () => {
           Check the specific requirements for your target province and stream — requirements change and vary significantly.
         </p>
 
-        <h2>Why Oral Sections Deserve Extra Attention</h2>
+        <h2>Why Do Oral Sections Deserve Extra Attention?</h2>
         <p>
           Most candidates who miss their target CLB score do so on oral expression, not written. There are two reasons:
         </p>
@@ -147,7 +157,7 @@ export const ArticleExpressEntry: React.FC = () => {
           Second, oral expression is weighted in the CRS calculation for both the first and second official language. If you speak French well, a strong TEF Canada oral score can stack on top of your English IELTS or CELPIP score for additional CRS points.
         </p>
 
-        <h2>How to Reach CLB 7 on TEF Canada Oral</h2>
+        <h2>How Do You Reach CLB 7 on TEF Canada Oral?</h2>
         <p>
           CLB 7 requires 316 out of 450 points on oral expression — that is a 70% score. Most intermediate French speakers can reach this level with focused practice, but it requires specific preparation:
         </p>

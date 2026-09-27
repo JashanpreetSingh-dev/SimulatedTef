@@ -234,11 +234,13 @@ export function LandingPage() {
               <motion.p variants={heroItem} className="text-sm font-semibold text-teal-700 dark:text-teal-400 tracking-[0.2em] uppercase">
                 For Express Entry candidates targeting CLB 7
               </motion.p>
-              <motion.h1 variants={heroItem} className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 text-slate-900 dark:text-slate-50">
-                TEF Canada oral practice, with an AI examiner
-              </motion.h1>
+              <motion.div variants={heroItem}>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2 text-slate-900 dark:text-slate-50">
+                  TEF Canada oral practice, with an AI examiner
+                </h1>
+              </motion.div>
               <motion.p variants={heroItem} className="text-slate-600 dark:text-slate-300 text-base sm:text-lg md:text-xl lg:text-2xl font-normal max-w-3xl mx-auto leading-[1.6] px-4">
-                Practice TEF Canada Sections A and B with realistic prompts and timing. Get the speaking fluency you need for CLB 7 and your Express Entry application.
+                Akseli is an AI-powered TEF Canada oral practice platform. Practice Sections A and B with realistic prompts and timing — and get CLB-scored feedback after every session.
               </motion.p>
               <motion.div variants={heroItem} className="flex flex-col sm:flex-row gap-3 justify-center items-center px-4">
                 <p className="text-teal-700 dark:text-teal-400 text-sm sm:text-base font-semibold">
@@ -292,9 +294,11 @@ export function LandingPage() {
                 </span>
                 <span className="text-indigo-600 dark:text-indigo-300 text-sm font-medium">For Language Schools & Institutions</span>
               </motion.div>
-              <motion.h1 variants={heroItem} className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
-              </motion.h1>
+              <motion.div variants={heroItem}>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl font-black tracking-[-0.02em] leading-[1.05] px-2">
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-indigo-400 to-cyan-500 dark:from-indigo-400 dark:via-indigo-300 dark:to-cyan-400">Akseli</span>
+                </h1>
+              </motion.div>
               <motion.h2 variants={heroItem} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-slate-100 tracking-tight px-2">
                 Enterprise TEF Canada Preparation Platform
               </motion.h2>

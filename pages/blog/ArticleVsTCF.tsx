@@ -39,12 +39,22 @@ export const ArticleVsTCF: React.FC = () => {
           dateModified: post.modifiedDate,
           author: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
           publisher: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': `https://akseli.ca/blog/${post.slug}` },
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://akseli.ca/' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://akseli.ca/blog' },
+            { '@type': 'ListItem', position: 3, name: post.title, item: `https://akseli.ca/blog/${post.slug}` },
+          ],
         })}</script>
       </Helmet>
 
-      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin}>
+      <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin} slug={post.slug}>
         <p>
-          TEF Canada and TCF Canada are two French proficiency tests accepted by IRCC for Canadian immigration, each developed by a different body and using a distinct format. Both produce CLB scores recognized for Express Entry, but they differ in how oral and written sections are administered — and for some candidates, one is a noticeably better fit than the other.
+          TEF Canada is a French proficiency test accepted by IRCC for Canadian immigration, developed by CCI Paris. TCF Canada is a competing test accepted by IRCC, developed by France Éducation International. Both produce CLB scores recognized for Express Entry. They differ in how oral and written sections are administered — and for some candidates, one is a noticeably better fit.
         </p>
         <p>
           This guide compares them directly so you can make an informed decision before you register.
@@ -68,7 +78,7 @@ export const ArticleVsTCF: React.FC = () => {
           Like TEF Canada, TCF Canada tests all four skills and produces CLB scores recognized by IRCC.
         </p>
 
-        <h2>Side-by-Side Comparison</h2>
+        <h2>How Do TEF Canada and TCF Canada Compare?</h2>
 
         <div className="overflow-x-auto my-6">
           <table className="w-full text-sm border-collapse">
@@ -112,7 +122,7 @@ export const ArticleVsTCF: React.FC = () => {
 
         <h3>Written expression</h3>
         <p>
-          This is a meaningful difference. TEF Canada requires handwritten essays — you write your responses by hand at the test centre. TCF Canada allows you to type your responses on a computer. If you are a faster typist than handwriter (which is most people who have used computers extensively), TCF Canada's written section may feel more comfortable. If you are not confident in your handwriting speed in French, this is worth factoring in.
+          This is a meaningful difference. TEF Canada requires handwritten essays — you write responses by hand at the test centre. TCF Canada lets you type on a computer. Most people type faster than they write by hand. If that's you, TCF Canada's written section may feel more comfortable. If you are not confident in your handwriting speed in French, this is worth factoring in.
         </p>
 
         <h3>Oral comprehension</h3>
@@ -145,7 +155,7 @@ export const ArticleVsTCF: React.FC = () => {
           If you are in a smaller city or need to test on a specific timeline, check availability for both tests in your area before deciding.
         </p>
 
-        <h2>Our Recommendation</h2>
+        <h2>Which Test Should You Choose?</h2>
         <p>
           For most Express Entry candidates: take the one with the soonest available date at your nearest test centre. The format difference is real but not so significant that it is worth delaying your application by weeks or travelling to a different city.
         </p>
