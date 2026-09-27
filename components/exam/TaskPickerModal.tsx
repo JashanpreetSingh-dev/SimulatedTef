@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { TEFTask } from '../../types';
+import { THEMES, THEME_BY_ID } from '../../constants/themes';
 
 interface TaskPickerModalProps {
   isOpen: boolean;
@@ -21,6 +22,7 @@ export function TaskPickerModal({
   onClose,
 }: TaskPickerModalProps) {
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'theme'>('list');
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -32,6 +34,72 @@ export function TaskPickerModal({
         String(t.id).includes(q)
     );
   }, [tasks, search]);
+
+  const groupedByTheme = useMemo(() => {
+    const groups: { theme: typeof THEMES[number]; tasks: TEFTask[] }[] = [];
+    for (const theme of THEMES) {
+      const themeTasks = filtered.filter((t) => (t as any).themeCategory === theme.id);
+      if (themeTasks.length > 0) groups.push({ theme, tasks: themeTasks });
+    }
+    const ungrouped = filtered.filter((t) => !(t as any).themeCategory);
+    if (ungrouped.length > 0) {
+      groups.push({ theme: { id: 'other' as any, label: 'Other', icon: '📌', color: '', darkColor: '', borderColor: '', textColor: 'text-slate-600 dark:text-slate-400', coreVocab: [] }, tasks: ungrouped });
+    }
+    return groups;
+  }, [filtered]);
+
+  const renderTaskRow = (task: TEFTask) => {
+    const isSelected = task.id === selectedTaskId;
+    const isDone = completedTaskIds.includes(task.id);
+    return (
+      <button
+        key={task.id}
+        onClick={() => {
+          onSelect(task);
+          onClose();
+        }}
+        className={`w-full text-left px-4 py-3.5 transition-colors border-b border-slate-100 dark:border-slate-800/60 last:border-0 flex items-start gap-3 ${
+          isSelected
+            ? 'bg-indigo-50 dark:bg-indigo-900/30'
+            : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
+        }`}
+      >
+        <span
+          className={`shrink-0 mt-0.5 text-[10px] font-black px-1.5 py-0.5 rounded tabular-nums ${
+            isSelected
+              ? 'bg-indigo-400 text-white'
+              : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+          }`}
+        >
+          #{task.id}
+        </span>
+        <div className="flex-1 min-w-0">
+          {(task as any).theme ? (
+            <>
+              <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-snug">
+                {(task as any).theme}
+              </p>
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed mt-0.5 line-clamp-2">
+                {task.prompt}
+              </p>
+            </>
+          ) : (
+            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              {task.prompt}
+            </p>
+          )}
+        </div>
+        {isDone && (
+          <span className="shrink-0 text-emerald-500 text-xs mt-0.5" title="Already practiced">
+            ✓
+          </span>
+        )}
+        {isSelected && (
+          <span className="shrink-0 text-indigo-400 text-xs mt-0.5 font-bold">←</span>
+        )}
+      </button>
+    );
+  };
 
   if (!isOpen) return null;
 
@@ -62,16 +130,40 @@ export function TaskPickerModal({
           </button>
         </div>
 
-        {/* Search */}
-        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex-shrink-0">
+        {/* Search + View toggle */}
+        <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex-shrink-0 flex gap-2">
           <input
             type="text"
             placeholder="Search by keyword or topic number…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 text-sm bg-slate-100 dark:bg-slate-800 rounded-lg border-0 outline-none text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
+            className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-800 rounded-lg border-0 outline-none text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
             autoFocus
           />
+          <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shrink-0">
+            <button
+              type="button"
+              onClick={() => setViewMode('list')}
+              className={`px-2.5 py-1.5 text-[11px] font-semibold transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-750'
+              }`}
+            >
+              List
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('theme')}
+              className={`px-2.5 py-1.5 text-[11px] font-semibold transition-colors border-l border-slate-200 dark:border-slate-700 ${
+                viewMode === 'theme'
+                  ? 'bg-indigo-500 text-white'
+                  : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-750'
+              }`}
+            >
+              By theme
+            </button>
+          </div>
         </div>
 
         {/* List */}
@@ -80,64 +172,20 @@ export function TaskPickerModal({
             <p className="text-sm text-slate-400 text-center py-10 italic">
               No topics match your search.
             </p>
+          ) : viewMode === 'list' ? (
+            filtered.map((task) => renderTaskRow(task))
           ) : (
-            filtered.map((task) => {
-              const isSelected = task.id === selectedTaskId;
-              const isDone = completedTaskIds.includes(task.id);
-              return (
-                <button
-                  key={task.id}
-                  onClick={() => {
-                    onSelect(task);
-                    onClose();
-                  }}
-                  className={`w-full text-left px-4 py-3.5 transition-colors border-b border-slate-100 dark:border-slate-800/60 last:border-0 flex items-start gap-3 ${
-                    isSelected
-                      ? 'bg-indigo-50 dark:bg-indigo-900/30'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-800/50'
-                  }`}
-                >
-                  <span
-                    className={`shrink-0 mt-0.5 text-[10px] font-black px-1.5 py-0.5 rounded tabular-nums ${
-                      isSelected
-                        ? 'bg-indigo-400 text-white'
-                        : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-                    }`}
-                  >
-                    #{task.id}
+            groupedByTheme.map(({ theme, tasks: groupTasks }) => (
+              <div key={theme.id}>
+                <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 sticky top-0">
+                  <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                    {theme.icon} {theme.label}
                   </span>
-                  <div className="flex-1 min-w-0">
-                    {(task as any).theme ? (
-                      <>
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-snug">
-                          {(task as any).theme}
-                        </p>
-                        <p className="text-[11px] text-slate-400 dark:text-slate-500 leading-relaxed mt-0.5 line-clamp-2">
-                          {task.prompt}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                        {task.prompt}
-                      </p>
-                    )}
-                  </div>
-                  {isDone && (
-                    <span
-                      className="shrink-0 text-emerald-500 text-xs mt-0.5"
-                      title="Already practiced"
-                    >
-                      ✓
-                    </span>
-                  )}
-                  {isSelected && (
-                    <span className="shrink-0 text-indigo-400 text-xs mt-0.5 font-bold">
-                      ←
-                    </span>
-                  )}
-                </button>
-              );
-            })
+                  <span className="ml-2 text-[10px] text-slate-400">{groupTasks.length} topics</span>
+                </div>
+                {groupTasks.map((task) => renderTaskRow(task))}
+              </div>
+            ))
           )}
         </div>
       </div>

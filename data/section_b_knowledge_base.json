@@ -82,7 +82,8 @@
         "solve": "Et si jamais tu n'es pas à l'aise avec un groupe en particulier, tu pourrais toujours choisir des activités un peu plus individuelles au début. En participant à des activités communes, tu serais surpris de voir à quel point les liens se créent facilement.",
         "fullResponse": "Non, je te comprends, c'est vrai que l'idée d'être avec des inconnus peut parfois être un peu intimidante au début. mais tu sais, c'est justement l'un des points forts du Week-End Sportif! Tous les participants sont là pour les mêmes raisons: partager un bon moment, faire du sport et rencontrer de nouvelles têtes. En général, les activités de groupe sont conçues pour faciliter les échanges et créer une bonne ambiance rapidement. Tu pourrais même y rencontrer des gens super intéressants avec qui partager d'autres sorties sportives après. Et si jamais tu n'es pas à l'aise avec un groupe en particulier, tu pourrais toujours choisir des activités un peu plus individuelles au début. En participant à des activités communes, tu serais surpris de voir à quel point les liens se créent facilement."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 2,
@@ -167,7 +168,8 @@
         "solve": "Et si jamais tu avais un doute ou si tu te sentais triste, l'association est là pour te soutenir. En sachant que tu as aidé une personne aveugle, tu serais rempli de fierté et de joie.",
         "fullResponse": "Non, je te comprends, l'attachement, c'est une réaction très naturelle et légitime après avoir passé autant de temps avec un animal. mais tu sais, les associations ont beaucoup d'expérience avec ça et elles préparent les familles d'accueil à cette étape. Les chiots sont des animaux incroyablement résilients. Il faut que tu te dises que tu ne les abandonnes pas, mais tu leur offres un avenir formidable, une vie utile et pleine de sens, ce que peu de chiens ont la chance d'avoir. Et si jamais tu avais un doute ou si tu te sentais triste, l'association est là pour te soutenir. En sachant que tu as aidé une personne aveugle, tu serais rempli de fierté et de joie."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 3,
@@ -252,7 +254,8 @@
         "solve": "Et si jamais tu avais un doute sur l'impact, il faut juste que tu voies le sourire des participants et des organisateurs. En partageant tes talents culinaires, tu pourrais vraiment faire une différence dans la vie des gens autour de toi.",
         "fullResponse": "Non, je te comprends, ça semble être une super idée de donner de son temps pour une bonne cause. Je vois ton point de vue. mais tu sais, la cuisine communautaire a aussi un impact social énorme. Non seulement on apprend à cuisiner de nouveaux plats du monde entier, mais on crée surtout des liens forts avec des gens qu'on n'aurait jamais rencontrés autrement. C'est une vraie richesse humaine, tu ne penses pas? En plus, les bénéfices des ventes peuvent parfois aussi aller à des projets locaux. J'ai un ami qui y a participé, et il m'a dit que l'ambiance était incroyable, un vrai partage. Et si jamais tu avais un doute sur l'impact, il faut juste que tu voies le sourire des participants et des organisateurs. En partageant tes talents culinaires, tu pourrais vraiment faire une différence dans la vie des gens autour de toi."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 4,
@@ -337,7 +340,8 @@
         "solve": "Et si jamais tu penses que ça ne rapporte rien, dis-toi que ces événements sont souvent subventionnés et attirent des partenaires privés. En augmentant la visibilité, tu pourrais même voir une amélioration des ventes de billets ou de produits dérivés par la suite.",
         "fullResponse": "Non, je te comprends, si tu avais un doute sur le financement du secteur culturel, c'est une réaction tout à fait normale, mais tu sais, c'est même le contraire! Ces Journées de la Culture permettent de faire découvrir la culture à un public plus large qui n'y aurait peut-être pas accès autrement. Ça crée un engouement et, à long terme, ça encourage les gens à dépenser pour la culture. J'ai un ami qui a découvert le théâtre comme ça et maintenant il prend un abonnement chaque année! Et si jamais tu penses que ça ne rapporte rien, dis-toi que ces événements sont souvent subventionnés et attirent des partenaires privés. En augmentant la visibilité, tu pourrais même voir une amélioration des ventes de billets ou de produits dérivés par la suite."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 5,
@@ -422,7 +426,8 @@
         "solve": "Et si jamais tu avais un doute sur le caractère d'un chat, tu pourrais demander conseil aux bénévoles du refuge. En passant du temps avec lui avant l'adoption, tu serais certain de faire le bon choix.",
         "fullResponse": "Franchement je te comprends, c'est vrai que certains chats peuvent être un peu difficiles à apprivoiser ou avoir un tempérament particulier, mais tu sais, il faut juste que tu choisisses le bon chat pour toi. Il y a tellement de races et de personnalités différentes. Souvent, les chats de refuge sont super doux et reconnaissants. Un chat calme et affectueux serait idéal pour ton niveau de stress. Il existe même des chats sélectionnés pour leur tempérament placide. Et si jamais tu avais un doute sur le caractère d'un chat, tu pourrais demander conseil aux bénévoles du refuge. En passant du temps avec lui avant l'adoption, tu serais certain de faire le bon choix."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 6,
@@ -507,7 +512,8 @@
         "solve": "Et de toute façon, les deux ne sont pas mutuellement exclusifs. Au contraire, le centre pourrait même devenir un point de rencontre et d'organisation pour des actions caritatives. En y participant, tu pourrais découvrir comment aider encore plus ta communauté.",
         "fullResponse": "Non, je te comprends, c'est noble de vouloir aider les autres et c'est vrai qu'il y a beaucoup de besoins autour de nous. mais tu sais, le Centre Communautaire, c'est aussi une forme d'action caritative. Il offre des services essentiels et gratuits à des personnes qui n'auraient pas les moyens autrement. Il faut juste que tu voies le centre comme un lieu où chacun peut donner et recevoir. D'ailleurs, de nombreuses activités là-bas ont des objectifs sociaux. Et de toute façon, les deux ne sont pas mutuellement exclusifs. Au contraire, le centre pourrait même devenir un point de rencontre et d'organisation pour des actions caritatives. En y participant, tu pourrais découvrir comment aider encore plus ta communauté."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 7,
@@ -592,7 +598,8 @@
         "solve": "Et de toute façon, le chef est un professionnel habitué à la discrétion. Si jamais tu n'étais pas à l'aise, tu pourrais toujours lui demander de se retirer un instant pendant que vous parlez. En lui expliquant gentiment, tu serais sûr qu'il comprenne et qu'il s'adapte.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, c'est sûr que la présence de quelqu'un d'autre peut parfois gêner une conversation intime, et je comprends ton point. mais tu sais, le chef vient pour cuisiner, pas pour participer à votre conversation. Il sera concentré sur ses plats et restera discret. L'idée est justement que vous profitiez du repas sans vous soucier de la cuisine. On ne va pas lui demander de faire la vaisselle, il ne ferait que les gros éléments, et laisserait le reste aux invités, comme d'habitude. Il faut juste que tu voies ça comme un privilège, pas une intrusion. Et de toute façon, le chef est un professionnel habitué à la discrétion. Si jamais tu n'étais pas à l'aise, tu pourrais toujours lui demander de se retirer un instant pendant que vous parlez. En lui expliquant gentiment, tu serais sûr qu'il comprenne et qu'il s'adapte."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 8,
@@ -677,7 +684,8 @@
         "solve": "Et de toute façon, même sans cuisiner, les produits du jardin sont parfaits pour les salades ou des accompagnements rapides. En préparant des plats très simples avec tes propres légumes, tu te rendrais compte du goût et tu serais sûrement fier de toi.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, si tu ne cuisines pas beaucoup, l'idée de jardiner peut sembler un peu inutile au premier abord. mais tu sais, le jardinage ne se limite pas à la cuisine. Tu pourrais cultiver des herbes aromatiques pour agrémenter tes plats, même les plus simples, ou des petites tomates cerises à picorer directement. Ça te ferait découvrir le plaisir de manger quelque chose que tu as fait pousser toi-même, même si tu manges souvent dehors. L'idée, c'est de profiter d'un petit plus, une touche de fraîcheur et d'authenticité. Et de toute façon, même sans cuisiner, les produits du jardin sont parfaits pour les salades ou des accompagnements rapides. En préparant des plats très simples avec tes propres légumes, tu te rendrais compte du goût et tu serais sûrement fier de toi."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 9,
@@ -762,7 +770,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais poser la question directement aux responsables quand tu iras visiter les lieux. En comprenant leur modèle, tu verrais que c'est une aide supplémentaire, pas un substitut d'emploi.",
         "fullResponse": "C'est vrai, ta remarque est logique, l'emploi est un sujet sensible et on ne voudrait pas créer de problèmes, mais tu sais, le bénévolat à la Maison des Jouets, ce n'est pas pour remplacer des emplois rémunérés. Au contraire, ils complètent ce que le personnel salarié ne pourrait pas faire seul. J'ai un ami qui y travaille, et il m'a expliqué que les bénévoles apportent un soutien essentiel pour des tâches ponctuelles ou pour augmenter l'impact des actions, ce qui n'entrerait pas dans le budget salarial. Il faut que tu comprennes que le bénévolat permet d'offrir plus de services à la communauté. Et si jamais tu avais un doute, tu pourrais poser la question directement aux responsables quand tu iras visiter les lieux. En comprenant leur modèle, tu verrais que c'est une aide supplémentaire, pas un substitut d'emploi."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 10,
@@ -847,7 +856,8 @@
         "solve": "Et si jamais aucune date ne te convenait, tu pourrais toujours contacter les organisateurs pour voir s'il y a des aménagements possibles. En leur expliquant ta situation, tu pourrais trouver une solution sur mesure.",
         "fullResponse": "Franchement je te comprends, c'est vrai que la gestion d'un emploi du temps peut être compliquée avec les auditions, mais tu sais, ce n'est pas un problème car l'annonce précise qu'il y a plusieurs dates de casting. Tu ne serais pas obligé de venir à toutes et tu pourrais choisir celles qui te conviennent le mieux, celles qui sont moins chargées pour toi. Il faut juste que tu t'organises un minimum en amont. Et si jamais aucune date ne te convenait, tu pourrais toujours contacter les organisateurs pour voir s'il y a des aménagements possibles. En leur expliquant ta situation, tu pourrais trouver une solution sur mesure."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 11,
@@ -932,7 +942,8 @@
         "solve": "Et si jamais tu avais un doute sur un article, on pourrait demander à une vendeuse avant d'acheter. En prenant ton temps pour bien choisir, tu serais sûr de ton coup et tu n'aurais pas besoin de retour.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, c'est vrai que la politique de retour peut être un problème avec les friperies éphémères. Mais tu sais, ce n'est pas comme un magasin normal, c'est une vente temporaire. Il faut que tu saches qu'ils vérifient les articles sur place avant la vente et que tu puisses les inspecter toi-même. La qualité est souvent au rendez-vous et il y a de belles trouvailles. Ça te ferait plaisir de trouver un truc unique que personne d'autre n'aura. Et si jamais tu avais un doute sur un article, on pourrait demander à une vendeuse avant d'acheter. En prenant ton temps pour bien choisir, tu serais sûr de ton coup et tu n'aurais pas besoin de retour."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 12,
@@ -1017,7 +1028,8 @@
         "solve": "Et de toute façon, si tu avais un doute sur l'impact, on pourrait d'abord faire une petite visite à l'association. En parlant avec les gens sur place, tu comprendrais mieux leur rôle essentiel.",
         "fullResponse": "Non, je te comprends, tu te dis que c'est une responsabilité publique et que le gouvernement devrait s'en occuper en priorité, mais tu sais, même si le gouvernement a un rôle important, les associations bénévoles sont super complémentaires. Elles apportent une touche humaine et une flexibilité que les grandes structures gouvernementales n'ont pas toujours. Il faut que tu saches que le bénévolat crée des liens sociaux uniques et personnalisés, ce que l'État ne peut pas faire aussi bien. Et de toute façon, si tu avais un doute sur l'impact, on pourrait d'abord faire une petite visite à l'association. En parlant avec les gens sur place, tu comprendrais mieux leur rôle essentiel."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 13,
@@ -1102,7 +1114,8 @@
         "solve": "Et si jamais tu avais un doute sur la qualité, la plateforme met en place des systèmes d'évaluation et de commentaires. En vérifiant les profils et les retours des autres utilisateurs, tu pourrais te faire une idée précise et être rassuré sur la personne et le service proposé.",
         "fullResponse": "Non, je te comprends, tu penses que l'État pourrait garantir une meilleure qualité ou une plus grande équité dans ces échanges, mais tu sais, c'est justement la force de ces plateformes d'être un peu plus libres et spontanées. Les services publics ont souvent des processus longs et une bureaucratie qui peut freiner l'initiative. Là, c'est plus direct, plus personnalisé, et ça répond à un besoin immédiat entre particuliers. Il faut que tu voies ça comme une complémentarité, pas une opposition. Et si jamais tu avais un doute sur la qualité, la plateforme met en place des systèmes d'évaluation et de commentaires. En vérifiant les profils et les retours des autres utilisateurs, tu pourrais te faire une idée précise et être rassuré sur la personne et le service proposé."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 14,
@@ -1187,7 +1200,8 @@
         "solve": "Et si jamais tu as un doute, on pourrait sélectionner à l'avance ce qu'on est prêt à donner. En vendant nos affaires d'abord, tu aurais un peu d'argent et ça te motiverait à continuer le tri!",
         "fullResponse": "Ouais, je vois ce que tu veux dire, si tu penses aux associations, c'est une très bonne intention, je suis d'accord avec toi. mais tu sais, ce n'est pas incompatible. On peut faire les deux! D'abord, on vend ce qu'on peut pour se faire un peu d'argent, et ensuite, ce qui ne part pas, on pourrait le donner à une association. Il faut juste que tu voies ça comme une opportunité de donner une seconde vie à nos objets et de rencontrer des gens. Et si jamais tu as un doute, on pourrait sélectionner à l'avance ce qu'on est prêt à donner. En vendant nos affaires d'abord, tu aurais un peu d'argent et ça te motiverait à continuer le tri!"
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 15,
@@ -1272,7 +1286,8 @@
         "solve": "Et de toute façon, si jamais tu changeais d'avis, ils ont un programme de reprise où ils rachètent les articles de leur propre marque à un prix raisonnable. En y allant, tu pourrais te faire une meilleure idée de leurs politiques et des avantages que ça représente.",
         "fullResponse": "Non, je te comprends, c'est vrai que c'est une manière de faire tes achats de façon plus circulaire et économique, si tu n'aimais pas garder longtemps tes affaires. mais tu sais, ce magasin offre une option super intéressante: tu peux échanger tes vêtements achetés chez eux contre d'autres articles neufs ou d'occasion s'ils sont en bon état, ce qui est encore mieux que de revendre. En fait, il faut juste que tu voies leurs collections, car elles sont uniques et intemporelles, donc tu ne voudrais probablement plus les revendre. Ils ont des pièces que tu garderais des années. Et de toute façon, si jamais tu changeais d'avis, ils ont un programme de reprise où ils rachètent les articles de leur propre marque à un prix raisonnable. En y allant, tu pourrais te faire une meilleure idée de leurs politiques et des avantages que ça représente."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 16,
@@ -1364,7 +1379,8 @@
         "solve": "Et si jamais tu avais un doute sur le niveau, tu pourrais toujours lire les œuvres des gagnants des années précédentes. En voyant la qualité des textes, tu serais vite rassuré sur l'exigence du concours.",
         "fullResponse": "Non, je te comprends, avec tout ce qu'on voit passer sur internet, on peut avoir l'impression que tout le monde est auteur aujourd'hui. mais tu sais, ce concours est organisé par la médiathèque de la ville, et ils ont un comité de lecture sérieux. Ce n'est pas juste un truc en ligne où n'importe qui peut soumettre. Il y a des critères précis pour les histoires, et ils vont vraiment chercher des textes de qualité. Il faut juste que tu aies confiance dans leur processus de sélection. Et si jamais tu avais un doute sur le niveau, tu pourrais toujours lire les œuvres des gagnants des années précédentes. En voyant la qualité des textes, tu serais vite rassuré sur l'exigence du concours."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 17,
@@ -1449,7 +1465,8 @@
         "solve": "Et si jamais tu n'étais pas à l'aise avec certains types de services, tu pourrais toujours filtrer ce que tu proposes. En choisissant tes offres, tu serais sûr de ne pas nuire aux petits commerces que tu aimes.",
         "fullResponse": "Non, je te comprends, l'idée de concurrencer les professionnels peut sembler un peu délicate au premier abord. mais tu sais, ce n'est pas vraiment le but de la consommation collaborative. On vise plutôt à valoriser les ressources inutilisées et à dépanner les gens entre eux. Si tu avais un doute, tu verrais que la plupart des services proposés ne sont pas des choses que les professionnels offriraient forcément, ou alors à un coût bien plus élevé. C'est plus pour des coups de main ou des objets qu'on utilise rarement. Mon pote Marc a prêté sa perceuse via une application, ça l'a vraiment aidé à se sentir utile sans empiéter sur le travail d'un artisan. Et si jamais tu n'étais pas à l'aise avec certains types de services, tu pourrais toujours filtrer ce que tu proposes. En choisissant tes offres, tu serais sûr de ne pas nuire aux petits commerces que tu aimes."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 18,
@@ -1534,7 +1551,8 @@
         "solve": "Et si jamais tu avais un doute sur le prix, on pourrait regarder ensemble les options de paiement. En réservant à l'avance, tu pourrais même bénéficier d'une petite réduction.",
         "fullResponse": "Franchement je te comprends, ça a l'air d'être une expérience unique donc c'est normal de penser que ce soit hors de prix. mais tu sais, j'ai vérifié les tarifs et ce n'est pas si extravagant que ça, surtout si on prend le forfait de groupe. Il faut juste que tu voies ça comme un investissement dans un souvenir incroyable que tu garderas toute ta vie. En plus, tout est inclus, l'hébergement, les repas et les activités. Il n'y a pas de frais cachés. C'est vraiment un bon rapport qualité-prix pour ce que c'est. Et si jamais tu avais un doute sur le prix, on pourrait regarder ensemble les options de paiement. En réservant à l'avance, tu pourrais même bénéficier d'une petite réduction."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 19,
@@ -1619,7 +1637,8 @@
         "solve": "Et si jamais tu n'étais vraiment pas à l'aise, tu pourrais toujours choisir de participer aux exercices sans forcément monter sur scène. En prenant confiance en toi, tu auras peut-être même envie de te lancer et ça te ferait un bien fou.",
         "fullResponse": "Ouais, franchement je te comprends, l'idée de monter sur scène devant des gens, ça peut être assez intimidant, si tu n'as jamais fait ça. mais tu sais, il ne faut pas que tu t'inquiètes pour ça. Au début, tu ne joueras que devant les autres participants de l'atelier, qui sont tous dans la même situation que toi. Ce n'est pas un spectacle public tout de suite, c'est un processus progressif. Tu as tout le temps de te sentir prêt. Et si jamais tu n'étais vraiment pas à l'aise, tu pourrais toujours choisir de participer aux exercices sans forcément monter sur scène. En prenant confiance en toi, tu auras peut-être même envie de te lancer et ça te ferait un bien fou."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 20,
@@ -1704,7 +1723,8 @@
         "solve": "Et de toute façon, si un sondage te semble bizarre ou trop orienté, tu n'es pas obligé de le finir. En abandonnant un sondage, tu pourrais en choisir un autre plus pertinent sans perdre ton temps.",
         "fullResponse": "Franchement je te comprends, si tu es tombé sur des sondages mal faits par le passé, c'est sûr que ça décourage, mais tu sais, il faut juste que tu t'inscrives sur des plateformes sérieuses et reconnues. Les bonnes plateformes ont des sondages qui sont testés et validés par des professionnels, pour que les réponses soient vraiment exploitables. Un pote à moi, par exemple, il a participé à des études super intéressantes pour des marques connues. Ils investissent beaucoup pour avoir des données fiables. Et de toute façon, si un sondage te semble bizarre ou trop orienté, tu n'es pas obligé de le finir. En abandonnant un sondage, tu pourrais en choisir un autre plus pertinent sans perdre ton temps."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 21,
@@ -1789,7 +1809,8 @@
         "solve": "Et si jamais tu avais envie de rencontrer d'autres membres, des ateliers sont proposés et tu pourrais les rejoindre si ça t'intéresse. En y allant une première fois, tu verrais par toi-même que la flexibilité est totale.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, si tu avais un doute sur le temps que ça prend, c'est tout à fait normal de ne pas vouloir d'obligations supplémentaires. mais tu sais, l'Espace Bricolage n'oblige personne à quoi que ce soit. Il n'y a pas de réunions obligatoires, pas de comités auxquels il faut que tu participes. C'est vraiment un espace libre où tu viens quand tu veux et tu bricoles sur tes projets. Tu pourrais y aller deux fois par an ou tous les week-ends, selon tes envies. Et si jamais tu avais envie de rencontrer d'autres membres, des ateliers sont proposés et tu pourrais les rejoindre si ça t'intéresse. En y allant une première fois, tu verrais par toi-même que la flexibilité est totale."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 22,
@@ -1874,7 +1895,8 @@
         "solve": "Et si jamais tu avais un doute sur un produit, tu pourrais toujours poser des questions pendant les réunions d'information. En te renseignant bien, tu pourrais même orienter tes ventes vers les options plus vertes.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, l'écologie est une préoccupation majeure pour beaucoup en ce moment. mais tu sais, Embal'plast n'est pas qu'une entreprise qui vend du plastique. Ils proposent aussi des solutions d'emballage réutilisables et durables, comme des sacs en tissu épais ou des boîtes de conservation en verre. Il faut juste que tu voies leurs catalogues pour comprendre toute la gamme. Ce n'est pas seulement du film alimentaire jetable, loin de là. En plus, ils mettent l'accent sur la réduction des déchets. Et si jamais tu avais un doute sur un produit, tu pourrais toujours poser des questions pendant les réunions d'information. En te renseignant bien, tu pourrais même orienter tes ventes vers les options plus vertes."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 23,
@@ -1959,7 +1981,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais toujours échanger les contacts en fin de soirée si le courant passe bien. En discutant ouvertement, tu verras que même une seule rencontre peut marquer les esprits.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, tu penses que ce n'est qu'une rencontre éphémère et que ça ne va pas plus loin. mais tu sais, même si ce n'est qu'une soirée, tu partages un moment unique et intime avec des gens du coin. Il faut que tu te dises que tu ne ferais pas ça dans un restaurant classique. C'est l'occasion de découvrir leur culture de l'intérieur, d'échanger sur leurs vies, leurs traditions, et ça, c'est super enrichissant. Un pote à moi a gardé contact avec une famille d'accueil après un repas chez l'habitant et ils s'envoient encore des nouvelles! Et si jamais tu avais un doute, tu pourrais toujours échanger les contacts en fin de soirée si le courant passe bien. En discutant ouvertement, tu verras que même une seule rencontre peut marquer les esprits."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 24,
@@ -2044,7 +2067,8 @@
         "solve": "Et si jamais tu n'avais pas de retours immédiats, ce n'est pas grave du tout. Ça te permettrait au moins de développer ton sens critique personnel. En partageant tes analyses, tu pourrais même découvrir une communauté de passionnés comme toi.",
         "fullResponse": "Non, je te comprends, si tu te dis que personne ne lira tes critiques, c'est sûr que ça peut démotiver. mais tu sais, l'objectif n'est pas forcément d'être lu par des millions de personnes dès le début. Tes critiques pourraient servir à d'autres cinéphiles, à ceux qui cherchent des avis honnêtes avant d'aller voir un film. Tu pourrais même influencer des gens à découvrir de petits films indépendants que les grands médias ignorent. Il faut juste que tu commences à écrire et à partager ton point de vue. Et si jamais tu n'avais pas de retours immédiats, ce n'est pas grave du tout. Ça te permettrait au moins de développer ton sens critique personnel. En partageant tes analyses, tu pourrais même découvrir une communauté de passionnés comme toi."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 25,
@@ -2129,7 +2153,8 @@
         "solve": "Et si jamais tu n'aimais pas ce format numérique pour certains types de livres, tu pourrais toujours continuer à les acheter en version papier. En profitant des deux options, tu doublerais tes opportunités de lecture.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, un livre, c'est quelque chose de spécial, avec une valeur qui va au-delà du simple objet. mais tu sais, la bibliothèque numérique ne cherche pas à remplacer complètement le livre physique, mais plutôt à le compléter. Il faut que tu voies ça comme une opportunité d'accès à la culture. Imagine la quantité de livres que tu pourrais avoir à portée de main, sans même bouger de chez toi. C'est une autre façon de consommer, pas forcément moins noble. Et si jamais tu n'aimais pas ce format numérique pour certains types de livres, tu pourrais toujours continuer à les acheter en version papier. En profitant des deux options, tu doublerais tes opportunités de lecture."
       }
-    ]
+    ],
+    "themeCategory": "technology-digital"
   },
   {
     "id": 26,
@@ -2214,7 +2239,8 @@
         "solve": "Et si jamais tu avais un doute, on pourrait même vérifier avec eux avant de partir ce qu'ils fournissent exactement. En étant bien emmitouflé, tu ne sentirais absolument pas le froid et tu pourrais profiter pleinement du paysage.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, si tu es très frileux/frileuse, ça peut paraître un peu risqué d'aller dans le froid. mais tu sais, ce type d'activité est vraiment fait pour ça. Les organisateurs fournissent des équipements d'hiver de haute qualité, comme des combinaisons thermiques, des bottes chaudes et des moufles spéciales. Il faut juste que tu te sentes bien équipé et ça, c'est leur métier de s'en assurer. On serait tellement confortables que le froid ne serait même plus un problème. J'ai un ami qui est super frileux et qui a adoré l'expérience sans avoir froid une seule seconde ! Et si jamais tu avais un doute, on pourrait même vérifier avec eux avant de partir ce qu'ils fournissent exactement. En étant bien emmitouflé, tu ne sentirais absolument pas le froid et tu pourrais profiter pleinement du paysage."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 27,
@@ -2299,7 +2325,8 @@
         "solve": "Et si jamais tu n'étais pas à l'aise avec l'idée de bénévolat, tu pourrais toujours commencer par des tâches moins engageantes ou des visites. En voyant le travail de tes propres yeux, tu serais plus rassuré sur l'intégrité du projet.",
         "fullResponse": "Franchement je te comprends, on peut toujours avoir l'impression que les gouvernements profitent un peu de l'engagement citoyen. mais tu sais, ce n'est pas forcément une exploitation directe. Souvent, ces projets de restauration sont initiés par des associations locales passionnées qui reçoivent des subventions publiques pour acheter des matériaux ou couvrir des frais logistiques. Les bénévoles viennent parce qu'ils croient à la cause, ce n'est pas une obligation. Il faut que tu voies ça comme une collaboration pour préserver notre histoire. Et si jamais tu n'étais pas à l'aise avec l'idée de bénévolat, tu pourrais toujours commencer par des tâches moins engageantes ou des visites. En voyant le travail de tes propres yeux, tu serais plus rassuré sur l'intégrité du projet."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 28,
@@ -2384,7 +2411,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais toujours vérifier les exemples de marques qui ont fait des changements grâce aux enquêtes. En participant régulièrement, tu verrais que ton impact est réel.",
         "fullResponse": "Franchement je te comprends, on peut facilement avoir cette impression que nos retours ne sont pas pris en compte. mais tu sais, Monopinion met justement un point d'honneur à ne collaborer qu'avec des marques qui s'engagent à considérer sérieusement tous les avis, même les négatifs. C'est leur modèle économique : ils vendent des études de marché complètes. Il faut juste que tu saches que ton opinion a de la valeur pour eux, qu'elle soit positive ou négative. J'ai un ami qui a participé à une enquête sur une nouvelle boisson et son avis mitigé a contribué à la modification de la recette avant le lancement. Ça prouve que ça marche ! Et si jamais tu avais un doute, tu pourrais toujours vérifier les exemples de marques qui ont fait des changements grâce aux enquêtes. En participant régulièrement, tu verrais que ton impact est réel."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 29,
@@ -2469,7 +2497,8 @@
         "solve": "Et de toute façon, tu pourrais organiser ton planning pour ne pas enchaîner les écrans. Si tu prenais des pauses régulières et alternais avec d'autres activités, tu ne sentirais pas la fatigue. En planifiant tes cours intelligemment, tu pourrais équilibrer ton temps devant l'écran et profiter de la musique.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, passer du temps devant les écrans, c'est un peu le quotidien de tout le monde maintenant. mais tu sais, les cours de musique en ligne, ce n'est pas comme regarder un film ou travailler. C'est une activité interactive et créative qui sollicite différemment ton cerveau. Les sessions sont courtes et structurées, pour que tu puisses vraiment apprendre sans te fatiguer les yeux. Ce serait une nouvelle façon d'utiliser ton temps d'écran, plus enrichissante. Et de toute façon, tu pourrais organiser ton planning pour ne pas enchaîner les écrans. Si tu prenais des pauses régulières et alternais avec d'autres activités, tu ne sentirais pas la fatigue. En planifiant tes cours intelligemment, tu pourrais équilibrer ton temps devant l'écran et profiter de la musique."
       }
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 30,
@@ -2554,7 +2583,8 @@
         "solve": "Et de toute façon, il faut que tu voies ça comme une option supplémentaire. Si jamais tu as un pharmacien que tu apprécies, tu pourrais continuer à y aller pour certains conseils. En comparant les services, tu serais plus à l'aise pour choisir la meilleure option pour toi.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, ça peut sembler un peu injuste pour les pharmacies traditionnelles au premier abord, et c'est une préoccupation légitime, mais tu sais, c'est aussi une question d'évolution du marché et d'adaptation aux nouvelles technologies. Les pharmacies en ligne doivent respecter des réglementations très strictes, tout comme les pharmacies physiques, pour pouvoir vendre des médicaments. Ce n'est pas un Far West où tout est permis. Au contraire, elles sont souvent très bien contrôlées par les autorités sanitaires. Et de toute façon, il faut que tu voies ça comme une option supplémentaire. Si jamais tu as un pharmacien que tu apprécies, tu pourrais continuer à y aller pour certains conseils. En comparant les services, tu serais plus à l'aise pour choisir la meilleure option pour toi."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 31,
@@ -2639,7 +2669,8 @@
         "solve": "Et si jamais il y avait un doute, tu pourrais poser toutes tes questions avant de sauter. En écoutant bien les instructions, tu serais rassuré et prêt pour une arrivée en douceur sur la terre ferme.",
         "fullResponse": "Non, je te comprends, c'est une inquiétude légitime d'imaginer une mauvaise chute. mais tu sais, avant chaque saut, il y a un briefing hyper détaillé sur la zone d'atterrissage. Les moniteurs sont des pros, ils connaissent le terrain par cœur et ils s'assurent toujours que tu sois bien guidé. Il faut juste que tu leur fasses confiance, car ils vérifient les conditions météo et le vent pour que tu puisses atterrir en toute sécurité. J'ai un ami qui était super inquiet, mais il a trouvé ça hyper doux finalement. Et si jamais il y avait un doute, tu pourrais poser toutes tes questions avant de sauter. En écoutant bien les instructions, tu serais rassuré et prêt pour une arrivée en douceur sur la terre ferme."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 32,
@@ -2724,7 +2755,8 @@
         "solve": "Et de toute façon, il faut que tu saches que les deux ne sont pas mutuellement exclusifs ; tu pourrais faire les deux si le temps te le permettait. En te renseignant sur les deux options, tu pourrais comparer ce qui te correspond le mieux à ce stade de ta vie.",
         "fullResponse": "Non, je te comprends, l'idée de jardiner pour les espaces verts publics est aussi très noble et ça montre ton engagement citoyen. Mais tu sais, le projet Les Clefs Du Jardin offre quelque chose de différent et de tout aussi précieux. Il s'agit de créer du lien social au sein d'une communauté plus petite, en aidant des personnes âgées ou à mobilité réduite. C'est une contribution plus directe et personnelle, où tu verrais immédiatement l'impact de ton travail et la joie que tu apportes à quelqu'un de spécifique, ce qui n'est pas toujours le cas avec les grands espaces publics. Et de toute façon, il faut que tu saches que les deux ne sont pas mutuellement exclusifs ; tu pourrais faire les deux si le temps te le permettait. En te renseignant sur les deux options, tu pourrais comparer ce qui te correspond le mieux à ce stade de ta vie."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 33,
@@ -2809,7 +2841,8 @@
         "solve": "Et si jamais l'État voyait que ça marche super bien ici, ça le pousserait à investir dans des projets similaires ailleurs. En voyant le succès, tu serais fier d'avoir contribué à quelque chose de concret.",
         "fullResponse": "Non, je te comprends, ça semble logique que l'État s'en occupe, surtout pour un projet d'une telle envergure. mais tu sais, même si l'État a son rôle, l'initiative citoyenne est hyper importante pour montrer ce que les gens veulent vraiment. C'est nous qui vivons en ville, donc c'est à nous aussi de proposer des solutions et de prouver que c'est faisable. Il faut que tu puisses voir que ce genre d'actions locales peut faire une vraie différence et inspirer d'autres villes. Et si jamais l'État voyait que ça marche super bien ici, ça le pousserait à investir dans des projets similaires ailleurs. En voyant le succès, tu serais fier d'avoir contribué à quelque chose de concret."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 34,
@@ -2894,7 +2927,8 @@
         "solve": "Et si jamais tu avais un doute sur la légitimité de ta parole, sache que ta perspective est précieuse. En partageant ton vécu, tu pourrais inspirer d'autres personnes qui vivent des situations similaires.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, ça peut sembler un peu bizarre de s'exprimer quand on n'est pas un expert reconnu. mais tu sais, l'idée du micro n'est pas de remplacer les experts. Au contraire, c'est une occasion unique de partager nos expériences de vie, nos points de vue personnels, qui sont tout aussi valables. Il faut que tu te dises que chacun a une histoire à raconter, et ça enrichit énormément le débat public, pas vrai ? On n'est pas là pour donner des leçons, juste pour échanger. Et si jamais tu avais un doute sur la légitimité de ta parole, sache que ta perspective est précieuse. En partageant ton vécu, tu pourrais inspirer d'autres personnes qui vivent des situations similaires."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 35,
@@ -2979,7 +3013,8 @@
         "solve": "Et si jamais tu n'aimais pas après quelques semaines, tu pourrais toujours arrêter sans problème. En essayant, tu ne prendrais aucun risque et tu pourrais même te découvrir une nouvelle passion inattendue.",
         "fullResponse": "Non, je te comprends, c'est vrai qu'on a déjà beaucoup d'activités et de passions chacun de notre côté. mais tu sais, l'Association Danses Régionales ce n'est pas un engagement à temps plein. Il faut que tu saches que les cours ne durent qu'une heure ou une heure et demie par semaine, ce n'est pas énorme. Ce serait une excellente occasion de découvrir quelque chose de nouveau sans que ça empiète sur tout le reste. Tu pourrais facilement l'intégrer à ton emploi du temps actuel. Et si jamais tu n'aimais pas après quelques semaines, tu pourrais toujours arrêter sans problème. En essayant, tu ne prendrais aucun risque et tu pourrais même te découvrir une nouvelle passion inattendue."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 36,
@@ -3071,7 +3106,8 @@
         "solve": "Et de toute façon, on pourrait choisir un modèle électrique ou hybride si tu préfères, il y en a de plus en plus disponibles et c'est facile à vérifier avec l'agence. En respectant les zones de navigation et en ne jetant rien à l'eau, on serait vraiment des usagers responsables de l'environnement.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, l'impact environnemental est une chose à laquelle on doit tous faire attention aujourd'hui, et c'est important que tu y penses. mais tu sais, les bateaux sans permis sont souvent des modèles électriques ou avec des moteurs très récents et peu polluants. L'entreprise de location a des engagements écologiques, il faut que tu saches qu'ils sensibilisent même à la protection de la faune locale. Ils ne sont pas du tout comparables aux vieux moteurs diesel qui étaient si nocifs avant. Et de toute façon, on pourrait choisir un modèle électrique ou hybride si tu préfères, il y en a de plus en plus disponibles et c'est facile à vérifier avec l'agence. En respectant les zones de navigation et en ne jetant rien à l'eau, on serait vraiment des usagers responsables de l'environnement."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 37,
@@ -3156,7 +3192,8 @@
         "solve": "Et si jamais il y en a beaucoup, on pourrait toujours faire un feu de camp, ça les éloigne pas mal. En portant des vêtements longs le soir, tu serais aussi beaucoup moins exposé aux piqûres.",
         "fullResponse": "Non, je te comprends, les moustiques peuvent être vraiment embêtants quand on est en pleine nature, surtout si tu n'aimes pas les insectes, je le sais. mais tu sais, c'est un problème assez facile à gérer en réalité. Il faut juste que tu viennes équipé avec les bons répulsifs, et on peut même acheter des bougies à la citronnelle pour le campement. La plupart du temps, ils sont surtout actifs au lever et au coucher du soleil, donc pendant la journée, on serait assez tranquilles. Et si jamais il y en a beaucoup, on pourrait toujours faire un feu de camp, ça les éloigne pas mal. En portant des vêtements longs le soir, tu serais aussi beaucoup moins exposé aux piqûres."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 38,
@@ -3241,7 +3278,8 @@
         "solve": "Et si jamais tu voulais t'arrêter spontanément à un endroit pour prendre une photo, tu pourrais toujours demander au chauffeur. En lui demandant gentiment, tu serais surpris de sa flexibilité.",
         "fullResponse": "Non, je te comprends, c'est une préoccupation valide si tu penses au stationnement classique en ville, mais tu sais, ce n'est pas comme une voiture normale que tu gares toi-même. Le chauffeur du Tuk Tuk est un professionnel; il connaît les rues de Bruxelles et sait exactement où s'arrêter et te déposer. Il y a des zones dédiées aux Tuk Tuks ou simplement des arrêts rapides, et le service est pensé pour que tu puisses profiter sans te soucier de ça. Il faut juste que tu aies confiance au chauffeur. En fait, tu n'aurais même pas à y penser! Et si jamais tu voulais t'arrêter spontanément à un endroit pour prendre une photo, tu pourrais toujours demander au chauffeur. En lui demandant gentiment, tu serais surpris de sa flexibilité."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 39,
@@ -3326,7 +3364,8 @@
         "solve": "Et si jamais tu n'aimais pas l'idée de \"faire le travail de l'État\", tu pourrais choisir des missions qui complètent l'action publique, sans la remplacer. En t'impliquant, tu aides à trouver des solutions innovantes et tu deviens un acteur du changement, là où les institutions ont parfois des lacunes.",
         "fullResponse": "Non, je te comprends, on se dit que c'est le rôle de l'État et des institutions de s'occuper de ces problèmes sociaux, et c'est vrai qu'ils ont une grande part de responsabilité. mais tu sais, les pouvoirs publics, malgré leurs efforts, ne peuvent pas toujours tout couvrir, surtout avec les budgets et les ressources limitées. Les bénévoles apportent une flexibilité et une réactivité précieuses, créant des liens directs avec les communautés que les grandes structures ont parfois du mal à atteindre. J'ai un ami qui travaille à la mairie, et il me dit souvent que sans l'aide des bénévoles, beaucoup de projets n'auraient jamais vu le jour. Il faut que tu saches que le bénévolat est un maillon indispensable pour une société solidaire. Et si jamais tu n'aimais pas l'idée de \"faire le travail de l'État\", tu pourrais choisir des missions qui complètent l'action publique, sans la remplacer. En t'impliquant, tu aides à trouver des solutions innovantes et tu deviens un acteur du changement, là où les institutions ont parfois des lacunes."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 40,
@@ -3411,7 +3450,8 @@
         "solve": "Et si jamais tu avais un doute sur une personne, tu pourrais toujours refuser de lui vendre l'article. En étant présent et attentif, tu gardes le contrôle total sur tes ventes et sur qui achète tes affaires.",
         "fullResponse": "Franchement je te comprends, c'est une inquiétude légitime d'imaginer que tes affaires puissent être revendues plus cher après le vide-dressing. mais tu sais, ce n'est pas le but de l'événement. L'idée est de donner une seconde vie à nos vêtements à des prix justes. La plupart des gens qui viennent cherchent de bonnes affaires pour les porter, pas pour faire du profit. Il faut juste que tu mettes des prix qui te semblent corrects dès le départ pour éviter ça. En général, les prix sont fixés bien en dessous du neuf. Et si jamais tu avais un doute sur une personne, tu pourrais toujours refuser de lui vendre l'article. En étant présent et attentif, tu gardes le contrôle total sur tes ventes et sur qui achète tes affaires."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 41,
@@ -3496,7 +3536,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais toujours demander à voir les certifications du chef avant de réserver. En discutant avec eux, tu serais rassuré sur leurs pratiques et leur sérieux.",
         "fullResponse": "Franchement je te comprends, c'est une préoccupation importante quand on invite quelqu'un à cuisiner chez soi. mais tu sais, ces chefs à domicile sont des professionnels qui tiennent à leur réputation. Ils sont en fait soumis aux mêmes règles d'hygiène que les restaurants et la plupart ont même des certifications. Il faut que tu saches que leurs cuisines sont contrôlées et ils respectent des protocoles stricts. Tu n'aimerais pas avoir de mauvaises surprises, et eux non plus. Et si jamais tu avais un doute, tu pourrais toujours demander à voir les certifications du chef avant de réserver. En discutant avec eux, tu serais rassuré sur leurs pratiques et leur sérieux."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 42,
@@ -3581,7 +3622,8 @@
         "solve": "Et si jamais tu avais un doute, on pourrait choisir une compagnie qui met en avant ses certifications écologiques. En vérifiant leurs engagements, tu pourrais partir l'esprit tranquille.",
         "fullResponse": "Non, je te comprends, c'est vrai que la question de l'impact environnemental des croisières est importante et on en parle beaucoup. mais tu sais, beaucoup de compagnies de croisière font des efforts considérables pour réduire leur empreinte carbone. Elles investissent dans des technologies plus propres, comme les moteurs au GNL ou les systèmes de filtration des eaux. Il faut juste que tu saches qu'elles ont conscience de ces enjeux et travaillent activement pour être plus respectueuses de l'environnement, même si tout n'est pas parfait. Et si jamais tu avais un doute, on pourrait choisir une compagnie qui met en avant ses certifications écologiques. En vérifiant leurs engagements, tu pourrais partir l'esprit tranquille."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 43,
@@ -3666,7 +3708,8 @@
         "solve": "Et si jamais tu avais un doute, on pourrait regarder les horaires ensemble pour trouver le créneau parfait. En t'organisant bien, tu pourrais facilement jongler entre les deux sans te sentir débordé.",
         "fullResponse": "Franchement je te comprends, reprendre le sport c'est une excellente idée et ça prend du temps. mais tu sais, les ateliers sont super flexibles. Tu pourrais choisir une formule qui ne dure que quelques semaines, juste pour voir. Il faut juste que tu trouves un équilibre entre tes activités. En plus, la poésie, c'est aussi une forme d'exercice pour l'esprit, ça peut même t'aider à te détendre après le sport. Et si jamais tu avais un doute, on pourrait regarder les horaires ensemble pour trouver le créneau parfait. En t'organisant bien, tu pourrais facilement jongler entre les deux sans te sentir débordé."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 44,
@@ -3751,7 +3794,8 @@
         "solve": "Et si jamais tu n'aimais pas le côté pratique, tu pourrais toujours te spécialiser dans la vente ou la promotion de produits artisanaux. En participant à ces ateliers, tu serais rapidement fixé sur ce qui te plaît vraiment.",
         "fullResponse": "Non, je te comprends, c'est vrai que la reconversion professionnelle peut faire peur, et tu n'aimerais sûrement pas t'engager dans quelque chose de trop long, mais tu sais, l'idée n'est pas forcément de devenir un artisan certifié du jour au lendemain, tu pourrais commencer par des ateliers ponctuels. L'association propose des stages intensifs pour apprendre des bases solides en quelques semaines. L'objectif est avant tout de te donner des compétences pratiques et un nouveau souffle, sans la pression d'un diplôme d'État. Il faut que tu voies ça comme une opportunité d'explorer sans contrainte. Et si jamais tu n'aimais pas le côté pratique, tu pourrais toujours te spécialiser dans la vente ou la promotion de produits artisanaux. En participant à ces ateliers, tu serais rapidement fixé sur ce qui te plaît vraiment."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 45,
@@ -3836,7 +3880,8 @@
         "solve": "Et de toute façon, il faut juste que tu voies le club comme un espace de discussion et d'échange, pas comme un groupe de lecture à voix haute! En partageant tes impressions, tu donnerais une nouvelle dimension à tes lectures personnelles.",
         "fullResponse": "C'est vrai, ta remarque est logique, la lecture est souvent perçue comme une activité que l'on fait seul dans son coin. mais tu sais, le club de lecture ne remplace pas cette lecture solitaire, il la complète. Le but est justement de sortir de l'isolement après avoir lu un livre. C'est l'occasion de rencontrer d'autres personnes qui ont partagé la même expérience de lecture et d'en discuter. Tu pourrais entendre des interprétations que tu n'aurais jamais imaginées toi-même. Et de toute façon, il faut juste que tu voies le club comme un espace de discussion et d'échange, pas comme un groupe de lecture à voix haute! En partageant tes impressions, tu donnerais une nouvelle dimension à tes lectures personnelles."
       }
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 46,
@@ -3921,7 +3966,8 @@
         "solve": "Et si jamais tu n'avais que quelques jours, ça te permettrait déjà de découvrir des coins sympas près de chez nous. En ayant tout à portée de main, tu serais surpris de tout ce que tu pourrais explorer en peu de temps.",
         "fullResponse": "Non, je te comprends, c'est vrai que beaucoup de gens pensent qu'il faut un mois pour voyager en combi. mais tu sais, ce n'est pas du tout obligatoire de partir longtemps! On peut très bien faire des escapades de quelques jours, ou même juste un week-end prolongé. L'avantage du combi, c'est justement cette flexibilité. Il faut juste que tu voies ça comme une petite maison mobile que tu peux garer où tu veux, pour une nuit ou pour une semaine. Et si jamais tu n'avais que quelques jours, ça te permettrait déjà de découvrir des coins sympas près de chez nous. En ayant tout à portée de main, tu serais surpris de tout ce que tu pourrais explorer en peu de temps."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 47,
@@ -4006,7 +4052,8 @@
         "solve": "Et si jamais tu n'étais pas sûr que ça te plaise, il n'y a pas de risque financier. En participant aux premières séances, tu pourrais voir si ça te correspond vraiment avant de t'engager pour la suite.",
         "fullResponse": "Non, je te comprends, ce n'est pas toujours facile d'engager des frais supplémentaires pour un loisir, surtout en ce moment. mais tu sais, l'atelier est complètement gratuit! C'est une initiative de la ville pour encourager la culture et l'expression artistique. Il n'y a pas de frais d'inscription ni de matériel à acheter. Il faut juste que tu t'inscrives avant la date limite pour avoir ta place. Et si jamais tu n'étais pas sûr que ça te plaise, il n'y a pas de risque financier. En participant aux premières séances, tu pourrais voir si ça te correspond vraiment avant de t'engager pour la suite."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 48,
@@ -4091,7 +4138,8 @@
         "solve": "Et si jamais tu n'aimais pas une activité, tu pourrais toujours en trouver d'autres. En discutant avec les autres étudiants, tu te ferais de nouveaux amis et découvrerais de nouvelles opportunités.",
         "fullResponse": "Non, je te comprends, tu as peur de ne pas te sentir à l'aise et de ne pas profiter à fond de ton séjour linguistique. mais tu sais, les organismes font justement attention à ça. Ils proposent plein d'activités culturelles et des excursions pour que tu puisses vraiment t'immerger et découvrir la région. Il faut juste que tu choisisses un programme qui correspond à tes centres d'intérêt, comme ça, tu es sûr de ne pas t'ennuyer une seule seconde. Un pote à moi est parti comme ça en Irlande et il a adoré toutes les sorties organisées. Et si jamais tu n'aimais pas une activité, tu pourrais toujours en trouver d'autres. En discutant avec les autres étudiants, tu te ferais de nouveaux amis et découvrais de nouvelles opportunités."
       }
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 49,
@@ -4176,7 +4224,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais commencer par des activités plus courtes et moins physiques. En participant à des sessions plus courtes, tu découvriras la variété des activités et tu te sentiras plus à l'aise, sans te fatiguer.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, c'est vrai que la marche ce n'est pas le truc que tu préfères faire en général. mais tu sais, l'association propose plein d'activités différentes qui ne demandent pas toujours de longues marches. Il y a des ateliers de sensibilisation, des projets de nettoyage de sites, et même des séances de photographie animalière où tu restes plutôt au même endroit. Il faut juste que tu trouves ce qui te plaît le plus. Et si jamais tu avais un doute, tu pourrais commencer par des activités plus courtes et moins physiques. En participant à des sessions plus courtes, tu découvriras la variété des activités et tu te sentiras plus à l'aise, sans te fatiguer."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 50,
@@ -4261,7 +4310,8 @@
         "solve": "Et si jamais tu n'étais pas convaincu par les plats végétariens, tu pourrais toujours goûter de petits plats et voir par toi-même. En explorant leur menu, tu pourrais trouver des surprises délicieuses qui te plairaient sans compromettre tes valeurs.",
         "fullResponse": "Non, je te comprends, c'est une position très honorable de vouloir s'orienter vers le végétarisme, surtout avec les préoccupations actuelles. mais tu sais, même si l'idée est louable, tout le monde n'est pas prêt à faire ce changement radical du jour au lendemain, et il ne faut pas que tu te sentes coupable. Et puis, Le Criquet ne propose pas que de la viande, ils ont aussi des options végétariennes savoureuses et variées. En plus, un repas de temps en temps ne va pas ruiner tes efforts pour un mode de vie plus sain et respectueux. Et si jamais tu n'étais pas convaincu par les plats végétariens, tu pourrais toujours goûter de petits plats et voir par toi-même. En explorant leur menu, tu pourrais trouver des surprises délicieuses qui te plairaient sans compromettre tes valeurs."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 51,
@@ -4346,7 +4396,8 @@
         "solve": "Et de toute façon, l'idée c'est d'explorer, pas de devenir un expert en art. Si tu avais un doute, tu pourrais commencer par des séances axées sur des thèmes plus figuratifs, en demandant l'avis du professeur. En participant activement, tu te sentirais vite plus à l'aise.",
         "fullResponse": "Non, je te comprends, c'est vrai que certains styles peuvent paraître un peu intimidants au premier abord, et je sais que tu aimes ce qui est direct. mais tu sais, les modèles vivants ne sont pas réservés à l'art abstrait ou conceptuel. Les artistes les utilisent pour des portraits, des paysages, ou même des scènes de rue, ce qui est très accessible. Il y a une telle diversité de styles que tu pourrais vraiment trouver quelque chose qui te parle. Il faut juste que tu essaies et que tu voies la richesse des approches. Et de toute façon, l'idée c'est d'explorer, pas de devenir un expert en art. Si tu avais un doute, tu pourrais commencer par des séances axées sur des thèmes plus figuratifs, en demandant l'avis du professeur. En participant activement, tu te sentirais vite plus à l'aise."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 52,
@@ -4431,7 +4482,8 @@
         "solve": "Et de toute façon, il faut juste que tu essaies une ou deux sessions pour voir par toi-même comment ça se passe. En rejoignant des groupes virtuels, tu pourrais très bien créer de nouveaux liens sportifs.",
         "fullResponse": "Non, je te comprends, c'est vrai qu'on a souvent envie de retrouver l'ambiance des salles de sport et le contact humain. mais tu sais, beaucoup de plateformes de sport en ligne proposent maintenant des cours en direct avec des interactions entre les participants et les coachs. C'est presque comme si tu étais en groupe, et tu peux même te faire des amis en partageant tes expériences dans les chats ou sur des forums dédiés. J'ai un ami qui a commencé le yoga en ligne et il a rencontré plusieurs personnes avec qui il fait maintenant des sessions en visio. Et de toute façon, il faut juste que tu essaies une ou deux sessions pour voir par toi-même comment ça se passe. En rejoignant des groupes virtuels, tu pourrais très bien créer de nouveaux liens sportifs."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 53,
@@ -4516,7 +4568,8 @@
         "solve": "Et si jamais tu avais un doute sur l'impact, tu pourrais voir que ces garages complètent l'offre existante. En aidant une autre clientèle, tu verrais qu'ils renforcent le tissu social et l'économie locale.",
         "fullResponse": "Franchement je te comprends, c'est une inquiétude légitime si tu penses aux emplois des professionnels. mais tu sais, les Garages Solidaires ne concurrencent pas directement les garages traditionnels. Ils se concentrent sur des réparations de base et l'entretien pour des personnes qui n'ont pas les moyens de payer plein tarif. Il faut juste que tu saches que leurs mécaniciens sont souvent des bénévoles ou des personnes en réinsertion, donc ça crée même de nouvelles opportunités. Ce n'est pas fait pour voler le travail de quelqu'un. Et si jamais tu avais un doute sur l'impact, tu pourrais voir que ces garages complètent l'offre existante. En aidant une autre clientèle, tu verrais qu'ils renforcent le tissu social et l'économie locale."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 54,
@@ -4601,7 +4654,8 @@
         "solve": "Et si jamais l'offre publique s'améliorait, tu pourrais toujours arrêter les cours quand tu veux. En t'inscrivant maintenant, tu ne dépendrais plus des délais ou des conditions d'éligibilité des programmes publics.",
         "fullResponse": "Non, je te comprends, tu penses que l'État devrait s'en occuper et je suis d'accord qu'ils ont un rôle à jouer, mais tu sais, malheureusement, les ressources publiques sont limitées et les listes d'attente pour des cours gratuits sont souvent très longues. Il faut juste que tu voies cette plateforme comme un complément rapide et efficace, pas un remplacement. C'est une solution flexible qui s'adapte à ton emploi du temps et à tes besoins spécifiques. Et si jamais l'offre publique s'améliorait, tu pourrais toujours arrêter les cours quand tu veux. En t'inscrivant maintenant, tu ne dépendrais plus des délais ou des conditions d'éligibilité des programmes publics."
       }
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 55,
@@ -4686,7 +4740,8 @@
         "solve": "Et si jamais tu avais un doute sur l'impact, chaque petite contribution compte pour la planète. En participant activement, tu encouragerais d'autres personnes à s'engager également.",
         "fullResponse": "Non, je te comprends, on pourrait penser que la responsabilité incombe entièrement au gouvernement pour financer la lutte environnementale, mais tu sais, même si le gouvernement a un rôle crucial, les initiatives citoyennes comme ce Défi Cycliste Pour La Planète sont aussi super importantes. En fait, ces événements permettent de sensibiliser énormément de monde et de montrer que l'action collective peut faire une vraie différence. Il faut que tout le monde participe, même si c'est à petite échelle, pour créer un mouvement plus large. Et si jamais tu avais un doute sur l'impact, chaque petite contribution compte pour la planète. En participant activement, tu encouragerais d'autres personnes à s'engager également."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 56,
@@ -4771,7 +4826,8 @@
         "solve": "Et si jamais tu avais un doute sur la qualité, on pourrait y aller ensemble une première fois. En goûtant leurs plats, tu serais sûrement rassuré par la fraîcheur et les saveurs authentiques.",
         "fullResponse": "Non, je te comprends, c'est une vraie préoccupation que de voir de plus en plus de restauration rapide s'installer. mais tu sais, ce n'est pas une simple chaîne de fast-food. Les Chaudrons Gourmands mettent en avant des produits frais et locaux, avec des options saines. Il faut que tu voies leurs menus: salades copieuses, plats équilibrés, et même des alternatives végétariennes. Ils insistent sur la qualité plutôt que la quantité de gras. Et si jamais tu avais un doute sur la qualité, on pourrait y aller ensemble une première fois. En goûtant leurs plats, tu serais sûrement rassuré par la fraîcheur et les saveurs authentiques."
       }
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 57,
@@ -4856,7 +4912,8 @@
         "solve": "Et de toute façon, il faut que tu saches que le but n'est pas que les parents se désintéressent. En participant aux activités avec leurs enfants et en discutant avec les accompagnants, tu pourrais voir comment ça se passe et te rassurer pleinement.",
         "fullResponse": "Non, je te comprends, c'est une inquiétude que beaucoup de parents pourraient partager, et il est vrai que certains abusent un un peu de ces services. mais tu sais, ce service est justement là pour accompagner, pas pour remplacer les parents. Il ne s'agit pas de se décharger complètement de ses responsabilités. L'idée, c'est d'offrir un soutien ponctuel ou régulier pour alléger la charge mentale des parents actifs qui ont déjà beaucoup à gérer au quotidien. Ce n'est pas une excuse pour ne rien faire, c'est une aide complémentaire pour mieux s'organiser quand on est débordé. Et de toute façon, il faut que tu saches que le but n'est pas que les parents se désintéressent. En participant aux activités avec leurs enfants et en discutant avec les accompagnants, tu pourrais voir comment ça se passe et te rassurer pleinement."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 58,
@@ -4941,7 +4998,8 @@
         "solve": "Et si jamais certains sujets te semblent moins intéressants, tu pourrais toujours te diriger vers une autre scène ou un autre atelier. En te baladant d'un espace à l'autre, tu trouverais forcément quelque chose qui te plairait davantage.",
         "fullResponse": "Non, je te comprends, tu as peur que l'ambiance soit gâchée par des discussions trop sérieuses. mais tu sais, ce n'est pas qu'un festival de discours. Il y a aussi des concerts incroyables avec des artistes locaux, des ateliers de danse et même des stands de nourriture du monde entier. Ce mélange est justement ce qui rend le festival unique et permet de toucher un public plus large. Il faut que tu viennes et que tu voies par toi-même. Et si jamais certains sujets te semblent moins intéressants, tu pourrais toujours te diriger vers une autre scène ou un autre atelier. En te baladant d'un espace à l'autre, tu trouverais forcément quelque chose qui te plairait davantage."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 59,
@@ -5026,7 +5084,8 @@
         "solve": "Et si jamais tu avais un doute, il faut que tu voies cela comme un complément, une force additionnelle pour la communauté. En participant, tu contribuerais directement à des actions concrètes que le gouvernement ne peut pas toujours prioriser, tu ferais une vraie différence.",
         "fullResponse": "Non, je te comprends, on pourrait penser que l'État devrait prendre en charge ce genre de dépenses pour le bien-être social. Mais tu sais, malheureusement, le gouvernement n'a pas toujours les ressources pour financer toutes les initiatives culturelles et sociales importantes. La Danse Du Cœur comble justement ce manque et permet d'offrir une aide précieuse que l'État ne peut pas toujours fournir. C'est grâce à ce type d'événements que des projets peuvent voir le jour et aider ceux qui en ont besoin. Et si jamais tu avais un doute, il faut que tu voies cela comme un complément, une force additionnelle pour la communauté. En participant, tu contribuerais directement à des actions concrètes que le gouvernement ne peut pas toujours prioriser, tu ferais une vraie différence."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 60,
@@ -5111,7 +5170,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais regarder leurs photos en ligne, ça te rassurerait tout de suite. En voyant l'ambiance, tu te sentirais déjà plus à l'aise.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, c'est vrai que l'équitation peut parfois donner cette impression d'être réservée à une élite. mais tu sais, le Camp Équestre, c'est vraiment l'opposé de ça. L'ambiance est super décontractée et inclusive. Il n'y a pas de jugement, et tout le monde est là pour le plaisir d'être avec les chevaux, peu importe son niveau ou son origine sociale. C'est surtout un endroit pour se détendre et apprendre, dans la bonne humeur. Et si jamais tu avais un doute, tu pourrais regarder leurs photos en ligne, ça te rassurerait tout de suite. En voyant l'ambiance, tu te sentirais déjà plus à l'aise."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 61,
@@ -5196,7 +5256,8 @@
         "solve": "Et de toute façon, ce genre de club demande peu d'investissement public direct, contrairement à un grand complexe sportif. En participant, tu montrerais aussi l'intérêt pour des activités plus naturelles et locales.",
         "fullResponse": "Non, je te comprends, c'est un point de vue tout à fait valable si tu penses aux infrastructures municipales. mais tu sais, les deux ne sont pas mutuellement exclusifs. Il faut que la ville investisse aussi bien dans des structures comme des gymnases que dans des initiatives communautaires plus simples. Le club de marche, c'est aussi un moyen de se dépenser sans avoir besoin d'installations coûteuses, et ça touche un public différent. C'est une question d'équilibre pour répondre à tous les besoins des habitants. Et de toute façon, ce genre de club demande peu d'investissement public direct, contrairement à un grand complexe sportif. En participant, tu montrerais aussi l'intérêt pour des activités plus naturelles et locales."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 62,
@@ -5281,7 +5342,8 @@
         "solve": "Et si jamais tu n’aimais vraiment pas ça, ce ne serait pas grave du tout, tu aurais essayé quelque chose de nouveau. En sortant de ta zone de confort une fois, tu grandirais énormément.",
         "fullResponse": "C’est vrai, ta remarque tient la route, quand on n’a pas l’esprit de compétition, on n’a pas envie de se prouver des trucs pour rien, mais tu sais, ce n’est absolument pas une course contre les autres. C’est plutôt une façon très personnelle de tester tes propres limites intérieures. Il faut voir ça comme un défi contre toi-même, pas comme une compétition avec des adversaires. Et si jamais tu n’aimais vraiment pas ça, ce ne serait pas grave du tout, tu aurais essayé quelque chose de nouveau. En sortant de ta zone de confort une fois, tu grandirais énormément."
       }
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 63,
@@ -5366,7 +5428,8 @@
         "solve": "Et si jamais tu n'étais pas à l'aise, on pourrait toujours changer de région. En parlant avec les habitants, tu te rendrais compte que la plupart sont ravis de voir des gens profiter de leur belle région.",
         "fullResponse": "Non, je te comprends, on a toujours peur de l'inconnu, et si tu avais un doute sur l'accueil, c'est légitime. mais tu sais, les gens à la campagne sont souvent curieux et accueillants. En fait, beaucoup d'entre eux aiment partager leur culture et leurs traditions avec les visiteurs. Tu pourrais être surpris de voir à quel point ils sont ouverts et intéressés. Il faut juste que tu te laisses porter par la rencontre. Ma cousine a fait une expérience similaire et elle a été invitée à des fêtes de village incroyables. Et si jamais tu n'étais pas à l'aise, on pourrait toujours changer de région. En parlant avec les habitants, tu te rendrais compte que la plupart sont ravis de voir des gens profiter de leur belle région."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 64,
@@ -5451,7 +5514,8 @@
         "solve": "Et si jamais tu avais un doute, tu pourrais décider de n'ouvrir tes messages qu'à des moments précis après la détox. En te fixant des plages horaires, tu reprendrais le contrôle de ton temps numérique.",
         "fullResponse": "Non, je te comprends, si tu as peur de te sentir débordé par tes messages accumulés, c'est une inquiétude légitime. mais tu sais, c'est justement pour ça que la détox est efficace. Tu serais tellement apaisé après ce séjour que tu gérerais tes messages de manière plus calme et organisée. Il faut que tu profites de ce moment pour réinitialiser tes habitudes. L'idée, c'est de casser le cycle infernal des notifications constantes et de l'urgence artificielle. Et si jamais tu avais un doute, tu pourrais décider de n'ouvrir tes messages qu'à des moments précis après la détox. En te fixant des plages horaires, tu reprendrais le contrôle de ton temps numérique."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 65,
@@ -5536,7 +5600,8 @@
         "solve": "Et de toute façon, ça te ferait une belle expérience qui pourrait même t’ouvrir des portes pour des jobs payants plus tard. En construisant ton réseau, tu bâtirais quelque chose sur le long terme.",
         "fullResponse": "Ah franchement, ton point est complètement juste, ce genre de service devrait normalement être rémunéré, mais tu sais, pense aux énormes économies que tu ferais sur le loyer et la nourriture pendant tout le séjour. C’est un peu comme être payée en nature, avec un logement gratuit dans un endroit sympa. Il faut voir ça comme une forme de rémunération non financière, pas comme du travail gratuit. Et de toute façon, ça te ferait une belle expérience qui pourrait même t’ouvrir des portes pour des jobs payants plus tard. En construisant ton réseau, tu bâtirais quelque chose sur le long terme."
       }
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 66,
@@ -5621,7 +5686,8 @@
         "solve": "Et de toute façon, avant d’accepter une mission, tu pourrais toujours demander tous les détails au client. En prenant tes précautions à l’avance, tu ne dirais oui que si tout est clair et safe.",
         "fullResponse": "Non, je te comprends, l’assurance peut vraiment être un souci en cas de casse ou d’accident, mais tu sais, pour les petites tâches du quotidien, souvent l’assurance n’est pas nécessaire. C’est plus pour les gros travaux ou les choses vraiment risquées comme de l’élagage. Il faut juste que tu choisisses des missions sans risque au départ, et tu ne serais jamais exposée à un vrai problème. Et de toute façon, avant d’accepter une mission, tu pourrais toujours demander tous les détails au client. En prenant tes précautions à l’avance, tu ne dirais oui que si tout est clair et safe."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 67,
@@ -5706,7 +5772,8 @@
         "solve": "Et de toute façon, ce serait une occasion de montrer qu’on peut aussi agir pour ce qui nous tient à cœur. En participant directement, tu ferais partie de la solution plutôt que de rester à te plaindre.",
         "fullResponse": "Ah franchement, ton point est complètement juste, restaurer le patrimoine, ce devrait être le rôle du gouvernement en premier lieu, mais tu sais, le gouvernement n’a pas toujours assez de budget ni d’effectifs pour tout couvrir partout. Notre aide bénévole peut vraiment faire une différence énorme pour ces sites historiques. Il faut qu’on agisse dès maintenant, sans attendre des années que la politique bouge. Et de toute façon, ce serait une occasion de montrer qu’on peut aussi agir pour ce qui nous tient à cœur. En participant directement, tu ferais partie de la solution plutôt que de rester à te plaindre."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 68,
@@ -5798,7 +5865,8 @@
         "solve": "Et de toute façon, on pourrait toujours lire les avis Google avant de réserver pour être sûrs de choisir un organisme sérieux. En vérifiant les commentaires, tu ne prendrais aucun risque de tomber sur du faux.",
         "fullResponse": "C’est vrai, ta remarque est logique, il y a plein d’organismes bidons qui se lancent sans être sérieux, mais tu sais, pour ces visites à vélo, ce sont souvent des entreprises bien établies qui existent depuis longtemps et qui ont plein de bonnes critiques en ligne. C’est vraiment facile de vérifier leur réputation avant de réserver. Il faut juste que tu prennes cinq minutes pour lire les avis, et tu serais rassurée. Et de toute façon, on pourrait toujours lire les avis Google avant de réserver pour être sûrs de choisir un organisme sérieux. En vérifiant les commentaires, tu ne prendrais aucun risque de tomber sur du faux."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 69,
@@ -5883,7 +5951,8 @@
         "solve": "Et si jamais tu voulais être totalement rassurée sur l’usage des fonds, tu pourrais demander plus de détails avant de t’engager. En posant tes questions au responsable, tu saurais exactement où va chaque euro récolté.",
         "fullResponse": "Ah franchement, ton point est complètement juste, on aimerait tous que ce genre d’argent aille à des causes vraiment nobles, mais tu sais, c’est justement une kermesse scolaire, donc l’argent va directement aux activités et au matériel des enfants de l’école. Ça pourrait servir à acheter du nouveau matériel de sport, organiser des sorties pédagogiques, ou financer des projets pour les élèves. Il faut voir ça comme une aide directe aux enfants. Et si jamais tu voulais être totalement rassurée sur l’usage des fonds, tu pourrais demander plus de détails avant de t’engager. En posant tes questions au responsable, tu saurais exactement où va chaque euro récolté."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 70,
@@ -5968,7 +6037,8 @@
         "solve": "Et de toute façon, on pourrait bien vérifier que tout est fermé avant de dormir et ne rien laisser à manger dehors. En prenant ces précautions simples, on ne se ferait pas déranger la nuit.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, dormir en pleine nature avec des animaux sauvages autour, ça peut faire peur, mais tu sais, c’est souvent installé dans des zones bien tranquilles où il n’y a pas de gros animaux dangereux. On ne serait vraiment pas dans la vraie forêt profonde avec des ours ou des loups. Il faut juste que tu penses à bien fermer la bulle le soir, et rien ne pourrait entrer. Et de toute façon, on pourrait bien vérifier que tout est fermé avant de dormir et ne rien laisser à manger dehors. En prenant ces précautions simples, on ne se ferait pas déranger la nuit."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 71,
@@ -6046,7 +6116,8 @@
         "solve": "Et si jamais il y avait vraiment trop de monde à notre goût, on pourrait toujours changer de session facilement. En restant flexibles sur l’horaire, on trouverait forcément un moment plus tranquille.",
         "fullResponse": "Ouais, c’est vrai, se retrouver dans une foule énorme, ça peut faire un peu peur au début, mais figure-toi que Bouge et Donne propose plusieurs sessions par jour et tu peux réserver ta place à l’avance en ligne. Ça permet de bien gérer le nombre de personnes dans la salle. Il faut juste qu’on choisisse un créneau moins fréquenté, et on aurait de la place à revendre. Et si jamais il y avait vraiment trop de monde à notre goût, on pourrait toujours changer de session facilement. En restant flexibles sur l’horaire, on trouverait forcément un moment plus tranquille."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 72,
@@ -6131,7 +6202,8 @@
         "solve": "Et de toute façon, apprendre à bien manger pour soi, c’est toujours une bonne idée, peu importe ce que fait l’industrie autour. En te prenant en main dès maintenant, tu ne dépendrais plus de ce que les autres décident.",
         "fullResponse": "Franchement je te comprends, ce serait super si toute l’industrie agroalimentaire changeait ses pratiques, mais tu sais, en attendant que ça bouge un jour, on peut déjà faire quelque chose de concret pour soi. Le nutritionniste peut t’aider à bien naviguer dans le supermarché et à choisir les bons produits parmi tout ce qu’il y a. Il faut qu’on agisse à notre niveau, sans attendre les grands changements. Et de toute façon, apprendre à bien manger pour soi, c’est toujours une bonne idée, peu importe ce que fait l’industrie autour. En te prenant en main dès maintenant, tu ne dépendrais plus de ce que les autres décident."
       }
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 73,
@@ -6216,7 +6288,8 @@
         "solve": "Et de toute façon, tu pourrais très bien faire les deux en parallèle, ce n’est pas incompatible du tout. En combinant brocante et Venteco, tu vendrais bien plus vite et à un meilleur prix.",
         "fullResponse": "Non, je te comprends, les brocantes c’est sympa aussi et ça a un vrai charme humain, mais tu sais, avec Venteco, tu peux vendre tes affaires quand tu veux, directement depuis chez toi, sans attendre un événement précis dans le calendrier. Il faut juste que tu fasses les photos tranquille et que tu attendes chez toi, et tu vendrais sans même sortir de ton canapé. Et de toute façon, tu pourrais très bien faire les deux en parallèle, ce n’est pas incompatible du tout. En combinant brocante et Venteco, tu vendrais bien plus vite et à un meilleur prix."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 74,
@@ -6301,7 +6374,8 @@
         "solve": "Et si jamais tu ne trouvais plus ça intéressant à un moment, tu pourrais essayer un autre groupe ou une autre structure. En changeant de cadre régulièrement, tu retrouverais vite ta motivation, sans quitter le domaine.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, on peut craindre que ce soit toujours la même routine sans surprise, mais figure-toi que chaque journée est différente avec les enfants, on ne s’ennuie vraiment jamais. Tu pourrais même proposer de nouvelles activités toi-même, innover selon tes propres idées. Il faut voir ça comme un cadre qui te laisse plein de liberté créative, pas comme une case à cocher. Et si jamais tu ne trouvais plus ça intéressant à un moment, tu pourrais essayer un autre groupe ou une autre structure. En changeant de cadre régulièrement, tu retrouverais vite ta motivation, sans quitter le domaine."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 75,
@@ -6386,7 +6460,8 @@
         "solve": "Et si jamais tu galérais à rédiger, je pourrais t’aider à écrire les premières phrases avec toi. En s’y mettant ensemble un soir tranquille, on aurait bouclé ça en une petite heure.",
         "fullResponse": "Ouais, c’est vrai, l’idée d’écrire des rapports après un voyage, ça peut refroidir un peu au départ, mais tu sais, ce ne sont vraiment pas de longs romans à rédiger. On doit juste dire ce qu’on a aimé et ce qui pourrait être amélioré selon nous. Ils te donnent même souvent un modèle tout prêt à remplir. Il faut juste que tu écrives quelques paragraphes simples, et c’est fait. Et si jamais tu galérais à rédiger, je pourrais t’aider à écrire les premières phrases avec toi. En s’y mettant ensemble un soir tranquille, on aurait bouclé ça en une petite heure."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 76,
@@ -6471,7 +6546,8 @@
         "solve": "Et de toute façon, c’est vraiment une toute petite activité à côté, ça ne t’empêche pas de chercher d’autres opportunités. En cumulant les deux en parallèle, tu multiplierais tes chances au lieu de les réduire.",
         "fullResponse": "Ouais, je te comprends, quand on vise haut dans sa carrière, on ne veut pas se disperser sur autre chose, mais tu sais, rencontrer un étudiant étranger, ça peut vraiment t’ouvrir des portes inattendues dans le futur. Il ou elle pourrait avoir des contacts utiles dans son pays pour tes projets. Il faut voir ça comme un investissement à long terme sur ton réseau, pas comme une perte de temps. Et de toute façon, c’est vraiment une toute petite activité à côté, ça ne t’empêche pas de chercher d’autres opportunités. En cumulant les deux en parallèle, tu multiplierais tes chances au lieu de les réduire."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 77,
@@ -6556,7 +6632,8 @@
         "solve": "Et si jamais tu perdais l’envie à un moment, tu pourrais toujours faire une petite pause et reprendre plus tard. En restant flexible dans ton parcours, tu ne verrais jamais ça comme une contrainte, mais comme un vrai plaisir.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, c’est facile de perdre la motivation quand on apprend une langue, mais figure-toi qu’ils proposent des cours vraiment variés, avec des sujets qui pourraient t’intéresser directement. Tu ne vas pas t’ennuyer une seconde. Il faudrait juste que tu leur dises tes centres d’intérêt au départ, et ils adapteraient toutes les leçons rien que pour toi. Et si jamais tu perdais l’envie à un moment, tu pourrais toujours faire une petite pause et reprendre plus tard. En restant flexible dans ton parcours, tu ne verrais jamais ça comme une contrainte, mais comme un vrai plaisir."
       }
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 78,
@@ -6641,7 +6718,8 @@
         "solve": "Et si jamais quelque chose te dérangeait après coup, tu pourrais leur demander directement de couper la partie où on te voit. En les contactant gentiment, ils feraient le nécessaire sans discuter le moins du monde.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, on n’a pas envie que sa tête traîne partout sur les réseaux sociaux, mais figure-toi que souvent, ils ne mettent pas tout en ligne et ils floutent même les visages pour bien protéger l’intimité. Ce n’est vraiment pas comme une vidéo où on te voit clairement. Il faut juste que tu leur poses la question au début de la répétition, pour être totalement sûre. Et si jamais quelque chose te dérangeait après coup, tu pourrais leur demander directement de couper la partie où on te voit. En les contactant gentiment, ils feraient le nécessaire sans discuter le moins du monde."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 79,
@@ -6726,7 +6804,8 @@
         "solve": "Et si tu voulais aller plus loin pour vraiment changer les choses, tu pourrais aussi signer des pétitions ou écrire aux élus. En combinant les deux actions, tu aiderais sur le terrain et sur le long terme.",
         "fullResponse": "Ah franchement, ton point est complètement juste, on aimerait tous que l’État s’occupe mieux des animaux abandonnés, mais tu sais, en attendant que ça bouge vraiment un jour, les animaux ont besoin d’aide dès maintenant. Le bénévolat fait une différence énorme au quotidien pour eux. Il faut qu’on agisse dès aujourd’hui, sans attendre des décisions politiques qui prendront des années à venir. Et si tu voulais aller plus loin pour vraiment changer les choses, tu pourrais aussi signer des pétitions ou écrire aux élus. En combinant les deux actions, tu aiderais sur le terrain et sur le long terme."
       }
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 80,
@@ -6811,7 +6890,8 @@
         "solve": "Et si tu voulais essayer sans le moindre risque, tu pourrais faire un premier envoi et voir comment ça se passe. En testant juste une fois, tu saurais vite si ça te plaît ou pas, sans jamais te lier.",
         "fullResponse": "Ouais, je te comprends, on n’a pas toujours envie de s’engager dans un projet qu’on ne connaît pas trop, mais c’est justement le truc bien avec cette annonce, il n’y a aucun vrai engagement derrière. Il faut juste que tu envoies tes photos une fois, et c’est tout. Tu es libre de continuer, ou d’arrêter complètement quand tu veux, sans avoir à te justifier. Et si tu voulais essayer sans le moindre risque, tu pourrais faire un premier envoi et voir comment ça se passe. En testant juste une fois, tu saurais vite si ça te plaît ou pas, sans jamais te lier."
       }
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 81,
@@ -6896,7 +6976,8 @@
         "solve": "Et si jamais tu ne te sentais pas à ta place, tu pourrais rester avec nous tout le temps. En restant en groupe entre amis, tu profiterais du séjour sans jamais te sentir seul ou mal à l’aise.",
         "fullResponse": "Ouais, je vois ce que tu veux dire, on a souvent cette image du ski comme un truc de riches, mais ce n’est vraiment plus le cas aujourd’hui. Il existe plein de stations familiales et abordables, où on trouve toutes sortes de gens venus de partout. Il faut juste que tu choisisses le bon endroit, et tu verras que l’ambiance est très simple et détendue. Et si jamais tu ne te sentais pas à ta place, tu pourrais rester avec nous tout le temps. En restant en groupe entre amis, tu profiterais du séjour sans jamais te sentir seul ou mal à l’aise."
       }
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 82,
@@ -6981,6 +7062,7 @@
         "solve": "Et si tu hésitais encore, rien ne t’empêcherait de commencer par l’éolienne et d’ajouter des panneaux plus tard. En essayant petit à petit, tu verrais ce qui marche le mieux chez toi avant de te lancer plus grand.",
         "fullResponse": "Ouais, c’est vrai, les panneaux solaires, on les connaît mieux, et ça a l’air plus simple à mettre, mais le truc bien avec l’éolienne, c’est qu’elle marche aussi la nuit et en hiver, quand les panneaux ne font pas grand-chose. C’est vraiment complémentaire. L’article dit d’ailleurs qu’en mettant les deux ensemble, c’est le meilleur combo pour être presque indépendant toute l’année. Et si tu hésitais encore, rien ne t’empêcherait de commencer par l’éolienne et d’ajouter des panneaux plus tard. En essayant petit à petit, tu verrais ce qui marche le mieux chez toi avant de te lancer plus grand."
       }
-    ]
+    ],
+    "themeCategory": "environment-animals"
   }
 ]

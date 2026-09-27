@@ -31,7 +31,8 @@
       "Pourriez-vous me donner des exemples de types de circuits ou de régions que vous explorez ?",
       "Est-ce que certaines de vos marches incluent des visites culturelles ou des découvertes de sites ?",
       "Y a-t-il un équipement particulier ou obligatoire à prévoir pour participer aux randonnées ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 2,
@@ -65,7 +66,8 @@
       "Les boissons sont-elles incluses dans vos formules ou proposez-vous une sélection à la carte pour les événements ?",
       "Quels types d'ambiances ou de thèmes événementiels proposez-vous, et est-il possible de personnaliser cela ?",
       "Pourriez-vous me donner une estimation des tarifs ou m'expliquer comment sont établis vos devis ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 3,
@@ -99,7 +101,8 @@
       "Pourriez-vous m'indiquer le coût d'une session ou si vous avez différentes formules tarifaires ?",
       "Y a-t-il une tenue particulière à prévoir pour les cours de cuisine ?",
       "Est-ce que les ustensiles et le matériel de cuisine sont fournis sur place ?"
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 4,
@@ -133,7 +136,8 @@
       "Y a-t-il des tests d'évaluation pour entrer en formation ou une certification à la fin du parcours ?",
       "Pourriez-vous me renseigner sur les tarifs des différentes formules de formation et les modalités de paiement ?",
       "Quel type de connexion internet est recommandé pour suivre la formation à distance dans de bonnes conditions ?"
-    ]
+    ],
+    "themeCategory": "technology-digital"
   },
   {
     "id": 5,
@@ -167,7 +171,8 @@
       "Sont les participants autorisés à apporter de quoi grignoter ou boire durant la séance ?",
       "Est-ce que votre local est facilement accessible en voiture et y a-t-il un parking ?",
       "Y a-t-il une pause prévue pendant les discussions, étant donné la durée de la rencontre ?"
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 6,
@@ -201,7 +206,8 @@
       "Pourriez-vous m'éclairer sur le mode de rémunération et la fourchette tarifaire par mission ?",
       "Quel est le délai de paiement habituel après la soumission et la validation d'un rapport de mission ?",
       "Est-il possible de refuser une mission proposée si elle ne correspond pas à mes disponibilités ou préférences ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 7,
@@ -235,7 +241,8 @@
       "Y a-t-il des dangers particuliers à connaître et quelles sont les mesures de sécurité mises en place ?",
       "Pourriez-vous m'indiquer la vitesse approximative que l'on peut atteindre pendant la randonnée ?",
       "Est-ce qu'un permis de conduire spécifique ou un permis bateau est nécessaire pour participer ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 8,
@@ -269,7 +276,8 @@
       "Pourriez-vous me préciser quel est le public ou la clientèle spécifique que vous accompagnez ?",
       "Concernant les jouets mentionnés dans l'annonce, quels types sont collectés ou distribués par les bénévoles ?",
       "Acceptez-vous également des dons de jouets de la part de particuliers ou d'entreprises ?"
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 9,
@@ -303,7 +311,8 @@
       "L'hébergement est-il prévu et inclus si certains circuits durent plus d'une journée ?",
       "Est-ce qu'un guide est présent à bord pour commenter le parcours et les différentes étapes ?",
       "Quelles sont les modalités de réservation et est-il possible de le faire directement en ligne ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 10,
@@ -337,7 +346,8 @@
       "Y a-t-il des risques particuliers liés à cette activité ou des consignes de sécurité ?",
       "Les personnes qui accompagnent peuvent-elles assister à l'activité sans participer ?",
       "Est-ce qu'une dégustation de produits ou une collation est incluse dans l'activité ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 11,
@@ -371,7 +381,8 @@
       "Des conférences ou des présentations spécifiques sont-elles prévues lors de ces soirées ?",
       "Ces visites nocturnes sont-elles adaptées aux enfants, et à partir de quel âge ?",
       "Proposez-vous un service de restauration ou un coin café pendant la durée de la visite en soirée ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 12,
@@ -405,7 +416,8 @@
       "Faut-il avoir une condition physique particulière pour pratiquer le lancer de hache ?",
       "Serons-nous accompagnés et encadrés par des professionnels qualifiés pendant la séance ?",
       "Est-ce que cette activité présente des dangers, et quelles sont vos mesures de sécurité ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 13,
@@ -439,7 +451,8 @@
       "Y a-t-il un large éventail de tailles disponibles pour toutes les morphologies ?",
       "Quelles sont les modalités de paiement acceptées lors de cette vente ?",
       "Une partie des bénéfices de cette vente est-elle reversée à des organismes caritatifs ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 14,
@@ -471,7 +484,8 @@
       "La bibliothèque dispose-t-elle d'une section dédiée aux livres pour enfants et aux jeunes lecteurs ?",
       "L'établissement propose-t-il des conférences thématiques et comment peut-on connaître la programmation ?",
       "Y a-t-il des ateliers ou des activités pour le public et comment peut-on s'inscrire ?"
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 15,
@@ -505,7 +519,8 @@
       "Quelles activités concrètes que les enfants feront durant cet atelier découverte animale ?",
       "Doit-on prévoir ou apporter du matériel spécifique pour la participation des enfants à l'atelier ?",
       "Les parents sont-ils autorisés à rester et à assister aux activités de l'atelier avec leurs enfants ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 16,
@@ -539,7 +554,8 @@
       "Des dégustations sont-elles prévues, et si oui, sont-elles incluses dans le prix d'entrée ?",
       "Sera-t-il possible d'acheter des boissons sur place, et quel type de rafraîchissements sera proposé ?",
       "Avez-vous un site internet ou une page où je pourrais trouver plus de détails sur l'événement ?"
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 17,
@@ -573,7 +589,8 @@
       "Pourriez-vous me donner une idée du nombre actuel de choristes qui font partie du groupe ?",
       "La chorale donne-t-elle des concerts ou des représentations publiques, et si oui, à quelle fréquence ?",
       "Est-ce qu'une formation musicale préalable est nécessaire pour rejoindre la chorale, comme le solfège ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 18,
@@ -607,7 +624,8 @@
       "Des pauses sont-elles prévues durant l'enregistrement ou la diffusion de l'émission de radio ?",
       "Y a-t-il une tenue spécifique ou un code vestimentaire à respecter pour participer à l'émission ?",
       "Quelles compétences spécifiques ou qualités sont recherchées pour être sélectionné(e) pour ce rôle ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 19,
@@ -641,7 +659,8 @@
       "Est-ce qu'une assurance est incluse dans le prix de l'inscription ou faut-il en prévoir une ?",
       "Proposez-vous également des sorties ou des balades de groupe en roller en plus des leçons classiques ?",
       "Pourriez-vous me préciser si les cours sont adaptés et divisés par groupes d'âge ou de niveau ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 20,
@@ -675,7 +694,8 @@
       "L'assurance est-elle comprise dans les frais d'inscription ou faut-il en prévoir une à part ?",
       "Faut-il fournir un certificat médical pour participer aux activités de l'école ?",
       "Quelles sont les mesures de sécurité mises en place pour minimiser les risques pendant les cours ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 21,
@@ -709,7 +729,8 @@
       "Y a-t-il une limite d'âge minimale ou maximale pour pouvoir participer à ces stages d'escalade ?",
       "Les stages se déroulent-ils en salle d'escalade en ville ou plutôt sur des sites naturels à l'extérieur ?",
       "Proposez-vous également des stages d'escalade plus intensifs, d'une durée d'une semaine par exemple ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 22,
@@ -743,7 +764,8 @@
       "Avez-vous des suggestions d'hébergement à proximité du lieu du concert pour les visiteurs ?",
       "Y a-t-il des conditions spécifiques pour la présence des enfants et un tarif réduit pour eux ?",
       "Est-il possible de rencontrer les artistes ou d'obtenir des dédicaces à un moment donné ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 23,
@@ -777,7 +799,8 @@
       "Pourriez-vous me détailler les différents tarifs disponibles pour cette visite ?",
       "Proposez-vous des tarifs réduits pour les étudiants, les seniors ou les familles ?",
       "Est-il nécessaire de réserver à l'avance pour participer à la visite ou à l'atelier ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 24,
@@ -811,7 +834,8 @@
       "Est-ce que vous entretenez tous les types et toutes les marques de véhicules, même les plus anciens ?",
       "Proposez-vous un suivi régulier ou un carnet d'entretien pour les véhicules clients ?",
       "Est-ce que vous conservez un dossier client avec l'historique des entretiens de chaque véhicule ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 25,
@@ -845,7 +869,8 @@
       "Y a-t-il des exigences ou des contre-indications en termes de préparation physique ou de santé ?",
       "Est-ce que l'utilisation de ces scooters est possible en rivière ou uniquement en mer ?",
       "L'assurance est-elle incluse dans le prix de la location, ou faut-il en souscrire une ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 26,
@@ -879,7 +904,8 @@
       "À partir de quel âge les enfants peuvent-ils participer à ces activités de randonnée en traîneau ?",
       "Y a-t-il des conditions médicales ou des restrictions de santé à considérer avant de s'inscrire ?",
       "Quelles sont les mesures de sécurité mises en place pour assurer la sûreté des participants ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 27,
@@ -913,7 +939,8 @@
       "Qui prend en charge l'installation technique, comme la sonorisation et l'éclairage, le jour de l'événement ?",
       "Disposez-vous d'une assurance responsabilité civile professionnelle pour couvrir d'éventuels incidents ?",
       "Serait-il possible d'intégrer une session karaoké à la prestation de l'orchestre ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 28,
@@ -947,7 +974,8 @@
       "Pourriez-vous m'expliquer un peu plus ce qu'est exactement la cabine protégée mentionnée dans l'annonce ?",
       "Dans cette partie du zoo, combien d'espèces animales différentes pourrons-nous observer durant notre séjour ?",
       "Quelles sont les modalités de réservation et est-il possible de le faire directement en ligne ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 29,
@@ -981,7 +1009,8 @@
       "Quelle est la durée minimale et maximale de la période de garde que vous proposez ?",
       "Est-ce que votre service dispose d'une assurance pour couvrir d'éventuels incidents pendant la garde ?",
       "Comment assurez-vous que le personnel ou les familles d'accueil sont qualifiés pour s'occuper des animaux ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 30,
@@ -1015,7 +1044,8 @@
       "Comment se déroule l'inscription aux examens théorique et pratique du permis moto ?",
       "Proposez-vous un entraînement spécifique pour la préparation de l'examen du code de la route ?",
       "Est-ce qu'une visite médicale est obligatoire pour s'inscrire au permis de conduire moto ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 31,
@@ -1049,7 +1079,8 @@
       "Combien de fois par jour vos intervenants visitent-ils ou s'occupent-ils des chats en garde ?",
       "Est-ce que le service inclut du temps de jeu et des interactions régulières avec le chat ?",
       "Avez-vous l'expérience nécessaire pour gérer des chats ayant un comportement plus difficile ou agressif ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 32,
@@ -1081,7 +1112,8 @@
       "Proposez-vous une assistance ou une petite formation pour les personnes moins expérimentées en mécanique ?",
       "Y a-t-il du personnel qualifié sur place pour nous conseiller et nous aider en cas de besoin ?",
       "Pourriez-vous m'indiquer la grille tarifaire de vos services et la location de vos équipements ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 33,
@@ -1115,7 +1147,8 @@
       "Si le participant est mineur, une autorisation parentale est-elle nécessaire pour l'inscription ?",
       "Comment se déroule concrètement l'initiation, et quel est le niveau d'encadrement prévu ?",
       "Quelles sont les conditions d'annulation ou de report en cas de mauvaise météo ou d'empêchement ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 34,
@@ -1149,7 +1182,8 @@
       "Vos produits bénéficient-ils d'une certification biologique ou d'un label spécifique ?",
       "Si nous venons cueillir, devons-nous apporter notre propre équipement ou le fournissez-vous ?",
       "En dehors des produits mentionnés dans votre publicité, avez-vous d'autres articles ou services à proposer ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 35,
@@ -1183,7 +1217,8 @@
       "Pourriez-vous m'informer sur les options de livraison, les délais et les éventuels frais associés ?",
       "Vendez-vous également des lunettes de soleil correctrices ou non, en plus des lunettes de vue ?",
       "Est-ce que votre offre comprend des lunettes adaptées spécifiquement pour les enfants ?"
-    ]
+    ],
+    "themeCategory": "health-wellbeing"
   },
   {
     "id": 36,
@@ -1215,7 +1250,8 @@
       "Quels sont les différents matériaux précieux ou pierres que vous rachetez habituellement ?",
       "Est-ce que vous rachetez aussi les bijoux qui sont cassés, abîmés ou incomplets ?",
       "Proposez-vous un service d'envoi sécurisé pour les bijoux si je ne peux pas me rendre en boutique ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 37,
@@ -1249,7 +1285,8 @@
       "Pourriez-vous m'éclairer sur les tarifs des différents circuits que vous proposez, s'il vous plaît ?",
       "Est-ce qu'un guide accompagne les participants à bord de chaque bateau pendant les circuits ?",
       "J'aimerais savoir si les enfants sont acceptés et s'il y a des conditions ou tarifs particuliers pour eux."
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 38,
@@ -1283,7 +1320,8 @@
       "Comment puis-je faire une réservation et quels sont les délais nécessaires ?",
       "Proposez-vous un catalogue en ligne pour visualiser tous vos modèles de voitures rétro ?",
       "Quelles sont les assurances incluses avec la location, et y a-t-il des options supplémentaires ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 39,
@@ -1317,7 +1355,8 @@
       "Sur quels critères les testeurs sont-ils évalués et comment les résultats sont-ils utilisés ?",
       "A-t-on la possibilité de choisir les catégories de produits que l’on souhaite tester ?",
       "Quelles protections sont prévues en cas de malaise ou d’indigestion suite à un test ?"
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 40,
@@ -1351,7 +1390,8 @@
       "Pourriez-vous m'expliquer quelles sont les étapes de progression ou le plan d'apprentissage ?",
       "J'aimerais en savoir plus sur la méthode d'enseignement que vous utilisez pour la guitare.",
       "Proposez-vous uniquement des cours individuels ou est-il possible de suivre des cours en groupe ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 41,
@@ -1385,7 +1425,8 @@
       "Quelles sont les différentes durées de location proposées pour les bateaux ?",
       "Pourriez-vous me donner une idée des tarifs de location, s'il vous plaît ?",
       "Comment procède-t-on pour la réservation et faut-il s'y prendre à l'avance ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 42,
@@ -1419,7 +1460,8 @@
       "Est-ce que la restauration est incluse ou proposez-vous des options pour le goûter ?",
       "Des animateurs sont-ils prévus pour encadrer les enfants pendant la fête d'anniversaire ?",
       "Comment procède-t-on pour effectuer une réservation, et quels sont les délais à prévoir ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 43,
@@ -1453,7 +1495,8 @@
       "Quelles assurances sont incluses dans vos services en cas de dommages ou de perte ?",
       "Quel est le délai de réservation à prévoir et combien de temps dure le déménagement ?",
       "Pourriez-vous me détailler le déroulement de la journée du déménagement elle-même ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 44,
@@ -1487,7 +1530,8 @@
       "Est-ce qu'un repas est inclus ou y a-t-il des options pour déjeuner pendant ou après l'excursion ?",
       "Quel est le point de départ exact de l'excursion et à quelle heure doit-on se présenter ?",
       "Y a-t-il une tenue particulière ou des équipements spécifiques à prévoir pour l'observation des baleines ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 45,
@@ -1521,7 +1565,8 @@
       "Y a-t-il des ateliers ou des activités interactives prévues pour les visiteurs ?",
       "Le musée dispose-t-il d'une boutique où l'on pourrait trouver des souvenirs ou des livres ?",
       "Est-il nécessaire de réserver sa visite ou ses billets à l'avance, ou est-ce facultatif ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 46,
@@ -1555,7 +1600,8 @@
       "Est-ce que des repas ou des rafraîchissements sont inclus ou peuvent être achetés à bord ?",
       "Proposez-vous des activités spécifiques pendant la balade, comme la baignade ou la plongée ?",
       "Quel est le nombre minimum et maximum de personnes acceptées par bateau pour ces balades ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 47,
@@ -1589,7 +1635,8 @@
       "Quel est le processus de sélection pour devenir testeur d'émissions de télévision ?",
       "Pourriez-vous me donner plus de détails sur la valeur ou l'utilisation des bons d'achat mentionnés ?",
       "Y a-t-il un contrat ou un engagement formel à signer pour participer à ces sessions de test ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 48,
@@ -1623,7 +1670,8 @@
       "Pourriez-vous me donner des informations sur le profil et l'expérience de vos professeurs ou tuteurs ?",
       "Quels sont les tarifs pour les séances d'aide aux devoirs, et proposez-vous des forfaits spécifiques ?",
       "Est-il nécessaire de réserver une place à l'avance et comment se passe le processus de réservation des séances ?"
-    ]
+    ],
+    "themeCategory": "education-learning"
   },
   {
     "id": 49,
@@ -1657,7 +1705,8 @@
       "Vos activités s'adressent-elles à tous les niveaux, des débutants aux cavaliers confirmés ?",
       "Pourriez-vous me renseigner sur les qualifications et l'expérience de vos moniteurs équestres ?",
       "Est-ce que vous proposez une préparation aux compétitions ou en organisez-vous au centre ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 50,
@@ -1691,7 +1740,8 @@
       "Y a-t-il un ascenseur dans l'immeuble, et à quel étage se trouve l'appartement exactement ?",
       "Pourriez-vous me donner une idée de l'ambiance générale du voisinage et des environs de l'immeuble ?",
       "Pourriez-vous me décrire un peu le quartier, notamment en termes de commerces, transports et commodités ?"
-    ]
+    ],
+    "themeCategory": "work-career"
   },
   {
     "id": 51,
@@ -1723,7 +1773,8 @@
       "Quels sont les types de matériaux spécifiques qui seront mis à la disposition des participants pendant l'atelier ?",
       "J'aimerais en savoir un peu plus sur les formateurs ou animateurs qui dirigeront cet atelier.",
       "Quelles sont les modalités pour s'inscrire à cet atelier et y a-t-il une date limite d'inscription ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 52,
@@ -1757,7 +1808,8 @@
       "Les repas sont-ils inclus dans le forfait et, si oui, quelle formule (demi-pension, pension complète) est proposée ?",
       "S'agit-il d'un voyage organisé en groupe avec un itinéraire fixe, ou des départs individuels sont-ils possibles ?",
       "Un guide est-il prévu pour accompagner le groupe pendant tout le séjour, et en quelle langue ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 53,
@@ -1791,7 +1843,8 @@
       "Quelles sont vos conditions d'annulation ou de remboursement si un imprévu survient ?",
       "Est-ce qu'il y a plusieurs dates de représentation ou s'agit-il d'un événement unique ?",
       "Y a-t-il des informations sur les comédiens ou les artistes qui joueront dans ce spectacle ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 54,
@@ -1825,7 +1878,8 @@
       "Est-ce que la location de l'équipement de ski est incluse dans le prix des cours ?",
       "Est-ce que votre école propose des options pour les repas ou l'hébergement durant le séjour ?",
       "Offrez-vous la possibilité de prendre des cours privés ou uniquement des cours de groupe ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 55,
@@ -1857,7 +1911,8 @@
       "Proposez-vous des facilités de paiement ou des options de financement pour les événements de grande envergure ?",
       "Acceptez-vous les paiements en espèces ou les règlements par chèque pour les services événementiels ?",
       "Y a-t-il d'autres avantages ou services exclusifs que votre agence propose à ses clients ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 56,
@@ -1891,7 +1946,8 @@
       "Proposez-vous des accessoires pour compléter les costumes, et sont-ils inclus ?",
       "Est-il possible de faire des retouches si un costume ne convient pas parfaitement ?",
       "Est-ce que des frais de nettoyage sont inclus dans le prix ou facturés séparément ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 57,
@@ -1925,7 +1981,8 @@
       "Quels sont les types ou les marques d'ordinateurs et tablettes disponibles à l'emprunt ?",
       "Pourriez-vous m'expliquer les différentes opportunités de bénévolat que vous proposez ?",
       "Comment puis-je vérifier la disponibilité du matériel ou des places pour les prochains ateliers ?"
-    ]
+    ],
+    "themeCategory": "technology-digital"
   },
   {
     "id": 58,
@@ -1959,7 +2016,8 @@
       "Quel est le nombre maximum de participants par stage pour assurer un bon encadrement ?",
       "Pourriez-vous me dire quelles sont les vitesses maximales que nous pourrions atteindre durant ces stages ?",
       "Quels sont les éventuels dangers associés à ce type de pilotage et comment gérez-vous la sécurité ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 59,
@@ -1993,7 +2051,8 @@
       "Pourriez-vous me dire quelques mots sur le profil et les qualifications de vos moniteurs ?",
       "Une autorisation parentale est-elle requise pour l'inscription des enfants mineurs aux cours ?",
       "Organisez-vous également des stages de ski intensifs pour progresser plus rapidement ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 60,
@@ -2027,7 +2086,8 @@
       "Devez-vous fournir des vêtements de protection ou dois-je les apporter ?",
       "Quels sont les éventuels risques ou dangers de cette activité ?",
       "Est-il nécessaire de réserver à l'avance et comment puis-je le faire ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 61,
@@ -2079,7 +2139,8 @@
       "Pourriez-vous m'indiquer les horaires d'ouverture et de fermeture du site de saut ?",
       "Est-ce qu'il y a un service de rafraîchissements ou une petite buvette sur place ?",
       "Est-ce qu'on peut apporter des éléments de décoration pour un événement spécial sur le site ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 63,
@@ -2113,7 +2174,8 @@
       "Est-il nécessaire d'acheter un équipement spécifique et pouvez-vous me conseiller sur ce point ?",
       "Pouvez-vous me donner des informations sur les qualifications et l'expérience de vos formateurs ?",
       "Le centre offre-t-il la possibilité de participer à des compétitions ou des championnats pour les élèves avancés ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 64,
@@ -2147,7 +2209,8 @@
       "Vos visites guidées à vélo sont-elles adaptées aux enfants, et à partir de quel âge minimum ?",
       "Faut-il prévoir une assurance personnelle, ou une couverture est-elle incluse avec la prestation ?",
       "Proposez-vous des tarifs spéciaux ou des visites privées si nous sommes un groupe ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 65,
@@ -2181,7 +2244,8 @@
       "J'aimerais en savoir un peu plus sur l'expérience de vos professeurs.",
       "Proposez-vous également des cours de danse adaptés spécifiquement aux enfants ?",
       "Y a-t-il un spectacle de fin d'année pour les élèves qui le souhaitent ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 66,
@@ -2215,7 +2279,8 @@
       "Est-ce que des accompagnateurs ou des guides sont prévus pendant le parcours ?",
       "Y a-t-il un équipement spécifique à prévoir, ou est-il fourni sur place ?",
       "Quelles sont les principales consignes de sécurité à respecter pendant l'aventure en forêt ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 67,
@@ -2249,7 +2314,8 @@
       "Y a-t-il des exigences particulières concernant la forme physique ou le niveau des participants ?",
       "Les stages sont-ils encadrés par des professionnels qualifiés en escalade et diplômés ?",
       "Quelles sont les mesures de sécurité mises en place pour minimiser les risques liés à l'escalade ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 68,
@@ -2283,7 +2349,8 @@
       "Est-ce possible d'obtenir un devis détaillé et personnalisé avant de s'engager pour vos services ?",
       "Quels sont vos horaires d'intervention habituels pour les travaux de jardinage chez les particuliers ?",
       "Est-ce que vous travaillez avec des variétés de plantes spécifiques ou pouvez-vous nous conseiller sur le choix ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 69,
@@ -2317,7 +2384,8 @@
       "Est-ce que vous fournissez le goûter et le gâteau d'anniversaire, ou est-ce à la charge des parents ?",
       "Est-ce que des moniteurs ou des animateurs spécialisés dans l'encadrement des enfants sont présents pendant la fête ?",
       "Quelles mesures de sécurité sont mises en place pour assurer le bien-être et la surveillance des enfants au zoo ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 70,
@@ -2351,7 +2419,8 @@
       "Y a-t-il la possibilité de se restaurer ou d'acheter des boissons directement sur votre site ?",
       "Proposez-vous des cours d'initiation au mini-golf ou des ateliers pour améliorer son jeu ?",
       "Serait-il possible de réserver l'ensemble du parcours pour un événement privé ou un anniversaire ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 71,
@@ -2385,7 +2454,8 @@
       "Une autorisation parentale est-elle obligatoire pour les participants mineurs aux stages ?",
       "Proposez-vous également des stages plus intensifs et quels sont les objectifs spécifiques ?",
       "Est-ce que l'hébergement est inclus dans les forfaits ou proposez-vous des options d'hébergement ?"
-    ]
+    ],
+    "themeCategory": "sports-outdoor"
   },
   {
     "id": 72,
@@ -2419,7 +2489,8 @@
       "Comment garantissez-vous la fraîcheur et la qualité de vos produits livrés ?",
       "En dehors du petit-déjeuner, proposez-vous d'autres types de repas ou de collations à livrer ?",
       "Vos petits-déjeuners peuvent-ils être commandés pour un nombre variable de personnes ?"
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 73,
@@ -2453,7 +2524,8 @@
       "Proposez-vous une variété de paniers pique-nique avec des thèmes ou des options différentes ?",
       "Avez-vous des options de menus spéciaux pour les végétariens ou les personnes avec des allergies ?",
       "Proposez-vous des réductions ou des offres spéciales, notamment pour les commandes importantes ?"
-    ]
+    ],
+    "themeCategory": "food-cooking"
   },
   {
     "id": 74,
@@ -2487,7 +2559,8 @@
       "Pouvons-nous choisir l'aéroport de départ et d'arrivée, ou y a-t-il des aéroports spécifiques ?",
       "Des repas sont-ils inclus à bord et est-ce possible de personnaliser le service de restauration ?",
       "Quelles options de divertissement proposez-vous aux passagers durant les vols personnalisés ?"
-    ]
+    ],
+    "themeCategory": "travel-tourism"
   },
   {
     "id": 75,
@@ -2521,7 +2594,8 @@
       "Existe-t-il différents parcours ou itinéraires pour explorer le parc et ses différentes zones thématiques ?",
       "Quelles sont les animations ou activités spéciales que vous proposez aux visiteurs durant la journée ?",
       "Proposez-vous des visites guidées et comment doit-on s'inscrire pour y participer ?"
-    ]
+    ],
+    "themeCategory": "environment-animals"
   },
   {
     "id": 76,
@@ -2555,7 +2629,8 @@
       "Pourriez-vous me dire combien de personnes sont déjà inscrites ou quel est le nombre maximum de participants ?",
       "Pourriez-vous me préciser les modalités d'inscription et s'il y a des frais à régler pour participer ?",
       "Est-ce qu'il y a une quantité minimum de vêtements à apporter pour pouvoir participer à l'échange ?"
-    ]
+    ],
+    "themeCategory": "community-volunteering"
   },
   {
     "id": 77,
@@ -2589,7 +2664,8 @@
       "En plus des vins, proposez-vous d'autres types d'alcools ou des boissons régionales à la dégustation ?",
       "Pourriez-vous m'indiquer l'origine des produits que vous mettez en avant ou proposez à la vente ?",
       "Est-il possible d'inclure une visite du vignoble dans la formule de visite du musée ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   },
   {
     "id": 78,
@@ -2623,6 +2699,7 @@
       "Proposez-vous des facilités de paiement, par exemple la possibilité de payer en plusieurs fois ?",
       "Où est située votre agence ou votre studio si l'on souhaite vous rencontrer pour discuter du projet ?",
       "Quelle est votre politique de remboursement si jamais le client n'est pas entièrement satisfait du résultat ?"
-    ]
+    ],
+    "themeCategory": "culture-arts"
   }
 ]
