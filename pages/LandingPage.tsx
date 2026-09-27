@@ -50,18 +50,18 @@ export function LandingPage() {
       <Helmet>
         <html lang="en" />
         <title>TEF Canada Oral Practice Online – Akseli AI Examiner</title>
-        <meta name="description" content="Practice TEF Canada oral sections A and B with an AI examiner. Ideal for Express Entry and immigration candidates. 30 sessions for less than the cost of one tutor hour. Instant feedback, on your schedule." />
+        <meta name="description" content="Practice TEF Canada oral sections A and B with an AI examiner. Get instant feedback and reach CLB 7 for Express Entry." />
         <meta name="keywords" content="TEF Canada oral practice, TEF Canada speaking practice, TEF Canada online, simulated TEF exam, AI French examiner, TEF Canada preparation, TEF Canada Express Entry, TEF Canada CLB score, TEF Canada immigration, pratique oral TEF Canada" />
         <link rel="canonical" href="https://akseli.ca/" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://akseli.ca/" />
         <meta property="og:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
-        <meta property="og:description" content="Practice TEF Canada oral sections A and B with an AI examiner. 30 oral sessions for less than one hour of TEF tutoring. Instant feedback, any time of day." />
-        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta property="og:description" content="Practice TEF Canada oral sections A and B with an AI examiner. Get instant feedback and reach CLB 7 for Express Entry." />
+        <meta property="og:image" content="https://akseli.ca/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TEF Canada Oral Practice Online – Akseli AI Examiner" />
-        <meta name="twitter:description" content="Practice TEF Canada Sections A and B with an AI examiner. Less than one hour of tutoring per month." />
-        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:description" content="Practice TEF Canada oral sections A and B with an AI examiner. Get instant feedback and reach CLB 7 for Express Entry." />
+        <meta name="twitter:image" content="https://akseli.ca/og-image.png" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'Organization',
@@ -69,6 +69,10 @@ export function LandingPage() {
           url: 'https://akseli.ca',
           logo: 'https://akseli.ca/logo.png',
           description: 'AI-powered TEF Canada oral practice platform for Express Entry and immigration candidates targeting CLB 7.',
+          sameAs: [
+            'https://www.linkedin.com/company/akseli-ai',
+            'https://twitter.com/akseli_ca',
+          ],
         })}</script>
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',

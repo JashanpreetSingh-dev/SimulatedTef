@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SignedIn, SignedOut } from '@clerk/clerk-react';
 import { HelmetProvider } from 'react-helmet-async';
 import { ClerkProviderWithTheme } from './providers/ClerkProviderWithTheme';
@@ -19,6 +19,7 @@ const ArticleExpressEntry = lazy(() =>
 const ArticleVsTCF = lazy(() => import('./pages/blog/ArticleVsTCF').then((m) => ({ default: m.ArticleVsTCF })));
 const TermsOfService = lazy(() => import('./components/TermsOfService').then((m) => ({ default: m.TermsOfService })));
 const PrivacyPolicy = lazy(() => import('./components/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy })));
+const NotFound = lazy(() => import('./pages/NotFound').then((m) => ({ default: m.NotFound })));
 
 function PublicRouteFallback() {
   return (
@@ -46,7 +47,7 @@ function App() {
                       <Route path="/blog/tef-canada-vs-tcf-canada" element={<ArticleVsTCF />} />
                       <Route path="/terms" element={<TermsOfService />} />
                       <Route path="/privacy" element={<PrivacyPolicy />} />
-                      <Route path="*" element={<Navigate to="/" replace />} />
+                      <Route path="*" element={<NotFound />} />
                     </Routes>
                   </Suspense>
                 </SignedOut>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BlogPostLayout } from '../../components/BlogPostLayout';
 
@@ -6,8 +7,9 @@ const post = {
   slug: 'tef-canada-vs-tcf-canada',
   title: 'TEF Canada vs TCF Canada: Which French Test for Immigration?',
   description:
-    'Comparing TEF Canada and TCF Canada for IRCC and Express Entry. Format differences, difficulty, score conversion, and how to choose the right test for your immigration application.',
+    'TEF Canada vs TCF Canada for Express Entry and immigration: format differences, score conversion, and how to decide which test to take.',
   publishedDate: '2026-04-12',
+  modifiedDate: '2026-04-12',
   readingTimeMin: 5,
 };
 
@@ -22,11 +24,11 @@ export const ArticleVsTCF: React.FC = () => {
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://akseli.ca/blog/${post.slug}`} />
-        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta property="og:image" content="https://akseli.ca/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.description} />
-        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:image" content="https://akseli.ca/og-image.png" />
         <meta name="keywords" content="TEF Canada vs TCF, TEF Canada or TCF for immigration, French test for Canadian immigration, TEF vs TCF Express Entry, TEF Canada TCF Canada comparison" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
@@ -34,6 +36,7 @@ export const ArticleVsTCF: React.FC = () => {
           headline: post.title,
           description: post.description,
           datePublished: post.publishedDate,
+          dateModified: post.modifiedDate,
           author: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
           publisher: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
         })}</script>
@@ -41,10 +44,10 @@ export const ArticleVsTCF: React.FC = () => {
 
       <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin}>
         <p>
-          If you are applying for Canadian permanent residency and French is one of your official languages, you will need to choose between TEF Canada and TCF Canada. Both are accepted by IRCC. Both produce CLB scores for Express Entry. But they are different tests with different formats, and for many candidates one is a noticeably better fit than the other.
+          TEF Canada and TCF Canada are two French proficiency tests accepted by IRCC for Canadian immigration, each developed by a different body and using a distinct format. Both produce CLB scores recognized for Express Entry, but they differ in how oral and written sections are administered — and for some candidates, one is a noticeably better fit than the other.
         </p>
         <p>
-          This guide compares them directly so you can make an informed decision.
+          This guide compares them directly so you can make an informed decision before you register.
         </p>
 
         <h2>What Are TEF Canada and TCF Canada?</h2>
@@ -97,7 +100,7 @@ export const ArticleVsTCF: React.FC = () => {
           </table>
         </div>
 
-        <h2>Format Differences That Matter</h2>
+        <h2>Which format differences actually matter?</h2>
 
         <h3>Oral expression</h3>
         <p>
@@ -134,7 +137,7 @@ export const ArticleVsTCF: React.FC = () => {
           The most useful thing you can do is take a practice test for both and see which format feels more natural. Do not pick based on rumours about which is "easier" — pick based on which format matches how you naturally perform.
         </p>
 
-        <h2>Which Test Has Better Availability?</h2>
+        <h2>Which test has better availability in Canada?</h2>
         <p>
           TEF Canada has been around longer and has more test centres across Canada and internationally. In most major Canadian cities you will find multiple TEF Canada testing locations with available dates year-round. TCF Canada availability has expanded significantly but is still more limited in some regions.
         </p>
@@ -150,10 +153,29 @@ export const ArticleVsTCF: React.FC = () => {
           If you have flexibility: take a practice run for both online and see which oral format feels more comfortable for you. The oral section is where scores vary most between candidates, and comfort with the format makes a measurable difference.
         </p>
 
-        <h2>Preparing for TEF Canada Oral Specifically</h2>
+        <h2>How do you prepare for TEF Canada oral once you have decided?</h2>
         <p>
           If you have decided on TEF Canada, Akseli is built to help you prepare for the specific format of TEF Canada Expression Orale — Section A interview questions and Section B role-play scenarios. You practice with an AI examiner that simulates the real exam format and gives you instant CLB-level feedback, so you can build the fluency and confidence you need before exam day.
         </p>
+        <p>
+          For more detail on what each section looks like and how to approach it, read <Link to="/blog/how-to-prepare-tef-canada-oral">how to prepare for TEF Canada oral sections A and B</Link>. For the CLB scores you need for each immigration stream, see <Link to="/blog/tef-canada-clb-score-express-entry">TEF Canada CLB scores for Express Entry</Link>.
+        </p>
+
+        <div className="not-prose mt-12 p-6 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Related articles</p>
+          <ul className="space-y-3">
+            <li>
+              <Link to="/blog/how-to-prepare-tef-canada-oral" className="font-medium text-teal-700 dark:text-teal-400 hover:underline">
+                How to Prepare for TEF Canada Oral Sections A and B
+              </Link>
+            </li>
+            <li>
+              <Link to="/blog/tef-canada-clb-score-express-entry" className="font-medium text-teal-700 dark:text-teal-400 hover:underline">
+                TEF Canada CLB Scores for Express Entry: What You Need to Know
+              </Link>
+            </li>
+          </ul>
+        </div>
       </BlogPostLayout>
     </>
   );

@@ -9,17 +9,17 @@ export const BlogPage: React.FC = () => {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       <Helmet>
         <title>TEF Canada Preparation Blog – Akseli</title>
-        <meta name="description" content="Guides and tips to help you prepare for TEF Canada oral sections, understand CLB score requirements for Express Entry, and pass the French language test for Canadian immigration." />
+        <meta name="description" content="Guides to TEF Canada oral preparation, CLB score requirements for Express Entry, and choosing the right French language test for immigration." />
         <link rel="canonical" href="https://akseli.ca/blog" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://akseli.ca/blog" />
         <meta property="og:title" content="TEF Canada Preparation Blog – Akseli" />
-        <meta property="og:description" content="Guides and tips to help you prepare for TEF Canada oral sections, understand CLB score requirements for Express Entry, and pass the French language test for Canadian immigration." />
-        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta property="og:description" content="Guides to TEF Canada oral preparation, CLB score requirements for Express Entry, and choosing the right French language test for immigration." />
+        <meta property="og:image" content="https://akseli.ca/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TEF Canada Preparation Blog – Akseli" />
-        <meta name="twitter:description" content="Guides and tips to help you prepare for TEF Canada oral sections and understand CLB score requirements for Express Entry." />
-        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:description" content="Guides to TEF Canada oral preparation, CLB score requirements for Express Entry, and choosing the right French language test." />
+        <meta name="twitter:image" content="https://akseli.ca/og-image.png" />
       </Helmet>
 
       {/* Nav */}

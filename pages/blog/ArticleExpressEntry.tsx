@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { BlogPostLayout } from '../../components/BlogPostLayout';
 
@@ -6,8 +7,9 @@ const post = {
   slug: 'tef-canada-clb-score-express-entry',
   title: 'TEF Canada CLB Scores for Express Entry: What You Need to Know',
   description:
-    'Everything immigration candidates need to know about TEF Canada CLB score requirements for Express Entry, Federal Skilled Worker, CEC, and provincial nominee programs.',
+    'TEF Canada CLB score requirements for Express Entry, Federal Skilled Worker, CEC, and provincial nominee programs — explained.',
   publishedDate: '2026-04-12',
+  modifiedDate: '2026-04-12',
   readingTimeMin: 6,
 };
 
@@ -22,11 +24,11 @@ export const ArticleExpressEntry: React.FC = () => {
         <meta property="og:description" content={post.description} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={`https://akseli.ca/blog/${post.slug}`} />
-        <meta property="og:image" content="https://akseli.ca/logo.png" />
+        <meta property="og:image" content="https://akseli.ca/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
         <meta name="twitter:description" content={post.description} />
-        <meta name="twitter:image" content="https://akseli.ca/logo.png" />
+        <meta name="twitter:image" content="https://akseli.ca/og-image.png" />
         <meta name="keywords" content="TEF Canada Express Entry, TEF Canada CLB score, TEF Canada permanent residency, TEF Canada immigration, TEF Canada CLB 7, TEF Canada Federal Skilled Worker" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
@@ -34,6 +36,7 @@ export const ArticleExpressEntry: React.FC = () => {
           headline: post.title,
           description: post.description,
           datePublished: post.publishedDate,
+          dateModified: post.modifiedDate,
           author: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
           publisher: { '@type': 'Organization', name: 'Akseli', url: 'https://akseli.ca' },
         })}</script>
@@ -41,13 +44,13 @@ export const ArticleExpressEntry: React.FC = () => {
 
       <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin}>
         <p>
-          If you are applying for Canadian permanent residency through Express Entry, your TEF Canada score directly affects whether you qualify and how many Comprehensive Ranking System (CRS) points you earn. Understanding exactly what CLB score you need — and how the oral sections contribute to it — is one of the most important things you can do before you register.
+          TEF Canada CLB scores are the numeric Canadian Language Benchmark levels that IRCC uses to determine whether your French proficiency meets the requirements for Express Entry and other immigration programs. Your TEF Canada oral expression score converts directly to a CLB level, and that level controls both your eligibility and the number of Comprehensive Ranking System (CRS) points you earn.
         </p>
         <p>
           This article explains the CLB requirements for each Express Entry stream, how TEF Canada scores convert to CLB levels, and why the oral sections deserve particular attention in your preparation.
         </p>
 
-        <h2>The Three Express Entry Streams and Their CLB Requirements</h2>
+        <h2>Which CLB level does each Express Entry stream require?</h2>
         <p>
           Express Entry manages applications for three federal immigration programs, each with different minimum language requirements:
         </p>
@@ -119,7 +122,7 @@ export const ArticleExpressEntry: React.FC = () => {
           This is why it pays to prepare for the highest score you can realistically achieve — not just the minimum to qualify.
         </p>
 
-        <h2>Provincial Nominee Programs (PNPs)</h2>
+        <h2>What CLB does a provincial nominee program require?</h2>
         <p>
           Many provincial nominee programs have their own language requirements. Common minimums:
         </p>
@@ -155,13 +158,32 @@ export const ArticleExpressEntry: React.FC = () => {
           <li><strong>Get feedback:</strong> You need to know what errors you are making before you can fix them. Practicing without feedback just reinforces your current patterns.</li>
         </ul>
 
-        <h2>How Akseli Fits Into Your TEF Canada Preparation</h2>
+        <h2>How does Akseli help you reach your target CLB score?</h2>
         <p>
           Akseli is built specifically to help you reach your target CLB score on TEF Canada oral. Each session simulates a real Section A or Section B scenario — the same format, timing, and difficulty you will face on exam day. After each session, you receive a detailed CLB-level evaluation of your performance.
         </p>
         <p>
           For Express Entry candidates, we recommend practicing 4–5 times per week in the 6–8 weeks before your exam. The volume of practice is what drives score improvement — one session a week is not enough. Akseli makes daily practice affordable and available on your schedule.
         </p>
+        <p>
+          If you want to understand how to build the fluency required for CLB 7 oral expression, read <Link to="/blog/how-to-prepare-tef-canada-oral">how to prepare for TEF Canada oral sections A and B</Link>. If you are still choosing between tests, see <Link to="/blog/tef-canada-vs-tcf-canada">TEF Canada vs TCF Canada</Link>.
+        </p>
+
+        <div className="not-prose mt-12 p-6 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Related articles</p>
+          <ul className="space-y-3">
+            <li>
+              <Link to="/blog/how-to-prepare-tef-canada-oral" className="font-medium text-teal-700 dark:text-teal-400 hover:underline">
+                How to Prepare for TEF Canada Oral Sections A and B
+              </Link>
+            </li>
+            <li>
+              <Link to="/blog/tef-canada-vs-tcf-canada" className="font-medium text-teal-700 dark:text-teal-400 hover:underline">
+                TEF Canada vs TCF Canada: Which French Test for Immigration?
+              </Link>
+            </li>
+          </ul>
+        </div>
       </BlogPostLayout>
     </>
   );
