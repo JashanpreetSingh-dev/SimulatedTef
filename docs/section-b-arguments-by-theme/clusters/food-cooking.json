@@ -1,0 +1,114 @@
+[
+  {
+    "label": "Cost — too expensive",
+    "rep": "7.0",
+    "members": ["7.0", "41.6", "50.0", "56.0", "56.8"],
+    "acknowledge": "Je comprends que le prix t'inquiète, c'est normal de vérifier son budget avant de s'engager.",
+    "defend": "Mais quand on compare bien, ce n'est pas si cher. D'abord, tout est compris : pas de courses, pas de préparation, pas de vaisselle. Ensuite, on peut choisir une formule qui corresponde à notre budget.",
+    "solve": "Et si le prix te semble encore trop élevé, on pourrait demander un devis ou commencer par la plus petite offre. Comme ça, on ne prend aucun risque."
+  },
+  {
+    "label": "A better alternative exists (restaurant, friends, charity)",
+    "rep": "7.1",
+    "members": ["7.1", "7.3", "3.9"],
+    "acknowledge": "C'est vrai, il existe d'autres solutions intéressantes, et je comprends ton point de vue.",
+    "defend": "Mais celle-ci offre une expérience différente. Au restaurant, l'ambiance est bruyante et le menu est fixe, tandis qu'ici tout est plus chaleureux et personnalisé. En plus, on crée de vrais liens avec les gens, et ça, c'est précieux.",
+    "solve": "Et pourquoi ne pas faire les deux ? On essaie celle-ci d'abord, puis on organise autre chose plus tard, pour que tout le monde soit content."
+  },
+  {
+    "label": "Trust in the provider / quality / hygiene",
+    "rep": "41.0",
+    "members": ["7.2", "41.0", "56.4", "41.9", "50.7"],
+    "acknowledge": "Je comprends que tu veuilles être sûr de la qualité avant de faire confiance, c'est important.",
+    "defend": "Mais ces services sont souvent très encadrés et ils ont de bons avis en ligne. Les professionnels respectent des règles d'hygiène strictes, car leur réputation en dépend. De plus, beaucoup affichent l'origine de leurs produits.",
+    "solve": "Si tu as encore un doute, on pourrait lire les commentaires des clients et demander les certifications avant de réserver. Comme ça, tu serais rassuré."
+  },
+  {
+    "label": "Space, equipment and tableware",
+    "rep": "7.4",
+    "members": ["7.4", "41.1", "7.5", "7.6", "41.3", "23.0", "23.1"],
+    "acknowledge": "Ouais, je vois ce que tu veux dire, un petit espace ou peu de matériel, ça peut sembler un problème.",
+    "defend": "Mais en réalité, on n'a pas besoin de beaucoup. Un professionnel apporte souvent ses propres outils et sait s'adapter à une petite cuisine. Et si c'est toi qui reçois, quelques plats simples suffisent, car les invités cherchent surtout une ambiance conviviale.",
+    "solve": "Pour être tranquille, on pourrait tout vérifier à l'avance avec l'organisateur, ou utiliser de la belle vaisselle jetable."
+  },
+  {
+    "label": "Time, effort and organisation (shopping, cleaning, serving)",
+    "rep": "3.0",
+    "members": ["3.0", "3.8", "23.8", "23.3", "41.5", "41.7", "41.8"],
+    "acknowledge": "Honnêtement, je te comprends, on manque tous de temps et on n'a pas envie de se compliquer la vie.",
+    "defend": "Mais c'est justement fait pour simplifier les choses. Tout est déjà organisé : le menu est choisi, la date est fixée, et souvent les courses, le service et le nettoyage sont pris en charge. Toi, tu n'as qu'à profiter du moment.",
+    "solve": "Et si tu es vraiment occupé, on pourrait participer seulement quelques heures ou choisir la formule tout compris. Comme ça, ça ne prendrait presque pas de temps."
+  },
+  {
+    "label": "I can't cook well / for many people / away from home",
+    "rep": "3.1",
+    "members": ["3.1", "3.2", "3.3", "3.6", "23.2"],
+    "acknowledge": "Non, je comprends, on a parfois peur de ne pas être assez bon en cuisine.",
+    "defend": "Pourtant, personne ne s'attend à un repas de chef. Le but, c'est de partager et d'apprendre, quel que soit le niveau. De plus, on n'est jamais seul : chacun aide, et les plus expérimentés guident les autres. On peut aussi choisir des recettes simples qu'on connaît déjà.",
+    "solve": "Si jamais tu es stressé, tu pourrais préparer un plat facile que tu maîtrises. Ainsi, tu te sentirais à l'aise et tu progresserais peu à peu."
+  },
+  {
+    "label": "Tastes: guests won't like it / I prefer something else",
+    "rep": "3.5",
+    "members": ["3.4", "3.5", "7.7", "23.4", "41.4"],
+    "acknowledge": "C'est vrai, il est difficile de savoir si ça plaira à tout le monde.",
+    "defend": "Mais les gens sont souvent curieux, et l'important, c'est de partager, pas d'être parfait. De plus, on peut adapter le menu aux goûts de chacun, que ce soit avec des plats traditionnels, végétariens ou sans gluten.",
+    "solve": "Pour éviter les mauvaises surprises, on pourrait poser quelques questions aux invités avant, puis proposer un plat simple que tout le monde aime."
+  },
+  {
+    "label": "Uncomfortable with strangers / language barrier",
+    "rep": "3.7",
+    "members": ["3.7", "23.5", "23.6", "23.7"],
+    "acknowledge": "Je comprends, rencontrer des inconnus peut mettre mal à l'aise au début.",
+    "defend": "Mais les gens qui participent ont déjà un intérêt en commun avec nous, donc la conversation vient naturellement. Même si on ne parle pas la même langue, un sourire et une application de traduction suffisent.",
+    "solve": "Si ça ne se passe pas bien, ce ne sont que quelques heures. Et on peut lire les avis avant de choisir, pour tomber sur des gens qui nous ressemblent."
+  },
+  {
+    "label": "No lasting bonds / friends won't want to come",
+    "rep": "23.9",
+    "members": ["23.9", "50.4"],
+    "acknowledge": "Je vois ce que tu veux dire, on aimerait que ça dure et que tout le monde soit partant.",
+    "defend": "Mais même une seule soirée peut laisser un très bon souvenir, et on garde parfois contact ensuite. Quant à nos amis, ils hésitent souvent au début, mais si on leur montre des photos et qu'on leur explique l'idée, beaucoup changent d'avis.",
+    "solve": "Si personne ne veut venir, on pourrait essayer à deux. Ensuite, on raconterait notre expérience aux autres pour les convaincre."
+  },
+  {
+    "label": "Privacy / not feeling at home",
+    "rep": "41.2",
+    "members": ["7.8", "7.9", "41.2"],
+    "acknowledge": "Ouais, je comprends, on veut se sentir chez soi, surtout dans sa cuisine.",
+    "defend": "Mais un professionnel est discret. Il est là pour cuisiner, pas pour envahir ton espace ni participer à vos conversations. Pendant qu'il travaille, tu peux rester au salon avec tes invités et parler librement.",
+    "solve": "Et si tu te sens gêné, tu pourrais lui demander de travailler en retrait. Un simple mot suffit."
+  },
+  {
+    "label": "Portions, waste and variety",
+    "rep": "50.1",
+    "members": ["50.1", "50.2", "56.1", "56.7"],
+    "acknowledge": "Je vois ce que tu veux dire, on n'aime pas gaspiller, ni rester sur sa faim.",
+    "defend": "Mais c'est facile à ajuster. On peut demander une petite ou une grande portion, ou partager un plat. En plus, le menu change souvent, donc tu ne manges jamais la même chose. Et les restes se congèlent ou se réchauffent le lendemain.",
+    "solve": "Si tu as encore faim, on pourrait prendre un dessert ou une entrée à partager. Et si tu ne finis pas, on demande une boîte pour emporter."
+  },
+  {
+    "label": "Health: fatty, salty, nutritional value",
+    "rep": "56.2",
+    "members": ["50.3", "50.6", "56.2", "56.9"],
+    "acknowledge": "Je comprends, on doit faire attention à ce qu'on mange, surtout quand c'est gras ou salé.",
+    "defend": "Mais on peut très bien manger équilibré. Beaucoup de services proposent des options légères, comme des salades, du poisson ou des plats végétariens, et affichent la valeur nutritive. Les ingrédients sont souvent frais et locaux, donc c'est plus sain qu'on ne le pense.",
+    "solve": "Pour être sûrs, on pourrait regarder la carte ou les étiquettes avant de choisir. Comme ça, tu prendrais un plat qui te convient."
+  },
+  {
+    "label": "Trend, ethics and ecology",
+    "rep": "50.8",
+    "members": ["50.5", "50.8", "50.9", "56.5"],
+    "acknowledge": "C'est vrai, ce sont des questions importantes, et je comprends ton inquiétude.",
+    "defend": "Mais avant de juger, il faut essayer. Même si c'est à la mode, ça répond à de vrais besoins : moins d'eau, moins de gaz à effet de serre, des emballages recyclables et des produits locaux. Et comme tout le monde n'est pas prêt à devenir végétarien, il y a aussi des options pour tous.",
+    "solve": "Et de toute façon, un essai ne coûte rien : si ça ne te convainc pas, on ne recommencera pas."
+  },
+  {
+    "label": "Waiting times and delivery hours",
+    "rep": "56.3",
+    "members": ["56.3", "56.6"],
+    "acknowledge": "Non, je comprends, personne n'aime attendre, surtout quand on a faim ou qu'on finit tard.",
+    "defend": "Mais on peut bien s'organiser. On réserve à l'avance, on choisit un créneau qui nous convient, et on suit la commande en temps réel. En plus, on peut souvent changer l'heure à la dernière minute.",
+    "solve": "Et si personne n'est à la maison, la livraison peut être laissée chez un voisin ou dans un point relais. Sinon, on passe la chercher nous-mêmes."
+  }
+]

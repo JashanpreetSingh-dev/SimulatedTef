@@ -1,0 +1,90 @@
+[
+  {
+    "label": "Cost",
+    "rep": "72.0",
+    "members": ["5.2", "19.0", "64.0", "70.5", "72.0"],
+    "acknowledge": "Je comprends que le budget compte, surtout quand il y a des dépenses en plus.",
+    "defend": "Mais on doit voir ça comme un investissement pour notre bien-être. Si on compare avec le prix de médicaments ou de vacances classiques, ce n'est pas si cher. Et les bénéfices, comme moins de stress ou une meilleure santé, valent largement le coût.",
+    "solve": "Pour limiter la dépense, on pourrait comparer les formules et choisir la moins chère. Et de toute façon, on peut commencer avec un essai court."
+  },
+  {
+    "label": "Other solutions already exist",
+    "rep": "5.1",
+    "members": ["5.1", "19.6", "30.4", "30.9", "64.1", "70.8", "72.5", "72.9"],
+    "acknowledge": "C'est vrai, il existe d'autres solutions, et elles peuvent aussi fonctionner.",
+    "defend": "Mais cette option apporte quelque chose de plus. Elle est plus concrète et plus adaptée que ce qu'on ferait seul. En plus, rien n'empêche de la combiner avec d'autres activités, comme le yoga ou les sorties, ou avec l'avis du médecin.",
+    "solve": "Alors on pourrait l'essayer un moment, puis comparer les résultats. Si ça ne te convient pas, tu pourras toujours revenir à ta méthode habituelle."
+  },
+  {
+    "label": "Doubt it will work / I don't want rules",
+    "rep": "72.1",
+    "members": ["19.3", "19.5", "64.8", "72.1", "72.2", "72.3", "72.4", "72.8"],
+    "acknowledge": "Je comprends que tu aies des doutes, beaucoup de méthodes promettent des miracles.",
+    "defend": "Mais ici, il ne s'agit pas d'une règle stricte. Le programme s'adapte à ton rythme, à tes goûts et à ta situation, et on ne t'oblige à rien. Bien sûr, les changements demandent du temps, mais de petites habitudes peuvent durer si on continue après la fin.",
+    "solve": "Si tu as peur de retomber dans tes vieilles habitudes, on pourrait se fixer des objectifs simples et se soutenir. Ainsi, on ferait des progrès pas à pas."
+  },
+  {
+    "label": "Pet care: responsibility, cost, cleaning, holidays, character",
+    "rep": "5.0",
+    "members": ["5.0", "5.3", "5.4", "5.5", "5.6", "5.7", "5.8", "5.9"],
+    "acknowledge": "Ouais, je vois ce que tu veux dire, un animal, c'est de la responsabilité au quotidien.",
+    "defend": "Mais c'est plus simple qu'on ne le pense. Les chats sont assez indépendants, et on apprend vite. Les dépenses, le ménage et les visites chez le vétérinaire restent raisonnables. En plus, un chat apporte de la douceur et aide vraiment à se détendre, même s'il a parfois son caractère.",
+    "solve": "Et si tu veux partir en vacances, on pourrait demander à un ami ou à un voisin de s'en occuper. On pourrait aussi commencer par une adoption temporaire pour tester."
+  },
+  {
+    "label": "Time and tiredness",
+    "rep": "19.7",
+    "members": ["19.7", "70.1"],
+    "acknowledge": "Honnêtement, je comprends, le temps et l'énergie, c'est précieux.",
+    "defend": "Mais on peut choisir des séances courtes qui s'intègrent facilement dans une semaine chargée. En plus, on repart souvent plus détendu et plus énergique qu'avant. Ce n'est pas du temps perdu, c'est du temps pour soi.",
+    "solve": "Si c'est trop long, on pourrait commencer par une séance par semaine ou par un week-end seulement. Ensuite, on verrait comment ajuster."
+  },
+  {
+    "label": "Ordering online: safety, delivery, prescriptions, insurance",
+    "rep": "30.0",
+    "members": ["30.0", "30.3", "30.5", "30.6", "30.7"],
+    "acknowledge": "C'est vrai, acheter en ligne, ça peut faire peur quand il s'agit de santé.",
+    "defend": "Mais les sites sérieux sont autorisés et contrôlés, comme les pharmacies classiques. Les paiements sont sécurisés, et on peut vérifier l'origine des produits. Pour la livraison, il suffit de commander un peu à l'avance, et les médicaments sur ordonnance restent possibles avec une prescription.",
+    "solve": "Pour être tranquille, on pourrait vérifier que le site est agréé et lire les avis. Et on garderait la pharmacie du quartier pour les urgences."
+  },
+  {
+    "label": "Losing the pharmacist's advice / self-medication",
+    "rep": "30.1",
+    "members": ["30.1", "30.2", "30.8"],
+    "acknowledge": "Je comprends, les conseils du pharmacien sont vraiment précieux.",
+    "defend": "Mais beaucoup de sites proposent un conseil par chat ou par téléphone, avec de vrais pharmaciens. Les noms des médicaments sont bien indiqués, avec une notice. Quant à l'automédication, elle existe déjà, et elle n'est pas pire en ligne, à condition d'être prudent.",
+    "solve": "Si jamais tu as un doute, on pourrait poser la question au pharmacien avant de commander. Ainsi, on garderait le meilleur des deux."
+  },
+  {
+    "label": "Being cut off: emergencies, loved ones, phone, sharing memories",
+    "rep": "64.4",
+    "members": ["64.2", "64.4", "64.5", "64.6", "64.7", "64.9", "70.7"],
+    "acknowledge": "Je comprends, être joignable, c'est rassurant pour tout le monde.",
+    "defend": "Mais on peut prévenir sa famille et son travail à l'avance, et laisser le numéro du lieu pour les urgences. Ne pas répondre pendant quelques jours n'est pas grave, et les messages seront encore là au retour. Et on pourra partager nos photos après.",
+    "solve": "Et si ça te stresse trop, on pourrait garder le téléphone éteint dans la chambre, seulement pour les urgences. Comme ça, tu serais tranquille sans être coupé de tout."
+  },
+  {
+    "label": "Boredom, comfort and fear of nature",
+    "rep": "70.4",
+    "members": ["64.3", "70.0", "70.2", "70.3", "70.4", "70.6", "70.9"],
+    "acknowledge": "Je comprends, on a peur de s'ennuyer ou de ne pas être à l'aise.",
+    "defend": "Mais on sous-estime le plaisir de ne rien faire : on lit, on se promène, on regarde les étoiles. Le confort est souvent meilleur qu'on ne l'imagine. Et il y a très peu de risques avec les animaux ou les insectes, parce que les lieux sont pensés pour ça.",
+    "solve": "Si tu as peur d'avoir froid ou de t'ennuyer, on pourrait apporter des vêtements chauds, des livres et des jeux. Comme ça, on serait bien préparés."
+  },
+  {
+    "label": "Fear of judgement and of performing",
+    "rep": "19.2",
+    "members": ["19.1", "19.2", "19.4", "19.8", "19.9"],
+    "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on se sent timide.",
+    "defend": "Mais personne ne se moque de personne dans ce genre d'atelier. Tout le monde est débutant, et chacun a ses peurs. Le groupe est là pour t'aider, pas pour te juger. On avance petit à petit, avec des exercices simples, et on n'est pas obligé de jouer devant un public au début.",
+    "solve": "Si tu es trop stressé, on pourrait aller à la première séance ensemble, juste pour observer. Après, tu déciderais si tu veux continuer."
+  },
+  {
+    "label": "Credibility and commercial motives",
+    "rep": "72.6",
+    "members": ["72.6", "72.7"],
+    "acknowledge": "C'est vrai, il faut se méfier de ceux qui veulent seulement vendre quelque chose.",
+    "defend": "Mais on peut vérifier facilement les diplômes et les avis. Les vrais professionnels sont diplômés et transparents. Et un programme sérieux n'oblige pas à acheter des produits.",
+    "solve": "Avant de s'inscrire, on pourrait regarder les qualifications et demander une consultation gratuite. Comme ça, on saurait à qui on a affaire."
+  }
+]

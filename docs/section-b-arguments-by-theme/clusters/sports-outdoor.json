@@ -1,0 +1,122 @@
+[
+  {
+    "label": "Cost and extra fees",
+    "rep": "1.0",
+    "members": ["1.0", "1.1", "26.4", "31.4", "52.0", "60.0", "62.0"],
+    "acknowledge": "Je comprends que le budget te préoccupe, surtout avec le transport, le logement et les repas en plus.",
+    "defend": "Mais quand on fait le calcul, le prix est souvent raisonnable pour tout ce qui est proposé : l'encadrement, le matériel, parfois même l'hébergement. Et puis, c'est une expérience qu'on n'oublie pas, donc ça vaut bien un petit effort financier.",
+    "solve": "Pour limiter les frais, on pourrait s'inscrire en avance, voyager à plusieurs et apporter nos propres repas. Comme ça, on dépenserait beaucoup moins."
+  },
+  {
+    "label": "Danger / risk of accidents",
+    "rep": "1.8",
+    "members": ["1.8", "26.2", "31.9", "60.7", "62.5"],
+    "acknowledge": "C'est vrai, la sécurité, c'est la première chose à vérifier avant de se lancer.",
+    "defend": "Mais ces activités sont très encadrées. Les moniteurs sont diplômés, le matériel est contrôlé régulièrement et on suit des consignes strictes. Bien que le risque zéro n'existe pas, les accidents sont rares.",
+    "solve": "Si tu veux être rassuré, on pourrait demander les diplômes des moniteurs et les règles de sécurité avant de réserver. Et au moindre doute, on choisirait une activité plus calme."
+  },
+  {
+    "label": "Personal fears: heights, speed, animals, panic",
+    "rep": "31.3",
+    "members": ["26.0", "26.1", "31.2", "31.3", "31.6", "31.7", "62.3", "62.4"],
+    "acknowledge": "Je comprends, avoir peur du vide, de la vitesse ou des animaux, ce n'est pas facile à contrôler.",
+    "defend": "Mais tu ne seras jamais seul face à ta peur. Un professionnel t'accompagne à chaque étape et t'explique tout à l'avance. En plus, beaucoup de gens avaient peur au début, et ils ont adoré l'expérience une fois lancés.",
+    "solve": "Si tu hésites encore, on pourrait commencer par une séance d'essai ou regarder des vidéos ensemble. Et de toute façon, tu peux dire non jusqu'à la dernière minute."
+  },
+  {
+    "label": "Fitness, level and experience required",
+    "rep": "1.3",
+    "members": ["1.2", "1.3", "31.1", "31.8", "60.3", "60.4", "60.5", "61.0"],
+    "acknowledge": "Honnêtement, je comprends, on n'a pas envie de se sentir dépassé par les autres.",
+    "defend": "Mais ces activités sont pensées pour les débutants. On n'a pas besoin d'être un athlète ni d'avoir de l'expérience, car les moniteurs expliquent tout et adaptent le rythme au niveau de chacun. En plus, on apprend vite quand on pratique avec des professionnels.",
+    "solve": "Et si tu veux être plus à l'aise, on pourrait marcher ou courir un peu chaque semaine avant la date. Ainsi, tu arriverais en forme et sans stress."
+  },
+  {
+    "label": "Paperwork: medical certificate, insurance",
+    "rep": "1.4",
+    "members": ["1.4", "62.6", "62.7"],
+    "acknowledge": "C'est vrai, ça peut sembler compliqué de rassembler tous les papiers.",
+    "defend": "Mais ce n'est pas si difficile. Un certificat médical s'obtient en une consultation rapide, et souvent l'assurance est déjà comprise dans le prix. Il suffit de bien s'informer avant de s'inscrire.",
+    "solve": "On pourrait appeler l'organisateur pour connaître la liste exacte des documents. Comme ça, on préparerait tout à l'avance, sans mauvaise surprise."
+  },
+  {
+    "label": "Equipment and clothing",
+    "rep": "1.5",
+    "members": ["1.5", "60.1", "61.3", "62.2"],
+    "acknowledge": "Je vois ce que tu veux dire, acheter des vêtements ou du matériel, ça peut coûter cher.",
+    "defend": "Mais dans la plupart des cas, l'équipement spécial est fourni ou loué sur place. Pour le reste, des vêtements confortables et de bonnes chaussures suffisent largement. Il n'est pas nécessaire d'acheter quoi que ce soit de neuf.",
+    "solve": "Sinon, on pourrait emprunter ce qui manque à des amis ou l'acheter d'occasion. Et on peut aussi demander à l'organisateur ce qu'il faut vraiment apporter."
+  },
+  {
+    "label": "Bad weather and cold",
+    "rep": "1.6",
+    "members": ["1.6", "26.3", "26.9", "60.2", "61.7"],
+    "acknowledge": "C'est vrai, le mauvais temps peut gâcher une sortie, et le froid n'est agréable pour personne.",
+    "defend": "Mais les organisateurs ont l'habitude et prévoient des solutions de remplacement. Avec de bons vêtements, le froid ou la pluie ne sont plus un problème, et on profite quand même du moment.",
+    "solve": "Et si la météo est vraiment trop mauvaise, on pourrait demander un report ou un remboursement. On peut aussi vérifier les prévisions quelques jours avant."
+  },
+  {
+    "label": "Big effort for a short activity / tiredness afterwards",
+    "rep": "62.1",
+    "members": ["1.7", "31.5", "60.8", "61.1", "62.1"],
+    "acknowledge": "Je comprends, on peut se demander si l'effort en vaut la peine.",
+    "defend": "Mais ce qui compte, ce n'est pas la durée, c'est l'intensité de l'expérience. Quelques minutes de sensations fortes ou un week-end actif, ça reste un souvenir inoubliable. Et la fatigue est agréable : on se sent bien et on dort mieux après.",
+    "solve": "Pour ne pas être épuisé, on pourrait prévoir une journée de repos avant de reprendre le travail. Comme ça, on récupérerait tranquillement."
+  },
+  {
+    "label": "Distance and travel",
+    "rep": "31.0",
+    "members": ["26.8", "31.0"],
+    "acknowledge": "Ouais, je comprends, s'il faut faire de la route, ça peut décourager.",
+    "defend": "Mais on peut en profiter pour faire une petite escapade. Le trajet fait partie de l'aventure, surtout si on y va à plusieurs. Et souvent, ces centres se trouvent plus près qu'on le pense.",
+    "solve": "On pourrait chercher un lieu plus proche ou organiser un covoiturage pour partager les frais. Ça simplifierait tout."
+  },
+  {
+    "label": "Social fit: the group, the image of the activity",
+    "rep": "1.9",
+    "members": ["1.9", "52.9", "60.9", "61.4", "61.6"],
+    "acknowledge": "Je comprends, on veut se sentir bien avec le groupe.",
+    "defend": "Mais ces activités sont ouvertes à tous, quel que soit l'âge ou le milieu. Les gens sont là pour s'amuser, pas pour juger. En plus, c'est une bonne façon de rencontrer du monde et de discuter pendant les pauses ou après.",
+    "solve": "Et si tu as peur de te sentir seul, on pourrait y aller ensemble. Comme ça, on serait déjà deux à se connaître."
+  },
+  {
+    "label": "Doubts about the benefits / I prefer other activities",
+    "rep": "61.8",
+    "members": ["26.6", "61.2", "61.8", "61.9", "62.8", "62.9"],
+    "acknowledge": "C'est vrai, il existe beaucoup d'autres activités, et je respecte ton choix.",
+    "defend": "Mais celle-ci apporte des bienfaits concrets : elle nous fait sortir, nous aide à rester en forme et nous change les idées. Même si tu n'aimes pas la compétition, tu peux y aller à ton rythme, juste pour te faire plaisir.",
+    "solve": "Pourquoi ne pas l'essayer une fois ? Si ça ne te plaît pas, tu pourras toujours revenir à ton activité habituelle."
+  },
+  {
+    "label": "Animals: welfare, noise, smells",
+    "rep": "26.7",
+    "members": ["26.5", "26.7", "60.6"],
+    "acknowledge": "Je comprends, le bien-être des animaux, c'est un sujet important.",
+    "defend": "Mais dans les structures sérieuses, ils sont bien soignés, et souvent ils adorent ce qu'ils font. Pour le bruit ou les odeurs, ça fait partie du charme de la nature, et on s'y habitue vite. En plus, le contact avec les animaux est une expérience unique.",
+    "solve": "Si tu veux vérifier, on pourrait regarder les avis en ligne ou visiter le lieu avant. Ainsi, tu saurais comment les animaux y sont traités."
+  },
+  {
+    "label": "Online training: connection and online payment",
+    "rep": "52.1",
+    "members": ["52.1", "52.2"],
+    "acknowledge": "Je comprends, une mauvaise connexion ou un paiement en ligne, ça peut inquiéter.",
+    "defend": "Mais le paiement se fait sur un site sécurisé, comme pour n'importe quel achat. Quant à la connexion, il suffit d'un Internet correct, et on peut souvent télécharger les séances à l'avance.",
+    "solve": "Et si tu as un doute, on pourrait tester la version gratuite d'abord. Comme ça, on vérifierait que tout fonctionne bien."
+  },
+  {
+    "label": "Motivation and commitment",
+    "rep": "52.5",
+    "members": ["52.3", "52.5", "61.5"],
+    "acknowledge": "Ouais, je vois ce que tu veux dire, chez soi, on se laisse vite distraire et on abandonne.",
+    "defend": "Mais justement, on choisit ses horaires et on suit son propre rythme. Les programmes proposent des objectifs et des rappels pour rester motivé. De plus, un engagement régulier finit par devenir une habitude.",
+    "solve": "Pour ne pas lâcher, on pourrait s'entraîner ensemble ou se fixer des rendez-vous. Et si on se lasse, on peut toujours arrêter ou changer de programme."
+  },
+  {
+    "label": "No coach to correct me or help",
+    "rep": "52.6",
+    "members": ["52.4", "52.6", "52.7", "52.8"],
+    "acknowledge": "Je comprends, sans coach, on peut avoir peur de mal faire ou de se blesser.",
+    "defend": "Mais les exercices sont expliqués en vidéo, étape par étape, et on peut les revoir autant de fois qu'on veut. Il y a des programmes adaptés à chaque niveau, et pas besoin de tout l'équipement d'une salle : quelques exercices simples suffisent.",
+    "solve": "Si tu as un doute, on pourrait commencer par des exercices faciles. Et au moindre problème, on s'arrêterait tout de suite pour demander conseil à un professionnel."
+  }
+]

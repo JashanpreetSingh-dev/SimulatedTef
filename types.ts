@@ -42,6 +42,7 @@ export interface TEFTask {
   prompt: string;
   title?: string | null;
   theme?: string;
+  themeCategory?: string;
   image: string;
   time_limit_sec: number;
   difficulty: string;

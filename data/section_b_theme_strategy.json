@@ -1,0 +1,1985 @@
+{
+  "community-volunteering": [
+    {
+      "id": "community-volunteering-1",
+      "label": "Time, tiredness and physical effort",
+      "examiner": "Je n’ai pas beaucoup de temps.",
+      "alsoAskedAs": [
+        "Je ne suis pas sûr(e) d’avoir le temps de m’en occuper.",
+        "Je n’ai pas beaucoup de temps.",
+        "Je n’ai pas beaucoup de temps.",
+        "Cela prendra beaucoup de temps de faire le tri dans mes affaires.",
+        "Il faut se lever tôt et savoir s’organiser.",
+        "Toute une soirée, c’est très long.",
+        "Il doit y avoir beaucoup de demandes et d’attente.",
+        "C’est épuisant de passer son temps à voyager avec un enfant !",
+        "Je serai constamment en déplacements.",
+        "Ce sera fatigant d’animer un stand toute une journée.",
+        "Je n’ai pas envie de me fatiguer.",
+        "Je peux me blesser facilement.",
+        "La zumba est trop intense.",
+        "Je n’ai pas de tenue adaptée pour Zumba.",
+        "Cela ne va pas être de tout repos.",
+        "Je manque de temps."
+      ],
+      "acknowledge": "Honnêtement, je comprends, le temps et l'énergie, c'est précieux, surtout quand on est fatigué.",
+      "defend": "Mais on n'a pas besoin de beaucoup de temps : quelques heures suffisent, et souvent on choisit ses horaires. Bien que ce soit un peu fatigant, on repart content et plus énergique. Et on va à son rythme, sans se forcer. Ce n'est pas du temps perdu, c'est du temps utile.",
+      "solve": "Si ton agenda est chargé, on pourrait commencer par une seule séance pour tester. Ensuite, on verrait comment ajuster selon ton emploi du temps."
+    },
+    {
+      "id": "community-volunteering-2",
+      "label": "Commitment and constraints (long term, meetings, imposed tasks)",
+      "examiner": "C’est un engagement à long terme.",
+      "alsoAskedAs": [
+        "10 mois, c’est long !",
+        "Je ne pourrai plus partir en vacances.",
+        "Il faut s’inscrire, c’est contraignant.",
+        "Je ne veux pas m’engager à long terme.",
+        "On m’imposera les activités à faire.",
+        "On me demandera un vrai engagement.",
+        "Je ne veux pas être obligé(e) de participer à des réunions.",
+        "Je ne pourrai pas faire ce que je veux pendant le voyage.",
+        "On ne me laissera probablement pas choisir le stand que j’animerai",
+        "Il faudra être présent à toutes les réunions de préparation.",
+        "Je ne pourrai pas profiter des autres animations avec mon enfant.",
+        "On me demandera ensuite de le faire chaque année."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de s'engager trop longtemps ni de perdre sa liberté.",
+      "defend": "Mais l'engagement est souvent plus léger qu'on ne le pense. On peut choisir la durée, le rôle, et parfois même la tâche. Les réunions sont courtes, et personne ne t'oblige à revenir chaque année. Et pendant ce temps, tu peux quand même profiter de tes vacances ou de tes loisirs.",
+      "solve": "Si jamais tu as peur de t'enfermer, on pourrait proposer un essai d'un mois. Et si ça ne te convient pas, tu pourras arrêter sans problème."
+    },
+    {
+      "id": "community-volunteering-3",
+      "label": "Responsibility, stress and emotional attachment",
+      "examiner": "S’occuper de personnes âgées, c’est beaucoup de responsabilités !",
+      "alsoAskedAs": [
+        "C’est beaucoup de responsabilités.",
+        "Ce sera très dur de le quitter après 10 mois…",
+        "C’est beaucoup de responsabilités et de stress.",
+        "C’est beaucoup de responsabilités.",
+        "Les personnes âgées ou les enfants, c’est beaucoup de responsabilités…",
+        "Les enfants c’est une grande responsabilité.",
+        "C’est une grande responsabilité.",
+        "C’est beaucoup de travail et de responsabilité.",
+        "Voir tous ces animaux dans un refuge risque de me déprimer.",
+        "Je vais m’attacher et je serai malheureux(se) de voir des animaux partir."
+      ],
+      "acknowledge": "C'est vrai, c'est une vraie responsabilité, et on peut aussi s'attacher très vite.",
+      "defend": "Mais on n'est jamais seul : il y a une équipe, des consignes claires et quelqu'un à qui demander de l'aide. Le stress diminue vite avec l'expérience. Et même si la séparation est difficile, on sait qu'on a fait quelque chose de bien. C'est ça qui donne du sens à tout ça.",
+      "solve": "Pour commencer doucement, on pourrait choisir un rôle simple ou une tâche courte. Comme ça, tu prendrais de l'assurance avant de t'engager plus."
+    },
+    {
+      "id": "community-volunteering-4",
+      "label": "No experience or qualification",
+      "examiner": "Je n’ai pas d’expérience en animation.",
+      "alsoAskedAs": [
+        "J’ai peur de ne pas réussir à lui apprendre ce qu’il faut faire.",
+        "Je n’ai aucune expérience d’agent d’accueil.",
+        "Je ne connais pas bien les jeux et jouets.",
+        "Ce sera difficile d’être à l’accueil et de surveiller en même temps.",
+        "Je n’ai pas d’expérience ni de formation en animation.",
+        "Je n’ai aucune qualification pour m’occuper d’enfants.",
+        "Je ne saurai pas quoi faire s’il pleure ou refuse de m’obéir.",
+        "Je n’ai aucune expérience pour ce type de travail.",
+        "Je ne sais pas quels types de services je pourrai rendre.",
+        "Je n’ai aucune expérience dans ce domaine.",
+        "Je n’ai pas de formation pour faire des soins.",
+        "L’accueil des visiteurs est difficile, je ne saurai pas les renseigner."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent, surtout quand on débute.",
+      "defend": "Pourtant, l'expérience compte moins que la bonne volonté. On te montre tout au début, et on apprend très vite en pratiquant. Il y a souvent une petite formation ou quelqu'un pour te guider. Et si un visiteur pose une question difficile, tu peux simplement demander à un collègue.",
+      "solve": "Si tu veux te sentir prêt, on pourrait faire une première visite ensemble. Ensuite, tu pourrais te lancer quand tu te sentirais à l'aise."
+    },
+    {
+      "id": "community-volunteering-5",
+      "label": "Technical skills: tools, mechanics, languages, organisation",
+      "examiner": "Je n’y connais rien en mécanique, je serai perdu(e).",
+      "alsoAskedAs": [
+        "Je ne suis pas très ordonné(e).",
+        "Je n’ai pas de compétences particulières à proposer.",
+        "Je ne sais pas utiliser la majorité des outils proposés.",
+        "Je vais passer mon temps à demander conseil au professionnel",
+        "La mécanique, c’est très salissant !",
+        "Je n’ai pas la force physique pour faire ce genre de travaux.",
+        "Je ne parle aucune langue étrangère.",
+        "Je ne connais pas comment fonctionne le monde universitaire aujourd’hui."
+      ],
+      "acknowledge": "Ouais, je vois ce que tu veux dire, on peut se sentir perdu face à quelque chose de technique.",
+      "defend": "Mais c'est justement fait pour les débutants. Un spécialiste est là pour expliquer chaque étape et surveiller le travail. Si tu poses beaucoup de questions, ce n'est pas grave, c'est comme ça qu'on apprend. Et il n'y a pas besoin de grande force : on adapte les tâches à chacun.",
+      "solve": "Si tu as un doute, on pourrait commencer par une tâche simple, comme observer ou aider un peu. Ainsi, tu apprendrais à ton rythme."
+    },
+    {
+      "id": "community-volunteering-6",
+      "label": "Shyness, crowds and fear of not doing well",
+      "examiner": "Je suis timide, je n’oserai jamais parler aux autres.",
+      "alsoAskedAs": [
+        "Je suis timide, je ne serai pas à l’aise pour tenir un standard.",
+        "Il y aura sûrement beaucoup de monde.",
+        "Je suis timide et ne je ne saurai pas négocier les prix.",
+        "Je suis timide, j’aurai du mal à animer un stand.",
+        "Je n’ai pas le rythme.",
+        "Je suis timide pour danser avec tout le monde.",
+        "Je n’arrive pas à mémoriser des mouvements de danse (rapidement).",
+        "Il va y avoir trop de monde."
+      ],
+      "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on est timide.",
+      "defend": "Mais personne ne juge personne dans ce genre d'activité. Tout le monde est là pour s'amuser ou aider, et beaucoup de gens sont débutants. Même si on se trompe dans un pas ou dans un prix, ce n'est pas grave, on en rit. Et plus il y a de monde, moins on se sent observé.",
+      "solve": "Si tu es trop stressé, on pourrait y aller ensemble et rester dans un coin au début. Ensuite, tu te lancerais quand tu te sentirais prêt."
+    },
+    {
+      "id": "community-volunteering-7",
+      "label": "Difficult personalities: children, seniors, other people",
+      "examiner": "Les enfants seront probablement tous surexcités.",
+      "alsoAskedAs": [
+        "Je ne suis pas très patiente avec les enfants.",
+        "Les personnes âgées ont parfois très mauvais caractère.",
+        "La personne peut être désagréable.",
+        "Tout le monde n’a pas le même degré d’exigence.",
+        "Les enfants risquent d’être surexcités.",
+        "Je manque de patience avec les enfants.",
+        "Peut-être qu’ils ne vont pas apprécier mes goûts et mes conseils.",
+        "Il est possible que l’on ne s’entende pas bien."
+      ],
+      "acknowledge": "C'est vrai, les enfants sont parfois surexcités, et certaines personnes ont un caractère difficile.",
+      "defend": "Mais on apprend vite à rester calme et à répondre avec le sourire. Les enfants se calment avec un jeu, et les personnes âgées apprécient surtout qu'on prenne du temps pour elles. Si quelqu'un n'est pas agréable, ça arrive rarement, et on peut changer de tâche ou de partenaire.",
+      "solve": "Pour éviter les tensions, on pourrait préparer quelques jeux ou sujets de conversation. Et au moindre problème, on demanderait de l'aide à l'équipe."
+    },
+    {
+      "id": "community-volunteering-8",
+      "label": "Neighbours, team spirit and privacy",
+      "examiner": "Certains de mes voisins ne me font pas bonne impression.",
+      "alsoAskedAs": [
+        "Ce n’est pas parce qu’on est voisins qu’on va s’apprécier.",
+        "J’aime bien garder ma vie privée.",
+        "Après, il faudra faire des amabilités à tous les voisins !",
+        "Je ne suis pas sûr(e) de trouver ma place dans l’équipe d’encadrement.",
+        "J’ai peur de ne pas m’entendre avec les autres bénévoles.",
+        "Tout le monde me reconnaîtra dans mon quartier."
+      ],
+      "acknowledge": "Je comprends, on veut garder sa vie privée et bien s'entendre avec les autres.",
+      "defend": "Mais on n'est pas obligé de devenir ami avec tout le monde. Chacun participe selon ses envies, et on peut rester discret. Bien sûr, tout le monde ne s'apprécie pas, mais la plupart des gens sont ouverts et sympathiques. Et être reconnu dans le quartier, c'est plutôt positif.",
+      "solve": "Si tu as peur de ne pas trouver ta place, on pourrait venir ensemble pour voir l'ambiance. Après, tu déciderais si tu veux revenir."
+    },
+    {
+      "id": "community-volunteering-9",
+      "label": "Cost, fees and supplies",
+      "examiner": "Je devrai acheter toutes les fournitures pour chien.",
+      "alsoAskedAs": [
+        "Je devrai lui aménager un espace chez moi.",
+        "Les frais de vétérinaire ne sont pas inclus.",
+        "Il faut apporter quelque chose.",
+        "C’est cher pour ce que c’est.",
+        "Ce genre d’échanges, c’est pour rapporter de l’argent aux sites.",
+        "Les places sont sûrement chères.",
+        "Il y a probablement des frais d’emplacement à payer.",
+        "Je paie alors que c’est moi qui fais le travail.",
+        "Je n’ai pas le matériel (jeux, livres) pour m’occuper d’un enfant.",
+        "Je devrai payer pour déposer mon annonce."
+      ],
+      "acknowledge": "Je comprends que le budget te préoccupe, personne n'a envie de dépenser pour rien.",
+      "defend": "Mais les frais sont souvent très limités : l'inscription est gratuite ou symbolique, et les associations fournissent le matériel de base. Pour le reste, on peut emprunter ou apporter quelque chose de simple. Et à la fin, ce qu'on gagne en expérience ou en économies dépasse largement ce qu'on a dépensé.",
+      "solve": "Si tu hésites, on pourrait demander la liste des frais à l'avance. Comme ça, tu saurais exactement ce que ça va coûter."
+    },
+    {
+      "id": "community-volunteering-10",
+      "label": "It's a real job: it should be paid / career plans",
+      "examiner": "Ce n’est pas rémunéré, pourtant c’est un vrai travail.",
+      "alsoAskedAs": [
+        "C’est un vrai travail, ça mérite un salaire.",
+        "Même si je cumule beaucoup de services, je ne gagnerai pas assez.",
+        "Ce n’est pas un travail stable.",
+        "Il n’y a aucune garantie de paiement.",
+        "Je voulais reprendre mes études.",
+        "Je voulais trouver un vrai métier où je peux évoluer.",
+        "Je n’ai pas envie de changer mes habitudes.",
+        "Je n’ai plus l’âge d’être moniteur dans un centre aéré.",
+        "Je voudrais un meilleur plan de carrière pour moi.",
+        "C’est un travail qui mérite un salaire.",
+        "J’attends des projets professionnels plus importants."
+      ],
+      "acknowledge": "C'est vrai, un vrai travail mérite un salaire, et je comprends que tu penses à ton avenir.",
+      "defend": "Mais ce n'est pas un remplacement de ton métier, c'est un plus. Ça peut aussi t'apporter de l'expérience, des contacts et des références pour ton CV. Même si ce n'est pas payé, on en retire des compétences qui servent ensuite. Et on ne perd pas ses habitudes : on garde ses projets.",
+      "solve": "Si tu as un projet précis, on pourrait choisir une activité qui aide ta carrière. Et on ne s'engagerait que pour une courte période."
+    },
+    {
+      "id": "community-volunteering-11",
+      "label": "Not for volunteers: the State's job, employers' job, professionals' jobs",
+      "examiner": "C’est aux pouvoirs publics d’organiser ces activités.",
+      "alsoAskedAs": [
+        "C’est un vrai métier, il existe des dresseurs de chien.",
+        "On ne devrait pas confier ce type d’emploi des bénévoles.",
+        "Le bénévolat empêche la création d’emplois.",
+        "C’est au gouvernement de mettre en place ces actions.",
+        "On prend le travail des véritables professionnels.",
+        "Ce service devrait être géré par les pouvoirs publics.",
+        "Je préfère faire appel à des professionnels pour ces travaux.",
+        "Le bénévolat empêche la création d’emplois.",
+        "Un professionnel ira beaucoup plus vite.",
+        "Les professionnels vont perdre leur emploi.",
+        "C’est aux compagnies de transports de recruter des accompagnateurs.",
+        "Les parents se déresponsabilisent de plus en plus.",
+        "Ça fait partie du travail des professeurs !",
+        "Le gouvernement devrait prendre en charge ces emplois."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas normal que tout repose sur des volontaires, et les professionnels ont leur place.",
+      "defend": "Mais l'État ne peut pas tout faire, et ces actions viennent en plus de son travail. Les professionnels restent indispensables : ici, on fait autre chose, plus proche des gens. Bien souvent, ce n'est pas un vrai concurrent. Et en attendant, il y a des personnes qui ont besoin d'aide tout de suite.",
+      "solve": "Alors on pourrait agir maintenant, puis écrire à la mairie pour demander plus de moyens. Comme ça, on ferait les deux."
+    },
+    {
+      "id": "community-volunteering-12",
+      "label": "Second-hand clothes: quality, hygiene, sizes, style",
+      "examiner": "Les vêtements d’occasion sont rarement (quasi jamais) de bonne qualité.",
+      "alsoAskedAs": [
+        "Trouver des objets de bonne qualité prend du temps.",
+        "Je n’aime pas l’idée de porter des vêtements d’occasion.",
+        "Il y a toujours des problèmes avec la taille.",
+        "Les vêtements d’occasion ne sont pas à la mode.",
+        "Certains vêtements sont sales.",
+        "Il n’y a pas de cabines d’essayage.",
+        "Je suis superstitieux. Le vêtement peut toujours avoir l’énergie de la personne qui le portait.",
+        "Possibilité de retour ?"
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de porter n'importe quoi ni de perdre son temps.",
+      "defend": "Mais on trouve souvent de très belles pièces, parfois même neuves, et à petit prix. Les vêtements sont lavés et triés, et on peut les nettoyer à la maison. Pour la taille, on essaie sur place, ou on demande à un bénévole. Et les vêtements vintage sont même très à la mode aujourd'hui.",
+      "solve": "Si tu as un doute, on pourrait commencer par acheter un seul article. Et on demanderait s'il y a un retour possible."
+    },
+    {
+      "id": "community-volunteering-13",
+      "label": "Selling at a sale: rain, equipment, low prices, few items",
+      "examiner": "S’il pleut, ce sera une catastrophe.",
+      "alsoAskedAs": [
+        "J’ai trop de choses à vendre, j’aurai besoin d’aide.",
+        "Je n’aime pas beaucoup négocier les prix.",
+        "Je ne pourrai pas profiter du vide grenier.",
+        "Je n’ai pas le matériel qu’il faut pour m’installer.",
+        "C’est beaucoup de temps pour peu d’argent au final.",
+        "Je n’ai pas tant d’affaires à vendre.",
+        "Je devrai vendre mes vêtements et mes accessoires de qualité à prix bradés.",
+        "Je n’aurai pas le temps d’en profiter pour acheter des vêtements.",
+        "Je ne pense pas que mes vêtements plairont.",
+        "Les personnes pourront ensuite revendre mes affaires plus cher sur Internet."
+      ],
+      "acknowledge": "C'est vrai, ça demande du temps, et il faut accepter de vendre à petit prix.",
+      "defend": "Mais on vide sa maison, on gagne un peu d'argent et on passe un bon moment. Pour la pluie, il y a souvent un abri ou un report. Le matériel est simple : une table et un peu d'espace suffisent. Et si tu n'as pas beaucoup de choses, tu peux t'installer avec un ami. Tu en profiteras aussi pour chiner.",
+      "solve": "Pour te faciliter la tâche, on pourrait partager un stand et se répartir le travail. Comme ça, on serait deux à négocier et à s'amuser."
+    },
+    {
+      "id": "community-volunteering-14",
+      "label": "Tool library: opening hours, availability, condition, distance",
+      "examiner": "L’atelier ne sera pas nécessairement ouvert quand j’aurai besoin d’y aller.",
+      "alsoAskedAs": [
+        "Je préfère avoir mes propres outils.",
+        "L’organisme n’offre peut-être pas les outils dont j’ai besoin.",
+        "Les outils dont j’aurai besoin seront peut-être déjà loués.",
+        "Les outils pourraient être brisés ou en mauvais état.",
+        "Je n’aurai pas souvent besoin de ce service.",
+        "Je devrai me déplacer chaque fois que j’aurai besoin d’un outil."
+      ],
+      "acknowledge": "Je comprends, on aime avoir ses propres outils sous la main, surtout quand on en a besoin vite.",
+      "defend": "Mais on ne les utilise pas tous les jours, et ils prennent de la place. Ici, on emprunte seulement ce dont on a besoin, quand on en a besoin. Le matériel est entretenu et souvent de meilleure qualité. Et pour les horaires, on peut réserver à l'avance, donc on ne dépend pas de la chance.",
+      "solve": "Si jamais l'outil est déjà pris, on pourrait chercher un autre créneau ou demander conseil au responsable. Et on garderait nos outils de base à la maison."
+    },
+    {
+      "id": "community-volunteering-15",
+      "label": "Trust, insurance, legal and health risks",
+      "examiner": "Je ne sais pas si je peux faire confiance à des inconnus.",
+      "alsoAskedAs": [
+        "Je risque d’attraper les virus des enfants.",
+        "On est redevable des personnes qui nous aident, mais on en aide d’autres.",
+        "C’est bien pour les personnes qui sont seules.",
+        "Il faut beaucoup de temps avant de rencontrer les bonnes personnes.",
+        "Si j’ai un accident après la réparation, je suis responsable.",
+        "Je ne suis pas sûr(e) que mon assurance m’autorise à ça.",
+        "Si je dois passer une frontière, j’aurais des problèmes avec un enfant qui n’est pas le mien.",
+        "Je ne sais pas si ce site est très sérieux.",
+        "Je n’ai pas d’assurance en cas de problème.",
+        "C’est dangereux : certains animaux sont agressifs.",
+        "Beaucoup de maladies circulent dans ces endroits."
+      ],
+      "acknowledge": "C'est vrai, il faut faire attention à la sécurité, à l'assurance et aux personnes qu'on rencontre.",
+      "defend": "Mais les organisations sérieuses ont des règles claires : assurance, vaccins, contrats et autorisations. On peut aussi lire les avis avant de s'inscrire. Bien que le risque zéro n'existe pas, on ne prend pas plus de risques qu'ailleurs. Et l'échange fonctionne bien quand chacun est honnête.",
+      "solve": "Pour être tranquille, on pourrait vérifier l'assurance avec l'organisme et demander les documents nécessaires. Et on choisirait toujours une structure reconnue."
+    },
+    {
+      "id": "community-volunteering-16",
+      "label": "I'd rather rest, do something else or donate; boredom",
+      "examiner": "J’aime bien me reposer pendant mon temps libre.",
+      "alsoAskedAs": [
+        "Il vaudrait mieux organiser des actions caritatives.",
+        "Les jeux de société, c’est ennuyeux à la longue.",
+        "Il vaudrait mieux faire un don à des associations",
+        "Je veux bien profiter des activités, mais les organiser c’est autre chose.",
+        "Je préfère donner mes affaires à des amis ou à une association.",
+        "Je risque de m’ennuyer.",
+        "L’argent récolté devrait être utilisé pour une bonne cause.",
+        "Je peux faire un don sans faire d’effort physique.",
+        "Je vais m’ennuyer à la longue, à force de faire la même chose.",
+        "Je vais être dérangé(e) en permanence.",
+        "Le weekend, j’ai besoin de me reposer.",
+        "Je préfère passer mon temps libre avec mes propres animaux.",
+        "Les tâches administratives, j’en fais suffisamment au travail et à la maison."
+      ],
+      "acknowledge": "Je respecte ton choix, on a tous besoin de repos, et donner de l'argent aide aussi.",
+      "defend": "Mais participer, ce n'est pas la même chose que de donner. On rencontre des gens, on bouge et on voit tout de suite les résultats. Bien sûr, on peut aussi se reposer, mais s'occuper de quelqu'un ou de quelque chose apporte une vraie satisfaction. Et on ne s'ennuie pas quand on a un objectif.",
+      "solve": "Pourquoi ne pas faire les deux ? On donnerait un peu d'argent, et on essaierait une activité une seule fois. Si ça ne te plaît pas, tu reviendrais à tes habitudes."
+    }
+  ],
+  "culture-arts": [
+    {
+      "id": "culture-arts-1",
+      "label": "Time to prepare or practise",
+      "examiner": "Je vais perdre beaucoup de temps à rédiger mes critiques.",
+      "alsoAskedAs": [
+        "Il y aura sûrement une journée de formation et je n’ai pas le temps.",
+        "C’est beaucoup d’investissement et de préparation.",
+        "Préparer une émission de qualité demande beaucoup de temps.",
+        "Je n’ai plus le temps en ce moment.",
+        "Je préfère garder du temps pour autre chose.",
+        "Je n’ai pas le temps en ce moment de suivre cet atelier.",
+        "Je n’ai pas beaucoup de temps.",
+        "Les shootings photos, c’est long.",
+        "S’il faut suivre une formation, ça prendra du temps.",
+        "Je ne vais pas avoir le temps de m’entraîner pour répéter la chorégraphie.",
+        "Il faut du temps pour prendre de bonnes photos, et je n’en ai pas beaucoup."
+      ],
+      "acknowledge": "Honnêtement, je comprends, le temps est précieux, surtout quand on a déjà un horaire chargé.",
+      "defend": "Mais on n'a pas besoin de passer des heures : un peu de préparation suffit, et on peut s'organiser à son rythme. En plus, c'est un moment pour soi, qui change les idées. Bien que ça demande un effort au début, ça devient vite naturel. Ce n'est pas du temps perdu.",
+      "solve": "Si ton agenda est trop plein, on pourrait commencer par une petite séance par semaine. Ensuite, on verrait si tu peux en ajouter une autre."
+    },
+    {
+      "id": "culture-arts-2",
+      "label": "Commitment, availability and constraints",
+      "examiner": "S’investir sur un an, c’est très long.",
+      "alsoAskedAs": [
+        "Je ne suis pas disponible pour toutes les dates de castings.",
+        "Dix minutes minimum c’est déjà très long !",
+        "Une tournée de spectacles, c’est plutôt contraignant.",
+        "Je n’ai pas trop de disponibilités pour m’engager.",
+        "C’est loin de chez moi.",
+        "Il faudra se contraindre aux demandes de l’artiste.",
+        "Ça va être compliqué de me libérer pour les répétitions.",
+        "Je n’ai pas envie de m’engager pour ce type d’activités."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de s'engager trop longtemps ni de perdre sa liberté.",
+      "defend": "Mais l'engagement est souvent plus flexible qu'on ne le pense. On peut choisir les dates qui nous conviennent, et personne ne t'oblige à faire plus. Même si les répétitions ou les déplacements demandent un peu d'organisation, on trouve toujours une solution avec le groupe. Et c'est temporaire, pas pour toute la vie.",
+      "solve": "Si jamais tu as peur de t'enfermer, on pourrait proposer un essai de quelques semaines. Et si ça ne te convient pas, tu pourrais arrêter sans problème."
+    },
+    {
+      "id": "culture-arts-3",
+      "label": "No training, experience or skills",
+      "examiner": "Je n’ai pas de formation dans ce domaine.",
+      "alsoAskedAs": [
+        "Je ne suis pas un musicien professionnel.",
+        "Je n’ai pas d’expérience de jurys.",
+        "Je ne suis pas capable de distinguer les styles musicaux.",
+        "Je n’ai aucune formation de critique.",
+        "Je ne sais pas très bien écrire.",
+        "Je n’ai aucune qualification pour ce type de travail.",
+        "Animateur de radio, c’est un métier : je n’ai aucune formation.",
+        "Je ne suis pas sûr(e) de trouver des choses intéressantes à dire.",
+        "J’aime lire les poèmes mais je n’en ai jamais écrit.",
+        "Je ne suis pas comédien de base ! C’est un métier.",
+        "Je ne connais rien à la photographie.",
+        "Je ne sais pas si je vais comprendre ce qui disent les spécialistes.",
+        "Je n’ai aucune compétence en matière de protection de l’environnement.",
+        "Je n’ai ni les compétences, ni l’expérience dans ce domaine.",
+        "J’aime prendre des photos mais je ne suis pas photographe.",
+        "La ville est grande, je ne sais pas quoi prendre en photo."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent, surtout sans formation.",
+      "defend": "Pourtant, la passion compte plus que le diplôme. On te montre les bases au début, et on apprend très vite en pratiquant. Il y a souvent une petite formation, ou quelqu'un pour te guider. Et tu as déjà des idées et un regard à toi, ce qui est précieux. Personne ne s'attend à un expert.",
+      "solve": "Si tu veux te sentir prêt, on pourrait faire un premier essai ensemble. Ensuite, tu pourrais te lancer quand tu te sentirais à l'aise."
+    },
+    {
+      "id": "culture-arts-4",
+      "label": "Not talented enough / others are better",
+      "examiner": "J’ai peur de ne pas savoir quoi dire ou quoi faire.",
+      "alsoAskedAs": [
+        "Il y aura beaucoup de gens plus talentueux que moi.",
+        "Cela fait des années que je ne pratique plus la danse.",
+        "C’est difficile d’apprendre une nouvelle danse.",
+        "Je n’ai pas le rythme dans la peau.",
+        "Il y aura sûrement des professionnels de la danse. Cela va me bloquer.",
+        "Il va y avoir sûrement de vrais poètes dans le groupe.",
+        "Je ne suis vraiment pas doué(e) pour les travaux manuels.",
+        "Je ne suis pas créatif(ve) du tout !",
+        "Je ne danse pas très bien.",
+        "Je ne suis pas très doué(e) en travail manuel.",
+        "Je ne sais pas bien danser.",
+        "Ils auront tous un meilleur niveau que moi !"
+      ],
+      "acknowledge": "Je comprends, on a tous peur de ne pas être assez bon face aux autres.",
+      "defend": "Mais ces activités sont ouvertes à tous, et la plupart des participants sont débutants. Le talent, ça se travaille, et on progresse plus vite qu'on ne le croit. Même s'il y a des gens plus expérimentés, ils aident souvent les autres. L'important, c'est de participer et de s'amuser.",
+      "solve": "Si tu as peur d'être dépassé, on pourrait choisir un groupe pour débutants. Et on pourrait s'entraîner un peu chez toi avant la première séance."
+    },
+    {
+      "id": "culture-arts-5",
+      "label": "Selection, competition and rewards",
+      "examiner": "Ils ne vont pas me choisir, il y aura des professionnels.",
+      "alsoAskedAs": [
+        "Je serai déçu(e) si je ne gagne pas de prix.",
+        "Les concours sont souvent arrangés, le gagnant est choisi d’avance.",
+        "Aujourd’hui, n’importe qui se prétend écrivain ou artiste.",
+        "Je ne vais jamais être pris pour le concours d’écriture.",
+        "Mes mains n’ont rien d’extraordinaire.",
+        "Il y aura beaucoup de monde et j’ai peu de chance d’être choisi(e).",
+        "Je n’entretiens pas beaucoup mes mains.",
+        "La sélection doit être compliquée.",
+        "Mes photos sont un peu spéciales."
+      ],
+      "acknowledge": "C'est vrai, il peut y avoir beaucoup de candidats, et on a peur d'être déçu.",
+      "defend": "Mais ce qui compte, c'est d'essayer. Personne ne sait qui sera choisi, et parfois, ce sont justement les profils différents qui plaisent. Même si tu n'es pas retenu, tu auras vécu une bonne expérience et tu auras appris quelque chose. Et si le concours est sérieux, un jury indépendant décide.",
+      "solve": "Si tu as peur de la déception, on pourrait le voir comme un test, sans pression. Et on postulerait ensemble pour se motiver."
+    },
+    {
+      "id": "culture-arts-6",
+      "label": "Shyness, performing in public and fear of ridicule",
+      "examiner": "Je suis trop timide pour jouer en public.",
+      "alsoAskedAs": [
+        "J’ai peur de parler en public.",
+        "J’ai peur que mes histoires ne plaisent pas.",
+        "Je n’ai pas envie qu’on juge mon conte.",
+        "Je manque d’aisance à l’oral.",
+        "Je ne vais pas aimer entendre ma voix à la radio.",
+        "Je crains d’être ridicule.",
+        "Je ne pourrais jamais danser en public devant les gens.",
+        "J’aurai trop peur de montrer mes créations à tout le monde.",
+        "J’ai peur d’être ridicule !",
+        "Je ne suis pas très à l’aise quand on me photographie.",
+        "Je n’ai pas envie de me donner en spectacle.",
+        "J’ai peur de me ridiculiser devant tout le monde.",
+        "Je suis un peu trop timide pour arriver à danser comme ça devant tout le monde.",
+        "Je ne veux pas qu’on me filme ça va me mettre trop mal à l’aise.",
+        "Je ne veux pas que ça apparaisse sur internet."
+      ],
+      "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on est timide.",
+      "defend": "Mais personne ne se moque de personne dans ce genre d'activité. Tout le monde est là pour apprendre, et chacun a ses peurs. On avance petit à petit, avec des exercices simples. Et si tu ne veux pas être filmé, tu peux le dire à l'avance : les organisateurs comprennent.",
+      "solve": "Si tu es trop stressé, on pourrait aller à la première séance ensemble, juste pour observer. Après, tu déciderais si tu veux continuer."
+    },
+    {
+      "id": "culture-arts-7",
+      "label": "Criticising and judging others",
+      "examiner": "Je n’oserai jamais critiquer un film négativement.",
+      "alsoAskedAs": [
+        "Je n’aime pas critiquer les musiciens.",
+        "Parfois certaines performances peuvent être gênantes.",
+        "Je suis trop timide pour argumenter devant tout le monde.",
+        "Je vais devoir visionner des films qui ne m’attirent pas.",
+        "J’ai des goûts très spécifiques, je n’aime pas tout.",
+        "Je risque de perdre mon plaisir de simple spectateur."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas facile de juger le travail des autres, surtout quand on aime ce qu'on regarde.",
+      "defend": "Mais une critique honnête n'est pas une attaque. On peut expliquer ce qui est bien et ce qui est moins bien, avec respect. Et on n'est pas obligé de tout aimer : donner son avis fait partie du rôle. En plus, ça aide les artistes à progresser. Tu garderas ton plaisir de spectateur.",
+      "solve": "Pour commencer, on pourrait écrire quelques critiques courtes, en se concentrant sur ce qu'on a aimé. Ensuite, on verrait comment nuancer."
+    },
+    {
+      "id": "culture-arts-8",
+      "label": "The group and strangers",
+      "examiner": "Je ne connais presque pas les voisins du quartier.",
+      "alsoAskedAs": [
+        "C’est plutôt une activité pour les retraités.",
+        "Je ne connais pas les autres membres du jury.",
+        "Je ne suis pas sûr(e) de m’entendre avec le reste du groupe.",
+        "C’est un travail en équipe et je préfère travailler seul(e).",
+        "Il n’y aura que des personnes âgées !",
+        "Je ne connais pas les autres membres de la troupe.",
+        "Ce n’est pas évident de s’entendre avec des gens que l’on ne connait pas.",
+        "Je ne parle pas de langues étrangères.",
+        "Je ne connais personne parmi les participants."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas simple de se retrouver avec des gens qu'on ne connaît pas.",
+      "defend": "Mais les gens qui participent ont déjà un intérêt en commun, alors la conversation vient naturellement. Même si on ne parle pas la même langue, un sourire et quelques mots suffisent. Il y a de tout âge, et tout le monde est accueillant. En plus, c'est une bonne façon de se faire des amis.",
+      "solve": "Si tu as peur de te sentir seul, on pourrait y aller ensemble. Comme ça, on serait déjà deux à se connaître."
+    },
+    {
+      "id": "culture-arts-9",
+      "label": "Crowds and other people's behaviour",
+      "examiner": "Il y a trop de monde dans ces festivals.",
+      "alsoAskedAs": [
+        "Il y a beaucoup de monde ce jour-là, c’est épuisant.",
+        "Les visiteurs ne sont pas toujours polis ni sympathiques avec le personnel.",
+        "On ne peut pas emmener les enfants à ce genre de festival.",
+        "Les participants ne se comportent pas toujours bien (vol, agression, abus d’alcool)."
+      ],
+      "acknowledge": "C'est vrai, la foule peut être fatigante, et tout le monde n'est pas toujours poli.",
+      "defend": "Mais ces événements sont bien organisés, avec des équipes de sécurité et des règles claires. La plupart des gens sont sympathiques, et on peut choisir des moments plus calmes. Et si les enfants sont là, il y a souvent des espaces réservés aux familles. Un problème reste rare et se règle vite.",
+      "solve": "Pour éviter la foule, on pourrait y aller en début de journée ou en semaine. Et on resterait ensemble, pour se sentir plus tranquilles."
+    },
+    {
+      "id": "culture-arts-10",
+      "label": "Physical effort, injury, comfort and weather",
+      "examiner": "C’est un travail physique qui demande beaucoup de préparation.",
+      "alsoAskedAs": [
+        "J’ai souvent mal à la tête à cause de la musique.",
+        "Je n’aurai plus de congés pour me reposer ensuite.",
+        "Je ne pourrai pas me reposer en dormant sous une tente.",
+        "Je n’ai pas les vêtements adéquats pour travailler.",
+        "J’ai peur de me blesser ou de me faire mal.",
+        "Travailler le cuir, faire des poteries, c’est salissant et on peut se blesser.",
+        "Ce sera fatigant de danser toute la soirée.",
+        "Ce ne seront pas des vacances reposantes.",
+        "On ne dort pas bien dans un dortoir, ni dans une tente.",
+        "En cas de mauvais temps, le séjour sera gâché.",
+        "Je pourrais me blesser.",
+        "Je vais devoir beaucoup marcher; c’est très fatigant."
+      ],
+      "acknowledge": "Honnêtement, je comprends, on veut se reposer, pas se fatiguer ni se blesser.",
+      "defend": "Mais on va à son rythme, avec des pauses, et il y a toujours un encadrement. Le matériel de protection est fourni, et on n'a pas besoin de vêtements spéciaux. Bien sûr, c'est un peu fatigant, mais c'est une fatigue agréable. Et si le temps est mauvais, il y a des solutions de rechange.",
+      "solve": "Pour être plus à l'aise, on pourrait apporter des vêtements confortables et une bonne paire de chaussures. Et on prévoirait une journée de repos ensuite."
+    },
+    {
+      "id": "culture-arts-11",
+      "label": "Cost, no pay and equipment",
+      "examiner": "Le billet et l’hébergement vont revenir très cher.",
+      "alsoAskedAs": [
+        "C’est un vrai travail qui devrait être rémunéré.",
+        "Les compensations ne sont pas très intéressantes.",
+        "Il faut s’équiper, ça coute cher.",
+        "Est-ce que c’est payant ?",
+        "Je ne serai pas rémunéré(e).",
+        "Je n’ai pas le budget pour acheter un nouvel appareil photo."
+      ],
+      "acknowledge": "Je comprends que l'argent te préoccupe, personne n'a envie de dépenser ou de travailler pour rien.",
+      "defend": "Mais les frais sont souvent limités : le matériel est fourni ou prêté, et l'inscription est gratuite ou à petit prix. Quant à l'absence de salaire, on gagne autre chose : de l'expérience, des contacts et un CV plus riche. Et pour un billet cher, on peut chercher les tarifs réduits.",
+      "solve": "Si tu hésites, on pourrait demander les tarifs à l'avance et comparer. Comme ça, tu saurais exactement ce que ça va coûter."
+    },
+    {
+      "id": "culture-arts-12",
+      "label": "It's a real job / taking work from professionals",
+      "examiner": "Je veux avoir un vrai métier.",
+      "alsoAskedAs": [
+        "Je vais prendre le travail d’une personne.",
+        "C’est parce qu’il y a ces journées gratuites que le secteur culturel manque d’argent.",
+        "On prend la place de vrais spécialistes.",
+        "Je préfère acheter, ça aide les vrais artisans.",
+        "Il n’y a pas beaucoup d’opportunités professionnelles."
+      ],
+      "acknowledge": "C'est vrai, un vrai métier mérite du respect, et je comprends que tu penses à ton avenir.",
+      "defend": "Mais ce n'est pas un remplacement de ton métier ni de celui des autres : c'est un plus. Les professionnels restent indispensables, et ici, on offre autre chose, plus proche du public. Ça peut même donner envie d'aller plus loin. Et pour acheter chez un artisan, on peut très bien continuer à le faire aussi.",
+      "solve": "Alors on pourrait le faire comme un passe-temps, sans quitter ton travail. Ensuite, tu verrais si ça peut devenir plus sérieux."
+    },
+    {
+      "id": "culture-arts-13",
+      "label": "It's the State's job / exploiting volunteers",
+      "examiner": "C’est au gouvernement de restaurer le patrimoine",
+      "alsoAskedAs": [
+        "Les pouvoirs publics exploitent les bénévoles.",
+        "Il vaut mieux sensibiliser les gens par les médias.",
+        "C’est au gouvernement de financer ce genre d’organismes."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas normal que tout repose sur des volontaires.",
+      "defend": "Mais l'État ne peut pas tout faire, et sans ces gens, beaucoup de lieux seraient fermés ou abîmés. Ce n'est pas de l'exploitation : chacun choisit librement d'aider. Et pendant qu'on attend que le gouvernement agisse, on peut déjà sauver un site, informer le public ou aider une cause.",
+      "solve": "Alors on pourrait participer une fois, puis écrire à la mairie pour demander plus d'aide. Comme ça, on ferait les deux."
+    },
+    {
+      "id": "culture-arts-14",
+      "label": "Doubts about seriousness, results and audience",
+      "examiner": "Ce n’est pas sérieux comme levée de fonds.",
+      "alsoAskedAs": [
+        "Si je n’ai pas assez d’auditeurs, l’émission sera supprimée.",
+        "Cette radio n’est sûrement pas très écoutée.",
+        "De nos jours, tout passe par l’image : les radios sont obsolètes.",
+        "On n’apprend pas grand chose, c’est juste pour rencontrer des gens.",
+        "Les animateurs ne sont peut-être pas très compétents.",
+        "Les festivals génèrent beaucoup de déchets, c’est paradoxal.",
+        "Mélanger fête et discours rabat-joie, ça ne marchera pas.",
+        "On ne pourra pas amasser beaucoup d’argent de cette façon.",
+        "Je crains que les fonds n’aillent pas vraiment à l’organisme."
+      ],
+      "acknowledge": "C'est vrai, on veut être sûr que ça sert à quelque chose et que l'organisation est sérieuse.",
+      "defend": "Mais on peut facilement vérifier les résultats : les organisateurs publient leurs bilans, et les avis en ligne parlent de la qualité. Même si l'audience est petite au début, elle grandit avec le temps. Et une soirée peut vraiment rapporter de l'argent, tout en faisant passer un message. Les animateurs sont souvent plus compétents qu'on ne le pense.",
+      "solve": "Pour être tranquille, on pourrait demander les comptes de l'organisme ou lire des témoignages. Ensuite, tu déciderais en connaissant les faits."
+    },
+    {
+      "id": "culture-arts-15",
+      "label": "Is it worth it? Limited results and usefulness",
+      "examiner": "En deux semaines, nous n’aurons pas le temps de tout rénover.",
+      "alsoAskedAs": [
+        "Je ne sais pas à qui vont servir mes critiques.",
+        "Je ne sais pas si je pourrai réutiliser les compétences que j’aurai acquises.",
+        "Se recycler dans l’artisanat, ça prend plusieurs années.",
+        "Je préfèrerais apprendre quelque chose d’utile au quotidien.",
+        "Voyager sans visiter, c’est dommage !"
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, on veut que l'effort serve à quelque chose de concret.",
+      "defend": "Mais même en peu de temps, on apporte une vraie contribution. Les compétences qu'on apprend, comme le travail en équipe ou la confiance en soi, servent dans tous les domaines. Et on peut toujours ajouter une visite ou une sortie pendant le séjour. Ce n'est pas une perte de temps.",
+      "solve": "Si tu as un doute, on pourrait demander à quoi servent les résultats, et prévoir du temps libre pour visiter. Ainsi, on profiterait de tout."
+    },
+    {
+      "id": "culture-arts-16",
+      "label": "I prefer something else / not my taste",
+      "examiner": "Je préfère lire des romans plutôt que d’écrire.",
+      "alsoAskedAs": [
+        "Je pensais profiter de cette journée comme visiteur.",
+        "On peut me donner une mission qui ne me plaît pas.",
+        "Je manque de patience pour regarder les prestations musicales pendant longtemps.",
+        "Je n’ai pas envie qu’on m’impose un thème.",
+        "Je préfère m’inscrire à une salle de sport.",
+        "Cela sera sûrement le weekend. Je préfère me reposer.",
+        "Je n’aime pas tous les thèmes, en poésie.",
+        "Je préfère faire de la musique.",
+        "Je préfère les activités manuelles.",
+        "J’avais décidé de pratiquer à nouveau du sport. Je n’aurai pas assez de temps.",
+        "Ce type d’art, c’est un peu trop intellectuel pour moi.",
+        "Je ne suis pas sûr(e) qu’il y ait la musique que j’aime.",
+        "J’ai peur de m’ennuyer.",
+        "Je préfère faire du bénévolat auprès d’un organisme.",
+        "Ce n’est sûrement pas mon type de musique."
+      ],
+      "acknowledge": "C'est vrai, il existe beaucoup d'autres activités, et je respecte tes goûts.",
+      "defend": "Mais celle-ci apporte quelque chose de différent. Elle ne t'empêche pas de faire de la musique, du sport ou de lire des romans. On y trouve plusieurs styles et thèmes, et on peut choisir ce qui nous plaît. Et si tu t'ennuies, c'est facile de partir plus tôt. En plus, ça change des habitudes.",
+      "solve": "Pourquoi ne pas l'essayer une seule fois ? Si ça ne te plaît pas, tu pourras toujours revenir à ton activité habituelle."
+    }
+  ],
+  "education-learning": [
+    {
+      "id": "education-learning-1",
+      "label": "Cost / low pay / paying for equipment",
+      "examiner": "Les cours doivent coûter plus cher que dans une école traditionnelle.",
+      "alsoAskedAs": [
+        "Ce n’est sûrement pas très bien payé.",
+        "Ce n’est sûrement pas très bien rémunéré.",
+        "Il faut sûrement payer le matériel."
+      ],
+      "acknowledge": "Je comprends que l'argent compte, on veut savoir ce qu'on gagne ou ce qu'on dépense.",
+      "defend": "Mais quand on compare bien, la différence est souvent petite. Il n'y a pas de frais de déplacement ni de location de salle, et le matériel de base est simple. Et même si ce n'est pas très bien payé, on gagne aussi de l'expérience et des contacts. Ça vaut vraiment la peine.",
+      "solve": "Si jamais tu as un doute, on pourrait demander les tarifs par écrit avant de commencer. Ensuite, tu déciderais en connaissant les chiffres."
+    },
+    {
+      "id": "education-learning-2",
+      "label": "Technology: equipment, sound quality, screens, payment online",
+      "examiner": "Il faut des équipements spéciaux pour faire de la musique sur Internet.",
+      "alsoAskedAs": [
+        "Je n’ai pas envie de payer par carte sur Internet.",
+        "Je passe déjà beaucoup de temps devant un écran.",
+        "Au téléphone, on n’entend pas très bien."
+      ],
+      "acknowledge": "C'est vrai, la technique peut être compliquée et on n'a pas envie d'être fatigué par l'écran.",
+      "defend": "Mais on n'a pas besoin de matériel spécial : un téléphone ou un ordinateur suffit. La qualité du son est bonne avec un bon casque ou une bonne connexion. Et pour payer, ces sites utilisent des systèmes sécurisés, comme pour n'importe quel achat. On peut aussi faire des pauses.",
+      "solve": "Pour être sûrs que tout marche, on pourrait faire un essai gratuit avant de s'inscrire. Comme ça, on testerait le son et la connexion."
+    },
+    {
+      "id": "education-learning-3",
+      "label": "Teaching quality: no structure, no correction, too fast, beginner level",
+      "examiner": "Si je tiens mal l’instrument, personne ne me corrigera.",
+      "alsoAskedAs": [
+        "Je n’y connais vraiment rien, j’ai besoin de quelqu’un pour me montrer les bases.",
+        "Les cours en ligne vont souvent trop vite et ne sont pas personnalisés.",
+        "Pour progresser, j’ai besoin d’imiter un professeur qui joue devant moi.",
+        "Cette école ne semble pas proposer de cours de solfège.",
+        "Les cours ne seront pas structurés.",
+        "On ne pourra pas corriger mes fautes à l’écrit !",
+        "Je suis débutant(e), je risque de ne pas comprendre ce qu’on me dit."
+      ],
+      "acknowledge": "Je comprends, quand on débute, on a besoin d'être guidé et corrigé.",
+      "defend": "Mais ces cours sont pensés pour les débutants. Le professeur explique les bases, montre les gestes et corrige les erreurs pendant la séance. On peut aussi revoir les leçons à son rythme. Et il y a souvent un programme clair, avec des exercices écrits, pour que chacun avance étape par étape.",
+      "solve": "Si tu as peur d'être perdu, on pourrait demander le plan du cours avant de choisir. Et on pourrait changer de professeur si ça ne marche pas."
+    },
+    {
+      "id": "education-learning-4",
+      "label": "Motivation and autonomy",
+      "examiner": "Seul, je vais me démotiver rapidement.",
+      "alsoAskedAs": [
+        "Il faut beaucoup de sérieux et d’autonomie.",
+        "J’ai peur d’être démotivé(e) rapidement."
+      ],
+      "acknowledge": "Ouais, je vois ce que tu veux dire, seul chez soi, on se décourage vite.",
+      "defend": "Mais justement, on peut planifier des rendez-vous fixes avec le professeur, et ça crée un engagement. En plus, les objectifs sont clairs et on voit ses progrès. Avec quelques semaines de pratique, ça devient une habitude. Et si tu manques de rigueur, le professeur est là pour te relancer.",
+      "solve": "Pour tenir le coup, on pourrait s'inscrire ensemble et se fixer un horaire. Comme ça, on se motiverait l'un l'autre."
+    },
+    {
+      "id": "education-learning-5",
+      "label": "Contact with people: group, teacher, isolation",
+      "examiner": "J’ai plutôt envie de jouer en groupe.",
+      "alsoAskedAs": [
+        "La lecture, c’est une activité solitaire.",
+        "Je ne rencontrerai jamais mon professeur !",
+        "J’aimerais bien rencontrer d’autres étudiants."
+      ],
+      "acknowledge": "Je comprends, on aime rencontrer du monde et partager ce qu'on fait.",
+      "defend": "Mais ce n'est pas si solitaire qu'on le pense. On échange avec le professeur, souvent en direct, et beaucoup de programmes organisent des rencontres entre participants. De plus, on peut ensuite partager ce qu'on a appris avec ses amis ou sa famille.",
+      "solve": "Si tu veux plus de contacts, on pourrait rejoindre un groupe ou un forum en même temps. Ainsi, tu aurais le meilleur des deux."
+    },
+    {
+      "id": "education-learning-6",
+      "label": "Self-confidence: talent, voice, fear of judgement, being ridiculous",
+      "examiner": "J’ai peu que l’on me juge si je lis mal.",
+      "alsoAskedAs": [
+        "Je n’ai pas de talent de comédien(ne).",
+        "Je n’ai pas une voix très puissante.",
+        "La lecture à voix haute demande beaucoup d’entraînement.",
+        "Je ne parle que français, ils vont me trouver ridicule.",
+        "Je ne suis pas à l’aise au téléphone."
+      ],
+      "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on débute.",
+      "defend": "Mais personne n'attend que tu sois parfait. Les gens qui participent sont là pour partager, pas pour juger. Le talent s'apprend, comme la voix, avec un peu d'entraînement. Et si tu fais une erreur, ce n'est pas grave : tout le monde en fait, et les autres sont souvent bienveillants.",
+      "solve": "Si tu es trop stressé, on pourrait commencer par écouter ou observer une séance. Ensuite, tu participerais quand tu te sentirais prêt."
+    },
+    {
+      "id": "education-learning-7",
+      "label": "Lack of training, skills or knowledge",
+      "examiner": "Je n’ai pas fait d’études littéraires, je ne sais pas commenter un livre.",
+      "alsoAskedAs": [
+        "Je n’ai pas de formation spécifique pour ce travail.",
+        "Je ne sais pas quelles activités je vais pouvoir leur proposer pendant le voyage.",
+        "Je ne sais pas quels types de cours je pourrais proposer.",
+        "Je n’ai pas de formation, j’ai tout appris par moi-même."
+      ],
+      "acknowledge": "C'est vrai, on n'a pas envie de se sentir incompétent, surtout sans diplôme.",
+      "defend": "Pourtant, l'expérience compte plus que le diplôme. Tout ce que tu as appris tout seul est très utile, et il y a souvent une petite formation pour t'aider. Pour les activités, il suffit de reprendre celles que tu aimes déjà. En plus, on apprend beaucoup sur le terrain.",
+      "solve": "Pour te préparer, on pourrait faire une liste de tes compétences et de quelques idées d'activités. Comme ça, tu saurais déjà par où commencer."
+    },
+    {
+      "id": "education-learning-8",
+      "label": "Time and energy",
+      "examiner": "Il faut être disponible les nuits ou très tôt le matin.",
+      "alsoAskedAs": [
+        "Je n’ai vraiment pas le temps de faire du bénévolat.",
+        "C’est très fatigant, toute la journée avec des jeunes !",
+        "Donner un cours, ça demande beaucoup de préparation !"
+      ],
+      "acknowledge": "Honnêtement, je comprends, on n'a pas toujours le temps ni l'énergie.",
+      "defend": "Mais on choisit son rythme et le nombre d'heures. Une fois qu'on a préparé un premier cours ou une première activité, on peut la réutiliser. Et même si c'est fatigant parfois, c'est un moment agréable qui change les idées. On repart souvent plus content qu'avant.",
+      "solve": "Si ton agenda est trop chargé, on pourrait commencer par une seule séance par semaine. Ensuite, on verrait si tu peux en faire plus."
+    },
+    {
+      "id": "education-learning-9",
+      "label": "Responsibility, teamwork, patience and reporting",
+      "examiner": "S’occuper de jeunes, c’est beaucoup de responsabilités.",
+      "alsoAskedAs": [
+        "Il faut bien s’entendre avec les autres accompagnateurs.",
+        "Il y a toujours des imprévus pendant les séjours.",
+        "Je n’ai pas beaucoup de patience pour expliquer les choses.",
+        "Il faut être capable de s’entendre avec tout le monde.",
+        "Il faut rendre des comptes à ceux qui organisent les cours."
+      ],
+      "acknowledge": "Je comprends, ce sont de vraies responsabilités, et il faut savoir s'entendre avec tout le monde.",
+      "defend": "Mais on n'est jamais seul : il y a une équipe et des règles claires. Les imprévus arrivent, mais on apprend vite à les gérer. Et pour les comptes à rendre, il s'agit surtout d'un petit rapport. Avec un peu d'expérience, on devient plus patient et plus sûr de soi.",
+      "solve": "Si tu as un doute, on pourrait parler avec les organisateurs avant de s'engager. Et on pourrait commencer par un rôle simple."
+    },
+    {
+      "id": "education-learning-10",
+      "label": "Not what I want / not for me / someone else's job",
+      "examiner": "Les ouvrages proposés ne me plairont peut-être pas.",
+      "alsoAskedAs": [
+        "Il n’y a pas beaucoup de monde que ça intéresse.",
+        "Je préfèrerais faire ça pour des enfants.",
+        "Je ne profiterai pas du tout du séjour.",
+        "Je risque de ne plus dissocier loisir et vie professionnelle.",
+        "C’est aux pouvoirs publics de proposer des cours gratuits."
+      ],
+      "acknowledge": "Je comprends, on veut une activité qui nous ressemble et qui nous plaise vraiment.",
+      "defend": "Mais justement, on peut choisir les textes, le public ou le type d'activité qui nous intéresse. Même si peu de gens participent, le petit groupe est plus convivial. Et bien que l'État puisse aider, il ne peut pas tout faire. En plus, séparer loisir et travail reste possible avec un peu d'organisation.",
+      "solve": "Pourquoi ne pas essayer une fois ? Si ça ne te plaît pas, tu pourras toujours arrêter ou changer d'activité."
+    }
+  ],
+  "environment-animals": [
+    {
+      "id": "environment-animals-1",
+      "label": "Cost, pay and equipment",
+      "examiner": "C’est trop cher à l’achat.",
+      "alsoAskedAs": [
+        "Ça doit être très cher.",
+        "Ce n’est pas un travail stable.",
+        "Je ne serai probablement pas très bien rémunéré.",
+        "Il faut sûrement fournir son propre matériel.",
+        "C’est un travail qui demande salaire.",
+        "Je ne veux pas faire ce travail sans être rémunéré.",
+        "Je n’ai pas l’équipement approprié.",
+        "Il faut payer pour participer.",
+        "L’inscription sur le site est sûrement payante.",
+        "L’entretien va coûter cher."
+      ],
+      "acknowledge": "Je comprends que l'argent t'inquiète, c'est normal de vouloir en avoir pour son argent.",
+      "defend": "Mais il faut voir ça sur la durée. Souvent, l'inscription est gratuite ou très abordable, et le matériel est fourni ou se loue facilement. Quand il s'agit d'aider la nature, on ne le fait pas pour le salaire, mais pour l'expérience. Et pour un équipement plus cher, comme une éolienne, on économise ensuite chaque mois.",
+      "solve": "Si jamais tu as encore un doute, on pourrait demander les prix par écrit et comparer avec d'autres offres. Ensuite, tu déciderais tranquillement."
+    },
+    {
+      "id": "environment-animals-2",
+      "label": "Time and availability (busy, early hours, Sundays)",
+      "examiner": "Je n’ai pas le temps.",
+      "alsoAskedAs": [
+        "Je travaille beaucoup et ne suis pas souvent à la maison.",
+        "Cela nécessite d’avoir beaucoup de temps libre.",
+        "C’est trop tôt pour moi le dimanche à 7h, je veux faire la grasse matinée.",
+        "Le dimanche je suis occupé(e).",
+        "Il faut consulter le site tous les jours pour faire de bonnes affaires."
+      ],
+      "acknowledge": "Honnêtement, je comprends, on est tous très occupés, et le dimanche matin, on aime dormir.",
+      "defend": "Mais on n'a pas besoin de beaucoup de temps : quelques heures par semaine ou par mois suffisent. Et l'horaire est souvent flexible. Bien que ce soit tôt, on est libre après et on se sent fier de sa journée. Ce n'est pas du temps perdu, c'est du temps bien utilisé.",
+      "solve": "Si tu es trop pris, on pourrait commencer par un seul rendez-vous pour tester. Ensuite, on choisirait le meilleur moment pour toi."
+    },
+    {
+      "id": "environment-animals-3",
+      "label": "Danger, injuries and emergencies",
+      "examiner": "C’est dangereux et très risqué.",
+      "alsoAskedAs": [
+        "Il faut toujours être prudent.",
+        "S’il y a une urgence on est loin de tout.",
+        "J’ai peur de me blesser avec des objets dangereux.",
+        "J’ai peur de me blesser.",
+        "C’est dangereux de faire du vélo sur les routes.",
+        "C’est dangereux s’il y a une tempête."
+      ],
+      "acknowledge": "C'est vrai, la sécurité est la première chose à vérifier, et je comprends ton inquiétude.",
+      "defend": "Mais ces activités sont très encadrées. Il y a des guides, des règles strictes et du matériel de protection, comme des gants ou un casque. Bien sûr, le risque zéro n'existe pas, mais les accidents restent rares. Et en cas de problème, il y a toujours un plan d'urgence et un téléphone.",
+      "solve": "Si tu veux être rassuré, on pourrait demander les consignes de sécurité avant de s'inscrire. Et on choisirait un parcours ou un modèle plus simple."
+    },
+    {
+      "id": "environment-animals-4",
+      "label": "Fear of wild animals and respect for nature",
+      "examiner": "J’ai peur des animaux sauvages.",
+      "alsoAskedAs": [
+        "Les hurlements du loup m’inquiètent.",
+        "On ne doit pas déranger les animaux sauvages dans leur milieu d’habitation.",
+        "Je ne peux pas me détendre en sachant que je suis entouré(e) des prédateurs.",
+        "Les hommes ne doivent pas domestiquer les animaux sauvages."
+      ],
+      "acknowledge": "Je comprends, avoir peur des animaux sauvages, ce n'est pas facile à contrôler.",
+      "defend": "Mais ces expériences sont organisées par des spécialistes qui respectent les animaux et leur milieu. On reste à distance, et on suit des règles précises. En plus, c'est une occasion unique d'apprendre à mieux comprendre et protéger ces animaux. On ne les dérange pas, on les observe.",
+      "solve": "Si ça t'inquiète encore, on pourrait d'abord visiter un parc ou regarder un documentaire. Comme ça, tu serais plus à l'aise avant de te décider."
+    },
+    {
+      "id": "environment-animals-5",
+      "label": "Physical effort, weather and comfort outdoors",
+      "examiner": "Ce sera fatigant : je préfère me reposer pendant mes jours de congé.",
+      "alsoAskedAs": [
+        "Les vacances dans la forêt ce n’est pas confortable.",
+        "C’est un travail qui demande de se déplacer constamment.",
+        "Jardiner, c’est très fatigant.",
+        "Et s’il fait mauvais, ça va être difficile ! Et s’il fait trop chaud, ça va être insupportable !",
+        "Je n’aime pas marcher, ca me fatique vite.",
+        "Si la météo est mauvaise, je risque de tomber malade.",
+        "Ce défi demande de bien s’entraîner."
+      ],
+      "acknowledge": "Je comprends, on n'a pas toujours envie de se fatiguer ou d'avoir froid, surtout pendant ses jours de congé.",
+      "defend": "Mais on va à son rythme, et on peut faire des pauses. Avec de bons vêtements, la pluie ou la chaleur ne sont plus un problème. Bien que ce soit un peu fatigant, on se sent mieux après et on dort mieux. Et il n'est pas nécessaire d'être un athlète.",
+      "solve": "Pour te préparer, on pourrait marcher ou rouler un peu chaque semaine avant la date. Et si la météo est trop mauvaise, on la reporterait."
+    },
+    {
+      "id": "environment-animals-6",
+      "label": "Gardening: no talent, no space or sun, don't eat vegetables",
+      "examiner": "Je n’ai pas de jardin car j’habite en appartement.",
+      "alsoAskedAs": [
+        "J’ai déjà essayé et je ne suis pas doué(e) avec les plantes.",
+        "Je ne mange pas beaucoup de fruits et légumes.",
+        "Je n’ai pas beaucoup de place chez moi pour des plantes.",
+        "C’est salissant.",
+        "Il n’y a pas beaucoup de soleil là où j’habite.",
+        "Je peux regarder des vidéos sur internet pour apprendre.",
+        "Je ne cuisine pas beaucoup et j’adore manger en extérieur"
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, ce n'est pas simple quand on habite en appartement ou qu'on n'a pas la main verte.",
+      "defend": "Mais on n'a pas besoin d'un grand jardin : un balcon ou une fenêtre suffit pour cultiver des herbes ou des tomates. Il existe même des plantes qui aiment l'ombre. En plus, un cours permet de vraiment apprendre, ce qu'une vidéo ne remplace pas. Et le jardinage, ça détend et ça fait manger plus sainement.",
+      "solve": "Si tu as peur d'échouer, on pourrait commencer avec quelques plantes faciles. Ainsi, tu verrais vite les premiers résultats."
+    },
+    {
+      "id": "environment-animals-7",
+      "label": "Skills, training and answering requests",
+      "examiner": "Je sais jardiner mais je n’ai aucune formation dans ce domaine.",
+      "alsoAskedAs": [
+        "Je ne suis pas sûr(e) de savoir répondre à toutes les demandes.",
+        "Il faut savoir s’adapter aux saisons.",
+        "Je ne saurai pas animer des réunions comme celles-ci.",
+        "Je ne suis pas très doué(e) en informatique, je ne saurai pas poster d’annonces.",
+        "Je ne suis pas bricoleur, l’installation a l’air compliquée."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent ni de faire une erreur.",
+      "defend": "Pourtant, l'expérience compte plus que le diplôme. On apprend très vite en pratiquant, et il y a souvent une petite formation ou des explications pas à pas. Si une demande est trop difficile, on peut la refuser ou demander de l'aide. Et un installateur peut s'occuper de la partie technique.",
+      "solve": "Si tu veux te sentir prêt, on pourrait essayer ensemble les premières étapes. Après, tu pourrais continuer tout seul."
+    },
+    {
+      "id": "environment-animals-8",
+      "label": "It won't change anything: unrealistic, pollution has other causes",
+      "examiner": "Une ville sans voiture, ce n’est pas réaliste.",
+      "alsoAskedAs": [
+        "Les transports en commun sont déjà saturés.",
+        "La pollution ne provient pas uniquement des voitures.",
+        "Ça ne sert à rien de nettoyer les sentiers, il y a sans arrêt des déchets jetés par les gens.",
+        "Les déchets qu’on va ramasser ne seront pas recyclés.",
+        "Je crains que les bénéfices n’aillent pas vraiment à l’organisme."
+      ],
+      "acknowledge": "C'est vrai, un seul geste ne règle pas tout, et je comprends que tu doutes de son utilité.",
+      "defend": "Mais chaque action compte, surtout quand beaucoup de gens s'y mettent. Un sentier propre reste propre plusieurs semaines, et d'autres personnes suivent le bon exemple. Même si ce n'est pas parfait, on avance étape par étape. Et les organismes sérieux publient ce qu'ils font de l'argent ou des déchets.",
+      "solve": "Si tu veux voir des résultats concrets, on pourrait regarder les bilans de l'association. Ensuite, tu déciderais si ça vaut la peine."
+    },
+    {
+      "id": "environment-animals-9",
+      "label": "It's not my job: the State should do it",
+      "examiner": "C’est l’État qui devrait prendre en charge ce type d’action.",
+      "alsoAskedAs": [
+        "Il faudrait d’abord augmenter les pistes cyclables !",
+        "Ce n’est pas moi qui ai pollué ces sentiers, ce n’est pas à moi de ramasser.",
+        "C’est au gouvernement de financer la lutte pour l’environnement"
+      ],
+      "acknowledge": "Je comprends, ce n'est pas toi qui as créé le problème, et l'État a aussi un rôle à jouer.",
+      "defend": "Mais on ne peut pas toujours attendre que les autres agissent. Pendant que les gouvernements réfléchissent, chacun peut faire sa part, et ça donne l'exemple. Ce n'est pas une question de faute, mais de solution. En plus, ces initiatives poussent les autorités à agir plus vite.",
+      "solve": "Alors on pourrait participer une fois, puis écrire à la mairie pour demander plus d'aide. Comme ça, on ferait les deux."
+    },
+    {
+      "id": "environment-animals-10",
+      "label": "Not what I want: preferences, boredom and going alone",
+      "examiner": "Distribuer et collecter, c’est répétitif et ennuyeux.",
+      "alsoAskedAs": [
+        "Je n’aurai plus envie de jardiner pour moi-même !",
+        "Je préfèrerais jardiner pour les espaces verts publics.",
+        "Je ne serai pas à l’aise car j’utilise beaucoup ma voiture.",
+        "Je ne connais personne dans cette association, j’ai peur de rester seul dans mon coin.",
+        "J’ai peur de ne pas trouver d’autres personnes pour faire partie de mon équipe."
+      ],
+      "acknowledge": "Je comprends, on veut une activité qui nous plaît et où on se sent bien.",
+      "defend": "Mais on peut choisir la tâche qui nous convient, alors ce n'est pas forcément répétitif. Et si tu utilises beaucoup ta voiture, ce sera l'occasion de changer doucement tes habitudes. Quant à connaître du monde, tout le monde est dans la même situation au début. On rencontre vite des gens sympathiques.",
+      "solve": "Et si tu as peur de te sentir seul, on pourrait y aller ensemble. Comme ça, on serait déjà deux à se connaître."
+    },
+    {
+      "id": "environment-animals-11",
+      "label": "Online selling: quality, privacy and trust",
+      "examiner": "Je n’ai aucune garantie sur la qualité des objets mis en vente.",
+      "alsoAskedAs": [
+        "J’aime bien voir les objets que j’achète.",
+        "Je n’aime pas donner mes coordonnées à des inconnus."
+      ],
+      "acknowledge": "C'est vrai, on veut voir ce qu'on achète et protéger ses informations.",
+      "defend": "Mais on peut demander des photos, poser des questions au vendeur et lire les avis avant d'acheter. Pour les coordonnées, on peut communiquer par la messagerie du site, sans donner son numéro. Et si un objet ne correspond pas, on ne l'achète pas. Rien n'oblige à acheter.",
+      "solve": "Pour être plus tranquille, on pourrait rencontrer le vendeur dans un lieu public. Ainsi, on vérifierait l'objet avant de payer."
+    },
+    {
+      "id": "environment-animals-12",
+      "label": "Online selling: pick-up, haggling, overspending, other ways",
+      "examiner": "Il faut sûrement aller chercher ses achats chez le particulier.",
+      "alsoAskedAs": [
+        "Je n’aime pas négocier les prix.",
+        "Je vais vouloir acheter des choses dont je n’ai pas besoin.",
+        "Il y a d’autres manières pour revendre ses affaires (brocantes)."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas toujours pratique, surtout si on n'aime pas négocier.",
+      "defend": "Mais beaucoup de vendeurs affichent un prix fixe, et certains livrent. Pour ce qui est de la brocante, elle demande de se lever tôt et d'y passer la journée, alors que le site est ouvert en tout temps. Et si tu as peur de trop dépenser, tu peux te fixer un budget.",
+      "solve": "Si tu veux limiter les tentations, on pourrait chercher seulement ce dont tu as besoin. Et on garderait la brocante pour le plaisir."
+    },
+    {
+      "id": "environment-animals-13",
+      "label": "Wind turbine: wind, noise, looks, permit and output",
+      "examiner": "Ça va faire du bruit, les voisins ne vont pas aimer.",
+      "alsoAskedAs": [
+        "Il n’y a pas assez de vent là où j’habite.",
+        "C’est moche, ça va défigurer ma maison.",
+        "Il faut sûrement l’autorisation de la mairie.",
+        "Ça ne produira jamais assez d’électricité pour toute la maison.",
+        "Autant mettre des panneaux solaires, c’est plus simple."
+      ],
+      "acknowledge": "Je comprends que tu te poses des questions pratiques, et que tu veuilles rester bien avec tes voisins.",
+      "defend": "Mais les modèles récents sont silencieux et discrets, et on peut choisir leur emplacement. Avant d'acheter, un spécialiste mesure le vent. Pour l'autorisation, la mairie explique les démarches. Bien qu'une éolienne ne couvre pas tout, elle réduit la facture, et on peut la combiner avec des panneaux solaires.",
+      "solve": "Pour éviter les surprises, on pourrait demander une étude gratuite et en parler d'abord avec les voisins. Ainsi, tout le monde serait informé."
+    }
+  ],
+  "food-cooking": [
+    {
+      "id": "food-cooking-1",
+      "label": "Cost — too expensive",
+      "examiner": "Ce service doit coûter très cher.",
+      "alsoAskedAs": [
+        "Faire venir un chef pour cuisiner, c’est forcément plus cher.",
+        "C’est sûrement un restaurant plus cher qu’un restaurant traditionnel.",
+        "Ce service est sûrement cher, même avec le rabais.",
+        "Ces services reviennent très cher au final."
+      ],
+      "acknowledge": "Je comprends que le prix t'inquiète, c'est normal de vérifier son budget avant de s'engager.",
+      "defend": "Mais quand on compare bien, ce n'est pas si cher. D'abord, tout est compris : pas de courses, pas de préparation, pas de vaisselle. Ensuite, on peut choisir une formule qui corresponde à notre budget.",
+      "solve": "Et si le prix te semble encore trop élevé, on pourrait demander un devis ou commencer par la plus petite offre. Comme ça, on ne prend aucun risque."
+    },
+    {
+      "id": "food-cooking-2",
+      "label": "A better alternative exists (restaurant, friends, charity)",
+      "examiner": "Autant inviter tout le monde au restaurant.",
+      "alsoAskedAs": [
+        "C’est plus sympathique de cuisiner pour ses amis.",
+        "Ce serait plus intéressant de cuisiner pour une association caritative."
+      ],
+      "acknowledge": "C'est vrai, il existe d'autres solutions intéressantes, et je comprends ton point de vue.",
+      "defend": "Mais celle-ci offre une expérience différente. Au restaurant, l'ambiance est bruyante et le menu est fixe, tandis qu'ici tout est plus chaleureux et personnalisé. En plus, on crée de vrais liens avec les gens, et ça, c'est précieux.",
+      "solve": "Et pourquoi ne pas faire les deux ? On essaie celle-ci d'abord, puis on organise autre chose plus tard, pour que tout le monde soit content."
+    },
+    {
+      "id": "food-cooking-3",
+      "label": "Trust in the provider / quality / hygiene",
+      "examiner": "Je n’ai jamais entendu parler de ce chef.",
+      "alsoAskedAs": [
+        "Les Chefs sérieux ne proposent pas ce genre de prestation.",
+        "Je ne connais pas la qualité des produits cuisinés.",
+        "J’ai peur que les normes d’hygiène ne soient pas respectées.",
+        "Les insectes sont élevés dans des conditions douteuses."
+      ],
+      "acknowledge": "Je comprends que tu veuilles être sûr de la qualité avant de faire confiance, c'est important.",
+      "defend": "Mais ces services sont souvent très encadrés et ils ont de bons avis en ligne. Les professionnels respectent des règles d'hygiène strictes, car leur réputation en dépend. De plus, beaucoup affichent l'origine de leurs produits.",
+      "solve": "Si tu as encore un doute, on pourrait lire les commentaires des clients et demander les certifications avant de réserver. Comme ça, tu serais rassuré."
+    },
+    {
+      "id": "food-cooking-4",
+      "label": "Space, equipment and tableware",
+      "examiner": "Le Chef n’arrivera pas à travailler dans ma petite cuisine.",
+      "alsoAskedAs": [
+        "L’espace de travail dans ma cuisine est vraiment petit.",
+        "Je n’ai pas les ustensiles pour faire de la cuisine gastronomique.",
+        "Je n’ai pas assez de vaisselle de qualité chez moi.",
+        "Je n’ai pas de vaisselle pour tout le monde.",
+        "Mon appartement est vraiment petit pour recevoir.",
+        "Ma cuisine n’est pas bien équipée."
+      ],
+      "acknowledge": "Ouais, je vois ce que tu veux dire, un petit espace ou peu de matériel, ça peut sembler un problème.",
+      "defend": "Mais en réalité, on n'a pas besoin de beaucoup. Un professionnel apporte souvent ses propres outils et sait s'adapter à une petite cuisine. Et si c'est toi qui reçois, quelques plats simples suffisent, car les invités cherchent surtout une ambiance conviviale.",
+      "solve": "Pour être tranquille, on pourrait tout vérifier à l'avance avec l'organisateur, ou utiliser de la belle vaisselle jetable."
+    },
+    {
+      "id": "food-cooking-5",
+      "label": "Time, effort and organisation (shopping, cleaning, serving)",
+      "examiner": "Je n’ai pas beaucoup de temps.",
+      "alsoAskedAs": [
+        "Il faut être très bien organisés entre participants.",
+        "C’est beaucoup d’organisation.",
+        "Je devrai faire les courses pour le repas.",
+        "Je n’ai pas d’ingrédients exotiques dans mes placards.",
+        "Je devrai laver la vaisselle après la fête.",
+        "Je devrai m’occuper du service pendant le repas."
+      ],
+      "acknowledge": "Honnêtement, je te comprends, on manque tous de temps et on n'a pas envie de se compliquer la vie.",
+      "defend": "Mais c'est justement fait pour simplifier les choses. Tout est déjà organisé : le menu est choisi, la date est fixée, et souvent les courses, le service et le nettoyage sont pris en charge. Toi, tu n'as qu'à profiter du moment.",
+      "solve": "Et si tu es vraiment occupé, on pourrait participer seulement quelques heures ou choisir la formule tout compris. Comme ça, ça ne prendrait presque pas de temps."
+    },
+    {
+      "id": "food-cooking-6",
+      "label": "I can't cook well / for many people / away from home",
+      "examiner": "Je ne cuisine pas très bien.",
+      "alsoAskedAs": [
+        "Il faut trouver des recettes faciles à faire.",
+        "C’est difficile de cuisiner quand on n’est pas chez soi !",
+        "Je ne sais pas cuisiner pour beaucoup de personnes.",
+        "Il va falloir que je cherche de bonnes recettes et que je m’entraîne."
+      ],
+      "acknowledge": "Non, je comprends, on a parfois peur de ne pas être assez bon en cuisine.",
+      "defend": "Pourtant, personne ne s'attend à un repas de chef. Le but, c'est de partager et d'apprendre, quel que soit le niveau. De plus, on n'est jamais seul : chacun aide, et les plus expérimentés guident les autres. On peut aussi choisir des recettes simples qu'on connaît déjà.",
+      "solve": "Si jamais tu es stressé, tu pourrais préparer un plat facile que tu maîtrises. Ainsi, tu te sentirais à l'aise et tu progresserais peu à peu."
+    },
+    {
+      "id": "food-cooking-7",
+      "label": "Tastes: guests won't like it / I prefer something else",
+      "examiner": "Je ne pense pas que les autres participants apprécient mes plats.",
+      "alsoAskedAs": [
+        "Je ne connais pas les goûts des autres participants.",
+        "Mes amis ont des goûts culinaires très différents.",
+        "Les voyageurs ne vont peut-être pas aimer mes plats.",
+        "Je préfère la cuisine traditionnelle à la cuisine exotique."
+      ],
+      "acknowledge": "C'est vrai, il est difficile de savoir si ça plaira à tout le monde.",
+      "defend": "Mais les gens sont souvent curieux, et l'important, c'est de partager, pas d'être parfait. De plus, on peut adapter le menu aux goûts de chacun, que ce soit avec des plats traditionnels, végétariens ou sans gluten.",
+      "solve": "Pour éviter les mauvaises surprises, on pourrait poser quelques questions aux invités avant, puis proposer un plat simple que tout le monde aime."
+    },
+    {
+      "id": "food-cooking-8",
+      "label": "Uncomfortable with strangers / language barrier",
+      "examiner": "Je ne suis pas sûr(e) de m’entendre avec les autres participants.",
+      "alsoAskedAs": [
+        "Je ne parle pas de langues étrangères.",
+        "Je risque de tomber sur des touristes peu sympathiques.",
+        "L’idée d’inviter chez moi des inconnus me met mal à l’aise."
+      ],
+      "acknowledge": "Je comprends, rencontrer des inconnus peut mettre mal à l'aise au début.",
+      "defend": "Mais les gens qui participent ont déjà un intérêt en commun avec nous, donc la conversation vient naturellement. Même si on ne parle pas la même langue, un sourire et une application de traduction suffisent.",
+      "solve": "Si ça ne se passe pas bien, ce ne sont que quelques heures. Et on peut lire les avis avant de choisir, pour tomber sur des gens qui nous ressemblent."
+    },
+    {
+      "id": "food-cooking-9",
+      "label": "No lasting bonds / friends won't want to come",
+      "examiner": "Ça ne crée pas de relations durables.",
+      "alsoAskedAs": [
+        "Aucun autre ami ne voudra venir avec nous dans ce restaurant."
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, on aimerait que ça dure et que tout le monde soit partant.",
+      "defend": "Mais même une seule soirée peut laisser un très bon souvenir, et on garde parfois contact ensuite. Quant à nos amis, ils hésitent souvent au début, mais si on leur montre des photos et qu'on leur explique l'idée, beaucoup changent d'avis.",
+      "solve": "Si personne ne veut venir, on pourrait essayer à deux. Ensuite, on raconterait notre expérience aux autres pour les convaincre."
+    },
+    {
+      "id": "food-cooking-10",
+      "label": "Privacy / not feeling at home",
+      "examiner": "Je vais me sentir gêné(e) si quelqu’un travaille dans ma cuisine.",
+      "alsoAskedAs": [
+        "Je ne sentirai plus chez moi.",
+        "On ne pourra pas parler librement entre nous."
+      ],
+      "acknowledge": "Ouais, je comprends, on veut se sentir chez soi, surtout dans sa cuisine.",
+      "defend": "Mais un professionnel est discret. Il est là pour cuisiner, pas pour envahir ton espace ni participer à vos conversations. Pendant qu'il travaille, tu peux rester au salon avec tes invités et parler librement.",
+      "solve": "Et si tu te sens gêné, tu pourrais lui demander de travailler en retrait. Un simple mot suffit."
+    },
+    {
+      "id": "food-cooking-11",
+      "label": "Portions, waste and variety",
+      "examiner": "Je ne suis pas sûr(e) de pouvoir terminer mon assiette.",
+      "alsoAskedAs": [
+        "Il n’y a pas grand-chose à manger, j’aurais encore faim.",
+        "Je ne réussirai pas à utiliser tous les repas auxquels j’ai droit.",
+        "J’ai peur de toujours manger la même chose."
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, on n'aime pas gaspiller, ni rester sur sa faim.",
+      "defend": "Mais c'est facile à ajuster. On peut demander une petite ou une grande portion, ou partager un plat. En plus, le menu change souvent, donc tu ne manges jamais la même chose. Et les restes se congèlent ou se réchauffent le lendemain.",
+      "solve": "Si tu as encore faim, on pourrait prendre un dessert ou une entrée à partager. Et si tu ne finis pas, on demande une boîte pour emporter."
+    },
+    {
+      "id": "food-cooking-12",
+      "label": "Health: fatty, salty, nutritional value",
+      "examiner": "Ces repas contiennent souvent trop de sel et de gras.",
+      "alsoAskedAs": [
+        "Ce surtout de la friture, grasse et salée.",
+        "Je ne connais pas la valeur nutritive de cette alimentation.",
+        "On se dirige vers une société de la malbouffe."
+      ],
+      "acknowledge": "Je comprends, on doit faire attention à ce qu'on mange, surtout quand c'est gras ou salé.",
+      "defend": "Mais on peut très bien manger équilibré. Beaucoup de services proposent des options légères, comme des salades, du poisson ou des plats végétariens, et affichent la valeur nutritive. Les ingrédients sont souvent frais et locaux, donc c'est plus sain qu'on ne le pense.",
+      "solve": "Pour être sûrs, on pourrait regarder la carte ou les étiquettes avant de choisir. Comme ça, tu prendrais un plat qui te convient."
+    },
+    {
+      "id": "food-cooking-13",
+      "label": "Trend, ethics and ecology",
+      "examiner": "Il y a suffisamment de nourriture sur Terre pour tout le monde.",
+      "alsoAskedAs": [
+        "C’est un phénomène de mode, pas une tendance durable.",
+        "Il vaudrait mieux que tout le monde devienne végétarien.",
+        "Ce service n’est pas écologique (livraison, repas dans des boîtes en carton)."
+      ],
+      "acknowledge": "C'est vrai, ce sont des questions importantes, et je comprends ton inquiétude.",
+      "defend": "Mais avant de juger, il faut essayer. Même si c'est à la mode, ça répond à de vrais besoins : moins d'eau, moins de gaz à effet de serre, des emballages recyclables et des produits locaux. Et comme tout le monde n'est pas prêt à devenir végétarien, il y a aussi des options pour tous.",
+      "solve": "Et de toute façon, un essai ne coûte rien : si ça ne te convainc pas, on ne recommencera pas."
+    },
+    {
+      "id": "food-cooking-14",
+      "label": "Waiting times and delivery hours",
+      "examiner": "Les délais d’attente sont souvent longs quand on commande.",
+      "alsoAskedAs": [
+        "Les heures de livraison sont trop limitées."
+      ],
+      "acknowledge": "Non, je comprends, personne n'aime attendre, surtout quand on a faim ou qu'on finit tard.",
+      "defend": "Mais on peut bien s'organiser. On réserve à l'avance, on choisit un créneau qui nous convient, et on suit la commande en temps réel. En plus, on peut souvent changer l'heure à la dernière minute.",
+      "solve": "Et si personne n'est à la maison, la livraison peut être laissée chez un voisin ou dans un point relais. Sinon, on passe la chercher nous-mêmes."
+    }
+  ],
+  "health-wellbeing": [
+    {
+      "id": "health-wellbeing-1",
+      "label": "Cost",
+      "examiner": "Ça doit coûter cher.",
+      "alsoAskedAs": [
+        "Je vais devoir faire des dépenses supplémentaires (litière, nourriture).",
+        "Ça doit être cher.",
+        "Ce genre de séjour coûte cher.",
+        "Ça doit couter cher."
+      ],
+      "acknowledge": "Je comprends que le budget compte, surtout quand il y a des dépenses en plus.",
+      "defend": "Mais on doit voir ça comme un investissement pour notre bien-être. Si on compare avec le prix de médicaments ou de vacances classiques, ce n'est pas si cher. Et les bénéfices, comme moins de stress ou une meilleure santé, valent largement le coût.",
+      "solve": "Pour limiter la dépense, on pourrait comparer les formules et choisir la moins chère. Et de toute façon, on peut commencer avec un essai court."
+    },
+    {
+      "id": "health-wellbeing-2",
+      "label": "Other solutions already exist",
+      "examiner": "Il y a d’autres manières pour se détendre (yoga, sorties).",
+      "alsoAskedAs": [
+        "C’est plus profitable d’aller voir un psychologue !",
+        "Certaines pharmacies font des promotions également.",
+        "C’est de la concurrence déloyale vis à vis des pharmaciens.",
+        "Je peux aussi me déconnecter chez moi, c’est moins coûteux.",
+        "Je préfère aller à l’hôtel.",
+        "Mon médecin me l’aurait dit, si j’avais des soucis de santé.",
+        "On devrait plutôt changer le comportement de l’industrie agroalimentaire."
+      ],
+      "acknowledge": "C'est vrai, il existe d'autres solutions, et elles peuvent aussi fonctionner.",
+      "defend": "Mais cette option apporte quelque chose de plus. Elle est plus concrète et plus adaptée que ce qu'on ferait seul. En plus, rien n'empêche de la combiner avec d'autres activités, comme le yoga ou les sorties, ou avec l'avis du médecin.",
+      "solve": "Alors on pourrait l'essayer un moment, puis comparer les résultats. Si ça ne te convient pas, tu pourras toujours revenir à ta méthode habituelle."
+    },
+    {
+      "id": "health-wellbeing-3",
+      "label": "Doubt it will work / I don't want rules",
+      "examiner": "Les régimes imposés, ça ne marche jamais.",
+      "alsoAskedAs": [
+        "Je ne pense pas que le théâtre va m’aider à ne plus être timide.",
+        "Je ne comprends pas comment un atelier de théâtre va m’enlever du stress au travail.",
+        "C’est trop court pour pouvoir changer mes habitudes.",
+        "Je suis assez difficile, c’est pour ça que je mange mal.",
+        "Je n’ai pas envie de suivre un programme à la lettre.",
+        "Je ne souhaite pas que l’on m’impose de faire du sport.",
+        "Une fois le programme terminé, je reprendrai mes mauvaises habitudes."
+      ],
+      "acknowledge": "Je comprends que tu aies des doutes, beaucoup de méthodes promettent des miracles.",
+      "defend": "Mais ici, il ne s'agit pas d'une règle stricte. Le programme s'adapte à ton rythme, à tes goûts et à ta situation, et on ne t'oblige à rien. Bien sûr, les changements demandent du temps, mais de petites habitudes peuvent durer si on continue après la fin.",
+      "solve": "Si tu as peur de retomber dans tes vieilles habitudes, on pourrait se fixer des objectifs simples et se soutenir. Ainsi, on ferait des progrès pas à pas."
+    },
+    {
+      "id": "health-wellbeing-4",
+      "label": "Pet care: responsibility, cost, cleaning, holidays, character",
+      "examiner": "Je ne me suis jamais occupé d’un animal.",
+      "alsoAskedAs": [
+        "Il faudra aller régulièrement chez le vétérinaire.",
+        "J’ai peur qu’il s’ennuie toute la journée chez moi.",
+        "Je ne pourrai plus partir en vacances.",
+        "Il faut faire plus souvent le ménage car les chats perdent leurs poils.",
+        "Le chat voudra dormir dans mon lit.",
+        "Certains chats demandent beaucoup d’attention.",
+        "Certains chats n’ont pas bon caractère."
+      ],
+      "acknowledge": "Ouais, je vois ce que tu veux dire, un animal, c'est de la responsabilité au quotidien.",
+      "defend": "Mais c'est plus simple qu'on ne le pense. Les chats sont assez indépendants, et on apprend vite. Les dépenses, le ménage et les visites chez le vétérinaire restent raisonnables. En plus, un chat apporte de la douceur et aide vraiment à se détendre, même s'il a parfois son caractère.",
+      "solve": "Et si tu veux partir en vacances, on pourrait demander à un ami ou à un voisin de s'en occuper. On pourrait aussi commencer par une adoption temporaire pour tester."
+    },
+    {
+      "id": "health-wellbeing-5",
+      "label": "Time and tiredness",
+      "examiner": "Les séances sont trop longues, ça va être épuisant.",
+      "alsoAskedAs": [
+        "Je n’ai pas le temps."
+      ],
+      "acknowledge": "Honnêtement, je comprends, le temps et l'énergie, c'est précieux.",
+      "defend": "Mais on peut choisir des séances courtes qui s'intègrent facilement dans une semaine chargée. En plus, on repart souvent plus détendu et plus énergique qu'avant. Ce n'est pas du temps perdu, c'est du temps pour soi.",
+      "solve": "Si c'est trop long, on pourrait commencer par une séance par semaine ou par un week-end seulement. Ensuite, on verrait comment ajuster."
+    },
+    {
+      "id": "health-wellbeing-6",
+      "label": "Ordering online: safety, delivery, prescriptions, insurance",
+      "examiner": "Je n’aime pas tellement faire des achats en ligne, ce n’est pas sûr.",
+      "alsoAskedAs": [
+        "Il y a un délai d’attente à cause de la livraison.",
+        "Je ne pourrai pas acheter les médicaments soumis à une prescription médicale.",
+        "Je ne sais pas si mon assurance et/ou ma mutuelle me remboursera.",
+        "On ne connaît pas l’origine des médicaments."
+      ],
+      "acknowledge": "C'est vrai, acheter en ligne, ça peut faire peur quand il s'agit de santé.",
+      "defend": "Mais les sites sérieux sont autorisés et contrôlés, comme les pharmacies classiques. Les paiements sont sécurisés, et on peut vérifier l'origine des produits. Pour la livraison, il suffit de commander un peu à l'avance, et les médicaments sur ordonnance restent possibles avec une prescription.",
+      "solve": "Pour être tranquille, on pourrait vérifier que le site est agréé et lire les avis. Et on garderait la pharmacie du quartier pour les urgences."
+    },
+    {
+      "id": "health-wellbeing-7",
+      "label": "Losing the pharmacist's advice / self-medication",
+      "examiner": "Je ne bénéficierai plus des conseils de mon pharmacien.",
+      "alsoAskedAs": [
+        "J’ai peur de me tromper dans le nom des médicaments.",
+        "Ça pousse à l’automédication, c’est dangereux."
+      ],
+      "acknowledge": "Je comprends, les conseils du pharmacien sont vraiment précieux.",
+      "defend": "Mais beaucoup de sites proposent un conseil par chat ou par téléphone, avec de vrais pharmaciens. Les noms des médicaments sont bien indiqués, avec une notice. Quant à l'automédication, elle existe déjà, et elle n'est pas pire en ligne, à condition d'être prudent.",
+      "solve": "Si jamais tu as un doute, on pourrait poser la question au pharmacien avant de commander. Ainsi, on garderait le meilleur des deux."
+    },
+    {
+      "id": "health-wellbeing-8",
+      "label": "Being cut off: emergencies, loved ones, phone, sharing memories",
+      "examiner": "Je ne serai pas joignable s’il y a une urgence (travail, famille).",
+      "alsoAskedAs": [
+        "Je penserai tout le temps à mon portable, à mes messages.",
+        "Mes proches vont s’inquiéter si je ne réponds pas.",
+        "Si j’ai un accident sur place, comment prévenir ?",
+        "Je ne pourrai pas partager mes souvenirs de vacances en ligne !",
+        "Une fois rentré(e), je passerai plus de temps à lire mes nouveaux messages.",
+        "J’ai besoin d’internet pour rester en contact avec mes proches."
+      ],
+      "acknowledge": "Je comprends, être joignable, c'est rassurant pour tout le monde.",
+      "defend": "Mais on peut prévenir sa famille et son travail à l'avance, et laisser le numéro du lieu pour les urgences. Ne pas répondre pendant quelques jours n'est pas grave, et les messages seront encore là au retour. Et on pourra partager nos photos après.",
+      "solve": "Et si ça te stresse trop, on pourrait garder le téléphone éteint dans la chambre, seulement pour les urgences. Comme ça, tu serais tranquille sans être coupé de tout."
+    },
+    {
+      "id": "health-wellbeing-9",
+      "label": "Boredom, comfort and fear of nature",
+      "examiner": "Je vais m’ennuyer.",
+      "alsoAskedAs": [
+        "Je risque de m’ennuyer toute la journée à la plage.",
+        "Je suis claustrophobe.",
+        "Il va faire froid.",
+        "Il y a des insectes.",
+        "Ce n’est pas confortable.",
+        "J’ai peur des animaux sauvages."
+      ],
+      "acknowledge": "Je comprends, on a peur de s'ennuyer ou de ne pas être à l'aise.",
+      "defend": "Mais on sous-estime le plaisir de ne rien faire : on lit, on se promène, on regarde les étoiles. Le confort est souvent meilleur qu'on ne l'imagine. Et il y a très peu de risques avec les animaux ou les insectes, parce que les lieux sont pensés pour ça.",
+      "solve": "Si tu as peur d'avoir froid ou de t'ennuyer, on pourrait apporter des vêtements chauds, des livres et des jeux. Comme ça, on serait bien préparés."
+    },
+    {
+      "id": "health-wellbeing-10",
+      "label": "Fear of judgement and of performing",
+      "examiner": "J’ai peur que les autres participants se moquent de moi.",
+      "alsoAskedAs": [
+        "Je n’ai jamais fait de théâtre, je suis mauvais (e) comédien (ne).",
+        "J’ai du mal à retenir les textes.",
+        "J’ai peur que cet atelier ressemble à une séance de thérapie collective.",
+        "Je serai stressé(e) de jouer devant un public."
+      ],
+      "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on se sent timide.",
+      "defend": "Mais personne ne se moque de personne dans ce genre d'atelier. Tout le monde est débutant, et chacun a ses peurs. Le groupe est là pour t'aider, pas pour te juger. On avance petit à petit, avec des exercices simples, et on n'est pas obligé de jouer devant un public au début.",
+      "solve": "Si tu es trop stressé, on pourrait aller à la première séance ensemble, juste pour observer. Après, tu déciderais si tu veux continuer."
+    },
+    {
+      "id": "health-wellbeing-11",
+      "label": "Credibility and commercial motives",
+      "examiner": "C’est pour faire vendre des produits sponsorisés.",
+      "alsoAskedAs": [
+        "N’importe qui peut s’improviser nutritionniste."
+      ],
+      "acknowledge": "C'est vrai, il faut se méfier de ceux qui veulent seulement vendre quelque chose.",
+      "defend": "Mais on peut vérifier facilement les diplômes et les avis. Les vrais professionnels sont diplômés et transparents. Et un programme sérieux n'oblige pas à acheter des produits.",
+      "solve": "Avant de s'inscrire, on pourrait regarder les qualifications et demander une consultation gratuite. Comme ça, on saurait à qui on a affaire."
+    }
+  ],
+  "sports-outdoor": [
+    {
+      "id": "sports-outdoor-1",
+      "label": "Cost and extra fees",
+      "examiner": "C’est sûrement hors de prix.",
+      "alsoAskedAs": [
+        "Le transport, le logement et la nourriture sont à prévoir.",
+        "Ça doit couter cher.",
+        "Ça doit couter cher.",
+        "Cela doit coûter plus cher qu’une salle de sport traditionnelle.",
+        "Il y aura beaucoup de frais à prévoir, ça coûtera cher !",
+        "C’est une activité onéreuse."
+      ],
+      "acknowledge": "Je comprends que le budget te préoccupe, surtout avec le transport, le logement et les repas en plus.",
+      "defend": "Mais quand on fait le calcul, le prix est souvent raisonnable pour tout ce qui est proposé : l'encadrement, le matériel, parfois même l'hébergement. Et puis, c'est une expérience qu'on n'oublie pas, donc ça vaut bien un petit effort financier.",
+      "solve": "Pour limiter les frais, on pourrait s'inscrire en avance, voyager à plusieurs et apporter nos propres repas. Comme ça, on dépenserait beaucoup moins."
+    },
+    {
+      "id": "sports-outdoor-2",
+      "label": "Danger / risk of accidents",
+      "examiner": "Certains sports proposés sont dangereux.",
+      "alsoAskedAs": [
+        "J’ai peur que le traîneau tombe.",
+        "J’ai peur d’atterrir dans l’eau ou dans un arbre.",
+        "L’équitation, c’est un sport dangereux.",
+        "Malgré toutes les sécurités, ça reste dangereux."
+      ],
+      "acknowledge": "C'est vrai, la sécurité, c'est la première chose à vérifier avant de se lancer.",
+      "defend": "Mais ces activités sont très encadrées. Les moniteurs sont diplômés, le matériel est contrôlé régulièrement et on suit des consignes strictes. Bien que le risque zéro n'existe pas, les accidents sont rares.",
+      "solve": "Si tu veux être rassuré, on pourrait demander les diplômes des moniteurs et les règles de sécurité avant de réserver. Et au moindre doute, on choisirait une activité plus calme."
+    },
+    {
+      "id": "sports-outdoor-3",
+      "label": "Personal fears: heights, speed, animals, panic",
+      "examiner": "J’ai le vertige.",
+      "alsoAskedAs": [
+        "Je n’aime pas trop la vitesse.",
+        "Je peur des chiens.",
+        "J’ai peur de m’évanouir.",
+        "Je n’ai pas trop confiance.",
+        "J’ai peur de changer d’avis une fois dans l’avion.",
+        "J’ai peur de ne pas y arriver au moment de sauter.",
+        "Si je suis terrifié(e), je ne profiterai pas du moment."
+      ],
+      "acknowledge": "Je comprends, avoir peur du vide, de la vitesse ou des animaux, ce n'est pas facile à contrôler.",
+      "defend": "Mais tu ne seras jamais seul face à ta peur. Un professionnel t'accompagne à chaque étape et t'explique tout à l'avance. En plus, beaucoup de gens avaient peur au début, et ils ont adoré l'expérience une fois lancés.",
+      "solve": "Si tu hésites encore, on pourrait commencer par une séance d'essai ou regarder des vidéos ensemble. Et de toute façon, tu peux dire non jusqu'à la dernière minute."
+    },
+    {
+      "id": "sports-outdoor-4",
+      "label": "Fitness, level and experience required",
+      "examiner": "Ça demande une grosse préparation physique.",
+      "alsoAskedAs": [
+        "Le niveau sportif risque d’être très élevé.",
+        "Il faut avoir de l’expérience.",
+        "Je ne sais pas utiliser le matériel.",
+        "Deux jours, c’est peu pour apprendre correctement.",
+        "Je ne serai pas à l’aise pour m’occuper du cheval.",
+        "Il faut se préparer physiquement.",
+        "Je ne suis pas très sportif(ive)."
+      ],
+      "acknowledge": "Honnêtement, je comprends, on n'a pas envie de se sentir dépassé par les autres.",
+      "defend": "Mais ces activités sont pensées pour les débutants. On n'a pas besoin d'être un athlète ni d'avoir de l'expérience, car les moniteurs expliquent tout et adaptent le rythme au niveau de chacun. En plus, on apprend vite quand on pratique avec des professionnels.",
+      "solve": "Et si tu veux être plus à l'aise, on pourrait marcher ou courir un peu chaque semaine avant la date. Ainsi, tu arriverais en forme et sans stress."
+    },
+    {
+      "id": "sports-outdoor-5",
+      "label": "Paperwork: medical certificate, insurance",
+      "examiner": "Il faudra sûrement présenter un certificat médical.",
+      "alsoAskedAs": [
+        "Il faut sûrement une assurance supplémentaire.",
+        "Il faut sûrement un certificat médical."
+      ],
+      "acknowledge": "C'est vrai, ça peut sembler compliqué de rassembler tous les papiers.",
+      "defend": "Mais ce n'est pas si difficile. Un certificat médical s'obtient en une consultation rapide, et souvent l'assurance est déjà comprise dans le prix. Il suffit de bien s'informer avant de s'inscrire.",
+      "solve": "On pourrait appeler l'organisateur pour connaître la liste exacte des documents. Comme ça, on préparerait tout à l'avance, sans mauvaise surprise."
+    },
+    {
+      "id": "sports-outdoor-6",
+      "label": "Equipment and clothing",
+      "examiner": "Je vais devoir m’équiper (vêtements).",
+      "alsoAskedAs": [
+        "Je n’ai pas l’équipement approprié (bottes, pantalon).",
+        "Je n’ai pas d’équipement adapté pour la marche.",
+        "Je n’ai aucun équipement adéquat."
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, acheter des vêtements ou du matériel, ça peut coûter cher.",
+      "defend": "Mais dans la plupart des cas, l'équipement spécial est fourni ou loué sur place. Pour le reste, des vêtements confortables et de bonnes chaussures suffisent largement. Il n'est pas nécessaire d'acheter quoi que ce soit de neuf.",
+      "solve": "Sinon, on pourrait emprunter ce qui manque à des amis ou l'acheter d'occasion. Et on peut aussi demander à l'organisateur ce qu'il faut vraiment apporter."
+    },
+    {
+      "id": "sports-outdoor-7",
+      "label": "Bad weather and cold",
+      "examiner": "Si la météo est mauvaise, c’est la catastrophe.",
+      "alsoAskedAs": [
+        "J’ai peur qu’il fasse mauvais temps.",
+        "Je suis très frileux / frileuse",
+        "Si la météo est mauvaise, le weekend sera gâché.",
+        "C’est une activité qui dépend beaucoup de la météo."
+      ],
+      "acknowledge": "C'est vrai, le mauvais temps peut gâcher une sortie, et le froid n'est agréable pour personne.",
+      "defend": "Mais les organisateurs ont l'habitude et prévoient des solutions de remplacement. Avec de bons vêtements, le froid ou la pluie ne sont plus un problème, et on profite quand même du moment.",
+      "solve": "Et si la météo est vraiment trop mauvaise, on pourrait demander un report ou un remboursement. On peut aussi vérifier les prévisions quelques jours avant."
+    },
+    {
+      "id": "sports-outdoor-8",
+      "label": "Big effort for a short activity / tiredness afterwards",
+      "examiner": "La préparation est longue mais le saut dure peu de temps.",
+      "alsoAskedAs": [
+        "Le retour au travail va être difficile (fatigue, courbatures…).",
+        "C’est beaucoup de temps de préparation pour un saut court.",
+        "J’aurai des courbatures toute la semaine.",
+        "Le dimanche matin, c’est mon moment de repos."
+      ],
+      "acknowledge": "Je comprends, on peut se demander si l'effort en vaut la peine.",
+      "defend": "Mais ce qui compte, ce n'est pas la durée, c'est l'intensité de l'expérience. Quelques minutes de sensations fortes ou un week-end actif, ça reste un souvenir inoubliable. Et la fatigue est agréable : on se sent bien et on dort mieux après.",
+      "solve": "Pour ne pas être épuisé, on pourrait prévoir une journée de repos avant de reprendre le travail. Comme ça, on récupérerait tranquillement."
+    },
+    {
+      "id": "sports-outdoor-9",
+      "label": "Distance and travel",
+      "examiner": "Ça doit être loin de chez moi.",
+      "alsoAskedAs": [
+        "J’habite loin des montagnes."
+      ],
+      "acknowledge": "Ouais, je comprends, s'il faut faire de la route, ça peut décourager.",
+      "defend": "Mais on peut en profiter pour faire une petite escapade. Le trajet fait partie de l'aventure, surtout si on y va à plusieurs. Et souvent, ces centres se trouvent plus près qu'on le pense.",
+      "solve": "On pourrait chercher un lieu plus proche ou organiser un covoiturage pour partager les frais. Ça simplifierait tout."
+    },
+    {
+      "id": "sports-outdoor-10",
+      "label": "Social fit: the group, the image of the activity",
+      "examiner": "Il faudra s’entendre avec les autres personnes du groupe.",
+      "alsoAskedAs": [
+        "Je ne rencontrerai personne en faisant du sport chez moi.",
+        "C’est une activité pour les riches, je serai mal à l’aise.",
+        "On ne peut pas discuter tout en marchant.",
+        "C’est une activité plutôt réservée aux personnes âgées."
+      ],
+      "acknowledge": "Je comprends, on veut se sentir bien avec le groupe.",
+      "defend": "Mais ces activités sont ouvertes à tous, quel que soit l'âge ou le milieu. Les gens sont là pour s'amuser, pas pour juger. En plus, c'est une bonne façon de rencontrer du monde et de discuter pendant les pauses ou après.",
+      "solve": "Et si tu as peur de te sentir seul, on pourrait y aller ensemble. Comme ça, on serait déjà deux à se connaître."
+    },
+    {
+      "id": "sports-outdoor-11",
+      "label": "Doubts about the benefits / I prefer other activities",
+      "examiner": "La marche n’est pas une activité suffisamment bénéfique.",
+      "alsoAskedAs": [
+        "Je préfère les activités relaxantes en hiver.",
+        "Je marche un peu chaque jour pour aller au travail.",
+        "La ville ferait mieux d’investir dans des équipements sportifs",
+        "Je ne perçois pas les bienfaits de cette activité.",
+        "Se dépasser, tester ses limites…. je n’ai pas l’esprit de compétition."
+      ],
+      "acknowledge": "C'est vrai, il existe beaucoup d'autres activités, et je respecte ton choix.",
+      "defend": "Mais celle-ci apporte des bienfaits concrets : elle nous fait sortir, nous aide à rester en forme et nous change les idées. Même si tu n'aimes pas la compétition, tu peux y aller à ton rythme, juste pour te faire plaisir.",
+      "solve": "Pourquoi ne pas l'essayer une fois ? Si ça ne te plaît pas, tu pourras toujours revenir à ton activité habituelle."
+    },
+    {
+      "id": "sports-outdoor-12",
+      "label": "Animals: welfare, noise, smells",
+      "examiner": "Les pauvres chiens sont forcés à courir.",
+      "alsoAskedAs": [
+        "Les chiens sont bruyants.",
+        "L’hébergement risque d’être peu confortable (odeurs)."
+      ],
+      "acknowledge": "Je comprends, le bien-être des animaux, c'est un sujet important.",
+      "defend": "Mais dans les structures sérieuses, ils sont bien soignés, et souvent ils adorent ce qu'ils font. Pour le bruit ou les odeurs, ça fait partie du charme de la nature, et on s'y habitue vite. En plus, le contact avec les animaux est une expérience unique.",
+      "solve": "Si tu veux vérifier, on pourrait regarder les avis en ligne ou visiter le lieu avant. Ainsi, tu saurais comment les animaux y sont traités."
+    },
+    {
+      "id": "sports-outdoor-13",
+      "label": "Online training: connection and online payment",
+      "examiner": "Ma connexion Internet fonctionne mal.",
+      "alsoAskedAs": [
+        "Je me méfie des paiements en ligne."
+      ],
+      "acknowledge": "Je comprends, une mauvaise connexion ou un paiement en ligne, ça peut inquiéter.",
+      "defend": "Mais le paiement se fait sur un site sécurisé, comme pour n'importe quel achat. Quant à la connexion, il suffit d'un Internet correct, et on peut souvent télécharger les séances à l'avance.",
+      "solve": "Et si tu as un doute, on pourrait tester la version gratuite d'abord. Comme ça, on vérifierait que tout fonctionne bien."
+    },
+    {
+      "id": "sports-outdoor-14",
+      "label": "Motivation and commitment",
+      "examiner": "Je risque de me démotiver rapidement.",
+      "alsoAskedAs": [
+        "À la maison, je risque d’être facilement distrait(e).",
+        "L’inscription est pour un an, je risque d’abandonner avant."
+      ],
+      "acknowledge": "Ouais, je vois ce que tu veux dire, chez soi, on se laisse vite distraire et on abandonne.",
+      "defend": "Mais justement, on choisit ses horaires et on suit son propre rythme. Les programmes proposent des objectifs et des rappels pour rester motivé. De plus, un engagement régulier finit par devenir une habitude.",
+      "solve": "Pour ne pas lâcher, on pourrait s'entraîner ensemble ou se fixer des rendez-vous. Et si on se lasse, on peut toujours arrêter ou changer de programme."
+    },
+    {
+      "id": "sports-outdoor-15",
+      "label": "No coach to correct me or help",
+      "examiner": "L’entraîneur ne pourra pas voir si je fais mal les mouvements.",
+      "alsoAskedAs": [
+        "J’aurai du mal à choisir l’entraînement le mieux adapté.",
+        "Si je me blesse, personne ne pourra m’aider.",
+        "Je ne pourrai pas profiter de tout l’équipement d’une salle de sport."
+      ],
+      "acknowledge": "Je comprends, sans coach, on peut avoir peur de mal faire ou de se blesser.",
+      "defend": "Mais les exercices sont expliqués en vidéo, étape par étape, et on peut les revoir autant de fois qu'on veut. Il y a des programmes adaptés à chaque niveau, et pas besoin de tout l'équipement d'une salle : quelques exercices simples suffisent.",
+      "solve": "Si tu as un doute, on pourrait commencer par des exercices faciles. Et au moindre problème, on s'arrêterait tout de suite pour demander conseil à un professionnel."
+    }
+  ],
+  "technology-digital": [
+    {
+      "id": "technology-digital-1",
+      "label": "Cost — registration must be paid",
+      "examiner": "L’inscription doit être payante.",
+      "alsoAskedAs": [],
+      "acknowledge": "Je comprends que tu veuilles savoir combien ça coûte avant de t'inscrire.",
+      "defend": "Mais quand on compare avec le prix des livres, on fait vite des économies. D'abord, on peut emprunter autant de livres qu'on veut. Ensuite, on n'a plus besoin de les acheter, de les ranger ni de les revendre. Pour quelqu'un qui lit beaucoup, l'abonnement se rentabilise en quelques mois.",
+      "solve": "Si tu hésites, on pourrait demander une période d'essai gratuite. Comme ça, tu verrais si ça te convient avant de payer."
+    },
+    {
+      "id": "technology-digital-2",
+      "label": "Not good with Internet / can't carry a computer everywhere",
+      "examiner": "Je ne suis pas très doué(e) pour naviguer sur Internet.",
+      "alsoAskedAs": [
+        "Je ne peux pas emporter mon ordinateur partout."
+      ],
+      "acknowledge": "Je comprends, ce n'est pas facile quand on ne se sent pas à l'aise avec la technologie.",
+      "defend": "Mais ces sites sont faits pour être très simples : on cherche un titre, on clique et on lit. De plus, il n'y a pas besoin d'un ordinateur : un téléphone ou une tablette suffit, et on peut lire dans le métro ou au parc. Même les débutants s'y habituent en quelques minutes.",
+      "solve": "Si tu as peur de te perdre, on pourrait faire les premiers pas ensemble. Ensuite, tu pourrais continuer tout seul."
+    },
+    {
+      "id": "technology-digital-3",
+      "label": "Eye strain from screens",
+      "examiner": "À force de lire sous format numérique, on s’abime les yeux.",
+      "alsoAskedAs": [],
+      "acknowledge": "C'est vrai, on parle beaucoup de la fatigue visuelle, et je comprends ton inquiétude.",
+      "defend": "Mais on peut régler la taille des lettres, la luminosité et même le fond de l'écran pour que ce soit confortable. Bien que la lecture prolongée fatigue un peu, il suffit de faire des pauses. En plus, on peut lire le soir sans lampe et sans déranger personne.",
+      "solve": "Si tu as un doute, on pourrait commencer par de courtes séances de lecture. Et tu pourrais toujours alterner avec un livre papier."
+    },
+    {
+      "id": "technology-digital-4",
+      "label": "I love paper books / a book is not a product like the others",
+      "examiner": "J’aime le contact du livre papier.",
+      "alsoAskedAs": [
+        "Le livre n’est pas un produit de consommation comme les autres."
+      ],
+      "acknowledge": "Je comprends, le plaisir de tenir un livre dans ses mains, c'est vraiment spécial.",
+      "defend": "Mais tu n'as pas à choisir entre les deux. Le numérique ne remplace pas le papier, il le complète. Le contenu reste le même, avec les mêmes histoires et les mêmes idées. Et beaucoup de gens qui lisent en ligne continuent à acheter leurs livres préférés en version papier.",
+      "solve": "Alors on pourrait utiliser la bibliothèque numérique pour découvrir de nouveaux titres. Ensuite, tu achèterais en papier ceux que tu adores."
+    },
+    {
+      "id": "technology-digital-5",
+      "label": "Limited choice and no librarian advice",
+      "examiner": "Le choix des livres sera plus limité.",
+      "alsoAskedAs": [
+        "Je n’aurai plus les conseils des bibliothécaires."
+      ],
+      "acknowledge": "C'est vrai, on veut avoir du choix et des conseils quand on lit beaucoup.",
+      "defend": "Pourtant, les catalogues numériques sont souvent très grands, et ils s'agrandissent chaque semaine. En plus, il y a des critiques, des notes et des recommandations selon tes goûts. Certaines plateformes proposent même un chat avec de vrais bibliothécaires.",
+      "solve": "Pour être rassurés, on pourrait regarder le catalogue avant de s'inscrire. Et on garderait la bibliothèque du quartier pour les conseils personnalisés."
+    },
+    {
+      "id": "technology-digital-6",
+      "label": "Traditional libraries: social place, and their future",
+      "examiner": "La bibliothèque traditionnelle est un lieu de socialisation.",
+      "alsoAskedAs": [
+        "Ça signe l’arrêt de mort des bibliothèques traditionnelles !"
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, les bibliothèques sont aussi des lieux de rencontre importants.",
+      "defend": "Mais elles ne vont pas disparaître pour autant. Le numérique répond à un autre besoin : lire n'importe quand, sans se déplacer. Et beaucoup de bibliothèques classiques ont déjà leur propre service en ligne. Les deux peuvent très bien vivre ensemble.",
+      "solve": "Alors on pourrait garder nos habitudes et profiter du numérique quand on est pressés. Comme ça, on soutiendrait les deux."
+    }
+  ],
+  "travel-tourism": [
+    {
+      "id": "travel-tourism-1",
+      "label": "Cost — too expensive",
+      "examiner": "Ça doit coûter très cher !",
+      "alsoAskedAs": [
+        "Ce type de voyage doit coûter très cher.",
+        "C’est cher.",
+        "Une croisière de qualité, c’est cher !",
+        "Ça coute cher.",
+        "Ce genre de vacances coûte généralement très cher.",
+        "C’est une formule qui doit revenir cher.",
+        "Ce n’est pas rémunéré.",
+        "Le séjour coûtera très cher.",
+        "Il faut sûrement souscrire à une assurance particulière."
+      ],
+      "acknowledge": "Je comprends que le budget te préoccupe, surtout pour des vacances.",
+      "defend": "Mais quand on fait le calcul, on économise sur d'autres choses. D'abord, l'hébergement et souvent les repas sont inclus. Ensuite, on partage les frais entre amis, et il existe des tarifs de basse saison. Et pour une expérience aussi forte, le prix reste raisonnable. On garde de très beaux souvenirs.",
+      "solve": "Si le prix te fait encore hésiter, on pourrait comparer plusieurs offres ou voyager hors saison. Comme ça, on dépenserait beaucoup moins."
+    },
+    {
+      "id": "travel-tourism-2",
+      "label": "Danger, accidents and safety",
+      "examiner": "On peut avoir un problème technique ou un accident.",
+      "alsoAskedAs": [
+        "Ça peut être dangereux pour les enfants ou les personnes qui ne savent pas nager !",
+        "Ce n’est pas assez sécurisant, même dangereux !",
+        "Il y a souvent des accidents en mer.",
+        "C’est dangereux.",
+        "Ça peut être dangereux sur les grandes routes.",
+        "C’est dangereux : les conducteurs de voitures ne respectent pas les cyclistes.",
+        "Le ski reste un sport dangereux."
+      ],
+      "acknowledge": "C'est vrai, la sécurité passe avant tout, surtout avec des enfants ou des personnes qui nagent mal.",
+      "defend": "Mais ces activités sont très encadrées. Le matériel est contrôlé, les moniteurs sont formés, et on donne toujours des consignes claires. Bien que le risque zéro n'existe pas, les accidents sont rares. Et on porte un gilet, un casque ou une ceinture selon l'activité.",
+      "solve": "Si tu veux être rassuré, on pourrait demander les règles de sécurité et les assurances avant de réserver. Et on choisirait une option plus calme au moindre doute."
+    },
+    {
+      "id": "travel-tourism-3",
+      "label": "I don't know how to drive, pilot or do it",
+      "examiner": "Je ne sais pas piloter un bateau.",
+      "alsoAskedAs": [
+        "Je ne sais pas conduire une roulotte.",
+        "Je ne sais pas m’occuper d’un cheval (brossage, nourriture, conduite).",
+        "Je n’ai aucune formation dans le domaine du tourisme.",
+        "Je ne suis pas très bon(ne) en langues étrangères."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de se sentir perdu ou de faire des erreurs.",
+      "defend": "Mais on n'a pas besoin d'être un expert. Une courte formation ou une explication suffit pour commencer, et le loueur reste joignable. Pour les langues, on se débrouille avec quelques mots et de bons gestes. En plus, apprendre quelque chose de nouveau fait partie du plaisir.",
+      "solve": "Si tu es stressé, on pourrait demander un essai avec un moniteur avant de partir. Et l'un de nous deux pourrait conduire au début."
+    },
+    {
+      "id": "travel-tourism-4",
+      "label": "Seasickness and motion sickness",
+      "examiner": "J’ai peur d’avoir le mal de mer.",
+      "alsoAskedAs": [
+        "J’ai peur d’être malade dans le bateau !",
+        "Je suis malade dans les transports."
+      ],
+      "acknowledge": "Ouais, je comprends, avoir mal au cœur pendant les vacances, ça gâche tout.",
+      "defend": "Mais il existe des solutions simples : des médicaments, des bracelets ou des conseils comme regarder l'horizon. Et sur un grand bateau ou en voiture bien conduite, on sent très peu les mouvements. Beaucoup de gens qui avaient peur du mal de mer ne l'ont jamais eu.",
+      "solve": "Pour être tranquille, on pourrait demander conseil à la pharmacie avant de partir. Et on ferait une petite sortie d'essai avant."
+    },
+    {
+      "id": "travel-tourism-5",
+      "label": "Boredom and long stays",
+      "examiner": "8 jours sur un bateau, c’est long, on va s’ennuyer !",
+      "alsoAskedAs": [
+        "On va s’ennuyer, car il n’y a rien à faire sur un bateau.",
+        "J’ai peur de trouver le temps long dans la nature pendant une semaine.",
+        "J’ai peur de m’ennuyer."
+      ],
+      "acknowledge": "Je comprends, on a peur de trouver le temps long, surtout si on reste plusieurs jours.",
+      "defend": "Mais il y a toujours quelque chose à faire : on se baigne, on cuisine, on pêche, on lit, on discute. Et on profite du calme, ce qu'on n'a jamais en ville. Le temps passe vite quand on est en bonne compagnie. Il suffit de prévoir quelques activités.",
+      "solve": "Pour éviter de s'ennuyer, on pourrait apporter des jeux, des livres et de la musique. Et si on se lasse, on pourrait raccourcir le séjour."
+    },
+    {
+      "id": "travel-tourism-6",
+      "label": "Comfort, space, noise and facilities",
+      "examiner": "Dormir dans une tente n’est pas très confortable.",
+      "alsoAskedAs": [
+        "Il n’y a pas de confort sur un bateau (salle de bain/cuisine).",
+        "Il n’y aura pas de commodités dans le bois ! (toilettes, douche, etc.)",
+        "Les Tuk Tuk ne sont pas confortables.",
+        "Il y a trop de bruit.",
+        "Il n’y a pas de fenêtres, l’intérieur doit être sale.",
+        "Les cabines sont souvent toutes petites.",
+        "L’espace est vraiment trop petit.",
+        "Ce n’est pas confortable.",
+        "Il n’y a pas de wifi.",
+        "Ça ne doit pas être pratique pour cuisiner (espace, ustensiles, odeurs)."
+      ],
+      "acknowledge": "C'est vrai, on tient tous à un minimum de confort, surtout quand on part en vacances.",
+      "defend": "Mais ces formules sont mieux équipées qu'on ne le pense : il y a souvent une petite cuisine, un lit correct et un coin toilette. Le confort est différent, mais on gagne en liberté. Et on est dehors presque tout le temps, donc on ne passe pas beaucoup de temps à l'intérieur. Pas de wifi, c'est même l'occasion de se déconnecter.",
+      "solve": "Si tu as peur de manquer de confort, on pourrait apporter un bon matelas et des vêtements chauds. Et on choisirait un modèle mieux équipé."
+    },
+    {
+      "id": "travel-tourism-7",
+      "label": "Weather, mosquitoes and nature nuisances",
+      "examiner": "Il faut être sûr que la météo soit clémente.",
+      "alsoAskedAs": [
+        "On va passer la semaine avec les moustiques !",
+        "S’il pleut, on sera trempés.",
+        "S’il fait mauvais temps, on va rester coincés dans la roulotte."
+      ],
+      "acknowledge": "Je comprends, personne n'aime la pluie ni les piqûres pendant les vacances.",
+      "defend": "Mais les organisateurs ont l'habitude et ils prévoient des solutions de remplacement. Avec un imperméable et un bon répulsif, on ne se laisse pas gâcher le séjour. Et même sous la pluie, la nature est belle, et on partage de bons moments à l'abri. Rien n'empêche de vérifier la météo avant de partir.",
+      "solve": "Et si la météo est vraiment trop mauvaise, on pourrait demander un report ou un remboursement. On emporterait aussi de quoi rester au sec."
+    },
+    {
+      "id": "travel-tourism-8",
+      "label": "Physical effort, fitness and tiredness",
+      "examiner": "Il faut être très sportif pour faire du canot toute la journée.",
+      "alsoAskedAs": [
+        "Je ne pourrai pas me reposer pendant ces vacances.",
+        "On sera sur la route toute la journée, c’est fatigant.",
+        "Je ne suis pas très sportif(ve).",
+        "Je ne pourrai pas me reposer pendant ces vacances.",
+        "Ça demande une préparation physique.",
+        "Ce ne sont pas des vacances reposantes."
+      ],
+      "acknowledge": "Honnêtement, je comprends, on veut se reposer pendant les vacances, pas se fatiguer.",
+      "defend": "Mais on n'a pas besoin d'être sportif. On avance à son rythme, avec des pauses, et il y a souvent des options plus douces. Bien que ce soit un peu fatigant, c'est une fatigue agréable, et on dort mieux ensuite. Et on peut toujours prévoir une journée de repos.",
+      "solve": "Pour arriver en forme, on pourrait marcher un peu chaque semaine avant le départ. Et on alternerait les journées actives et les journées calmes."
+    },
+    {
+      "id": "travel-tourism-9",
+      "label": "Preparation, equipment and organisation",
+      "examiner": "Ce sont des vacances qui demandent beaucoup de préparation.",
+      "alsoAskedAs": [
+        "Je vais devoir m’équiper, je n’ai aucun matériel de camping.",
+        "Il faut partir longtemps",
+        "Il faudra que je mette à jour mes vaccins.",
+        "La durée du voyage devra correspondre à mes congés.",
+        "Il faudra s’organiser pour le transport, la nourriture.",
+        "Je n’ai pas de matériel.",
+        "J’aurai besoin d’un moniteur particulier."
+      ],
+      "acknowledge": "Je vois ce que tu veux dire, préparer un voyage, ça demande du temps et parfois du matériel.",
+      "defend": "Mais dans la plupart des cas, l'agence s'occupe de l'essentiel. Le matériel se loue sur place, et on nous donne une liste de ce qu'il faut apporter. Pour les dates, on peut choisir un court séjour qui entre dans nos congés. Et un cours ou un moniteur est souvent compris dans le prix.",
+      "solve": "Pour tout simplifier, on pourrait appeler l'organisateur et demander la liste exacte. Comme ça, on préparerait tout à l'avance, sans mauvaise surprise."
+    },
+    {
+      "id": "travel-tourism-10",
+      "label": "Freedom: stops, parking, route and imposed programme",
+      "examiner": "C’est compliqué de s’arrêter où on veut.",
+      "alsoAskedAs": [
+        "On ne pourra pas s’arrêter pour visiter et laisser le bateau sans surveillance !",
+        "On ne peut pas contrôler la durée du trajet.",
+        "Les Tuk Tuk ne peuvent pas se garer partout.",
+        "On ne peut pas se garer n’importe où.",
+        "En groupe on ne peut pas s’arrêter comme on veut.",
+        "Je ne pourrai pas choisir la destination.",
+        "On m’imposera le logement, les activités et les lieux à visiter."
+      ],
+      "acknowledge": "C'est vrai, on aime être libre de s'arrêter où on veut et de choisir son programme.",
+      "defend": "Mais ces formules laissent plus de liberté qu'on ne l'imagine. On peut choisir ses arrêts dans des lieux prévus, et le guide s'adapte souvent au groupe. Pour le stationnement, il y a des zones réservées. Et un programme organisé fait gagner du temps, ce qui permet de voir davantage.",
+      "solve": "Si tu tiens à ta liberté, on pourrait demander un itinéraire flexible. Et on prévoirait une journée libre pour faire ce qu'on veut."
+    },
+    {
+      "id": "travel-tourism-11",
+      "label": "Service quality: guides, drivers, rented equipment, seriousness",
+      "examiner": "Ces organismes ne sont pas sérieux.",
+      "alsoAskedAs": [
+        "Certains chauffeurs parlent trop.",
+        "Les vélos loués sont souvent vieux et en mauvais état.",
+        "En général, on entend mal le guide à cause des bruits de la rue.",
+        "En cas de panne, la visite est fichue.",
+        "Je ne me sentirai pas à l’aise avec les guides et les organisateurs.",
+        "Il faudra que j’écrive des comptes rendus à l’agence de voyages"
+      ],
+      "acknowledge": "Je comprends, on veut être sûr que l'organisme est sérieux et que le service sera de qualité.",
+      "defend": "Mais on peut facilement vérifier les avis et les licences avant de réserver. Les entreprises sérieuses entretiennent leur matériel, et proposent des micros ou des casques pour bien entendre le guide. En cas de panne, il y a un service d'assistance. Quant aux comptes rendus, ce n'est qu'une courte page à écrire.",
+      "solve": "Si tu as un doute, on pourrait lire les commentaires et appeler l'organisateur avant de payer. Comme ça, on saurait à qui on a affaire."
+    },
+    {
+      "id": "travel-tourism-12",
+      "label": "Social fit: crowds, isolation, image of the trip",
+      "examiner": "On sera trop nombreux à bord pour faire de vraies rencontres.",
+      "alsoAskedAs": [
+        "On est isolés sur un bateau, on ne peut pas rencontrer d’autres personnes.",
+        "C’est plutôt pour les personnes âgées.",
+        "L’ambiance de fête sera artificielle.",
+        "C’est trop de promiscuité avec les enfants ou les amis.",
+        "Les gens du coin vont nous traiter comme des excentriques.",
+        "Il va y avoir beaucoup de monde sur les pistes.",
+        "C’est une activité pour les riches, je ne serai pas à l’aise."
+      ],
+      "acknowledge": "Je comprends, on veut se sentir à l'aise avec les autres et ne pas être jugé.",
+      "defend": "Mais ces vacances sont ouvertes à tous, quel que soit l'âge ou le budget. Les gens sont là pour s'amuser, pas pour juger. Même dans un groupe nombreux, on peut faire de vraies rencontres autour d'une activité. Et pour le reste, on a des moments à deux ou entre amis.",
+      "solve": "Si tu as peur de la foule, on pourrait choisir une période plus calme. Et on partirait ensemble, comme ça on ne serait jamais seuls."
+    },
+    {
+      "id": "travel-tourism-13",
+      "label": "Ecology and pollution",
+      "examiner": "Ce ne sont pas des vacances très écologiques.",
+      "alsoAskedAs": [
+        "Le bateau, ça pollue !",
+        "En ville, il n’y a pas assez de pistes cyclables.",
+        "On va surtout subir la pollution."
+      ],
+      "acknowledge": "C'est vrai, l'environnement est une question importante, et je comprends ton point de vue.",
+      "defend": "Mais beaucoup d'entreprises font des efforts : moteurs plus propres, tri des déchets, compensation carbone. Et on peut choisir les options les plus responsables. Même s'il y a un peu de pollution, on en cause moins qu'en prenant l'avion. En plus, ces vacances nous rapprochent de la nature et nous donnent envie de la protéger.",
+      "solve": "Pour limiter l'impact, on pourrait choisir un organisme certifié et voyager en groupe. Comme ça, on ferait un choix plus vert."
+    },
+    {
+      "id": "travel-tourism-14",
+      "label": "I prefer another kind of trip / not enough time to visit",
+      "examiner": "Je préfère l’hôtel.",
+      "alsoAskedAs": [
+        "J’aime visiter une ville à pied.",
+        "Les escales seront très courtes.",
+        "Je préfère visiter des villes pendant mes vacances.",
+        "On prend mieux notre temps à pied"
+      ],
+      "acknowledge": "Je respecte ton choix, il existe beaucoup de façons de voyager, et l'hôtel a ses avantages.",
+      "defend": "Mais celle-ci apporte quelque chose de différent. On voit plus de choses en peu de temps, et on découvre des endroits qu'on n'atteint pas à pied. Et on prend le temps qu'on veut aux escales qui nous plaisent. Ça n'empêche pas de visiter une ville à pied le lendemain.",
+      "solve": "Pourquoi ne pas l'essayer une fois ? Si ça ne te plaît pas, tu pourras toujours revenir à ta façon habituelle de voyager."
+    }
+  ],
+  "work-career": [
+    {
+      "id": "work-career-1",
+      "label": "Income: too little money, unstable, costs to start",
+      "examiner": "La rémunération doit être dérisoire.",
+      "alsoAskedAs": [
+        "Le site Internet doit être payant.",
+        "Les locations doivent être rentables.",
+        "Ils ne pourront pas me garantir un revenu stable.",
+        "Je ne vais pas pouvoir gagner ma vie avec cette activité.",
+        "Je vais dépenser pour le repas sans être sûr(e) de vendre.",
+        "Ce genre de vente à domicile existe depuis longtemps, il y a beaucoup de concurrence.",
+        "La rémunération est sans doute très faible.",
+        "Ça devrait être un travail rémunéré."
+      ],
+      "acknowledge": "Je comprends que l'argent te préoccupe, personne n'a envie de perdre son temps pour rien.",
+      "defend": "Mais ce n'est pas le but de vivre de cette activité. C'est un complément de revenu, sans engagement. Bien que la somme soit modeste, elle s'ajoute à ton budget chaque mois. En plus, les frais de départ sont très limités, donc le risque reste faible.",
+      "solve": "Si jamais tu as un doute, on pourrait faire un essai d'un mois et calculer ce que ça rapporte vraiment. Ensuite, tu déciderais si ça vaut la peine."
+    },
+    {
+      "id": "work-career-2",
+      "label": "Personal data, privacy and security",
+      "examiner": "Il est risqué de donner ses informations bancaires pour les paiements.",
+      "alsoAskedAs": [
+        "Je ne souhaite pas donner mes coordonnées à des inconnus.",
+        "Je crains que mon ordinateur ne soit piraté.",
+        "Ma messagerie va être inondée de publicités.",
+        "Je doute de la garantie de confidentialité de mes résultats.",
+        "J’ai peur de recevoir trop d’emails, d’être harcelé(e).",
+        "Je n’aime pas l’idée que quelqu’un connaisse tout de moi, de mes habitudes etc.",
+        "J’ai peur qu’on utilise mes informations pour essayer de me vendre des produits."
+      ],
+      "acknowledge": "C'est vrai, il faut faire attention à ses informations personnelles, surtout sur Internet.",
+      "defend": "Mais les sites sérieux protègent tes données et respectent la loi. Les paiements passent par des plateformes sécurisées, et on n'est pas obligé de donner ses coordonnées à tout le monde. De plus, tu peux créer une adresse courriel à part pour éviter les publicités et le harcèlement.",
+      "solve": "Pour être tranquille, on pourrait lire les conditions d'utilisation et vérifier les avis avant de s'inscrire. Et au moindre problème, tu pourrais fermer ton compte."
+    },
+    {
+      "id": "work-career-3",
+      "label": "I lack the skills, knowledge or opinions",
+      "examiner": "Certaines thématiques me seront totalement inconnues.",
+      "alsoAskedAs": [
+        "Je ne sais pas poster d’annonce sur un site Internet.",
+        "Je ne peux pas avoir une opinion sur tout.",
+        "J’ai peur de donner mon opinion sur des sujets délicats.",
+        "Je n’ai pas de formation de vendeur(se).",
+        "J’ai peur de ne pas connaître les émissions, produits, services etc. sur lesquels on fait des sondages.",
+        "Je n’y connais rien en plantes et jardinerie."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent ou de dire n'importe quoi.",
+      "defend": "Pourtant, personne ne s'attend à ce que tu sois un expert. On apprend vite, et il y a souvent des explications ou une aide pour les débutants. Si un sujet t'est inconnu ou trop délicat, tu peux simplement le passer. Le but, c'est de participer à ton rythme.",
+      "solve": "Si tu veux te sentir plus à l'aise, on pourrait faire les premières étapes ensemble. Comme ça, tu verrais que c'est plus simple qu'on ne le pense."
+    },
+    {
+      "id": "work-career-4",
+      "label": "It takes too much time",
+      "examiner": "C’est une activité qui prend beaucoup de temps.",
+      "alsoAskedAs": [
+        "Je passe déjà beaucoup de temps devant un ordinateur.",
+        "Ça demande trop de boulot d’entretenir une maison !"
+      ],
+      "acknowledge": "Honnêtement, je comprends, le temps est précieux, surtout quand on travaille déjà beaucoup.",
+      "defend": "Mais on choisit soi-même quand et combien de temps on s'y consacre. Quelques minutes par jour suffisent, et on peut s'arrêter à tout moment. Ce n'est pas un travail à temps plein, c'est une activité flexible qui s'adapte à ton emploi du temps.",
+      "solve": "Et si tu manques de temps, on pourrait commencer par une petite heure par semaine. Ensuite, on ajusterait selon ce qui te convient."
+    },
+    {
+      "id": "work-career-5",
+      "label": "Usefulness, ethics and ecology",
+      "examiner": "C’est une grande responsabilité : je peux donner mon avis sur des produits nocifs.",
+      "alsoAskedAs": [
+        "Les sondages sont souvent mal construits et orientés.",
+        "Vendre des emballages plastiques, ce n’est pas écologique.",
+        "Il y a déjà suffisamment de gens qui donnent leurs avis sur tout et n’importe quoi !",
+        "Les industriels ne tiennent pas compte des avis négatifs."
+      ],
+      "acknowledge": "C'est vrai, ce sont des questions importantes, et je comprends que tu veuilles agir de façon responsable.",
+      "defend": "Mais c'est justement une occasion de faire entendre ton opinion. Même si certaines entreprises ne l'écoutent pas, beaucoup en tiennent compte. Et un avis honnête, même négatif, peut faire changer les choses. De plus, tu es libre de refuser ce qui ne te convient pas.",
+      "solve": "Pour rester cohérent, on pourrait choisir seulement les sujets ou les produits qui nous intéressent vraiment. Ainsi, on garderait la conscience tranquille."
+    },
+    {
+      "id": "work-career-6",
+      "label": "Risk of damage and insurance",
+      "examiner": "J’ai peur de salir ou d’abîmer le vêtement.",
+      "alsoAskedAs": [
+        "Mes affaires risquent de s’abîmer.",
+        "J’ai peur de casser les affaires des autres.",
+        "Je ne pense pas que mon assurance couvrira les frais en cas de problème."
+      ],
+      "acknowledge": "Je comprends, on a peur d'abîmer quelque chose ou que ça nous coûte cher ensuite.",
+      "defend": "Mais ces situations restent rares, et la plupart des plateformes proposent une garantie ou une caution. En plus, les gens prennent généralement soin de ce qu'ils empruntent, parce qu'ils veulent garder une bonne réputation. Pour le reste, l'usure normale est acceptée.",
+      "solve": "Si tu as un doute, on pourrait vérifier ce que ton assurance couvre avant de commencer. Et on prêterait d'abord des objets qui ont peu de valeur."
+    },
+    {
+      "id": "work-career-7",
+      "label": "Quality, trying items and refund guarantees",
+      "examiner": "Je ne pourrai pas essayer les vêtements.",
+      "alsoAskedAs": [
+        "Il y aura des frais supplémentaires (envoi, nettoyage).",
+        "On n’est pas sûr que les vêtements soient en bon état.",
+        "Il peut s’agir de contrefaçons.",
+        "Les photos sont parfois trompeuses (couleur, coupe, matière).",
+        "Je ne pourrai pas me faire rembourser si ça ne me convient pas.",
+        "Il n’y a pas de contrat de location."
+      ],
+      "acknowledge": "C'est vrai, sans pouvoir essayer ni toucher, on peut avoir peur d'être déçu.",
+      "defend": "Mais les sites sérieux donnent des descriptions précises, avec plusieurs photos, les mesures et l'état de l'article. De plus, on peut poser des questions au propriétaire et lire les avis. Les frais sont indiqués à l'avance, et souvent on peut retourner l'article s'il ne convient pas.",
+      "solve": "Pour éviter les mauvaises surprises, on pourrait choisir des vendeurs bien notés et demander un contrat écrit. Comme ça, tout serait clair dès le départ."
+    },
+    {
+      "id": "work-career-8",
+      "label": "Legality and competition with professionals",
+      "examiner": "On fait de la concurrence aux professionnels.",
+      "alsoAskedAs": [
+        "C’est une forme de travail illégal."
+      ],
+      "acknowledge": "Je comprends que tu veuilles rester dans la légalité et ne pas nuire aux autres.",
+      "defend": "Mais il s'agit d'échanges entre particuliers, et c'est tout à fait légal tant qu'on reste dans un cadre occasionnel. On ne remplace pas les professionnels, on propose autre chose. Les clients qui veulent un service complet continueront d'aller les voir.",
+      "solve": "Si jamais tu as un doute, on pourrait se renseigner auprès de la ville ou d'un organisme officiel. Ainsi, on serait sûrs de respecter les règles."
+    },
+    {
+      "id": "work-career-9",
+      "label": "I prefer other ways: buy, resell, ask friends, free exchanges",
+      "examiner": "Je préfère acheter puis revendre mes vêtements",
+      "alsoAskedAs": [
+        "Il existe déjà des lieux d’échanges gratuits.",
+        "Je préfère demander de l’aide à des amis."
+      ],
+      "acknowledge": "C'est vrai, il existe d'autres solutions, et elles peuvent aussi bien fonctionner.",
+      "defend": "Mais celle-ci apporte un plus. Elle est plus rapide et plus simple que de chercher longtemps, et elle t'ouvre à des personnes que tu ne connais pas encore. Tu ne dépends plus toujours de la même personne ni des mêmes lieux. En plus, rien ne t'empêche de la combiner avec tes habitudes.",
+      "solve": "Alors on pourrait l'essayer une ou deux fois. Si ça ne te plaît pas, tu reviendras tranquillement à ta méthode habituelle."
+    },
+    {
+      "id": "work-career-10",
+      "label": "Social awkwardness: few friends, strangers at home, pressure to buy",
+      "examiner": "Je vais embarrasser mes ami(e)s : ils se sentiront obligés de venir et d’acheter.",
+      "alsoAskedAs": [
+        "J’ai peu d’ami(e)s, je ne pourrai jamais inviter suffisamment de personnes.",
+        "Je n’ai pas envie de recevoir des inconnus chez moi.",
+        "Je cuisine assez mal, ce n’est pas vendeur.",
+        "Cette formule est peu conviviale."
+      ],
+      "acknowledge": "Je comprends, on n'a pas envie de mettre ses amis mal à l'aise ni de recevoir des inconnus.",
+      "defend": "Mais personne n'est obligé d'acheter, et l'ambiance peut rester détendue. Même avec peu d'invités, ça peut très bien marcher : quelques amis suffisent. Et si tu n'es pas un grand cuisinier, un repas simple fait l'affaire, car ce qui compte, c'est le moment partagé.",
+      "solve": "Si tu as peur de te sentir gêné, on pourrait inviter seulement des gens proches. Ensuite, on verrait si tu as envie de recommencer."
+    },
+    {
+      "id": "work-career-11",
+      "label": "Responsibility and animals",
+      "examiner": "C’est une trop grande responsabilité !",
+      "alsoAskedAs": [
+        "Je vais avoir du mal à m’occuper des animaux que je ne connais pas.",
+        "Je suis allergique aux poils de chat."
+      ],
+      "acknowledge": "Je comprends, c'est vrai que garder la maison et les animaux de quelqu'un, ça demande de la confiance.",
+      "defend": "Mais les propriétaires donnent des consignes claires et souvent une liste de tâches. Ils restent joignables en cas de problème. Quant aux animaux, ils s'habituent vite à une présence calme. On peut aussi refuser une maison où il y a des chats si on y est allergique.",
+      "solve": "Pour commencer doucement, on pourrait choisir une garde courte, sans animaux. Comme ça, tu prendrais de l'assurance avant de t'engager plus."
+    },
+    {
+      "id": "work-career-12",
+      "label": "Loneliness and not feeling like real holidays",
+      "examiner": "Ce ne sont pas de vraies vacances !",
+      "alsoAskedAs": [
+        "Je n’arriverais pas à me sentir chez moi !",
+        "Je risque de m’ennuyer tout seul dans une grande maison.",
+        "C’est un travail trop solitaire, je ne pourrai pas faire de rencontres."
+      ],
+      "acknowledge": "Honnêtement, je comprends, on veut se sentir bien et ne pas s'ennuyer tout seul.",
+      "defend": "Mais on peut inviter des amis pour un week-end, et le quartier offre souvent de quoi rencontrer du monde. En plus, on vit gratuitement dans un endroit calme, avec un grand jardin ou un beau salon. Ce n'est pas un hôtel, mais c'est une façon différente de voyager.",
+      "solve": "Si tu as peur de t'ennuyer, on pourrait emporter des livres et prévoir des sorties. Et on pourrait même partir à deux pour que ce soit plus agréable."
+    }
+  ]
+}

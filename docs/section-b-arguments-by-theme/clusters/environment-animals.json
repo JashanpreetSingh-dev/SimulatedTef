@@ -1,0 +1,106 @@
+[
+  {
+    "label": "Cost, pay and equipment",
+    "rep": "82.0",
+    "members": ["18.9", "32.0", "32.2", "32.4", "33.0", "49.5", "55.4", "55.7", "73.1", "82.0", "82.8"],
+    "acknowledge": "Je comprends que l'argent t'inquiète, c'est normal de vouloir en avoir pour son argent.",
+    "defend": "Mais il faut voir ça sur la durée. Souvent, l'inscription est gratuite ou très abordable, et le matériel est fourni ou se loue facilement. Quand il s'agit d'aider la nature, on ne le fait pas pour le salaire, mais pour l'expérience. Et pour un équipement plus cher, comme une éolienne, on économise ensuite chaque mois.",
+    "solve": "Si jamais tu as encore un doute, on pourrait demander les prix par écrit et comparer avec d'autres offres. Ensuite, tu déciderais tranquillement."
+  },
+  {
+    "label": "Time and availability (busy, early hours, Sundays)",
+    "rep": "8.0",
+    "members": ["8.0", "8.5", "33.1", "49.0", "49.1", "73.2"],
+    "acknowledge": "Honnêtement, je comprends, on est tous très occupés, et le dimanche matin, on aime dormir.",
+    "defend": "Mais on n'a pas besoin de beaucoup de temps : quelques heures par semaine ou par mois suffisent. Et l'horaire est souvent flexible. Bien que ce soit tôt, on est libre après et on se sent fier de sa journée. Ce n'est pas du temps perdu, c'est du temps bien utilisé.",
+    "solve": "Si tu es trop pris, on pourrait commencer par un seul rendez-vous pour tester. Ensuite, on choisirait le meilleur moment pour toi."
+  },
+  {
+    "label": "Danger, injuries and emergencies",
+    "rep": "18.0",
+    "members": ["18.0", "18.6", "18.8", "49.3", "55.3", "55.5", "82.7"],
+    "acknowledge": "C'est vrai, la sécurité est la première chose à vérifier, et je comprends ton inquiétude.",
+    "defend": "Mais ces activités sont très encadrées. Il y a des guides, des règles strictes et du matériel de protection, comme des gants ou un casque. Bien sûr, le risque zéro n'existe pas, mais les accidents restent rares. Et en cas de problème, il y a toujours un plan d'urgence et un téléphone.",
+    "solve": "Si tu veux être rassuré, on pourrait demander les consignes de sécurité avant de s'inscrire. Et on choisirait un parcours ou un modèle plus simple."
+  },
+  {
+    "label": "Fear of wild animals and respect for nature",
+    "rep": "18.2",
+    "members": ["18.1", "18.2", "18.4", "18.5", "18.7"],
+    "acknowledge": "Je comprends, avoir peur des animaux sauvages, ce n'est pas facile à contrôler.",
+    "defend": "Mais ces expériences sont organisées par des spécialistes qui respectent les animaux et leur milieu. On reste à distance, et on suit des règles précises. En plus, c'est une occasion unique d'apprendre à mieux comprendre et protéger ces animaux. On ne les dérange pas, on les observe.",
+    "solve": "Si ça t'inquiète encore, on pourrait d'abord visiter un parc ou regarder un documentaire. Comme ça, tu serais plus à l'aise avant de te décider."
+  },
+  {
+    "label": "Physical effort, weather and comfort outdoors",
+    "rep": "55.0",
+    "members": ["18.3", "32.3", "32.5", "49.8", "49.9", "55.0", "55.1", "55.2"],
+    "acknowledge": "Je comprends, on n'a pas toujours envie de se fatiguer ou d'avoir froid, surtout pendant ses jours de congé.",
+    "defend": "Mais on va à son rythme, et on peut faire des pauses. Avec de bons vêtements, la pluie ou la chaleur ne sont plus un problème. Bien que ce soit un peu fatigant, on se sent mieux après et on dort mieux. Et il n'est pas nécessaire d'être un athlète.",
+    "solve": "Pour te préparer, on pourrait marcher ou rouler un peu chaque semaine avant la date. Et si la météo est trop mauvaise, on la reporterait."
+  },
+  {
+    "label": "Gardening: no talent, no space or sun, don't eat vegetables",
+    "rep": "8.3",
+    "members": ["8.1", "8.2", "8.3", "8.4", "8.6", "8.7", "8.8", "8.9"],
+    "acknowledge": "Je vois ce que tu veux dire, ce n'est pas simple quand on habite en appartement ou qu'on n'a pas la main verte.",
+    "defend": "Mais on n'a pas besoin d'un grand jardin : un balcon ou une fenêtre suffit pour cultiver des herbes ou des tomates. Il existe même des plantes qui aiment l'ombre. En plus, un cours permet de vraiment apprendre, ce qu'une vidéo ne remplace pas. Et le jardinage, ça détend et ça fait manger plus sainement.",
+    "solve": "Si tu as peur d'échouer, on pourrait commencer avec quelques plantes faciles. Ainsi, tu verrais vite les premiers résultats."
+  },
+  {
+    "label": "Skills, training and answering requests",
+    "rep": "32.1",
+    "members": ["32.1", "32.6", "32.7", "33.3", "73.0", "82.5"],
+    "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent ni de faire une erreur.",
+    "defend": "Pourtant, l'expérience compte plus que le diplôme. On apprend très vite en pratiquant, et il y a souvent une petite formation ou des explications pas à pas. Si une demande est trop difficile, on peut la refuser ou demander de l'aide. Et un installateur peut s'occuper de la partie technique.",
+    "solve": "Si tu veux te sentir prêt, on pourrait essayer ensemble les premières étapes. Après, tu pourrais continuer tout seul."
+  },
+  {
+    "label": "It won't change anything: unrealistic, pollution has other causes",
+    "rep": "33.5",
+    "members": ["33.5", "33.6", "33.7", "49.2", "49.7", "55.8"],
+    "acknowledge": "C'est vrai, un seul geste ne règle pas tout, et je comprends que tu doutes de son utilité.",
+    "defend": "Mais chaque action compte, surtout quand beaucoup de gens s'y mettent. Un sentier propre reste propre plusieurs semaines, et d'autres personnes suivent le bon exemple. Même si ce n'est pas parfait, on avance étape par étape. Et les organismes sérieux publient ce qu'ils font de l'argent ou des déchets.",
+    "solve": "Si tu veux voir des résultats concrets, on pourrait regarder les bilans de l'association. Ensuite, tu déciderais si ça vaut la peine."
+  },
+  {
+    "label": "It's not my job: the State should do it",
+    "rep": "33.9",
+    "members": ["33.8", "33.9", "49.6", "55.9"],
+    "acknowledge": "Je comprends, ce n'est pas toi qui as créé le problème, et l'État a aussi un rôle à jouer.",
+    "defend": "Mais on ne peut pas toujours attendre que les autres agissent. Pendant que les gouvernements réfléchissent, chacun peut faire sa part, et ça donne l'exemple. Ce n'est pas une question de faute, mais de solution. En plus, ces initiatives poussent les autorités à agir plus vite.",
+    "solve": "Alors on pourrait participer une fois, puis écrire à la mairie pour demander plus d'aide. Comme ça, on ferait les deux."
+  },
+  {
+    "label": "Not what I want: preferences, boredom and going alone",
+    "rep": "33.2",
+    "members": ["32.8", "32.9", "33.2", "33.4", "49.4", "55.6"],
+    "acknowledge": "Je comprends, on veut une activité qui nous plaît et où on se sent bien.",
+    "defend": "Mais on peut choisir la tâche qui nous convient, alors ce n'est pas forcément répétitif. Et si tu utilises beaucoup ta voiture, ce sera l'occasion de changer doucement tes habitudes. Quant à connaître du monde, tout le monde est dans la même situation au début. On rencontre vite des gens sympathiques.",
+    "solve": "Et si tu as peur de te sentir seul, on pourrait y aller ensemble. Comme ça, on serait déjà deux à se connaître."
+  },
+  {
+    "label": "Online selling: quality, privacy and trust",
+    "rep": "73.4",
+    "members": ["73.3", "73.4", "73.5"],
+    "acknowledge": "C'est vrai, on veut voir ce qu'on achète et protéger ses informations.",
+    "defend": "Mais on peut demander des photos, poser des questions au vendeur et lire les avis avant d'acheter. Pour les coordonnées, on peut communiquer par la messagerie du site, sans donner son numéro. Et si un objet ne correspond pas, on ne l'achète pas. Rien n'oblige à acheter.",
+    "solve": "Pour être plus tranquille, on pourrait rencontrer le vendeur dans un lieu public. Ainsi, on vérifierait l'objet avant de payer."
+  },
+  {
+    "label": "Online selling: pick-up, haggling, overspending, other ways",
+    "rep": "73.6",
+    "members": ["73.6", "73.7", "73.8", "73.9"],
+    "acknowledge": "Je comprends, ce n'est pas toujours pratique, surtout si on n'aime pas négocier.",
+    "defend": "Mais beaucoup de vendeurs affichent un prix fixe, et certains livrent. Pour ce qui est de la brocante, elle demande de se lever tôt et d'y passer la journée, alors que le site est ouvert en tout temps. Et si tu as peur de trop dépenser, tu peux te fixer un budget.",
+    "solve": "Si tu veux limiter les tentations, on pourrait chercher seulement ce dont tu as besoin. Et on garderait la brocante pour le plaisir."
+  },
+  {
+    "label": "Wind turbine: wind, noise, looks, permit and output",
+    "rep": "82.2",
+    "members": ["82.1", "82.2", "82.3", "82.4", "82.6", "82.9"],
+    "acknowledge": "Je comprends que tu te poses des questions pratiques, et que tu veuilles rester bien avec tes voisins.",
+    "defend": "Mais les modèles récents sont silencieux et discrets, et on peut choisir leur emplacement. Avant d'acheter, un spécialiste mesure le vent. Pour l'autorisation, la mairie explique les démarches. Bien qu'une éolienne ne couvre pas tout, elle réduit la facture, et on peut la combiner avec des panneaux solaires.",
+    "solve": "Pour éviter les surprises, on pourrait demander une étude gratuite et en parler d'abord avec les voisins. Ainsi, tout le monde serait informé."
+  }
+]

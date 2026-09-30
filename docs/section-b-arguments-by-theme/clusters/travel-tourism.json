@@ -1,0 +1,114 @@
+[
+  {
+    "label": "Cost — too expensive",
+    "rep": "36.6",
+    "members": ["36.6", "37.0", "38.0", "42.5", "46.6", "63.2", "68.1", "75.1", "81.0", "81.7"],
+    "acknowledge": "Je comprends que le budget te préoccupe, surtout pour des vacances.",
+    "defend": "Mais quand on fait le calcul, on économise sur d'autres choses. D'abord, l'hébergement et souvent les repas sont inclus. Ensuite, on partage les frais entre amis, et il existe des tarifs de basse saison. Et pour une expérience aussi forte, le prix reste raisonnable. On garde de très beaux souvenirs.",
+    "solve": "Si le prix te fait encore hésiter, on pourrait comparer plusieurs offres ou voyager hors saison. Comme ça, on dépenserait beaucoup moins."
+  },
+  {
+    "label": "Danger, accidents and safety",
+    "rep": "36.4",
+    "members": ["36.4", "36.7", "38.1", "42.8", "46.2", "63.3", "68.4", "81.6"],
+    "acknowledge": "C'est vrai, la sécurité passe avant tout, surtout avec des enfants ou des personnes qui nagent mal.",
+    "defend": "Mais ces activités sont très encadrées. Le matériel est contrôlé, les moniteurs sont formés, et on donne toujours des consignes claires. Bien que le risque zéro n'existe pas, les accidents sont rares. Et on porte un gilet, un casque ou une ceinture selon l'activité.",
+    "solve": "Si tu veux être rassuré, on pourrait demander les règles de sécurité et les assurances avant de réserver. Et on choisirait une option plus calme au moindre doute."
+  },
+  {
+    "label": "I don't know how to drive, pilot or do it",
+    "rep": "36.0",
+    "members": ["36.0", "63.0", "63.6", "75.0", "75.4"],
+    "acknowledge": "Je comprends, on n'a pas envie de se sentir perdu ou de faire des erreurs.",
+    "defend": "Mais on n'a pas besoin d'être un expert. Une courte formation ou une explication suffit pour commencer, et le loueur reste joignable. Pour les langues, on se débrouille avec quelques mots et de bons gestes. En plus, apprendre quelque chose de nouveau fait partie du plaisir.",
+    "solve": "Si tu es stressé, on pourrait demander un essai avec un moniteur avant de partir. Et l'un de nous deux pourrait conduire au début."
+  },
+  {
+    "label": "Seasickness and motion sickness",
+    "rep": "42.2",
+    "members": ["36.9", "42.2", "46.0"],
+    "acknowledge": "Ouais, je comprends, avoir mal au cœur pendant les vacances, ça gâche tout.",
+    "defend": "Mais il existe des solutions simples : des médicaments, des bracelets ou des conseils comme regarder l'horizon. Et sur un grand bateau ou en voiture bien conduite, on sent très peu les mouvements. Beaucoup de gens qui avaient peur du mal de mer ne l'ont jamais eu.",
+    "solve": "Pour être tranquille, on pourrait demander conseil à la pharmacie avant de partir. Et on ferait une petite sortie d'essai avant."
+  },
+  {
+    "label": "Boredom and long stays",
+    "rep": "42.0",
+    "members": ["36.2", "37.5", "42.0", "46.8"],
+    "acknowledge": "Je comprends, on a peur de trouver le temps long, surtout si on reste plusieurs jours.",
+    "defend": "Mais il y a toujours quelque chose à faire : on se baigne, on cuisine, on pêche, on lit, on discute. Et on profite du calme, ce qu'on n'a jamais en ville. Le temps passe vite quand on est en bonne compagnie. Il suffit de prévoir quelques activités.",
+    "solve": "Pour éviter de s'ennuyer, on pourrait apporter des jeux, des livres et de la musique. Et si on se lasse, on pourrait raccourcir le séjour."
+  },
+  {
+    "label": "Comfort, space, noise and facilities",
+    "rep": "37.7",
+    "members": ["36.5", "37.6", "37.7", "38.3", "38.4", "38.6", "42.6", "46.1", "46.3", "46.5", "63.7"],
+    "acknowledge": "C'est vrai, on tient tous à un minimum de confort, surtout quand on part en vacances.",
+    "defend": "Mais ces formules sont mieux équipées qu'on ne le pense : il y a souvent une petite cuisine, un lit correct et un coin toilette. Le confort est différent, mais on gagne en liberté. Et on est dehors presque tout le temps, donc on ne passe pas beaucoup de temps à l'intérieur. Pas de wifi, c'est même l'occasion de se déconnecter.",
+    "solve": "Si tu as peur de manquer de confort, on pourrait apporter un bon matelas et des vêtements chauds. Et on choisirait un modèle mieux équipé."
+  },
+  {
+    "label": "Weather, mosquitoes and nature nuisances",
+    "rep": "37.8",
+    "members": ["37.8", "37.9", "38.2", "63.5"],
+    "acknowledge": "Je comprends, personne n'aime la pluie ni les piqûres pendant les vacances.",
+    "defend": "Mais les organisateurs ont l'habitude et ils prévoient des solutions de remplacement. Avec un imperméable et un bon répulsif, on ne se laisse pas gâcher le séjour. Et même sous la pluie, la nature est belle, et on partage de bons moments à l'abri. Rien n'empêche de vérifier la météo avant de partir.",
+    "solve": "Et si la météo est vraiment trop mauvaise, on pourrait demander un report ou un remboursement. On emporterait aussi de quoi rester au sec."
+  },
+  {
+    "label": "Physical effort, fitness and tiredness",
+    "rep": "37.2",
+    "members": ["37.1", "37.2", "63.4", "68.0", "75.6", "81.4", "81.8"],
+    "acknowledge": "Honnêtement, je comprends, on veut se reposer pendant les vacances, pas se fatiguer.",
+    "defend": "Mais on n'a pas besoin d'être sportif. On avance à son rythme, avec des pauses, et il y a souvent des options plus douces. Bien que ce soit un peu fatigant, c'est une fatigue agréable, et on dort mieux ensuite. Et on peut toujours prévoir une journée de repos.",
+    "solve": "Pour arriver en forme, on pourrait marcher un peu chaque semaine avant le départ. Et on alternerait les journées actives et les journées calmes."
+  },
+  {
+    "label": "Preparation, equipment and organisation",
+    "rep": "37.3",
+    "members": ["37.3", "37.4", "46.9", "75.3", "75.5", "81.1", "81.2", "81.5"],
+    "acknowledge": "Je vois ce que tu veux dire, préparer un voyage, ça demande du temps et parfois du matériel.",
+    "defend": "Mais dans la plupart des cas, l'agence s'occupe de l'essentiel. Le matériel se loue sur place, et on nous donne une liste de ce qu'il faut apporter. Pour les dates, on peut choisir un court séjour qui entre dans nos congés. Et un cours ou un moniteur est souvent compris dans le prix.",
+    "solve": "Pour tout simplifier, on pourrait appeler l'organisateur et demander la liste exacte. Comme ça, on préparerait tout à l'avance, sans mauvaise surprise."
+  },
+  {
+    "label": "Freedom: stops, parking, route and imposed programme",
+    "rep": "36.3",
+    "members": ["36.3", "36.8", "38.5", "38.9", "46.4", "68.6", "75.2", "75.7"],
+    "acknowledge": "C'est vrai, on aime être libre de s'arrêter où on veut et de choisir son programme.",
+    "defend": "Mais ces formules laissent plus de liberté qu'on ne l'imagine. On peut choisir ses arrêts dans des lieux prévus, et le guide s'adapte souvent au groupe. Pour le stationnement, il y a des zones réservées. Et un programme organisé fait gagner du temps, ce qui permet de voir davantage.",
+    "solve": "Si tu tiens à ta liberté, on pourrait demander un itinéraire flexible. Et on prévoirait une journée libre pour faire ce qu'on veut."
+  },
+  {
+    "label": "Service quality: guides, drivers, rented equipment, seriousness",
+    "rep": "68.10",
+    "members": ["38.7", "68.7", "68.8", "68.9", "68.10", "75.8", "75.9"],
+    "acknowledge": "Je comprends, on veut être sûr que l'organisme est sérieux et que le service sera de qualité.",
+    "defend": "Mais on peut facilement vérifier les avis et les licences avant de réserver. Les entreprises sérieuses entretiennent leur matériel, et proposent des micros ou des casques pour bien entendre le guide. En cas de panne, il y a un service d'assistance. Quant aux comptes rendus, ce n'est qu'une courte page à écrire.",
+    "solve": "Si tu as un doute, on pourrait lire les commentaires et appeler l'organisateur avant de payer. Comme ça, on saurait à qui on a affaire."
+  },
+  {
+    "label": "Social fit: crowds, isolation, image of the trip",
+    "rep": "42.3",
+    "members": ["36.1", "42.1", "42.3", "42.7", "63.8", "63.9", "81.3", "81.9"],
+    "acknowledge": "Je comprends, on veut se sentir à l'aise avec les autres et ne pas être jugé.",
+    "defend": "Mais ces vacances sont ouvertes à tous, quel que soit l'âge ou le budget. Les gens sont là pour s'amuser, pas pour juger. Même dans un groupe nombreux, on peut faire de vraies rencontres autour d'une activité. Et pour le reste, on a des moments à deux ou entre amis.",
+    "solve": "Si tu as peur de la foule, on pourrait choisir une période plus calme. Et on partirait ensemble, comme ça on ne serait jamais seuls."
+  },
+  {
+    "label": "Ecology and pollution",
+    "rep": "42.9",
+    "members": ["36.10", "42.9", "68.3", "68.5"],
+    "acknowledge": "C'est vrai, l'environnement est une question importante, et je comprends ton point de vue.",
+    "defend": "Mais beaucoup d'entreprises font des efforts : moteurs plus propres, tri des déchets, compensation carbone. Et on peut choisir les options les plus responsables. Même s'il y a un peu de pollution, on en cause moins qu'en prenant l'avion. En plus, ces vacances nous rapprochent de la nature et nous donnent envie de la protéger.",
+    "solve": "Pour limiter l'impact, on pourrait choisir un organisme certifié et voyager en groupe. Comme ça, on ferait un choix plus vert."
+  },
+  {
+    "label": "I prefer another kind of trip / not enough time to visit",
+    "rep": "46.7",
+    "members": ["38.8", "42.4", "46.7", "63.1", "68.2"],
+    "acknowledge": "Je respecte ton choix, il existe beaucoup de façons de voyager, et l'hôtel a ses avantages.",
+    "defend": "Mais celle-ci apporte quelque chose de différent. On voit plus de choses en peu de temps, et on découvre des endroits qu'on n'atteint pas à pied. Et on prend le temps qu'on veut aux escales qui nous plaisent. Ça n'empêche pas de visiter une ville à pied le lendemain.",
+    "solve": "Pourquoi ne pas l'essayer une fois ? Si ça ne te plaît pas, tu pourras toujours revenir à ta façon habituelle de voyager."
+  }
+]

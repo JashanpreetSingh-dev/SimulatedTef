@@ -1,0 +1,98 @@
+[
+  {
+    "label": "Income: too little money, unstable, costs to start",
+    "rep": "20.2",
+    "members": ["17.0", "17.4", "20.2", "20.3", "22.0", "22.5", "22.7", "28.0", "65.9"],
+    "acknowledge": "Je comprends que l'argent te préoccupe, personne n'a envie de perdre son temps pour rien.",
+    "defend": "Mais ce n'est pas le but de vivre de cette activité. C'est un complément de revenu, sans engagement. Bien que la somme soit modeste, elle s'ajoute à ton budget chaque mois. En plus, les frais de départ sont très limités, donc le risque reste faible.",
+    "solve": "Si jamais tu as un doute, on pourrait faire un essai d'un mois et calculer ce que ça rapporte vraiment. Ensuite, tu déciderais si ça vaut la peine."
+  },
+  {
+    "label": "Personal data, privacy and security",
+    "rep": "20.6",
+    "members": ["17.2", "20.4", "20.5", "20.6", "20.7", "28.1", "28.6", "28.7"],
+    "acknowledge": "C'est vrai, il faut faire attention à ses informations personnelles, surtout sur Internet.",
+    "defend": "Mais les sites sérieux protègent tes données et respectent la loi. Les paiements passent par des plateformes sécurisées, et on n'est pas obligé de donner ses coordonnées à tout le monde. De plus, tu peux créer une adresse courriel à part pour éviter les publicités et le harcèlement.",
+    "solve": "Pour être tranquille, on pourrait lire les conditions d'utilisation et vérifier les avis avant de s'inscrire. Et au moindre problème, tu pourrais fermer ton compte."
+  },
+  {
+    "label": "I lack the skills, knowledge or opinions",
+    "rep": "20.8",
+    "members": ["17.1", "20.0", "20.1", "20.8", "22.6", "28.4", "65.4"],
+    "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent ou de dire n'importe quoi.",
+    "defend": "Pourtant, personne ne s'attend à ce que tu sois un expert. On apprend vite, et il y a souvent des explications ou une aide pour les débutants. Si un sujet t'est inconnu ou trop délicat, tu peux simplement le passer. Le but, c'est de participer à ton rythme.",
+    "solve": "Si tu veux te sentir plus à l'aise, on pourrait faire les premières étapes ensemble. Comme ça, tu verrais que c'est plus simple qu'on ne le pense."
+  },
+  {
+    "label": "It takes too much time",
+    "rep": "28.3",
+    "members": ["28.2", "28.3", "65.2"],
+    "acknowledge": "Honnêtement, je comprends, le temps est précieux, surtout quand on travaille déjà beaucoup.",
+    "defend": "Mais on choisit soi-même quand et combien de temps on s'y consacre. Quelques minutes par jour suffisent, et on peut s'arrêter à tout moment. Ce n'est pas un travail à temps plein, c'est une activité flexible qui s'adapte à ton emploi du temps.",
+    "solve": "Et si tu manques de temps, on pourrait commencer par une petite heure par semaine. Ensuite, on ajusterait selon ce qui te convient."
+  },
+  {
+    "label": "Usefulness, ethics and ecology",
+    "rep": "28.8",
+    "members": ["20.9", "22.9", "28.5", "28.8", "28.9"],
+    "acknowledge": "C'est vrai, ce sont des questions importantes, et je comprends que tu veuilles agir de façon responsable.",
+    "defend": "Mais c'est justement une occasion de faire entendre ton opinion. Même si certaines entreprises ne l'écoutent pas, beaucoup en tiennent compte. Et un avis honnête, même négatif, peut faire changer les choses. De plus, tu es libre de refuser ce qui ne te convient pas.",
+    "solve": "Pour rester cohérent, on pourrait choisir seulement les sujets ou les produits qui nous intéressent vraiment. Ainsi, on garderait la conscience tranquille."
+  },
+  {
+    "label": "Risk of damage and insurance",
+    "rep": "15.4",
+    "members": ["15.4", "17.5", "17.6", "17.7"],
+    "acknowledge": "Je comprends, on a peur d'abîmer quelque chose ou que ça nous coûte cher ensuite.",
+    "defend": "Mais ces situations restent rares, et la plupart des plateformes proposent une garantie ou une caution. En plus, les gens prennent généralement soin de ce qu'ils empruntent, parce qu'ils veulent garder une bonne réputation. Pour le reste, l'usure normale est acceptée.",
+    "solve": "Si tu as un doute, on pourrait vérifier ce que ton assurance couvre avant de commencer. Et on prêterait d'abord des objets qui ont peu de valeur."
+  },
+  {
+    "label": "Quality, trying items and refund guarantees",
+    "rep": "15.0",
+    "members": ["15.0", "15.1", "15.2", "15.3", "15.5", "15.6", "15.7"],
+    "acknowledge": "C'est vrai, sans pouvoir essayer ni toucher, on peut avoir peur d'être déçu.",
+    "defend": "Mais les sites sérieux donnent des descriptions précises, avec plusieurs photos, les mesures et l'état de l'article. De plus, on peut poser des questions au propriétaire et lire les avis. Les frais sont indiqués à l'avance, et souvent on peut retourner l'article s'il ne convient pas.",
+    "solve": "Pour éviter les mauvaises surprises, on pourrait choisir des vendeurs bien notés et demander un contrat écrit. Comme ça, tout serait clair dès le départ."
+  },
+  {
+    "label": "Legality and competition with professionals",
+    "rep": "17.9",
+    "members": ["15.8", "17.9"],
+    "acknowledge": "Je comprends que tu veuilles rester dans la légalité et ne pas nuire aux autres.",
+    "defend": "Mais il s'agit d'échanges entre particuliers, et c'est tout à fait légal tant qu'on reste dans un cadre occasionnel. On ne remplace pas les professionnels, on propose autre chose. Les clients qui veulent un service complet continueront d'aller les voir.",
+    "solve": "Si jamais tu as un doute, on pourrait se renseigner auprès de la ville ou d'un organisme officiel. Ainsi, on serait sûrs de respecter les règles."
+  },
+  {
+    "label": "I prefer other ways: buy, resell, ask friends, free exchanges",
+    "rep": "15.9",
+    "members": ["15.9", "17.3", "17.8"],
+    "acknowledge": "C'est vrai, il existe d'autres solutions, et elles peuvent aussi bien fonctionner.",
+    "defend": "Mais celle-ci apporte un plus. Elle est plus rapide et plus simple que de chercher longtemps, et elle t'ouvre à des personnes que tu ne connais pas encore. Tu ne dépends plus toujours de la même personne ni des mêmes lieux. En plus, rien ne t'empêche de la combiner avec tes habitudes.",
+    "solve": "Alors on pourrait l'essayer une ou deux fois. Si ça ne te plaît pas, tu reviendras tranquillement à ta méthode habituelle."
+  },
+  {
+    "label": "Social awkwardness: few friends, strangers at home, pressure to buy",
+    "rep": "22.2",
+    "members": ["22.1", "22.2", "22.3", "22.4", "22.8"],
+    "acknowledge": "Je comprends, on n'a pas envie de mettre ses amis mal à l'aise ni de recevoir des inconnus.",
+    "defend": "Mais personne n'est obligé d'acheter, et l'ambiance peut rester détendue. Même avec peu d'invités, ça peut très bien marcher : quelques amis suffisent. Et si tu n'es pas un grand cuisinier, un repas simple fait l'affaire, car ce qui compte, c'est le moment partagé.",
+    "solve": "Si tu as peur de te sentir gêné, on pourrait inviter seulement des gens proches. Ensuite, on verrait si tu as envie de recommencer."
+  },
+  {
+    "label": "Responsibility and animals",
+    "rep": "65.0",
+    "members": ["65.0", "65.7", "65.8"],
+    "acknowledge": "Je comprends, c'est vrai que garder la maison et les animaux de quelqu'un, ça demande de la confiance.",
+    "defend": "Mais les propriétaires donnent des consignes claires et souvent une liste de tâches. Ils restent joignables en cas de problème. Quant aux animaux, ils s'habituent vite à une présence calme. On peut aussi refuser une maison où il y a des chats si on y est allergique.",
+    "solve": "Pour commencer doucement, on pourrait choisir une garde courte, sans animaux. Comme ça, tu prendrais de l'assurance avant de t'engager plus."
+  },
+  {
+    "label": "Loneliness and not feeling like real holidays",
+    "rep": "65.3",
+    "members": ["65.1", "65.3", "65.5", "65.6"],
+    "acknowledge": "Honnêtement, je comprends, on veut se sentir bien et ne pas s'ennuyer tout seul.",
+    "defend": "Mais on peut inviter des amis pour un week-end, et le quartier offre souvent de quoi rencontrer du monde. En plus, on vit gratuitement dans un endroit calme, avec un grand jardin ou un beau salon. Ce n'est pas un hôtel, mais c'est une façon différente de voyager.",
+    "solve": "Si tu as peur de t'ennuyer, on pourrait emporter des livres et prévoir des sorties. Et on pourrait même partir à deux pour que ce soit plus agréable."
+  }
+]

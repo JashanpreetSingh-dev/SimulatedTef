@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { TEFTask, AdsCounter } from '../../types';
-import strategyData from '../../data/section_b_universal_strategy.json';
+import { ThemeStrategyPanel } from '../strategy/ThemeStrategyPanel';
 
 interface HintsCarouselProps {
   task: TEFTask;
@@ -19,19 +19,6 @@ interface SectionBCard {
 }
 
 type Card = SectionACard | SectionBCard;
-
-interface StrategyCategory {
-  id: string;
-  category: string;
-  icon: string;
-  exampleObjection: string;
-  acknowledge: string;
-  defend: string;
-  solve: string;
-  fullResponse: string;
-}
-
-const universalStrategy = strategyData as StrategyCategory[];
 
 function buildCards(task: TEFTask, section: 'A' | 'B'): Card[] {
   if (section === 'A') {
@@ -52,47 +39,10 @@ function buildCards(task: TEFTask, section: 'A' | 'B'): Card[] {
     .filter((c): c is SectionBCard => c !== null);
 }
 
-function StrategyTab() {
-  const [expanded, setExpanded] = useState<string | null>(null);
-
+function StrategyTab({ themeCategory }: { themeCategory?: string }) {
   return (
-    <div className="px-3 py-3 space-y-1.5 max-h-72 overflow-y-auto">
-      {universalStrategy.map((cat) => {
-        const isOpen = expanded === cat.id;
-        return (
-          <div key={cat.id} className="rounded-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
-            <button
-              type="button"
-              className="w-full flex items-center gap-2.5 px-3 py-2 text-left hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
-              onClick={() => setExpanded(isOpen ? null : cat.id)}
-            >
-              <span className="text-base shrink-0">{cat.icon}</span>
-              <span className="flex-1 text-xs font-semibold text-slate-700 dark:text-slate-200">{cat.category}</span>
-              <span className="text-[10px] text-slate-400 dark:text-slate-500 shrink-0">{isOpen ? '▲' : '▼'}</span>
-            </button>
-            {isOpen && (
-              <div className="px-3 pb-3 space-y-2 border-t border-slate-100 dark:border-slate-700 pt-2">
-                <div className="flex gap-2">
-                  <span className="shrink-0 w-4 h-4 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold flex items-center justify-center">A</span>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{cat.acknowledge}</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="shrink-0 w-4 h-4 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-[9px] font-bold flex items-center justify-center">D</span>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{cat.defend}</p>
-                </div>
-                <div className="flex gap-2">
-                  <span className="shrink-0 w-4 h-4 rounded-full bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 text-[9px] font-bold flex items-center justify-center">S</span>
-                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{cat.solve}</p>
-                </div>
-                <div className="mt-1 p-2 rounded-lg bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600">
-                  <p className="text-[9px] font-bold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-1">Réponse complète</p>
-                  <p className="text-xs text-slate-600 dark:text-slate-200 leading-relaxed italic">« {cat.fullResponse} »</p>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+    <div className="max-h-80 overflow-y-auto">
+      <ThemeStrategyPanel initialTheme={themeCategory} compact />
     </div>
   );
 }
@@ -173,13 +123,13 @@ export function HintsCarousel({ task, section }: HintsCarouselProps) {
                 onClick={() => setTab('strategy')}
                 className={`flex-1 py-2 text-[11px] font-bold uppercase tracking-widest transition-colors ${tab === 'strategy' ? 'text-violet-600 dark:text-violet-400 border-b-2 border-violet-500' : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'}`}
               >
-                🛡️ Stratégie ({universalStrategy.length})
+                🛡️ Stratégie
               </button>
             </div>
           )}
 
           {/* Strategy tab */}
-          {section === 'B' && tab === 'strategy' && <StrategyTab />}
+          {section === 'B' && tab === 'strategy' && <StrategyTab key={task.id} themeCategory={task.themeCategory} />}
 
           {/* Hints tab (or Section A always) */}
           {(section === 'A' || tab === 'hints') && cards.length > 0 && (

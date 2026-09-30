@@ -1,0 +1,50 @@
+[
+  {
+    "label": "Cost — registration must be paid",
+    "rep": "25.0",
+    "members": ["25.0"],
+    "acknowledge": "Je comprends que tu veuilles savoir combien ça coûte avant de t'inscrire.",
+    "defend": "Mais quand on compare avec le prix des livres, on fait vite des économies. D'abord, on peut emprunter autant de livres qu'on veut. Ensuite, on n'a plus besoin de les acheter, de les ranger ni de les revendre. Pour quelqu'un qui lit beaucoup, l'abonnement se rentabilise en quelques mois.",
+    "solve": "Si tu hésites, on pourrait demander une période d'essai gratuite. Comme ça, tu verrais si ça te convient avant de payer."
+  },
+  {
+    "label": "Not good with Internet / can't carry a computer everywhere",
+    "rep": "25.1",
+    "members": ["25.1", "25.2"],
+    "acknowledge": "Je comprends, ce n'est pas facile quand on ne se sent pas à l'aise avec la technologie.",
+    "defend": "Mais ces sites sont faits pour être très simples : on cherche un titre, on clique et on lit. De plus, il n'y a pas besoin d'un ordinateur : un téléphone ou une tablette suffit, et on peut lire dans le métro ou au parc. Même les débutants s'y habituent en quelques minutes.",
+    "solve": "Si tu as peur de te perdre, on pourrait faire les premiers pas ensemble. Ensuite, tu pourrais continuer tout seul."
+  },
+  {
+    "label": "Eye strain from screens",
+    "rep": "25.3",
+    "members": ["25.3"],
+    "acknowledge": "C'est vrai, on parle beaucoup de la fatigue visuelle, et je comprends ton inquiétude.",
+    "defend": "Mais on peut régler la taille des lettres, la luminosité et même le fond de l'écran pour que ce soit confortable. Bien que la lecture prolongée fatigue un peu, il suffit de faire des pauses. En plus, on peut lire le soir sans lampe et sans déranger personne.",
+    "solve": "Si tu as un doute, on pourrait commencer par de courtes séances de lecture. Et tu pourrais toujours alterner avec un livre papier."
+  },
+  {
+    "label": "I love paper books / a book is not a product like the others",
+    "rep": "25.4",
+    "members": ["25.4", "25.9"],
+    "acknowledge": "Je comprends, le plaisir de tenir un livre dans ses mains, c'est vraiment spécial.",
+    "defend": "Mais tu n'as pas à choisir entre les deux. Le numérique ne remplace pas le papier, il le complète. Le contenu reste le même, avec les mêmes histoires et les mêmes idées. Et beaucoup de gens qui lisent en ligne continuent à acheter leurs livres préférés en version papier.",
+    "solve": "Alors on pourrait utiliser la bibliothèque numérique pour découvrir de nouveaux titres. Ensuite, tu achèterais en papier ceux que tu adores."
+  },
+  {
+    "label": "Limited choice and no librarian advice",
+    "rep": "25.5",
+    "members": ["25.5", "25.6"],
+    "acknowledge": "C'est vrai, on veut avoir du choix et des conseils quand on lit beaucoup.",
+    "defend": "Pourtant, les catalogues numériques sont souvent très grands, et ils s'agrandissent chaque semaine. En plus, il y a des critiques, des notes et des recommandations selon tes goûts. Certaines plateformes proposent même un chat avec de vrais bibliothécaires.",
+    "solve": "Pour être rassurés, on pourrait regarder le catalogue avant de s'inscrire. Et on garderait la bibliothèque du quartier pour les conseils personnalisés."
+  },
+  {
+    "label": "Traditional libraries: social place, and their future",
+    "rep": "25.7",
+    "members": ["25.7", "25.8"],
+    "acknowledge": "Je vois ce que tu veux dire, les bibliothèques sont aussi des lieux de rencontre importants.",
+    "defend": "Mais elles ne vont pas disparaître pour autant. Le numérique répond à un autre besoin : lire n'importe quand, sans se déplacer. Et beaucoup de bibliothèques classiques ont déjà leur propre service en ligne. Les deux peuvent très bien vivre ensemble.",
+    "solve": "Alors on pourrait garder nos habitudes et profiter du numérique quand on est pressés. Comme ça, on soutiendrait les deux."
+  }
+]

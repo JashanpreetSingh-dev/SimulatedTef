@@ -1,0 +1,130 @@
+[
+  {
+    "label": "Time, tiredness and physical effort",
+    "rep": "6.0",
+    "members": ["2.1", "6.0", "9.1", "12.0", "14.2", "14.8", "40.1", "53.3", "57.2", "66.6", "69.1", "71.1", "71.4", "71.5", "71.7", "74.0", "76.1"],
+    "acknowledge": "Honnêtement, je comprends, le temps et l'énergie, c'est précieux, surtout quand on est fatigué.",
+    "defend": "Mais on n'a pas besoin de beaucoup de temps : quelques heures suffisent, et souvent on choisit ses horaires. Bien que ce soit un peu fatigant, on repart content et plus énergique. Et on va à son rythme, sans se forcer. Ce n'est pas du temps perdu, c'est du temps utile.",
+    "solve": "Si ton agenda est chargé, on pourrait commencer par une seule séance pour tester. Ensuite, on verrait comment ajuster selon ton emploi du temps."
+  },
+  {
+    "label": "Commitment and constraints (long term, meetings, imposed tasks)",
+    "rep": "39.5",
+    "members": ["2.0", "2.7", "6.2", "6.4", "12.4", "12.8", "21.9", "39.5", "57.5", "69.3", "69.4", "69.5", "69.8"],
+    "acknowledge": "Je comprends, on n'a pas envie de s'engager trop longtemps ni de perdre sa liberté.",
+    "defend": "Mais l'engagement est souvent plus léger qu'on ne le pense. On peut choisir la durée, le rôle, et parfois même la tâche. Les réunions sont courtes, et personne ne t'oblige à revenir chaque année. Et pendant ce temps, tu peux quand même profiter de tes vacances ou de tes loisirs.",
+    "solve": "Si jamais tu as peur de t'enfermer, on pourrait proposer un essai d'un mois. Et si ça ne te convient pas, tu pourras arrêter sans problème."
+  },
+  {
+    "label": "Responsibility, stress and emotional attachment",
+    "rep": "12.6",
+    "members": ["2.5", "2.9", "12.6", "39.4", "57.1", "66.8", "74.1", "76.0", "79.1", "79.3", "79.4"],
+    "acknowledge": "C'est vrai, c'est une vraie responsabilité, et on peut aussi s'attacher très vite.",
+    "defend": "Mais on n'est jamais seul : il y a une équipe, des consignes claires et quelqu'un à qui demander de l'aide. Le stress diminue vite avec l'expérience. Et même si la séparation est difficile, on sait qu'on a fait quelque chose de bien. C'est ça qui donne du sens à tout ça.",
+    "solve": "Pour commencer doucement, on pourrait choisir un rôle simple ou une tâche courte. Comme ça, tu prendrais de l'assurance avant de t'engager plus."
+  },
+  {
+    "label": "No experience or qualification",
+    "rep": "39.3",
+    "members": ["2.6", "9.0", "9.2", "9.6", "12.1", "39.3", "57.0", "57.4", "66.0", "66.1", "74.4", "79.0", "79.8"],
+    "acknowledge": "Je comprends, on n'a pas envie de se sentir incompétent, surtout quand on débute.",
+    "defend": "Pourtant, l'expérience compte moins que la bonne volonté. On te montre tout au début, et on apprend très vite en pratiquant. Il y a souvent une petite formation ou quelqu'un pour te guider. Et si un visiteur pose une question difficile, tu peux simplement demander à un collègue.",
+    "solve": "Si tu veux te sentir prêt, on pourrait faire une première visite ensemble. Ensuite, tu pourrais te lancer quand tu te sentirais à l'aise."
+  },
+  {
+    "label": "Technical skills: tools, mechanics, languages, organisation",
+    "rep": "53.0",
+    "members": ["9.3", "13.0", "21.6", "53.0", "53.1", "53.2", "53.4", "76.2", "76.4"],
+    "acknowledge": "Ouais, je vois ce que tu veux dire, on peut se sentir perdu face à quelque chose de technique.",
+    "defend": "Mais c'est justement fait pour les débutants. Un spécialiste est là pour expliquer chaque étape et surveiller le travail. Si tu poses beaucoup de questions, ce n'est pas grave, c'est comme ça qu'on apprend. Et il n'y a pas besoin de grande force : on adapte les tâches à chacun.",
+    "solve": "Si tu as un doute, on pourrait commencer par une tâche simple, comme observer ou aider un peu. Ainsi, tu apprendrais à ton rythme."
+  },
+  {
+    "label": "Shyness, crowds and fear of not doing well",
+    "rep": "6.3",
+    "members": ["6.3", "39.2", "40.4", "40.6", "69.7", "71.0", "71.3", "71.6", "71.8"],
+    "acknowledge": "Je comprends, on a tous peur du regard des autres, surtout quand on est timide.",
+    "defend": "Mais personne ne juge personne dans ce genre d'activité. Tout le monde est là pour s'amuser ou aider, et beaucoup de gens sont débutants. Même si on se trompe dans un pas ou dans un prix, ce n'est pas grave, on en rit. Et plus il y a de monde, moins on se sent observé.",
+    "solve": "Si tu es trop stressé, on pourrait y aller ensemble et rester dans un coin au début. Ensuite, tu te lancerais quand tu te sentirais prêt."
+  },
+  {
+    "label": "Difficult personalities: children, seniors, other people",
+    "rep": "9.4",
+    "members": ["9.4", "9.5", "12.2", "13.1", "13.3", "69.6", "74.5", "76.7", "76.8"],
+    "acknowledge": "C'est vrai, les enfants sont parfois surexcités, et certaines personnes ont un caractère difficile.",
+    "defend": "Mais on apprend vite à rester calme et à répondre avec le sourire. Les enfants se calment avec un jeu, et les personnes âgées apprécient surtout qu'on prenne du temps pour elles. Si quelqu'un n'est pas agréable, ça arrive rarement, et on peut changer de tâche ou de partenaire.",
+    "solve": "Pour éviter les tensions, on pourrait préparer quelques jeux ou sujets de conversation. Et au moindre problème, on demanderait de l'aide à l'équipe."
+  },
+  {
+    "label": "Neighbours, team spirit and privacy",
+    "rep": "6.6",
+    "members": ["6.5", "6.6", "6.7", "6.8", "12.7", "39.6", "39.7"],
+    "acknowledge": "Je comprends, on veut garder sa vie privée et bien s'entendre avec les autres.",
+    "defend": "Mais on n'est pas obligé de devenir ami avec tout le monde. Chacun participe selon ses envies, et on peut rester discret. Bien sûr, tout le monde ne s'apprécie pas, mais la plupart des gens sont ouverts et sympathiques. Et être reconnu dans le quartier, c'est plutôt positif.",
+    "solve": "Si tu as peur de ne pas trouver ta place, on pourrait venir ensemble pour voir l'ambiance. Après, tu déciderais si tu veux revenir."
+  },
+  {
+    "label": "Cost, fees and supplies",
+    "rep": "2.2",
+    "members": ["2.2", "2.3", "2.4", "6.1", "11.7", "13.7", "14.0", "40.0", "53.6", "57.3", "66.3"],
+    "acknowledge": "Je comprends que le budget te préoccupe, personne n'a envie de dépenser pour rien.",
+    "defend": "Mais les frais sont souvent très limités : l'inscription est gratuite ou symbolique, et les associations fournissent le matériel de base. Pour le reste, on peut emprunter ou apporter quelque chose de simple. Et à la fin, ce qu'on gagne en expérience ou en économies dépasse largement ce qu'on a dépensé.",
+    "solve": "Si tu hésites, on pourrait demander la liste des frais à l'avance. Comme ça, tu saurais exactement ce que ça va coûter."
+  },
+  {
+    "label": "It's a real job: it should be paid / career plans",
+    "rep": "12.5",
+    "members": ["12.5", "57.6", "66.4", "66.5", "66.7", "74.2", "74.3", "74.6", "74.7", "74.8", "76.6", "76.9"],
+    "acknowledge": "C'est vrai, un vrai travail mérite un salaire, et je comprends que tu penses à ton avenir.",
+    "defend": "Mais ce n'est pas un remplacement de ton métier, c'est un plus. Ça peut aussi t'apporter de l'expérience, des contacts et des références pour ton CV. Même si ce n'est pas payé, on en retire des compétences qui servent ensuite. Et on ne perd pas ses habitudes : on garde ses projets.",
+    "solve": "Si tu as un projet précis, on pourrait choisir une activité qui aide ta carrière. Et on ne s'engagerait que pour une courte période."
+  },
+  {
+    "label": "Not for volunteers: the State's job, employers' job, professionals' jobs",
+    "rep": "39.9",
+    "members": ["2.8", "9.8", "9.9", "12.9", "13.4", "13.9", "21.5", "39.8", "39.9", "53.5", "53.9", "57.8", "57.9", "69.0", "79.9"],
+    "acknowledge": "Je comprends, ce n'est pas normal que tout repose sur des volontaires, et les professionnels ont leur place.",
+    "defend": "Mais l'État ne peut pas tout faire, et ces actions viennent en plus de son travail. Les professionnels restent indispensables : ici, on fait autre chose, plus proche des gens. Bien souvent, ce n'est pas un vrai concurrent. Et en attendant, il y a des personnes qui ont besoin d'aide tout de suite.",
+    "solve": "Alors on pourrait agir maintenant, puis écrire à la mairie pour demander plus de moyens. Comme ça, on ferait les deux."
+  },
+  {
+    "label": "Second-hand clothes: quality, hygiene, sizes, style",
+    "rep": "11.0",
+    "members": ["11.0", "11.1", "11.2", "11.3", "11.4", "11.5", "11.6", "11.8", "11.9"],
+    "acknowledge": "Je comprends, on n'a pas envie de porter n'importe quoi ni de perdre son temps.",
+    "defend": "Mais on trouve souvent de très belles pièces, parfois même neuves, et à petit prix. Les vêtements sont lavés et triés, et on peut les nettoyer à la maison. Pour la taille, on essaie sur place, ou on demande à un bénévole. Et les vêtements vintage sont même très à la mode aujourd'hui.",
+    "solve": "Si tu as un doute, on pourrait commencer par acheter un seul article. Et on demanderait s'il y a un retour possible."
+  },
+  {
+    "label": "Selling at a sale: rain, equipment, low prices, few items",
+    "rep": "14.1",
+    "members": ["14.1", "14.3", "14.4", "14.5", "14.6", "14.7", "40.2", "40.3", "40.7", "40.8", "40.9"],
+    "acknowledge": "C'est vrai, ça demande du temps, et il faut accepter de vendre à petit prix.",
+    "defend": "Mais on vide sa maison, on gagne un peu d'argent et on passe un bon moment. Pour la pluie, il y a souvent un abri ou un report. Le matériel est simple : une table et un peu d'espace suffisent. Et si tu n'as pas beaucoup de choses, tu peux t'installer avec un ami. Tu en profiteras aussi pour chiner.",
+    "solve": "Pour te faciliter la tâche, on pourrait partager un stand et se répartir le travail. Comme ça, on serait deux à négocier et à s'amuser."
+  },
+  {
+    "label": "Tool library: opening hours, availability, condition, distance",
+    "rep": "21.0",
+    "members": ["21.0", "21.1", "21.2", "21.3", "21.4", "21.7", "21.8"],
+    "acknowledge": "Je comprends, on aime avoir ses propres outils sous la main, surtout quand on en a besoin vite.",
+    "defend": "Mais on ne les utilise pas tous les jours, et ils prennent de la place. Ici, on emprunte seulement ce dont on a besoin, quand on en a besoin. Le matériel est entretenu et souvent de meilleure qualité. Et pour les horaires, on peut réserver à l'avance, donc on ne dépend pas de la chance.",
+    "solve": "Si jamais l'outil est déjà pris, on pourrait chercher un autre créneau ou demander conseil au responsable. Et on garderait nos outils de base à la maison."
+  },
+  {
+    "label": "Trust, insurance, legal and health risks",
+    "rep": "13.2",
+    "members": ["9.7", "13.2", "13.5", "13.6", "13.8", "53.7", "53.8", "57.7", "66.2", "66.9", "79.5", "79.6"],
+    "acknowledge": "C'est vrai, il faut faire attention à la sécurité, à l'assurance et aux personnes qu'on rencontre.",
+    "defend": "Mais les organisations sérieuses ont des règles claires : assurance, vaccins, contrats et autorisations. On peut aussi lire les avis avant de s'inscrire. Bien que le risque zéro n'existe pas, on ne prend pas plus de risques qu'ailleurs. Et l'échange fonctionne bien quand chacun est honnête.",
+    "solve": "Pour être tranquille, on pourrait vérifier l'assurance avec l'organisme et demander les documents nécessaires. Et on choisirait toujours une structure reconnue."
+  },
+  {
+    "label": "I'd rather rest, do something else or donate; boredom",
+    "rep": "39.0",
+    "members": ["6.9", "12.3", "14.9", "39.0", "39.1", "40.5", "69.2", "69.9", "71.2", "74.9", "76.3", "76.5", "79.2", "79.7"],
+    "acknowledge": "Je respecte ton choix, on a tous besoin de repos, et donner de l'argent aide aussi.",
+    "defend": "Mais participer, ce n'est pas la même chose que de donner. On rencontre des gens, on bouge et on voit tout de suite les résultats. Bien sûr, on peut aussi se reposer, mais s'occuper de quelqu'un ou de quelque chose apporte une vraie satisfaction. Et on ne s'ennuie pas quand on a un objectif.",
+    "solve": "Pourquoi ne pas faire les deux ? On donnerait un peu d'argent, et on essaierait une activité une seule fois. Si ça ne te plaît pas, tu reviendrais à tes habitudes."
+  }
+]
