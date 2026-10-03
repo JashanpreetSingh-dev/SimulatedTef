@@ -45,10 +45,6 @@ export function D2CCTA({ variant = 'hero', className = '' }: D2CCTAProps) {
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xl">✓</span>
-            <span>1 Mock exam (total)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xl">✓</span>
             <span>Unlimited written expression practice</span>
           </div>
         </div>

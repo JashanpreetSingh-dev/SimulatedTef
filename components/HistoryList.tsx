@@ -526,18 +526,11 @@ export const HistoryList: React.FC<HistoryListProps> = ({ module }) => {
         alert(t('errors.retakeAssignmentFailed'));
       }
     } else if (result.module === 'reading' || result.module === 'listening') {
-      const mockExamId = 'mockExamId' in result ? result.mockExamId : undefined;
-      if (mockExamId) {
-        // Part of a mock exam — return to mock exam view
-        navigate(`/mock-exam/${mockExamId}?module=${result.module}`);
+      const practiceTaskId = result.taskReferences?.taskA?.taskId;
+      if (practiceTaskId) {
+        navigate(`/practice/${result.module}/${practiceTaskId}`);
       } else {
-        // Standalone practice — navigate directly to the task page
-        const practiceTaskId = result.taskReferences?.taskA?.taskId;
-        if (practiceTaskId) {
-          navigate(`/practice/${result.module}/${practiceTaskId}`);
-        } else {
-          alert(t('errors.retakeTaskMissing'));
-        }
+        alert(t('errors.retakeTaskMissing'));
       }
     }
   };

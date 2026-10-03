@@ -5,7 +5,6 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { PracticeCard } from '../components/dashboard/PracticeCard';
 import { DailyRitualCard } from '../components/dashboard/DailyRitualCard';
-import { MockExamsCard } from '../components/dashboard/MockExamsCard';
 import { ReadingPracticeCard } from '../components/dashboard/ReadingPracticeCard';
 import { ListeningPracticeCard } from '../components/dashboard/ListeningPracticeCard';
 import { OralBStrategyCard } from '../components/dashboard/OralBStrategyCard';
@@ -103,14 +102,9 @@ export function Dashboard() {
           <ListeningPracticeCard />
         </div>
 
-        {/* Secondary row — daily habit + mock exam (retiring) */}
+        {/* Secondary row — daily habit + Section B strategy guide */}
         <div className="grid md:grid-cols-2 gap-6">
           <DailyRitualCard />
-          <MockExamsCard />
-        </div>
-
-        {/* Section B universal strategy guide */}
-        <div className="grid md:grid-cols-2 gap-6">
           <OralBStrategyCard />
         </div>
       </main>

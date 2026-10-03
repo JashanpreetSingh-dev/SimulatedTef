@@ -136,9 +136,7 @@ export function ResultView() {
           <DetailedResultView 
             result={result} 
             onBack={() => {
-              if (result.mockExamId) {
-                navigate(`/mock-exam/${result.mockExamId}`);
-              } else if (result.assignmentId) {
+              if (result.assignmentId) {
                 navigate('/practice');
               } else if (result.module === 'reading') {
                 navigate('/reading-practice');

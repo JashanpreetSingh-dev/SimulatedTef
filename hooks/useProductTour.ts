@@ -42,15 +42,6 @@ export function useProductTour(userId: string | undefined) {
             },
           },
           {
-            element: '#tour-mock-exam-card',
-            popover: {
-              title: '📚 Mock Exam — pressure-test yourself',
-              description: "All 4 TEF Canada sections, fully timed, real exam conditions. Run one when you want to know exactly where you stand.",
-              side: 'bottom',
-              align: 'start',
-            },
-          },
-          {
             element: '#tour-daily-ritual-card',
             popover: {
               title: '📇 Daily Ritual — your secret weapon',
@@ -66,8 +57,8 @@ export function useProductTour(userId: string | undefined) {
             popover: {
               title: '⚡ Navigate from anywhere',
               description: isMobile
-                ? 'Tap the menu to jump to Practice, Mock Exam, Daily Ritual, or History from any page.'
-                : 'Jump straight to any section from the nav — Practice, Mock Exam, Daily Ritual, History — from any page.',
+                ? 'Tap the menu to jump to Practice, Reading, Listening, Daily Ritual, or History from any page.'
+                : 'Jump straight to any section from the nav — Practice, Reading, Listening, Daily Ritual, History — from any page.',
               side: 'bottom',
               align: 'start',
               nextBtnText: "Got it — let's go!",

@@ -391,14 +391,6 @@ export function LandingPage() {
                 </motion.div>
 
                 <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-cyan-200 dark:group-hover:bg-cyan-800 group-hover:rotate-3 transition-all duration-300">🎯</div>
-                  <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">Mock Exams</h3>
-                  <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">
-                    Full simulation with official time limits. Experience the real exam conditions before test day.
-                  </p>
-                </motion.div>
-
-                <motion.div variants={cardItem} whileHover={{ scale: 1.04, y: -4 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }} className="group space-y-4 p-6 rounded-2xl bg-indigo-100 dark:bg-slate-800/50 hover:bg-indigo-200 dark:hover:bg-slate-700 transition-colors duration-200 border border-slate-200 dark:border-slate-700">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-800 group-hover:rotate-3 transition-all duration-300">🎙️</div>
                   <h3 className="text-base sm:text-xl font-bold text-slate-800 dark:text-slate-100">AI Oral Evaluation</h3>
                   <p className="text-slate-500 dark:text-slate-400 leading-[1.5] text-xs sm:text-sm hidden sm:block">

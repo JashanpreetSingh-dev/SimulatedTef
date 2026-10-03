@@ -93,11 +93,6 @@ export function ChangePlanModal({
                     : `${targetTier.limits.sectionALimit} Part A, ${targetTier.limits.sectionBLimit} Part B per month`}
               </li>
               <li>
-                {targetTier.id === 'free'
-                  ? '1 Mock Exam (total)'
-                  : `${targetTier.limits.mockExamLimit} Mock Exams per month`}
-              </li>
-              <li>
                 Written Expression: {(targetTier.limits.writtenExpressionSectionALimit ?? 1) === -1
                   ? 'Unlimited'
                   : (targetTier.limits.writtenExpressionSectionALimit ?? 1) === (targetTier.limits.writtenExpressionSectionBLimit ?? 1)

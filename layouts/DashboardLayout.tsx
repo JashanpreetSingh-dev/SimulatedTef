@@ -102,15 +102,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   Practice
                 </button>
                 <button
-                  onClick={() => navigate('/mock-exam')}
-                  className={
-                    location.pathname.startsWith('/mock-exam')
-                      ? 'text-indigo-400 dark:text-indigo-400'
-                      : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-                  }>
-                  Mock Exam
-                </button>
-                <button
                   onClick={() => navigate('/reading-practice')}
                   className={
                     location.pathname.startsWith('/reading-practice') || location.pathname.startsWith('/practice/reading')
@@ -316,16 +307,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     }`}
                   >
                     Practice
-                  </button>
-                  <button
-                    onClick={() => handleNavigate('/mock-exam')}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-colors ${
-                      location.pathname.startsWith('/mock-exam')
-                        ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-400 dark:text-indigo-300'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-indigo-100 dark:hover:bg-slate-800'
-                    }`}
-                  >
-                    Mock Exam
                   </button>
                   <button
                     onClick={() => handleNavigate('/reading-practice')}

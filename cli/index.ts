@@ -17,7 +17,6 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { registerReadingCommands } from './commands/reading';
 import { registerListeningCommands } from './commands/listening';
-import { registerMockExamCommands } from './commands/mock-exam';
 import { registerEmailCommands } from './commands/email';
 import { registerUsersCommands } from './commands/users';
 import { registerCleanupCommands } from './commands/cleanup';
@@ -49,10 +48,6 @@ const cli = yargs(hideBin(process.argv))
     return registerListeningCommands(yargs)
       .demandCommand(1, 'You need at least one command after listening');
   })
-  .command('mock-exam', 'Manage mock exams', (yargs) => {
-    return registerMockExamCommands(yargs)
-      .demandCommand(1, 'You need at least one command after mock-exam');
-  })
   .command('email', 'Send notification emails manually', (yargs) => {
     return registerEmailCommands(yargs)
       .demandCommand(1, 'You need at least one command after email');
@@ -61,7 +56,7 @@ const cli = yargs(hideBin(process.argv))
     return registerUsersCommands(yargs)
       .demandCommand(1, 'You need at least one command after users');
   })
-  .command('cleanup', 'Remove all documents for a task or mock exam ID', (yargs) => {
+  .command('cleanup', 'Remove all documents for a task ID', (yargs) => {
     return registerCleanupCommands(yargs)
       .demandCommand(1, 'You need at least one command after cleanup');
   })
@@ -86,14 +81,6 @@ const cli = yargs(hideBin(process.argv))
   .example('$0 listening section1-images --task-id listening_1', 'Generate Section 1 option images for one task (redo or first time)')
   .example('$0 listening fill-missing-section1-images', 'Generate Section 1 images for all tasks that are missing them')
   .example('$0 listening fill-missing-section1-images --task-id listening_1', 'Generate Section 1 images for a specific task only')
-  .example('$0 mock-exam generate', 'Generate complete mock exam (creates listening, reading, and mock exam automatically)')
-  .example('$0 mock-exam generate --reading-theme "Télétravail"', 'Generate mock exam with a specific reading theme')
-  .example('$0 mock-exam generate --skip-audio', 'Generate mock exam but skip audio generation')
-  .example('$0 mock-exam generate --skip-section1-images', 'Generate mock exam but skip Section 1 option images (Gemini image model)')
-  .example('$0 mock-exam create', 'Create a mock exam with auto-generated IDs (uses existing listening task)')
-  .example('$0 mock-exam create --reading-theme "Télétravail"', 'Create a mock exam with a specific theme')
-  .example('$0 mock-exam list', 'List all mock exams')
-  .example('$0 mock-exam remove mock_1', 'Remove mock exam mock_1 and all its data')
   .example('$0 email send-welcome --user-id user_123', 'Enqueue a welcome email for a specific user')
   .example('$0 email send-subscription-congrats --user-id user_123 --tier-id basic', 'Enqueue a subscription congratulations email for a specific user and tier');
 
