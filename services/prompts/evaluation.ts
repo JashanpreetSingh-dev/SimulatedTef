@@ -127,6 +127,81 @@ IMPORTANT:
 
 SCORING SYSTEM:
 - Overall score (score field): Provide a TEF score from 0 to 699 (integer). This represents the candidate's overall performance on the TEF Canada scale.
+${section === 'OralExpression' ? `
+EXPRESSION ORALE SCORE TABLE (current scale, effective Dec 11 2023):
+Use this table to assign a score consistent with the CLB level you assign. Position within the band should reflect strength (lower third = weak pass, mid = solid, upper third = strong).
+  CLB 4:  328–386
+  CLB 5:  387–421
+  CLB 6:  422–455
+  CLB 7:  456–493
+  CLB 8:  494–517
+  CLB 9:  518–555
+  CLB 10: 556–591
+  CLB 11: 592–641
+  CLB 12: 642–699
+Do NOT use the old pre-2023 scale or the Compréhension scale — they have different breakpoints.
+
+CLB LEVEL ANCHORS (official Centre for Canadian Language Benchmarks speaking descriptors):
+Use these descriptors as the PRIMARY reference when assigning clbLevel. Match the candidate's actual performance against the descriptor that best fits — do not rely on a vague feel for the level. If performance sits between two levels, choose the LOWER level (IRCC uses this score for immigration; be conservative).
+
+CLB 4 — Basic:
+  Short, familiar exchanges on immediate concrete topics. Speech is slow with
+  frequent pauses while searching for words. Many basic grammar errors.
+  Vocabulary limited to everyday needs. Often needs repetition or rephrasing
+  from the examiner. Cannot sustain abstract discussion.
+
+CLB 5 — Initial Intermediate:
+  Can handle short routine conversations on familiar topics. Speech is slow,
+  with visible hesitation while assembling sentences. Grammar errors are
+  frequent. Vocabulary limited to familiar concrete topics. Can convey basic
+  meaning but struggles noticeably with abstract ideas or counter-arguments.
+
+CLB 6 — Developing Intermediate:
+  Communicates in straightforward phone conversations and some formal
+  contexts. Speech reasonably fluent with hesitations. Grammatical errors
+  present but usually don't block meaning. Mostly concrete topics; abstract
+  topics cause difficulty. Register is appropriate but range is somewhat
+  limited. Can defend a position but with limited development.
+
+CLB 7 — Adequate Intermediate:
+  Adapts style and register to different audiences and situations. Expanding
+  range of concrete AND some idiomatic language. Communicates with some
+  confidence in daily routine social, educational, and work situations. Can
+  present concrete and some abstract information on an expanding range of
+  familiar topics. Hesitations exist but don't derail communication. Addresses
+  objections rather than ignoring them. Grammar errors occur but don't block
+  understanding.
+
+CLB 8 — Fluent Intermediate:
+  Clear connected discourse, even in unfamiliar groups and moderately
+  demanding contexts. Expanded range of concrete, abstract, and idiomatic
+  language. Register control is reliable. Grammar errors become rare and are
+  often self-corrected. Can develop and nuance arguments with examples.
+
+CLB 9 — Initial Advanced:
+  Participates fully in extended discussions on abstract and theoretical
+  topics. Nuanced vocabulary range, including some less common idiomatic
+  expressions. Grammar near-flawless with occasional slips. Speech flows
+  without visible retrieval effort. Handles counter-arguments with
+  sophistication and anticipates objections.
+
+CLB 10 — Developed Advanced:
+  Sophisticated discourse on specialized or complex topics with precision.
+  Idiomatic language used naturally. Very few errors. Can argue persuasively
+  with structure, nuance, and rhetorical effect.
+
+CLB 11-12 — Advanced to Near-Native:
+  Near-native range and precision. Handles any topic with fluency, idiomatic
+  control, and natural prosody. Grammar effectively error-free.
+
+HOW TO USE THESE ANCHORS:
+1. Read the transcript end-to-end before scoring.
+2. Ask: which descriptor above best matches the OVERALL performance?
+3. If evidence points to one level, assign that level.
+4. If torn between two adjacent levels, choose the lower one.
+5. Then assign a score within the matching band from the SCORE TABLE above.
+6. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria.
+7. Objective anchors (EO1 question count, EO2 argument_breakdown quality) still apply and can lower the CLB from what the descriptors alone would suggest.` : ''}
 - Criteria scores (criteria object): Each criterion must include BOTH a score (0-10 integer) AND a comment (English sentence explaining how the candidate performed). Format each criterion as an object with "score" (number) and "comment" (string):
   * taskFulfillment: { score: 0-10, comment: "English sentence explaining performance" }
   * coherence: { score: 0-10, comment: "English sentence explaining performance" }
@@ -261,23 +336,29 @@ CLB 5 (B1):
 - Frequent but not systematic errors
 - Some coherence, basic development
 
-CLB 6 (B2):
+CLB 6 (B1):
 - Task fulfillment: 75-85% (e.g., Section A: 90-110 words, Section B: 210-240 words; Section A: 2+ paragraphs, Section B: 3+ arguments with some development)
 - Average criteria score: 6-7/10
 - Occasional errors, generally accurate
 - Good coherence, adequate development
 
-CLB 7 (B2-C1):
+CLB 7 (B2):
 - Task fulfillment: 85-95% (e.g., Section A: 100-120 words with multiple paragraphs, Section B: 230-250 words with 3+ well-developed arguments)
 - Average criteria score: 7-8/10
 - Few errors, good accuracy
 - Strong coherence, good development and nuance
 
-CLB 8+ (C1-C2):
+CLB 8 (B2):
 - Task fulfillment: 95-100% (all requirements met excellently)
 - Average criteria score: 8-9/10
 - Very few or no significant errors
 - Excellent coherence, sophisticated development
+
+CLB 9+ (C1-C2):
+- Task fulfillment: 100% (all requirements met at an advanced level)
+- Average criteria score: 9-10/10
+- Near-flawless grammar, spelling, and vocabulary
+- Sophisticated development, nuance, and precision
 
 IMPORTANT FOR CONSISTENCY:
 - Calculate the average of all 6 criteria scores first
@@ -312,7 +393,7 @@ French (examples only):
 - upgraded_sentences.why: English (explanation of why the improvement was made)
 
 model_answer: Provide a model answer (in French) that demonstrates how a strong candidate (B2-C1 level) would approach this task.
-${section === 'OralExpression' ? `For EO1: Show a natural conversation flow with 8-10 relevant questions, appropriate register, and clear communication.
+${section === 'OralExpression' ? `For EO1: Show a natural conversation flow with 9-10 relevant questions, appropriate register, and clear communication.
 For EO2: Show a persuasive argument with clear structure, effective counter-argument handling, and strong examples.
 Keep it realistic and appropriate for the TEF Canada context (2-3 paragraphs or a structured dialogue example).` : section === 'WrittenExpression' ? `For Section A (fait divers): Show a proper continuation of the news article with multiple paragraphs, factual reporting style, correct use of past tenses (passé composé, imparfait), and sufficient detail (80-120 words). Demonstrate journalistic objectivity and clarity.
 For Section B (argumentation): Show a proper letter to the journal with formal register, clear position statement, at least 3 well-developed arguments with examples, and effective use of formal connectors. Demonstrate ability to develop, nuance, and clarify arguments (200-250 words).` : ''}

@@ -86,7 +86,7 @@ export const ArticleExpressEntry: React.FC = () => {
 
         <h2>How Do TEF Canada Scores Convert to CLB?</h2>
         <p>
-          IRCC publishes official conversion tables for TEF Canada. The oral expression section (Expression Orale) is scored out of 450 points and maps to CLB levels as follows:
+          IRCC publishes official conversion tables for TEF Canada. All four skills are scored out of 699. The oral expression section (Expression Orale) uses the following score bands, which changed in December 2023:
         </p>
 
         <div className="overflow-x-auto my-6">
@@ -94,19 +94,21 @@ export const ArticleExpressEntry: React.FC = () => {
             <thead>
               <tr className="bg-teal-50 dark:bg-teal-900/30">
                 <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">CLB Level</th>
-                <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">TEF Canada Oral Score (/ 450)</th>
+                <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">TEF Canada Oral Score (/ 699)</th>
                 <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">Express Entry eligibility</th>
               </tr>
             </thead>
             <tbody>
               {[
-                ['CLB 4', '181–225', 'FSTP writing/reading minimum'],
-                ['CLB 5', '226–270', 'FSTP speaking/listening; CEC TEER 2–3 minimum'],
-                ['CLB 6', '271–315', 'Above CEC TEER 2–3 minimum'],
-                ['CLB 7', '316–360', 'FSWP and CEC TEER 0–1 minimum ✓'],
-                ['CLB 8', '361–392', 'CRS bonus points begin'],
-                ['CLB 9', '393–420', 'Strong CRS language score'],
-                ['CLB 10+', '421–450', 'Maximum CRS language points'],
+                ['CLB 4', '328–386', 'FSTP writing/reading minimum'],
+                ['CLB 5', '387–421', 'FSTP speaking/listening; CEC TEER 2–3 minimum'],
+                ['CLB 6', '422–455', 'Above CEC TEER 2–3 minimum'],
+                ['CLB 7', '456–493', 'FSWP and CEC TEER 0–1 minimum ✓'],
+                ['CLB 8', '494–517', 'CRS bonus points begin'],
+                ['CLB 9', '518–555', 'Strong CRS language score'],
+                ['CLB 10', '556–591', 'High CRS language points'],
+                ['CLB 11', '592–641', 'Very high CRS language points'],
+                ['CLB 12', '642–699', 'Maximum CRS language points'],
               ].map(([clb, score, note]) => (
                 <tr key={clb} className="even:bg-slate-50 dark:even:bg-slate-800/30">
                   <td className="p-3 border border-slate-200 dark:border-slate-700 font-semibold text-teal-700 dark:text-teal-400">{clb}</td>
@@ -118,7 +120,7 @@ export const ArticleExpressEntry: React.FC = () => {
           </table>
         </div>
         <p className="text-sm text-slate-500 dark:text-slate-400 -mt-4">
-          Scores are approximate. Always verify against the current IRCC TEF Canada conversion chart before submitting your application.
+          Score bands are from the official CCI Paris conversion table effective December 11, 2023. Always verify against the current IRCC TEF Canada chart before submitting your application.
         </p>
 
         <h2>How Do Language Scores Affect Your CRS Points?</h2>
@@ -159,7 +161,7 @@ export const ArticleExpressEntry: React.FC = () => {
 
         <h2>How Do You Reach CLB 7 on TEF Canada Oral?</h2>
         <p>
-          CLB 7 requires 316 out of 450 points on oral expression — that is a 70% score. Most intermediate French speakers can reach this level with focused practice, but it requires specific preparation:
+          CLB 7 requires a score of 456–493 out of 699 on oral expression. Most intermediate French speakers can reach this level with focused practice, but it requires specific preparation:
         </p>
         <ul>
           <li><strong>Practice the exam format:</strong> Know what Section A and Section B look like, how much time you have, and what the examiner is assessing.</li>

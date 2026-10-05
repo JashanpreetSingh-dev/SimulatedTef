@@ -54,7 +54,7 @@ export const ArticleOralPreparation: React.FC = () => {
 
       <BlogPostLayout title={post.title} publishedDate={post.publishedDate} readingTimeMin={post.readingTimeMin} slug={post.slug}>
         <p>
-          TEF Canada Expression Orale is the spoken French component of the TEF Canada exam. It is scored out of 450 points and converted to a CLB level recognized by IRCC for immigration applications. It is also the section most candidates find hardest to prepare for on their own. Speaking practice requires a conversation partner, and finding one who can simulate a real exam is expensive and hard to schedule.
+          TEF Canada Expression Orale is the spoken French component of the TEF Canada exam. It is scored out of 699 points and converted to a CLB level recognized by IRCC for immigration applications. It is also the section most candidates find hardest to prepare for on their own. Speaking practice requires a conversation partner, and finding one who can simulate a real exam is expensive and hard to schedule.
         </p>
         <p>
           This guide covers what to expect in both oral sections, how they are scored, and the most effective ways to build fluency before exam day.
@@ -116,7 +116,7 @@ export const ArticleOralPreparation: React.FC = () => {
 
         <h2>How Are the Oral Sections Scored?</h2>
         <p>
-          TEF Canada oral expression is scored out of 450 points. These raw scores are then converted to Canadian Language Benchmark (CLB) levels, which is what IRCC uses for immigration purposes.
+          TEF Canada oral expression is scored out of 699 points. These raw scores are converted to Canadian Language Benchmark (CLB) levels, which is what IRCC uses for immigration purposes. The score bands below apply from December 11, 2023.
         </p>
 
         <div className="overflow-x-auto my-6">
@@ -124,19 +124,21 @@ export const ArticleOralPreparation: React.FC = () => {
             <thead>
               <tr className="bg-teal-50 dark:bg-teal-900/30">
                 <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">CLB Level</th>
-                <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">TEF Canada Score (out of 450)</th>
+                <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">TEF Canada Score (out of 699)</th>
                 <th className="text-left p-3 border border-slate-200 dark:border-slate-700 font-semibold">Description</th>
               </tr>
             </thead>
             <tbody>
               {[
-                ['CLB 4', '181–225', 'Basic conversational ability'],
-                ['CLB 5', '226–270', 'Intermediate — handles familiar topics'],
-                ['CLB 6', '271–315', 'Upper intermediate'],
-                ['CLB 7', '316–360', 'Advanced — required for most Express Entry streams'],
-                ['CLB 8', '361–392', 'Strong advanced'],
-                ['CLB 9', '393–420', 'Near-fluent'],
-                ['CLB 10', '421–450', 'Fluent'],
+                ['CLB 4', '328–386', 'Basic conversational ability'],
+                ['CLB 5', '387–421', 'Intermediate — handles familiar topics'],
+                ['CLB 6', '422–455', 'Upper intermediate'],
+                ['CLB 7', '456–493', 'Advanced — required for most Express Entry streams'],
+                ['CLB 8', '494–517', 'Strong advanced'],
+                ['CLB 9', '518–555', 'Near-fluent'],
+                ['CLB 10', '556–591', 'Fluent'],
+                ['CLB 11', '592–641', 'Highly proficient'],
+                ['CLB 12', '642–699', 'Near-native'],
               ].map(([clb, score, desc]) => (
                 <tr key={clb} className="even:bg-slate-50 dark:even:bg-slate-800/30">
                   <td className="p-3 border border-slate-200 dark:border-slate-700 font-semibold text-teal-700 dark:text-teal-400">{clb}</td>
@@ -148,7 +150,7 @@ export const ArticleOralPreparation: React.FC = () => {
           </table>
         </div>
         <p className="text-sm text-slate-500 dark:text-slate-400 -mt-4">
-          Source: IRCC CLB/TEF Canada conversion table. Scores are approximate — consult official CCI Paris materials for the current conversion chart.
+          Source: Official CCI Paris conversion table, effective December 11, 2023. Always verify against the current IRCC TEF Canada chart before submitting your application.
         </p>
 
         <h2>What are the most effective ways to prepare?</h2>
