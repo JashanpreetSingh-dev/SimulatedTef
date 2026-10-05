@@ -355,6 +355,24 @@ Level requirements:
 - cecrLevel: CECR level (one of exactly: A1, A2, B1, B2, C1, C2)
   IMPORTANT: Use a single CECR level, NOT a range. Choose the level that best represents the candidate's performance.
 
+MANDATORY CECR ↔ CLB MAPPING (official Centre for CLB / CCI Paris alignment):
+Derive cecrLevel DIRECTLY from the clbLevel you assigned, using this table — do NOT infer CECR independently.
+  CLB 4       → A2
+  CLB 5       → B1
+  CLB 6       → B1
+  CLB 7       → B2
+  CLB 8       → B2
+  CLB 9       → C1
+  CLB 10      → C1
+  CLB 11      → C2
+  CLB 12      → C2
+Common mistakes to avoid:
+  • CLB 6 is B1, NOT B2. B2 starts at CLB 7.
+  • CLB 8 is B2, NOT C1. C1 starts at CLB 9.
+  • Do not output B2 for anything below CLB 7.
+  • Do not output C1 for anything below CLB 9.
+If you catch yourself about to output a mismatch (e.g., CLB 6 + B2), recheck the mapping above and fix it before returning JSON.
+
 ${section === 'WrittenExpression' ? `DETERMINISTIC CLB SCORING GUIDELINES (for consistent evaluation - Written Expression only):
 To ensure consistency across multiple evaluations of the same text, use these objective guidelines when determining CLB levels:
 
