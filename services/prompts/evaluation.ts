@@ -303,6 +303,42 @@ For OralExpression Section B / EO2 (mode: partB or full), also include:
   Cover every counter-argument raised by the examiner plus 1-2 main supporting arguments the candidate needed to make.
   Return [] for partA-only evaluations.
 
+ARGUMENT_BREAKDOWN QUALITY RUBRIC (apply this strictly to each item's "quality" field):
+
+  strong — Candidate addresses the counter-argument DIRECTLY and effectively:
+    • Clear rebuttal, OR acknowledgement + redirection to new angle
+    • At least ONE concrete example, reason, or piece of evidence
+    • Natural French, few grammar errors, connectors used appropriately
+    • Shows active persuasion, not defensive one-liners
+
+  adequate — Candidate addresses it but with limitations:
+    • Rebuttal is present but shallow (e.g., "non, c'est pas vrai" plus one sentence)
+    • Example is generic, vague, or missing
+    • Language understandable with occasional errors
+    • Stays on topic but develops the point minimally
+
+  weak — Candidate attempts to address but ineffectively:
+    • Just restates original position without new reasoning
+    • One-sentence response with no development
+    • Significant errors cloud the meaning
+    • Response is partially off-topic or misses the examiner's actual point
+
+  missing — Candidate did NOT meaningfully address the counter-argument:
+    • Silence, filler ("euh… d'accord"), or one-word acknowledgement
+    • Agreed with the counter without defending their position
+    • Changed subject entirely
+    • Response does not appear in the transcript
+
+HOW argument_breakdown AFFECTS CLB (apply as a secondary anchor, after CLB descriptors):
+  CLB 9+: ≥ 70% strong, 0 missing, at most 1 weak
+  CLB 8:  majority strong-or-adequate, 0 missing, at most 1 weak
+  CLB 7:  majority adequate (some strong), at most 1 weak, 0 missing
+  CLB 6:  mix of adequate and weak, at most 1 missing
+  CLB 5:  majority weak, several missing
+  CLB 4:  mostly missing or very weak
+
+If argument_breakdown quality would place the candidate at a different CLB level than the overall descriptors suggest, choose the LOWER of the two levels. EO2 CLB cannot exceed what the argument_breakdown supports.
+
 For WrittenExpression, also include:
 - actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)
 - actual_word_count_sectionB: Integer word count for Section B (target: 200-250 words)
