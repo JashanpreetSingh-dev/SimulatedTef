@@ -318,6 +318,10 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionBLimitReached': 'Limite quotidienne de Section B atteinte et aucun crédit de pack disponible',
     'errors.examSessionExpired': 'Cette session d\'examen a expiré. L\'utilisation a déjà été consommée lorsque l\'examen a commencé.',
     'errors.writtenExpressionLimitReached': 'Limite mensuelle d\'expression écrite atteinte. Passez à un forfait supérieur pour continuer.',
+    'errors.oralLimitReachedTitle': 'Limite d\'expression orale atteinte',
+    'errors.oralLimitReachedBody': 'Vous avez utilisé votre quota gratuit pour cette période. Passez à un forfait supérieur pour continuer à pratiquer sans limite.',
+    'errors.limitUpgradeCTA': 'Passer à un forfait supérieur',
+    'errors.limitCloseCTA': 'Fermer',
     
     // Subscription Management
     'subscription.title': 'Gestion de l\'abonnement',
@@ -873,6 +877,10 @@ const translations: Record<Language, Record<string, string>> = {
     'errors.sectionBLimitReached': 'Daily Section B limit reached and no pack credits available',
     'errors.examSessionExpired': 'This exam session has expired. Usage was already consumed when the exam started.',
     'errors.writtenExpressionLimitReached': 'Monthly written expression limit reached. Upgrade to continue.',
+    'errors.oralLimitReachedTitle': 'Oral expression limit reached',
+    'errors.oralLimitReachedBody': 'You\'ve used your free attempts for this period. Upgrade to keep practicing without limits.',
+    'errors.limitUpgradeCTA': 'Upgrade to continue',
+    'errors.limitCloseCTA': 'Close',
     
     // Subscription Management
     'subscription.title': 'Subscription Management',

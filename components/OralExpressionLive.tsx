@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { geminiService, decodeAudio, decodeAudioData, createPcmBlob } from '../services/gemini';
 import { TEFTask, SavedResult } from '../types';
@@ -12,6 +13,8 @@ import {
 import { LoadingResult } from './LoadingResult';
 import { conversationLogService } from '../services/conversationLogService';
 import { HintsCarousel } from './exam/HintsCarousel';
+import { LimitReachedModal } from './common/LimitReachedModal';
+import { useLanguage } from '../contexts/LanguageContext';
 
 /**
  * Live outputTranscription often sends incremental fragments (a few words), not the full line each time.
@@ -68,6 +71,9 @@ interface Props {
 export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSessionStart, mode }) => {
   const { user } = useUser();
   const { getToken } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const [limitModal, setLimitModal] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
   const [currentPart, setCurrentPart] = useState<'A' | 'B'>(scenario.mode === 'partB' ? 'B' : 'A');
   const [status, setStatus] = useState<'idle' | 'connecting' | 'active' | 'evaluating'>('idle');
   const [showLiveCaptions, setShowLiveCaptions] = useState(() => {
@@ -364,13 +370,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
     if (onSessionStart && !usageCountedRef.current) {
       usageCountedRef.current = true;
       const examType = mode === 'full' ? 'full' : mode === 'partA' ? 'partA' : 'partB';
-      const result = await onSessionStart(examType);
-      
+      let result: { canStart: boolean; sessionId?: string; reason?: string };
+      try {
+        result = await onSessionStart(examType);
+      } catch (err) {
+        // Network / server error: release the latch so the user's next click re-checks the gate.
+        usageCountedRef.current = false;
+        setStatus('idle');
+        setLimitModal({ open: true, message: 'Impossible de démarrer l\'examen. Veuillez réessayer.' });
+        return;
+      }
+
       if (!result.canStart) {
         console.error('Failed to count usage:', result.reason);
-        // If usage counting fails, don't start the session
+        // Release the latch — otherwise a second mic click would skip the gate entirely
+        // (the `if (!usageCountedRef.current)` guard would see `true` and bypass this block).
+        usageCountedRef.current = false;
         setStatus('idle'); // Reset status if we can't start
-        alert(result.reason || 'Impossible de démarrer l\'examen. Veuillez réessayer.');
+        setLimitModal({ open: true, message: t('errors.oralLimitReachedBody') });
         return;
       }
       
@@ -1749,6 +1766,18 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           </div>
         </div>
       )}
+      <LimitReachedModal
+        isOpen={limitModal.open}
+        title={t('errors.oralLimitReachedTitle')}
+        message={limitModal.message}
+        upgradeLabel={t('errors.limitUpgradeCTA')}
+        closeLabel={t('errors.limitCloseCTA')}
+        onClose={() => setLimitModal({ open: false, message: '' })}
+        onUpgrade={() => {
+          setLimitModal({ open: false, message: '' });
+          navigate('/subscription');
+        }}
+      />
     </div>
   );
 };

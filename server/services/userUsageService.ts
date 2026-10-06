@@ -378,7 +378,10 @@ export async function checkCanStartSection(
       status: { $in: ['active', 'trialing'] },
     });
     
-    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+    // Only use subscription billing cycle for PAID tiers.
+    // Free tier's currentPeriodStart/End is a signup-time placeholder that never rolls over,
+    // so free-tier users must use the signup-anchored rolling window instead.
+    if (subscription && subscription.tier !== 'free' && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
       const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
         currentPeriodStart: subscription.currentPeriodStart,
         currentPeriodEnd: subscription.currentPeriodEnd,
@@ -606,7 +609,9 @@ export async function checkCanStartWrittenExpression(
       status: { $in: ['active', 'trialing'] },
     });
     
-    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+    // Only paid tiers use the subscription billing cycle; free tier's periods never roll
+    // over, so they must use the signup-anchored rolling window.
+    if (subscription && subscription.tier !== 'free' && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
       // Paid subscription - use billing cycle (effective start resets usage on upgrade)
       const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
         currentPeriodStart: subscription.currentPeriodStart,
@@ -767,7 +772,9 @@ export async function checkCanStartMockExam(
       status: { $in: ['active', 'trialing'] },
     });
     
-    if (subscription && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
+    // Only paid tiers use the subscription billing cycle; free tier's periods never roll
+    // over, so they must use the signup-anchored rolling window.
+    if (subscription && subscription.tier !== 'free' && subscription.currentPeriodStart && subscription.currentPeriodEnd) {
       // Paid subscription - use billing cycle (effective start resets usage on upgrade)
       const { effectiveStartStr, periodEndStr } = getEffectivePeriodForSubscription({
         currentPeriodStart: subscription.currentPeriodStart,
