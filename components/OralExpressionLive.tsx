@@ -1248,41 +1248,24 @@ export const OralExpressionLive: React.FC<Props> = ({ scenario, onFinish, onSess
           ].filter(Boolean).join('\n\n').trim() || '';
         }
 
+        // Server-side worker transcribes the recording from S3 using recordingId —
+        // keeps the slow Gemini audio call off the browser, inside the retryable queue.
+        // If the S3 upload failed (no recordingId), fall back to the live transcript
+        // so evaluation can still proceed.
         let evalTranscript = '';
-        let fluencyFromRecording: Record<string, unknown> | undefined;
-        let usedRecordingTranscribe = false;
-
-        if (wavBlob && wavBlob.size > 0) {
-          try {
-            console.log('🎤 Transcribing recording for evaluation (recheck-quality path)...');
-            const tx = await geminiService.transcribeAudio(wavBlob);
-            const t = (tx.transcript || '').trim();
-            if (t) {
-              evalTranscript = t;
-              fluencyFromRecording = tx.fluency_analysis as Record<string, unknown> | undefined;
-              usedRecordingTranscribe = true;
-              console.log(
-                '✅ Transcription done for job, length:',
-                evalTranscript.length,
-                fluencyFromRecording ? '(with fluency_analysis)' : ''
-              );
-            }
-          } catch (txErr) {
-            console.error('❌ Client transcribeAudio failed, falling back to live transcript:', txErr);
-          }
-        }
-
-        if (!evalTranscript) {
+        const fluencyFromRecording: Record<string, unknown> | undefined = undefined;
+        if (!recordingId) {
           evalTranscript = liveTranscriptFallback;
-          fluencyFromRecording = undefined;
           if (!evalTranscript) {
-            console.warn('⚠️ No eval transcript: no recording transcription and empty live transcript');
+            console.warn('⚠️ No recordingId AND empty live transcript — worker will reject the job');
+          } else {
+            console.warn('⚠️ No recordingId; submitting with live transcript fallback');
           }
         }
 
         console.log('📝 Submitting oral evaluation job:', {
           audioBlobSize: wavBlob?.size || 0,
-          evalSource: usedRecordingTranscribe ? 'transcribeAudio' : 'liveFallback',
+          evalSource: recordingId ? 'serverTranscribe(S3)' : 'liveFallback',
           transcriptLength: evalTranscript.length,
           preview: evalTranscript.substring(0, 200) + (evalTranscript.length > 200 ? '...' : '')
         });
