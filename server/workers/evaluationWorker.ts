@@ -114,7 +114,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
         let fluencyAnalysis = providedFluencyAnalysis;
 
         const needsAudioTranscribe =
-          section === 'OralExpression' && !transcript && (Boolean(audioBlob) || Boolean(recordingId));
+          section === 'OralExpression' && Boolean(audioBlob) && !transcript;
 
         if (section === 'OralExpression' && transcript && !needsAudioTranscribe) {
           await safeUpdateProgress(job, 28);
@@ -130,30 +130,10 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           await safePublish(channel, JSON.stringify({ status: 'active', progress: 15 }));
 
           console.log(`Transcribing audio for job ${job.id}...`);
-
-          // Resolve audio bytes + mime type.
-          // Preferred path: fetch from S3 using recordingId (keeps job payload small).
-          // Legacy path: audioBlob base64 passed inline (kept for back-compat).
-          let base64Data: string;
-          let audioMimeType = 'audio/wav';
-          if (recordingId && !audioBlob) {
-            const { recordingsService } = await import('../services/recordingsService');
-            const { s3Service } = await import('../services/s3Service');
-            const rec = await recordingsService.findById(recordingId, userId);
-            if (!rec) {
-              throw new Error(`Recording not found or not accessible: ${recordingId}`);
-            }
-            const buffer = await s3Service.downloadFile(rec.s3Key);
-            base64Data = buffer.toString('base64');
-            audioMimeType = rec.contentType || 'audio/wav';
-            console.log(
-              `📥 Fetched audio from S3 for job ${job.id}: ${(buffer.length / 1024).toFixed(2)} KB, ${audioMimeType}`
-            );
-          } else {
-            // Extract base64 data (remove data:audio/wav;base64, prefix if present)
-            base64Data = audioBlob.split(',')[1] || audioBlob;
-          }
-
+          
+          // Extract base64 data (remove data:audio/wav;base64, prefix if present)
+          const base64Data = audioBlob.split(',')[1] || audioBlob;
+          
           // Directly call Gemini API with base64 (bypass blobToBase64 which uses FileReader)
           // This is more efficient in Node.js since we already have base64
           const { GoogleGenAI, Type } = await import('@google/genai');
@@ -168,7 +148,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
             contents: [{
               parts: [{
                 inlineData: {
-                  mimeType: audioMimeType,
+                  mimeType: "audio/wav",
                   data: base64Data
                 }
               }, {
@@ -245,7 +225,7 @@ export function startWorker(): Worker<EvaluationJobData, EvaluationJobResult> {
           await safeUpdateProgress(job, 30); // 30% - Transcription complete
           await safePublish(channel, JSON.stringify({ status: 'active', progress: 30 }));
         } else if (!transcript) {
-          throw new Error('Either transcript, audioBlob, or recordingId must be provided');
+          throw new Error('Either transcript or audioBlob must be provided');
         }
 
         // Call Gemini API for evaluation (this is the slow part)

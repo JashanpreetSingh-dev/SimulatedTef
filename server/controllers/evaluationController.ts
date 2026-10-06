@@ -54,9 +54,9 @@ export const evaluationController = {
       });
     }
 
-    if (section === 'OralExpression' && !transcriptTrimmed && !audioBlob && !recordingId) {
+    if (section === 'OralExpression' && !transcriptTrimmed && !audioBlob) {
       return res.status(400).json({
-        error: 'Missing required field: transcript, audioBlob, or recordingId must be provided for OralExpression',
+        error: 'Missing required field: either transcript or audioBlob must be provided for OralExpression',
       });
     }
 

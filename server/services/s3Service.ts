@@ -95,31 +95,6 @@ export async function getPresignedUrl(
 }
 
 /**
- * Download a file from S3 as a Buffer. Used by the evaluation worker to fetch
- * audio recordings for server-side transcription.
- * @param key - S3 object key
- * @returns File contents as a Buffer
- */
-export async function downloadFile(key: string): Promise<Buffer> {
-  const bucket = getBucket();
-  if (!bucket) {
-    throw new Error('AWS_S3_BUCKET environment variable is not set');
-  }
-
-  const command = new GetObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  });
-
-  const response = await getS3Client().send(command);
-  if (!response.Body) {
-    throw new Error(`S3 object has no body: ${key}`);
-  }
-  const bytes = await response.Body.transformToByteArray();
-  return Buffer.from(bytes);
-}
-
-/**
  * Delete an audio file from S3
  * @param key - S3 object key to delete
  */
@@ -176,7 +151,6 @@ export const s3Service = {
   isS3Configured,
   uploadFile,
   uploadAudio,
-  downloadFile,
   getPresignedUrl,
   deleteAudio,
   generateRecordingKey,
