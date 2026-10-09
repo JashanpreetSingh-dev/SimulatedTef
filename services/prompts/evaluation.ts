@@ -202,6 +202,70 @@ HOW TO USE THESE ANCHORS:
 5. Then assign a score within the matching band from the SCORE TABLE above.
 6. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria.
 7. Objective anchors (EO1 question count, EO2 argument_breakdown quality) still apply and can lower the CLB from what the descriptors alone would suggest.` : ''}
+${section === 'WrittenExpression' ? `
+CLB LEVEL ANCHORS (official Centre for Canadian Language Benchmarks writing descriptors):
+Use these descriptors as the PRIMARY reference when assigning clbLevel. Match the candidate's actual writing performance against the descriptor that best fits — do not rely on a vague feel for the level, and do not derive CLB from your own criteria-score averages. If performance sits between two levels, choose the LOWER level (IRCC uses this score for immigration; be conservative).
+
+CLB 4 — Basic:
+  Writes short, simple texts on familiar personal topics. Vocabulary limited
+  to everyday needs. Simple sentences only, often with grammar and spelling
+  errors that occasionally obscure meaning. Connectors are limited to "et",
+  "mais", "parce que". Little paragraphing. Register control is inconsistent.
+
+CLB 5 — Initial Intermediate:
+  Writes short routine texts on familiar concrete topics. Mostly simple
+  sentences with some coordinated clauses. Frequent errors in verb tenses,
+  agreements, and spelling, but meaning usually gets through. Basic
+  paragraphing. Vocabulary adequate for familiar topics but imprecise.
+
+CLB 6 — Developing Intermediate:
+  Writes paragraphs on familiar concrete topics in known formats (letter,
+  fait divers). Simple and some complex sentences. Errors are frequent but
+  rarely block meaning. Can express a point of view with limited
+  development. Register is mostly appropriate but not consistently
+  controlled. Vocabulary adequate; precision is uneven.
+
+CLB 7 — Adequate Intermediate:
+  Writes multi-paragraph texts on an expanding range of concrete and some
+  abstract topics. Mix of simple and complex sentences with clear
+  organization. Errors occur but do not block understanding. Can develop
+  a position with examples. Register control is reliable. Vocabulary shows
+  some precision and some idiomatic use. Spelling of usual vocabulary is
+  largely mastered.
+
+CLB 8 — Fluent Intermediate:
+  Writes well-organized multi-paragraph texts on concrete, abstract, and
+  moderately specialized topics. Complex sentence structures used
+  effectively. Grammar errors are rare and often self-corrected. Arguments
+  developed with nuance and clarification. Register is consistently
+  appropriate. Vocabulary is precise with growing idiomatic range.
+  Spelling largely accurate.
+
+CLB 9 — Initial Advanced:
+  Writes extended texts on abstract and theoretical topics with clear
+  structure and nuance. Complex syntax used naturally. Grammar
+  near-flawless with occasional slips. Vocabulary is nuanced and precise,
+  including less common idiomatic expressions. Register and tone finely
+  adjusted to purpose. Arguments anticipate objections.
+
+CLB 10 — Developed Advanced:
+  Sophisticated, precise writing on specialized or complex topics.
+  Idiomatic language used naturally. Very few errors. Can argue
+  persuasively with structure, nuance, and rhetorical effect.
+  Orthographic mastery.
+
+CLB 11-12 — Advanced to Near-Native:
+  Near-native range and precision. Handles any topic with idiomatic
+  control and stylistic finesse. Grammar and spelling effectively
+  error-free.
+
+HOW TO USE THESE ANCHORS (Written Expression):
+1. Read the entire candidate text end-to-end before scoring.
+2. Ask: which descriptor above best matches the OVERALL performance?
+3. If evidence points to one level, assign that level.
+4. If torn between two adjacent levels, choose the LOWER one.
+5. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria. Do NOT derive the CLB from criteria averages; derive both from the descriptor match.
+6. Objective anchors (word counts, Section B argument_breakdown_sectionB, Section A fait_divers_breakdown_sectionA) can LOWER the CLB from what the descriptors alone would suggest, but cannot raise it.` : ''}
 - Criteria scores (criteria object): Each criterion must include BOTH a score (0-10 integer) AND a comment (English sentence explaining how the candidate performed). Format each criterion as an object with "score" (number) and "comment" (string):
   * taskFulfillment: { score: 0-10, comment: "English sentence explaining performance" }
   * coherence: { score: 0-10, comment: "English sentence explaining performance" }
@@ -224,6 +288,14 @@ Use these criteria (adapt comments to the section):
 
 ${section === 'WrittenExpression' ? `WRITTEN EXPRESSION SPECIFIC GUIDANCE:
 
+PROCEDURAL REQUIREMENTS (apply before scoring any criterion):
+1. Read the entire candidate text end-to-end before assigning any score.
+2. Count words per section yourself; do not rely only on the metrics block.
+3. If evaluating both sections, score each independently against its own rubric, then synthesize an overall CLB that reflects the WEAKER of the two.
+4. If torn between two adjacent CLB levels, ALWAYS choose the LOWER level. This score feeds IRCC immigration decisions; a conservative assignment is correct behaviour.
+5. Never let a strong grammar score override weak task fulfillment (word count, argument count, format compliance). Objective anchors cap the CLB; they do not raise it.
+6. If the candidate's text is empty, off-topic, or in the wrong language, assign CLB 4 or below and explain why — do not try to find a charitable interpretation.
+
 FOR SECTION A (Fait divers - News Article Continuation):
 - Task: Complete/continue a news article (rubrique faits-divers) - continuation, NOT starting from scratch. The candidate is given the beginning of an article and must continue it.
 - Objective: Write the continuation of the article (80 mots minimum)
@@ -245,6 +317,41 @@ FOR SECTION A (Fait divers - News Article Continuation):
   * Syntax: Are sentences simple, complex, or mastered?
   * Tenses/modes: Correct use of passé composé and imparfait
   * Spelling: Is usual spelling mastered?
+
+SECTION A FAIT-DIVERS QUALITY RUBRIC (apply when Section A is present):
+Return a new field "fait_divers_breakdown_sectionA" — an object evaluating the news-article continuation on five dimensions. Each dimension is one of "strong"|"adequate"|"weak"|"missing":
+
+{
+  "journalistic_register": { "quality": ..., "evidence": "French: short verbatim quote from Section A supporting the rating (or null if missing)", "feedback": "one English sentence" },
+  "factual_density": { "quality": ..., "evidence": ..., "feedback": ... },
+  "past_tense_accuracy": { "quality": ..., "evidence": ..., "feedback": ... },
+  "paragraph_structure": { "quality": ..., "evidence": ..., "feedback": ... },
+  "narrative_continuity": { "quality": ..., "evidence": ..., "feedback": ... }
+}
+
+What each dimension assesses:
+- journalistic_register: Third-person, objective, neutral tone appropriate for a fait divers (not first-person, not opinion).
+- factual_density: Does the continuation answer who/what/when/where/why/how?
+- past_tense_accuracy: Correct use of passé composé for events + imparfait for background/description.
+- paragraph_structure: Multiple paragraphs, each with a clear focus.
+- narrative_continuity: Does the continuation flow naturally from the given opening, maintaining referents, names, and factual consistency?
+
+QUALITY LABELS (per dimension):
+  strong — Reliably well-executed (consistent register, dense facts, correct tense alternation, 2+ clear paragraphs, seamless continuation).
+  adequate — Mostly works with minor slips (one tense error, one first-person leak, thin on one w/w/w/w/w element).
+  weak — Noticeable failures (frequent register slips, mostly passé composé with no imparfait, single-paragraph block, missing most w/w/w/w/w elements).
+  missing — Dimension not demonstrated at all (no past tenses used, no paragraph breaks, no factual content).
+
+HOW fait_divers_breakdown_sectionA AFFECTS CLB (secondary anchor, after the writing descriptors):
+  CLB 8+: majority strong, 0 missing, at most 1 weak
+  CLB 7:  majority strong-or-adequate, 0 missing
+  CLB 6:  majority adequate, at most 1 weak
+  CLB 5:  mix of adequate and weak
+  CLB 4:  mostly weak or missing
+
+If fait_divers_breakdown_sectionA supports a lower CLB than the overall writing descriptors suggest, choose the LOWER level. Section A CLB cannot exceed what the breakdown supports.
+
+Return null for this field in partB-only evaluations.
 
 FOR SECTION B (Argumentation - Letter to the Journal):
 - Task: Write a letter to the journal (une phrase extraite d'un journal) expressing and justifying a point of view
@@ -275,6 +382,50 @@ FOR SECTION B (Argumentation - Letter to the Journal):
   * Tenses/modes: Correct use of appropriate tenses and modes
   * Spelling: Is usual spelling mastered? (Critical for formal writing)
   * Vocabulary: Is the vocabulary used correct, precise, adequate for formal argumentation?
+
+SECTION B ARGUMENT_BREAKDOWN QUALITY RUBRIC (apply when Section B is present):
+Return a new field "argument_breakdown_sectionB" — an array of 3-5 objects, one per argument the candidate presented in defence of their position. For each argument:
+
+{
+  "candidate_said": "French: verbatim quote from the letter — the sentence(s) that constitute this argument (or null when quality is 'missing')",
+  "ideal_development": "French: a concise model development of this argument — ONLY include this when quality is 'adequate', 'weak', or 'missing'; null when quality is 'strong'",
+  "quality": one of "strong"|"adequate"|"weak"|"missing",
+  "feedback": "one English sentence — praise what was done well if strong, or explain specifically what was missing / how to deepen the argument"
+}
+
+QUALITY LABELS:
+  strong — Argument is clearly stated AND developed:
+    • A clear claim + at least one concrete example, reason, or piece of evidence
+    • Shows nuance, clarification, or anticipation of objection
+    • Formal register, natural French, few grammar errors
+    • Uses formal connectors appropriately (cependant, en effet, par conséquent, d'une part/d'autre part)
+
+  adequate — Argument is present but limited:
+    • Claim is clear but development is shallow (one supporting sentence, generic example)
+    • Register mostly formal with minor slips
+    • Understandable with occasional errors
+
+  weak — Argument is attempted but ineffective:
+    • Claim is vague or restates the position without a new reason
+    • No supporting example or evidence
+    • Significant errors cloud the meaning
+    • Register inconsistent
+
+  missing — Fewer than 3 distinct arguments present in the letter. For each "missing" slot, candidate_said is null; ideal_development shows what should have been written.
+
+Cover every distinct argument the candidate presented. If the candidate presented fewer than 3 arguments, pad the array with "missing" entries up to 3 so the breakdown always has at least 3 items.
+
+HOW argument_breakdown_sectionB AFFECTS CLB (secondary anchor, after the writing descriptors):
+  CLB 9+: ≥ 70% strong, 0 missing, at most 1 weak
+  CLB 8:  majority strong-or-adequate, 0 missing, at most 1 weak
+  CLB 7:  majority adequate (some strong), at most 1 weak, 0 missing
+  CLB 6:  mix of adequate and weak, at most 1 missing
+  CLB 5:  majority weak, several missing
+  CLB 4:  mostly missing or very weak
+
+If argument_breakdown_sectionB would place the candidate at a different CLB than the writing descriptors suggest, choose the LOWER of the two levels. Section B CLB cannot exceed what argument_breakdown_sectionB supports.
+
+Return [] for this field in partA-only evaluations.
 
 WORD COUNT REQUIREMENTS AND PENALTIES:
 - Section A target: 80-120 words (minimum 80 as per PDF)
@@ -342,6 +493,8 @@ If argument_breakdown quality would place the candidate at a different CLB level
 For WrittenExpression, also include:
 - actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)
 - actual_word_count_sectionB: Integer word count for Section B (target: 200-250 words)
+- fait_divers_breakdown_sectionA: Object as specified in the Section A fait-divers quality rubric. Return null for partB-only evaluations.
+- argument_breakdown_sectionB: Array as specified in the Section B argument_breakdown quality rubric (always length ≥ 3, padded with "missing" entries if the candidate wrote fewer than 3 arguments). Return [] for partA-only evaluations.
 
 For WrittenExpression with two sections (Section A + Section B), also provide:
 - model_answer_sectionA: Model answer for Section A (fait divers, 80-120 words)
@@ -373,10 +526,11 @@ Common mistakes to avoid:
   • Do not output C1 for anything below CLB 9.
 If you catch yourself about to output a mismatch (e.g., CLB 6 + B2), recheck the mapping above and fix it before returning JSON.
 
-${section === 'WrittenExpression' ? `DETERMINISTIC CLB SCORING GUIDELINES (for consistent evaluation - Written Expression only):
-To ensure consistency across multiple evaluations of the same text, use these objective guidelines when determining CLB levels:
+${section === 'WrittenExpression' ? `DETERMINISTIC CLB SCORING GUIDELINES (consistency CROSS-CHECK — Written Expression only):
 
-For Written Expression, base CLB assignment on objective measures:
+IMPORTANT: The writing descriptors above (CLB LEVEL ANCHORS) are the PRIMARY source of truth for the CLB assignment. The guidelines below are a CONSISTENCY CROSS-CHECK: after you have chosen a CLB from the descriptors, compare against the ranges below. If the descriptor-based CLB and the cross-check conflict by more than 1 level, re-read the text — the descriptor match wins, but a large gap is a signal that one of the two reads is wrong. Do NOT derive the CLB directly from criteria averages.
+
+For Written Expression, use these objective cross-check anchors:
 
 CLB 4 (A2): 
 - Task fulfillment: 40-60% (e.g., Section A: 50-70 words, Section B: 150-180 words; Section A: 1 paragraph, Section B: fewer than 3 arguments)

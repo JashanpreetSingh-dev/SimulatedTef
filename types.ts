@@ -151,6 +151,29 @@ export interface ArgumentBreakdownItem {
   feedback: string;               // English: short tip or confirmation
 }
 
+export type RubricQuality = 'strong' | 'adequate' | 'weak' | 'missing';
+
+export interface WrittenArgumentBreakdownItem {
+  candidate_said: string | null;      // French: verbatim quote of the argument from the letter (null when quality is 'missing')
+  ideal_development: string | null;   // French: model development, shown only when quality is not 'strong'
+  quality: RubricQuality;
+  feedback: string;                   // English: short tip or confirmation
+}
+
+export interface FaitDiversDimension {
+  quality: RubricQuality;
+  evidence: string | null;            // French: verbatim quote from Section A supporting the rating (null if missing)
+  feedback: string;                   // English: short tip or confirmation
+}
+
+export interface FaitDiversBreakdown {
+  journalistic_register: FaitDiversDimension;
+  factual_density: FaitDiversDimension;
+  past_tense_accuracy: FaitDiversDimension;
+  paragraph_structure: FaitDiversDimension;
+  narrative_continuity: FaitDiversDimension;
+}
+
 export interface EvaluationResult {
   score: number;           // Overall TEF score (0-699) - Full TEF scoring scale
   clbLevel: string;        // Canadian Language Benchmark - single level only (e.g., "CLB 7", "CLB 5") - NO RANGES
@@ -178,6 +201,10 @@ export interface EvaluationResult {
   // WrittenExpression specific - AI-counted words
   actual_word_count_sectionA?: number;  // Word count for Section A (fait divers)
   actual_word_count_sectionB?: number;  // Word count for Section B (argumentation)
+  // WrittenExpression Section A - fait-divers quality rubric (dimension-level breakdown)
+  fait_divers_breakdown_sectionA?: FaitDiversBreakdown | null;
+  // WrittenExpression Section B - per-argument quality breakdown (parallel to EO2 argument_breakdown)
+  argument_breakdown_sectionB?: WrittenArgumentBreakdownItem[];
 }
 
 export interface UserResponse {
