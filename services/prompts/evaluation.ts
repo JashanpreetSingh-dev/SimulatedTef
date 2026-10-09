@@ -203,6 +203,20 @@ HOW TO USE THESE ANCHORS:
 6. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria.
 7. Objective anchors (EO1 question count, EO2 argument_breakdown quality) still apply and can lower the CLB from what the descriptors alone would suggest.` : ''}
 ${section === 'WrittenExpression' ? `
+EXPRESSION ÉCRITE SCORE TABLE (/699 scale, effective Dec 11 2023 — source: CCI Paris / lefrancaisdesaffaires.fr "Correspondance Score TEF – Niveau NCLC"):
+Use this table to assign a score consistent with the CLB level you assigned. Position within the band should reflect strength (lower third = weak pass, mid = solid, upper third = strong).
+  CLB 4:  268–329
+  CLB 5:  330–378
+  CLB 6:  379–427
+  CLB 7:  428–471
+  CLB 8:  472–511
+  CLB 9:  512–557
+  CLB 10: 558–576
+  CLB 11: 577–618
+  CLB 12: 619–699
+Do NOT use the Expression Orale score table — EE breakpoints are different (and lower at every CLB).
+Do NOT use the pre-Dec-2023 /699 scale — it has different breakpoints.
+
 CLB LEVEL ANCHORS (official Centre for Canadian Language Benchmarks writing descriptors):
 Use these descriptors as the PRIMARY reference when assigning clbLevel. Match the candidate's actual writing performance against the descriptor that best fits — do not rely on a vague feel for the level, and do not derive CLB from your own criteria-score averages. If performance sits between two levels, choose the LOWER level (IRCC uses this score for immigration; be conservative).
 
@@ -264,8 +278,9 @@ HOW TO USE THESE ANCHORS (Written Expression):
 2. Ask: which descriptor above best matches the OVERALL performance?
 3. If evidence points to one level, assign that level.
 4. If torn between two adjacent levels, choose the LOWER one.
-5. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria. Do NOT derive the CLB from criteria averages; derive both from the descriptor match.
-6. Objective anchors (word counts, Section B argument_breakdown_sectionB, Section A fait_divers_breakdown_sectionA) can LOWER the CLB from what the descriptors alone would suggest, but cannot raise it.` : ''}
+5. Then assign a /699 score within the matching band from the EXPRESSION ÉCRITE SCORE TABLE above (do NOT use the EO table).
+6. The six criterion scores (0-10) should be consistent with that CLB level — e.g., a CLB 7 overall should average roughly 6.5-7.5 across criteria. Do NOT derive the CLB from criteria averages; derive both from the descriptor match.
+7. Objective anchors (word counts, Section B argument_breakdown_sectionB, Section A fait_divers_breakdown_sectionA) can LOWER the CLB from what the descriptors alone would suggest, but cannot raise it.` : ''}
 - Criteria scores (criteria object): Each criterion must include BOTH a score (0-10 integer) AND a comment (English sentence explaining how the candidate performed). Format each criterion as an object with "score" (number) and "comment" (string):
   * taskFulfillment: { score: 0-10, comment: "English sentence explaining performance" }
   * coherence: { score: 0-10, comment: "English sentence explaining performance" }
