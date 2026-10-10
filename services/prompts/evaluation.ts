@@ -373,7 +373,7 @@ FOR SECTION B (Argumentation - Letter to the Journal):
 - Objective: Express and justify a point of view (exprimer son point de vue et le justifier)
 - Duration: 35 minutes
 - Format requirements:
-  * Minimum 200 words (200 mots minimum - no maximum specified, but 200-250 words is reasonable)
+  * Minimum 200 words (200 mots minimum per PDF). Ideal length is 200-250 words. Going longer is acceptable without penalty up to 300 words; only penalize if the text exceeds 300 words AND loses focus / becomes repetitive.
   * Letter format to the journal (Écrivez une lettre au journal)
   * Response to a statement/affirmation extracted from a journal article
 - Content requirements:
@@ -443,14 +443,15 @@ If argument_breakdown_sectionB would place the candidate at a different CLB than
 Return [] for this field in partA-only evaluations.
 
 WORD COUNT REQUIREMENTS AND PENALTIES:
-- Section A target: 80-120 words (minimum 80 as per PDF)
-- Section B target: 200-250 words (minimum 200 as per PDF)
+- Section A target: 80-120 words (minimum 80 per PDF)
+- Section B target: 200-250 words ideal (minimum 200 per PDF). Up to 300 words is acceptable without penalty.
 - Apply graduated penalties for word count violations:
-  * Within range: No penalty
+  * Within range (Section A: 80-120, Section B: 200-300): No penalty
   * 10-20% below minimum: Minor penalty (-1 on taskFulfillment)
   * 20-40% below minimum: Moderate penalty (-2 on taskFulfillment)
   * >40% below minimum: Severe penalty (-3 to -4 on taskFulfillment)
-  * Significantly over maximum: Minor penalty if content becomes repetitive or loses focus` : ''}
+  * Section B over 300 words: Minor penalty ONLY if content becomes repetitive or loses focus; otherwise no penalty
+  * Section A over 120 words: Minor penalty ONLY if content becomes repetitive or loses focus; otherwise no penalty` : ''}
 
 OUTPUT FORMAT:
 Required keys: score, clbLevel, cecrLevel, overall_comment, criteria, strengths, weaknesses, top_improvements, upgraded_sentences, model_answer
@@ -507,7 +508,7 @@ If argument_breakdown quality would place the candidate at a different CLB level
 
 For WrittenExpression, also include:
 - actual_word_count_sectionA: Integer word count for Section A (target: 80-120 words)
-- actual_word_count_sectionB: Integer word count for Section B (target: 200-250 words)
+- actual_word_count_sectionB: Integer word count for Section B (ideal: 200-250 words; acceptable up to 300 without penalty)
 - fait_divers_breakdown_sectionA: Object as specified in the Section A fait-divers quality rubric. Return null for partB-only evaluations.
 - argument_breakdown_sectionB: Array as specified in the Section B argument_breakdown quality rubric (always length ≥ 3, padded with "missing" entries if the candidate wrote fewer than 3 arguments). Return [] for partA-only evaluations.
 
@@ -706,9 +707,9 @@ The question count is a CORE requirement of EO1 - it cannot be overlooked even i
         }
         
         if (sectionBWords !== null) {
-          metrics += `\n- Section B words: ${sectionBWords} (target: 200-250)`;
+          metrics += `\n- Section B words: ${sectionBWords} (ideal: 200-250, acceptable up to 300)`;
           if (sectionBWords < 200) metrics += ` ⚠️ BELOW MINIMUM`;
-          else if (sectionBWords > 250) metrics += ` ⚠️ ABOVE MAXIMUM`;
+          else if (sectionBWords > 300) metrics += ` ⚠️ ABOVE MAXIMUM (>300)`;
         }
         
         // For single section mode (partA or partB)
@@ -719,9 +720,9 @@ The question count is a CORE requirement of EO1 - it cannot be overlooked even i
             if (totalWords < 80) metrics += ` ⚠️ BELOW MINIMUM`;
             else if (totalWords > 120) metrics += ` ⚠️ ABOVE MAXIMUM`;
           } else {
-            metrics += `\n- Detected as Section B (argumentation), target: 200-250 words`;
+            metrics += `\n- Detected as Section B (argumentation), ideal: 200-250 words, acceptable up to 300`;
             if (totalWords < 200) metrics += ` ⚠️ BELOW MINIMUM`;
-            else if (totalWords > 250) metrics += ` ⚠️ ABOVE MAXIMUM`;
+            else if (totalWords > 300) metrics += ` ⚠️ ABOVE MAXIMUM (>300)`;
           }
         }
         
