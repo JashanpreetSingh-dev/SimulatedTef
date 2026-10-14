@@ -9,14 +9,13 @@
  *   4. Uploads to S3 and stores questionImageS3Key in MongoDB
  *
  * Usage:
- *   npx tsx cli/commands/generate-listening-images.ts [--tests 11,12,13,14,15] [--prod]
+ *   npx tsx cli/commands/generate-listening-images.ts [--tests 11,12,13,14,15] [--force]
  */
 
 import dotenv from 'dotenv';
 import { resolve } from 'path';
 
-const isProd = process.argv.includes('--prod');
-dotenv.config({ path: resolve(process.cwd(), isProd ? '.env.local.prod' : '.env') });
+dotenv.config({ path: resolve(process.cwd(), '.env') });
 
 import { execSync } from 'child_process';
 import { existsSync, writeFileSync, unlinkSync, mkdirSync } from 'fs';
@@ -103,7 +102,8 @@ Rules:
       const msg: string = err?.message || JSON.stringify(err);
       // Parse retry delay from quota error, or use exponential backoff
       const retryMatch = msg.match(/retry[^0-9]*(\d+)[\.\d]*s/i);
-      const delaySec = retryMatch ? parseInt(retryMatch[1]) + 3 : Math.min(30 * 2 ** attempt, 120);
+      const rawDelay = retryMatch ? parseInt(retryMatch[1]) + 3 : 30 * 2 ** attempt;
+      const delaySec = Math.min(rawDelay, 120); // never wait more than 2 minutes
       const code = err?.status?.code || err?.code;
       if (code === 429 || code === 503 || msg.includes('503') || msg.includes('429') || msg.includes('UNAVAILABLE') || msg.includes('RESOURCE_EXHAUSTED')) {
         console.log(`      ⏳ Gemini rate limit/503, waiting ${delaySec}s (attempt ${attempt + 1}/5)...`);
