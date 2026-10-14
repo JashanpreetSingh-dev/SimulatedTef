@@ -53,7 +53,7 @@ export const ListeningExamAudioSection: React.FC<ListeningExamAudioSectionProps>
           <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-current mr-2"></div>
           {t('listeningExam.loadingAudio')}
         </div>
-      ) : audioUrl && audioUrl !== task.audioUrl ? (
+      ) : audioUrl ? (
         <AudioPlayer
           src={audioUrl}
           onEnded={onAudioEnded}
@@ -62,10 +62,6 @@ export const ListeningExamAudioSection: React.FC<ListeningExamAudioSectionProps>
             console.error('Audio playback error:', error);
           }}
         />
-      ) : audioUrl === task.audioUrl && task.audioUrl ? (
-        <div className={`p-4 ${theme === 'dark' ? 'text-red-300' : 'text-red-600'}`}>
-          ⚠️ {t('listeningExam.audioNotAvailable')}
-        </div>
       ) : (
         <div className={`p-4 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
           {t('listeningExam.loadingAudio')}
