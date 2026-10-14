@@ -118,12 +118,14 @@ Rules:
 
 // ── HTML renderer ─────────────────────────────────────────────────────────────
 
+// Letters → "Dessin N" (matching the original TEF exam image style)
+const DESSIN_LABELS: Record<string, string> = { A: 'Dessin 1', B: 'Dessin 2', C: 'Dessin 3', D: 'Dessin 4' };
+
 function buildHtml(panels: Panel[], questionNumber: number, testNumber: number): string {
   const panelHtml = panels.map(p => `
-    <div class="panel ${p.isCorrect ? 'correct' : ''}">
-      <div class="letter">${p.letter}</div>
+    <div class="panel">
+      <div class="label">${DESSIN_LABELS[p.letter] || p.letter}</div>
       <div class="emoji">${p.emoji}</div>
-      <div class="scene">${p.scene}</div>
     </div>`).join('');
 
   return `<!DOCTYPE html>
@@ -136,59 +138,44 @@ function buildHtml(panels: Panel[], questionNumber: number, testNumber: number):
     width: 560px;
     height: 420px;
     background: #fff;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: Arial, sans-serif;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px;
+    padding: 8px;
   }
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    gap: 6px;
     width: 100%;
+    height: 100%;
   }
   .panel {
-    border: 2px solid #d1d5db;
-    border-radius: 10px;
-    background: #f9fafb;
+    border: 2px solid #333;
+    background: #f4f4f4;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 14px 10px;
-    min-height: 158px;
-    position: relative;
+    gap: 0;
   }
-  .letter {
-    position: absolute;
-    top: 7px;
-    left: 10px;
-    font-size: 14px;
+  .label {
+    width: 100%;
+    background: #fff;
+    border-bottom: 2px solid #333;
+    text-align: center;
+    font-size: 15px;
     font-weight: 700;
-    color: #4b5563;
-    background: #e5e7eb;
-    border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #111;
+    padding: 5px 0;
+    letter-spacing: 0.02em;
   }
   .emoji {
-    font-size: 54px;
+    font-size: 72px;
     line-height: 1;
-    margin-bottom: 8px;
-    margin-top: 10px;
-  }
-  .scene {
-    font-size: 11.5px;
-    color: #374151;
-    text-align: center;
-    line-height: 1.35;
-    max-width: 180px;
-    font-weight: 500;
+    padding: 16px 0 8px;
+    filter: grayscale(100%);
   }
 </style>
 </head>
@@ -266,6 +253,7 @@ async function main() {
   const testNumbers = testsIdx >= 0
     ? args[testsIdx + 1].split(',').map(Number)
     : [11, 12, 13, 14, 15];
+  const force = args.includes('--force'); // regenerate even if image already exists
 
   if (!isS3Configured()) throw new Error('S3 not configured');
   if (!existsSync(TMP_DIR)) mkdirSync(TMP_DIR, { recursive: true });
@@ -293,9 +281,12 @@ async function main() {
         { projection: { questionImageS3Key: 1 } }
       );
 
-      if (existing?.questionImageS3Key) {
+      if (existing?.questionImageS3Key && !force) {
         console.log(`    Q${q.number}: already has image (${existing.questionImageS3Key}), skipping`);
         continue;
+      }
+      if (existing?.questionImageS3Key && force) {
+        console.log(`    Q${q.number}: --force, regenerating...`);
       }
 
       try {
