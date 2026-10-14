@@ -61,9 +61,10 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
   const { getToken } = useAuth();
   const { theme } = useTheme();
 
-  // Validate that we have questions and audioItems - check before hooks
+  // Validate that we have questions and audio - check before hooks
   const hasQuestions = questions && questions.length > 0;
-  const hasAudioItems = audioItems && audioItems.length > 0;
+  // v2 tasks use task.audioUrl (single global MP3); legacy tasks use per-question audioItems
+  const hasAudio = (audioItems && audioItems.length > 0) || !!task.audioUrl;
 
   // Main state management - hooks must be called unconditionally
   const examState = useListeningExamState({ questions: questions || [], assignmentId, mockExamId });
@@ -170,7 +171,7 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
     return <NoQuestionsError task={task} onClose={onClose} />;
   }
 
-  if (!hasAudioItems) {
+  if (!hasAudio) {
     return <NoAudioError task={task} onClose={onClose} />;
   }
 
