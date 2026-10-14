@@ -21,9 +21,14 @@ export interface ReadingListeningQuestion {
   options: string[]; // Array of exactly 4 answer options
   /** Length 4 when present; order = A,B,C,D. When set, UI shows options as images (e.g. listening Section 1 "quel dessin"). */
   optionImageUrls?: string[];
+  /** Composite image shown above the question (e.g. "quel dessin" with drawings labeled A-D). */
+  questionImage?: string;
   correctAnswer: number; // Index 0-3 indicating correct option
   explanation: string; // Explanation of why the correct answer is right
   audioId?: string; // Optional: Reference to AudioItem for listening questions
+  transcriptFr?: string; // French transcript for this question's audio segment
+  transcriptEn?: string; // English translation of transcript
+  vocabHints?: string; // Vocabulary hints (comma-separated)
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

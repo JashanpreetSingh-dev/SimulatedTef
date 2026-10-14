@@ -6,20 +6,34 @@ import { connectDB } from '../db/connection';
 import { ReadingListeningQuestion } from '../../types';
 import { s3Service } from './s3Service';
 
-/** Resolve optionImageS3Keys to presigned URLs and return question without S3 keys. */
+/** Resolve S3 keys to presigned URLs and return question without raw S3 key fields. */
 async function resolveQuestionForResponse(q: any): Promise<ReadingListeningQuestion> {
-  const keys = q.optionImageS3Keys as string[] | undefined;
-  if (keys?.length === 4 && s3Service.isS3Configured()) {
+  let result = { ...q };
+
+  // Resolve optionImageS3Keys → optionImageUrls
+  const optionKeys = q.optionImageS3Keys as string[] | undefined;
+  if (optionKeys?.length === 4 && s3Service.isS3Configured()) {
     try {
-      const urls = await Promise.all(keys.map((key) => s3Service.getPresignedUrl(key)));
-      const { optionImageS3Keys: _, ...rest } = q;
-      return { ...rest, optionImageUrls: urls };
+      const urls = await Promise.all(optionKeys.map((key) => s3Service.getPresignedUrl(key)));
+      result = { ...result, optionImageUrls: urls };
     } catch (err) {
       console.warn('Failed to resolve optionImageS3Keys to presigned URLs:', err);
     }
   }
-  const { optionImageS3Keys: _, ...rest } = q;
-  return rest;
+  delete result.optionImageS3Keys;
+
+  // Resolve questionImageS3Key → questionImage
+  const qImgKey = q.questionImageS3Key as string | undefined;
+  if (qImgKey && s3Service.isS3Configured()) {
+    try {
+      result.questionImage = await s3Service.getPresignedUrl(qImgKey);
+    } catch (err) {
+      console.warn('Failed to resolve questionImageS3Key to presigned URL:', err);
+    }
+  }
+  delete result.questionImageS3Key;
+
+  return result as ReadingListeningQuestion;
 }
 
 export const questionService = {

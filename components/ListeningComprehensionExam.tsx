@@ -195,6 +195,7 @@ export const ListeningComprehensionExam: React.FC<ListeningComprehensionExamProp
       question: examState.currentQuestion.question,
       options: examState.currentQuestion.options,
       optionImageUrls: examState.currentQuestion.optionImageUrls,
+      questionImage: examState.currentQuestion.questionImage,
     };
   }, [examState.currentQuestion]);
 

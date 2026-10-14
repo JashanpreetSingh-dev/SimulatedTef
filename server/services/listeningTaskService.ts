@@ -4,6 +4,22 @@
 
 import { connectDB } from '../db/connection';
 import { ListeningTask } from '../../types';
+import { getPresignedUrl, isS3Configured } from './s3Service';
+
+/** If audioUrl is stored as s3://<key>, resolve it to a presigned URL. */
+async function resolveTaskAudio(task: any): Promise<ListeningTask> {
+  const url: string = task.audioUrl || '';
+  if (url.startsWith('s3://') && isS3Configured()) {
+    const s3Key = url.slice('s3://'.length);
+    try {
+      const presigned = await getPresignedUrl(s3Key, 14400); // 4-hour expiry
+      return { ...task, audioUrl: presigned };
+    } catch (err) {
+      console.warn(`Failed to generate presigned URL for ${s3Key}:`, err);
+    }
+  }
+  return task as ListeningTask;
+}
 
 export const listeningTaskService = {
   /**
@@ -54,10 +70,10 @@ export const listeningTaskService = {
       if (fallbackTasks.length === 0) {
         return null;
       }
-      return fallbackTasks[0] as unknown as ListeningTask;
+      return resolveTaskAudio(fallbackTasks[0]);
     }
-    
-    return tasksWithQuestionCount[0] as unknown as ListeningTask;
+
+    return resolveTaskAudio(tasksWithQuestionCount[0]);
   },
   
   /**
@@ -69,7 +85,8 @@ export const listeningTaskService = {
     const task = await db.collection('listeningTasks')
       .findOne({ taskId, isActive: true });
     
-    return task as unknown as ListeningTask | null;
+    if (!task) return null;
+    return resolveTaskAudio(task);
   },
   
   /**
@@ -82,7 +99,7 @@ export const listeningTaskService = {
       .find({ isActive: true })
       .toArray();
     
-    return tasks as unknown as ListeningTask[];
+    return Promise.all((tasks as any[]).map(resolveTaskAudio));
   },
   
   /**

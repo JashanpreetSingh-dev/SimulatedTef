@@ -8,6 +8,8 @@ export interface MCQQuestionData {
   options: string[];
   /** When length 4, UI renders options as images (e.g. listening Section 1 "quel dessin"). Order = A,B,C,D. */
   optionImageUrls?: string[];
+  /** Composite image shown above the question (e.g. drawings labeled A–D for "quel dessin" questions). */
+  questionImage?: string;
   correctAnswer?: number; // Only provided in results view
   userAnswer?: number; // Only provided in results view
   explanation?: string; // Only provided in results view
@@ -33,7 +35,7 @@ export const MCQQuestion: React.FC<MCQQuestionProps> = ({
   className = '',
 }) => {
   const { theme } = useTheme();
-  const { questionId, question: questionText, questionText: questionPassage, options, optionImageUrls, correctAnswer, userAnswer, explanation } = question;
+  const { questionId, question: questionText, questionText: questionPassage, options, optionImageUrls, questionImage, correctAnswer, userAnswer, explanation } = question;
   const showAsImages = optionImageUrls && optionImageUrls.length === 4;
 
   const isCorrect = showResult && userAnswer !== undefined && correctAnswer !== undefined 
@@ -129,9 +131,16 @@ export const MCQQuestion: React.FC<MCQQuestionProps> = ({
         `}>
           {questionText}
         </p>
+        {questionImage && (
+          <img
+            src={questionImage}
+            alt="Diagrams A–D"
+            className="w-full max-w-lg rounded-lg border border-slate-200 dark:border-slate-700 mb-4"
+          />
+        )}
       </div>
 
-      <div className={`grid gap-3 ${showAsImages ? 'grid-cols-2 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2'}`}>
+      <div className={`grid gap-3 ${showAsImages ? 'grid-cols-2 sm:grid-cols-2' : options.length === 3 ? 'grid-cols-1' : 'grid-cols-1 sm:grid-cols-2'}`}>
         {options.map((option, index) => (
           <div key={index} className={`relative flex ${showAsImages ? 'min-h-[220px] sm:min-h-[260px]' : 'min-h-[80px]'}`}>
             <button
