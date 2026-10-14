@@ -366,29 +366,124 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
     );
   }
 
+  // Compute summary counts
+  const correctCount = enrichedResults.filter(q => q.isCorrect).length;
+  const skippedCount = enrichedResults.filter(q => q.userAnswer === -1 || q.userAnswer == null).length;
+  const wrongCount = enrichedResults.length - correctCount - skippedCount;
+  const pct = result.totalQuestions > 0 ? Math.round((result.score / result.totalQuestions) * 100) : 0;
+
+  // Map questionId → groupIndex for jump navigation
+  const questionToGroupIndex = useMemo(() => {
+    const map = new Map<string, number>();
+    audioGroups.forEach((group, gi) => group.forEach(q => map.set(q.questionId, gi)));
+    return map;
+  }, [audioGroups]);
+
+  // Refs for scrolling to individual questions within the current group (v2 / reading)
+  const questionDivRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
+  const jumpToQuestion = (questionId: string) => {
+    const groupIdx = questionToGroupIndex.get(questionId);
+    if (groupIdx === undefined) return;
+    if (groupIdx !== currentAudioGroupIndex) {
+      setCurrentAudioGroupIndex(groupIdx);
+      // Scroll after state update
+      setTimeout(() => {
+        questionDivRefs.current.get(questionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    } else {
+      questionDivRefs.current.get(questionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className={className}>
-      {/* Header with Score and Progress */}
-      <div className="mb-6">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-4">
-            <div className={`
-              px-3 py-1 rounded font-mono text-sm font-semibold
-              ${theme === 'dark' ? 'bg-slate-700 text-slate-100' : 'bg-indigo-100 text-indigo-700'}
-            `}>
-              {result.score}/{result.totalQuestions}
-            </div>
-            <div className={`
-              px-3 py-1 rounded text-sm
-              ${theme === 'dark' ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700 border border-slate-300'}
-            `}>
-              {moduleName === 'Listening' 
-                ? `Audio ${currentAudioGroupIndex + 1} of ${audioGroups.length} (${currentAudioGroup.length} question${currentAudioGroup.length > 1 ? 's' : ''})`
-                : `Question ${currentAudioGroupIndex + 1} of ${audioGroups.length}`
-              }
-            </div>
-          </div>
+      {/* ── Score Hero ── */}
+      <div className={`
+        mb-6 p-6 rounded-2xl border text-center
+        ${theme === 'dark' ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}
+      `}>
+        <div className={`text-6xl font-black leading-none ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`}>
+          {result.score}
+          <span className={`text-3xl font-medium ml-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-400'}`}>
+            /{result.totalQuestions}
+          </span>
         </div>
+        <div className={`text-lg font-semibold mt-2 ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+          {pct}% correct
+        </div>
+        <div className="flex gap-6 justify-center mt-4 text-sm font-semibold flex-wrap">
+          <span className="flex items-center gap-1.5 text-green-500">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.17l6.879-6.879a1 1 0 011.414 0z" clipRule="evenodd"/>
+            </svg>
+            {correctCount} correct
+          </span>
+          <span className="flex items-center gap-1.5 text-red-500">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/>
+            </svg>
+            {wrongCount} wrong
+          </span>
+          {skippedCount > 0 && (
+            <span className={`flex items-center gap-1.5 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-400'}`}>
+              <span className="font-bold text-base leading-none">—</span>
+              {skippedCount} skipped
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* ── Question Map ── */}
+      <div className={`
+        mb-6 p-4 rounded-xl border
+        ${theme === 'dark' ? 'bg-slate-800/60 border-slate-700' : 'bg-slate-50 border-slate-200'}
+      `}>
+        <p className={`text-xs font-bold uppercase tracking-wider mb-3 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+          All Questions
+        </p>
+        <div className="flex flex-wrap gap-1.5">
+          {enrichedResults.map((q, i) => {
+            const isSkipped = q.userAnswer === -1 || q.userAnswer == null;
+            const isActive = questionToGroupIndex.get(q.questionId) === currentAudioGroupIndex;
+            return (
+              <button
+                key={q.questionId}
+                onClick={() => jumpToQuestion(q.questionId)}
+                title={`Q${i + 1}: ${isSkipped ? 'not attempted' : q.isCorrect ? 'correct' : 'wrong'}`}
+                className={`
+                  w-8 h-8 rounded-full text-xs font-bold transition-all
+                  ${isSkipped
+                    ? theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+                    : q.isCorrect
+                    ? 'bg-green-500 text-white'
+                    : 'bg-red-500 text-white'
+                  }
+                  ${isActive ? 'ring-2 ring-offset-1 ring-indigo-400' : 'hover:scale-110'}
+                `}
+              >
+                {i + 1}
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex gap-4 mt-3 text-xs font-medium flex-wrap">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-green-500 inline-block"/><span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>Correct</span></span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-500 inline-block"/><span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>Wrong</span></span>
+          <span className="flex items-center gap-1"><span className={`w-3 h-3 rounded-full inline-block ${theme === 'dark' ? 'bg-slate-700' : 'bg-slate-200'}`}/><span className={theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}>Skipped</span></span>
+        </div>
+      </div>
+
+      {/* Navigation progress label */}
+      <div className="mb-4">
+        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+          {moduleName === 'Listening'
+            ? audioGroups.length > 1
+              ? `Audio ${currentAudioGroupIndex + 1} of ${audioGroups.length} · ${currentAudioGroup.length} question${currentAudioGroup.length !== 1 ? 's' : ''}`
+              : `Showing all ${enrichedResults.length} questions`
+            : `Question ${currentAudioGroupIndex + 1} of ${audioGroups.length}`
+          }
+        </p>
       </div>
 
       {/* Audio Player for Listening Questions */}
@@ -436,21 +531,53 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
             userAnswer: question.userAnswer,
             explanation: question.explanation,
           };
-          
-          // Find the original question number from enrichedResults
+
           const originalIndex = enrichedResults.findIndex(q => q.questionId === question.questionId);
           const questionNumber = originalIndex >= 0 ? originalIndex + 1 : idx + 1;
-          
+          const isSkipped = question.userAnswer === -1 || question.userAnswer == null;
+
           return (
-            <MCQQuestion
+            <div
               key={question.questionId}
-              question={questionData}
-              questionNumber={questionNumber}
-              selectedAnswer={question.userAnswer}
-              onAnswerSelect={() => {}} // Disabled in results view
-              disabled={true}
-              showResult={true}
-            />
+              ref={el => {
+                if (el) questionDivRefs.current.set(question.questionId, el);
+                else questionDivRefs.current.delete(question.questionId);
+              }}
+              className={`rounded-xl border p-4 ${
+                isSkipped
+                  ? theme === 'dark' ? 'border-slate-600 bg-slate-800/40' : 'border-slate-200 bg-slate-50/60'
+                  : question.isCorrect
+                  ? theme === 'dark' ? 'border-green-700/50 bg-green-900/10' : 'border-green-200 bg-green-50/50'
+                  : theme === 'dark' ? 'border-red-700/50 bg-red-900/10' : 'border-red-200 bg-red-50/50'
+              }`}
+            >
+              {/* Status badge */}
+              <div className="flex items-center gap-2 mb-3">
+                {isSkipped ? (
+                  <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ${theme === 'dark' ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'}`}>
+                    — Skipped
+                  </span>
+                ) : question.isCorrect ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15l-4.121-4.121a1 1 0 011.414-1.414L8.414 12.17l6.879-6.879a1 1 0 011.414 0z" clipRule="evenodd"/></svg>
+                    Correct
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd"/></svg>
+                    Wrong
+                  </span>
+                )}
+              </div>
+              <MCQQuestion
+                question={questionData}
+                questionNumber={questionNumber}
+                selectedAnswer={question.userAnswer}
+                onAnswerSelect={() => {}}
+                disabled={true}
+                showResult={true}
+              />
+            </div>
           );
         })}
       </div>
