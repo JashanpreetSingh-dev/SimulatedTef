@@ -209,6 +209,16 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
     fetchQuestions();
   }, [result.taskId, result.questionResults, isOldFormat, getToken]);
 
+  // Map questionId → groupIndex for jump navigation (must be before conditional returns)
+  const questionToGroupIndex = useMemo(() => {
+    const map = new Map<string, number>();
+    audioGroups.forEach((group, gi) => group.forEach(q => map.set(q.questionId, gi)));
+    return map;
+  }, [audioGroups]);
+
+  // Refs for scrolling to individual questions within the current group (must be before conditional returns)
+  const questionDivRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+
   // Navigation functions - navigate between audio groups
   const goToNextGroup = () => {
     if (currentAudioGroupIndex < audioGroups.length - 1) {
@@ -224,10 +234,10 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
 
   const isFirstGroup = currentAudioGroupIndex === 0;
   const isLastGroup = currentAudioGroupIndex === audioGroups.length - 1;
-  
+
   // Get the audioId for the current group (for listening)
-  const currentAudioId = moduleName === 'Listening' && currentAudioGroup.length > 0 
-    ? currentAudioGroup[0].audioId 
+  const currentAudioId = moduleName === 'Listening' && currentAudioGroup.length > 0
+    ? currentAudioGroup[0].audioId
     : undefined;
 
   // Fetch audio for current listening audio group (with caching)
@@ -371,16 +381,6 @@ export const QuestionResultsView: React.FC<QuestionResultsViewProps> = ({
   const skippedCount = enrichedResults.filter(q => q.userAnswer === -1 || q.userAnswer == null).length;
   const wrongCount = enrichedResults.length - correctCount - skippedCount;
   const pct = result.totalQuestions > 0 ? Math.round((result.score / result.totalQuestions) * 100) : 0;
-
-  // Map questionId → groupIndex for jump navigation
-  const questionToGroupIndex = useMemo(() => {
-    const map = new Map<string, number>();
-    audioGroups.forEach((group, gi) => group.forEach(q => map.set(q.questionId, gi)));
-    return map;
-  }, [audioGroups]);
-
-  // Refs for scrolling to individual questions within the current group (v2 / reading)
-  const questionDivRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
   const jumpToQuestion = (questionId: string) => {
     const groupIdx = questionToGroupIndex.get(questionId);
